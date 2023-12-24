@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmlns:xmi="http://www.omg.org/spec/XMI/20100901" xmlns:uml="http://www.omg.org/spec/UML/20100901" xmlns:mofext="http://www.omg.org/spec/MOF/20100901">
+  <uml:Package xmi:type="uml:Package" xmi:id="_0" name="L0" URI="http://www.omg.org/spec/UML/20100901">
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.0">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Infrastructure.xmi#Core-Basic"/>
+    </packageMerge>
+  </uml:Package>
+  <mofext:Tag xmi:type="mofext:Tag" xmi:id="_2" name="org.omg.xmi.nsPrefix" value="uml" element="_0"/>
+</xmi:XMI>

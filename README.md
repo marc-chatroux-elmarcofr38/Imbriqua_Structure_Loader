@@ -17,11 +17,20 @@ If not, see <https://www.gnu.org/licenses/>.
 
 -->
 
-# Imbriqua Structure : Generate structure file for Imbriqua Engine
+# Imbriqua Structure : Imterpreter of BPMN model files (in UML notation) for Imbriqua Engine project
 
 ## Context
 
-* Use OMG BPMN CMOF file
+The Object Management Group® (OMG®) is an international, open membership, not-for-profit technology standards consortium, who create and make evolve specification for modeling language.
+
+Updated in 2010, the BPMN™ (Business Process Model and Notation) specification propose a normative language for business process modeling. This notation is schematic-oriented and highly adaptive. BPMN project can be exchange in XML-structured files. This repository proposes to create a interpreter who generates BPMN class and function code (in RUST) from BPMN metamodel files.
+
+ Based on MOF™ (Meta Object Facility) and UML® (Unified Modeling Language) specification, 
+
+Break
+
+* metamodel
+* Running system
 
 ## Result
 
@@ -29,5 +38,8 @@ If not, see <https://www.gnu.org/licenses/>.
 * Generate rust structures file,
 * Generate rust traits file
 
-## How to use
+## How to use 
 
+## Reference
+
+* 

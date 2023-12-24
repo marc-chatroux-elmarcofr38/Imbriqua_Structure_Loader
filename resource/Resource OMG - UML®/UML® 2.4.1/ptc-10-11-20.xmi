@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmlns:xmi="http://www.omg.org/spec/XMI/20100901" xmlns:uml="http://www.omg.org/spec/UML/20100901" xmlns:mofext="http://www.omg.org/spec/MOF/20100901">
+  <uml:Package xmi:type="uml:Package" xmi:id="_0" name="L1" URI="http://www.omg.org/spec/UML/20100901">
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.0">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#Actions-BasicActions"/>
+    </packageMerge>
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.1">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#Activities-BasicActivities"/>
+    </packageMerge>
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.2">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#Activities-FundamentalActivities"/>
+    </packageMerge>
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.3">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#Classes-Dependencies"/>
+    </packageMerge>
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.4">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#Classes-Interfaces"/>
+    </packageMerge>
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.5">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#Classes-Kernel"/>
+    </packageMerge>
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.6">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#CommonBehaviors-BasicBehaviors"/>
+    </packageMerge>
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.7">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#CommonBehaviors-Communications"/>
+    </packageMerge>
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.8">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#CompositeStructures-InternalStructures"/>
+    </packageMerge>
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.9">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#Interactions-BasicInteractions"/>
+    </packageMerge>
+    <packageMerge xmi:type="uml:PackageMerge" xmi:id="_packageMerge.10">
+      <mergedPackage href="http://www.omg.org/spec/UML/20100901/Superstructure.xmi#UseCases"/>
+    </packageMerge>
+  </uml:Package>
+  <mofext:Tag xmi:type="mofext:Tag" xmi:id="_2" name="org.omg.xmi.nsPrefix" value="uml" element="_0"/>
+</xmi:XMI>

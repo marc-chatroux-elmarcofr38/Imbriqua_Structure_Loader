@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmlns:xmi="http://www.omg.org/spec/XMI/20100901" xmlns:uml="http://www.omg.org/spec/UML/20100901" xmlns:mofext="http://www.omg.org/spec/MOF/20100901">
+  <uml:Package xmi:type="uml:Package" xmi:id="_0" name="UML" URI="http://www.omg.org/spec/UML/20100901">
+    <packageImport xmi:type="uml:PackageImport" xmi:id="_packageImport.0">
+      <importedPackage href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#_0"/>
+    </packageImport>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_annotatedElement_comment" name="A_annotatedElement_comment" memberEnd="Comment-annotatedElement A_annotatedElement_comment-comment">
+      <ownedEnd xmi:type="uml:Property" xmi:id="A_annotatedElement_comment-comment" name="comment" visibility="public" type="Comment" association="A_annotatedElement_comment">
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="A_annotatedElement_comment-comment-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="A_annotatedElement_comment-comment-_lowerValue"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_nestedPackage_nestingPackage" name="A_nestedPackage_nestingPackage" memberEnd="Package-nestedPackage Package-nestingPackage"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_opposite_property" name="A_opposite_property" memberEnd="Property-opposite A_opposite_property-property">
+      <ownedEnd xmi:type="uml:Property" xmi:id="A_opposite_property-property" name="property" visibility="public" type="Property" association="A_opposite_property">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="A_opposite_property-property-_lowerValue"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_ownedAttribute_class" name="A_ownedAttribute_class" memberEnd="Class-ownedAttribute Property-class"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_ownedComment_owningElement" name="A_ownedComment_owningElement" memberEnd="Element-ownedComment A_ownedComment_owningElement-owningElement">
+      <ownedEnd xmi:type="uml:Property" xmi:id="A_ownedComment_owningElement-owningElement" name="owningElement" visibility="public" type="Element" association="A_ownedComment_owningElement">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="A_ownedComment_owningElement-owningElement-_lowerValue"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_ownedLiteral_enumeration" name="A_ownedLiteral_enumeration" memberEnd="Enumeration-ownedLiteral EnumerationLiteral-enumeration"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_ownedOperation_class" name="A_ownedOperation_class" memberEnd="Class-ownedOperation Operation-class"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_ownedParameter_operation" name="A_ownedParameter_operation" memberEnd="Operation-ownedParameter Parameter-operation"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_ownedType_package" name="A_ownedType_package" memberEnd="Package-ownedType Type-package"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_raisedException_operation" name="A_raisedException_operation" memberEnd="Operation-raisedException A_raisedException_operation-operation">
+      <ownedEnd xmi:type="uml:Property" xmi:id="A_raisedException_operation-operation" name="operation" visibility="public" type="Operation" association="A_raisedException_operation">
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="A_raisedException_operation-operation-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="A_raisedException_operation-operation-_lowerValue"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_superClass_class" name="A_superClass_class" memberEnd="Class-superClass A_superClass_class-class">
+      <ownedEnd xmi:type="uml:Property" xmi:id="A_superClass_class-class" name="class" visibility="public" type="Class" association="A_superClass_class">
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="A_superClass_class-class-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="A_superClass_class-class-_lowerValue"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="A_type_typedElement" name="A_type_typedElement" memberEnd="TypedElement-type A_type_typedElement-typedElement">
+      <ownedEnd xmi:type="uml:Property" xmi:id="A_type_typedElement-typedElement" name="typedElement" visibility="public" type="TypedElement" association="A_type_typedElement">
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="A_type_typedElement-typedElement-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="A_type_typedElement-typedElement-_lowerValue"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="Class" name="Class">
+      <ownedComment xmi:type="uml:Comment" xmi:id="Class-_ownedComment.0" annotatedElement="Class">
+        <body>A class is a type that has objects as its instances.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="Class-_generalization.0" general="Type"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Class-isAbstract" name="isAbstract" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Class-isAbstract-_ownedComment.0" annotatedElement="Class-isAbstract">
+          <body>True when a class is abstract.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Boolean"/>
+        <defaultValue xmi:type="uml:LiteralBoolean" xmi:id="Class-isAbstract-_defaultValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Class-ownedAttribute" name="ownedAttribute" visibility="public" type="Property" isOrdered="true" aggregation="composite" association="A_ownedAttribute_class">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Class-ownedAttribute-_ownedComment.0" annotatedElement="Class-ownedAttribute">
+          <body>The attributes owned by a class. These do not include the inherited attributes. Attributes are represented by instances of Property.</body>
+        </ownedComment>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="Class-ownedAttribute-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Class-ownedAttribute-_lowerValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Class-ownedOperation" name="ownedOperation" visibility="public" type="Operation" isOrdered="true" aggregation="composite" association="A_ownedOperation_class">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Class-ownedOperation-_ownedComment.0" annotatedElement="Class-ownedOperation">
+          <body>The operations owned by a class. These do not include the inherited operations.</body>
+        </ownedComment>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="Class-ownedOperation-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Class-ownedOperation-_lowerValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Class-superClass" name="superClass" visibility="public" type="Class" association="A_superClass_class">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Class-superClass-_ownedComment.0" annotatedElement="Class-superClass">
+          <body>The immediate superclasses of a class, from which the class inherits.</body>
+        </ownedComment>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="Class-superClass-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Class-superClass-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="Comment" name="Comment">
+      <ownedComment xmi:type="uml:Comment" xmi:id="Comment-_ownedComment.0" annotatedElement="Comment">
+        <body>A comment is a textual annotation that can be attached to a set of elements.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="Comment-_generalization.0" general="Element"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Comment-annotatedElement" name="annotatedElement" visibility="public" type="Element" association="A_annotatedElement_comment">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Comment-annotatedElement-_ownedComment.0" annotatedElement="Comment-annotatedElement">
+          <body>References the Element(s) being commented.</body>
+        </ownedComment>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="Comment-annotatedElement-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Comment-annotatedElement-_lowerValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Comment-body" name="body" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Comment-body-_ownedComment.0" annotatedElement="Comment-body">
+          <body>Specifies a string that is the comment.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Comment-body-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="DataType" name="DataType" isAbstract="true">
+      <ownedComment xmi:type="uml:Comment" xmi:id="DataType-_ownedComment.0" annotatedElement="DataType">
+        <body>DataType is an abstract class that acts as a common superclass for different kinds of data types.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="DataType-_generalization.0" general="Type"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="Element" name="Element" isAbstract="true">
+      <ownedComment xmi:type="uml:Comment" xmi:id="Element-_ownedComment.0" annotatedElement="Element">
+        <body>An element is a constituent of a model.</body>
+      </ownedComment>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Element-ownedComment" name="ownedComment" visibility="public" type="Comment" aggregation="composite" association="A_ownedComment_owningElement">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Element-ownedComment-_ownedComment.0" annotatedElement="Element-ownedComment">
+          <body>The Comments owned by this element.</body>
+        </ownedComment>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="Element-ownedComment-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Element-ownedComment-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="Enumeration" name="Enumeration">
+      <ownedComment xmi:type="uml:Comment" xmi:id="Enumeration-_ownedComment.0" annotatedElement="Enumeration">
+        <body>An enumeration defines a set of literals that can be used as its values.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="Enumeration-_generalization.0" general="DataType"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Enumeration-ownedLiteral" name="ownedLiteral" visibility="public" type="EnumerationLiteral" isOrdered="true" aggregation="composite" association="A_ownedLiteral_enumeration">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Enumeration-ownedLiteral-_ownedComment.0" annotatedElement="Enumeration-ownedLiteral">
+          <body>The ordered set of literals for this Enumeration.</body>
+        </ownedComment>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="Enumeration-ownedLiteral-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Enumeration-ownedLiteral-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="EnumerationLiteral" name="EnumerationLiteral">
+      <ownedComment xmi:type="uml:Comment" xmi:id="EnumerationLiteral-_ownedComment.0" annotatedElement="EnumerationLiteral">
+        <body>An enumeration literal is a value of an enumeration.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="EnumerationLiteral-_generalization.0" general="NamedElement"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="EnumerationLiteral-enumeration" name="enumeration" visibility="public" type="Enumeration" association="A_ownedLiteral_enumeration">
+        <ownedComment xmi:type="uml:Comment" xmi:id="EnumerationLiteral-enumeration-_ownedComment.0" annotatedElement="EnumerationLiteral-enumeration">
+          <body>The Enumeration that this EnumerationLiteral is a member of.</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="EnumerationLiteral-enumeration-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="MultiplicityElement" name="MultiplicityElement" isAbstract="true">
+      <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-_ownedComment.0" annotatedElement="MultiplicityElement">
+        <body>A multiplicity is a definition of an inclusive interval of non-negative integers beginning with a lower bound and ending with a (possibly infinite) upper bound. A multiplicity element embeds this information to specify the allowable cardinalities for an instantiation of this element.</body>
+      </ownedComment>
+      <ownedRule xmi:type="uml:Constraint" xmi:id="MultiplicityElement-lower_ge_0" name="lower_ge_0" constrainedElement="MultiplicityElement">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-lower_ge_0-_ownedComment.0" annotatedElement="MultiplicityElement-lower_ge_0">
+          <body>The lower bound must be a non-negative integer literal.</body>
+        </ownedComment>
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="MultiplicityElement-lower_ge_0-_specification">
+          <language>OCL</language>
+          <body>lowerBound()-&gt;notEmpty() implies lowerBound() &gt;= 0</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:type="uml:Constraint" xmi:id="MultiplicityElement-upper_ge_lower" name="upper_ge_lower" constrainedElement="MultiplicityElement">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-upper_ge_lower-_ownedComment.0" annotatedElement="MultiplicityElement-upper_ge_lower">
+          <body>The upper bound must be greater than or equal to the lower bound.</body>
+        </ownedComment>
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="MultiplicityElement-upper_ge_lower-_specification">
+          <language>OCL</language>
+          <body>(upperBound()-&gt;notEmpty() and lowerBound()-&gt;notEmpty()) implies upperBound() &gt;= lowerBound()</body>
+        </specification>
+      </ownedRule>
+      <generalization xmi:type="uml:Generalization" xmi:id="MultiplicityElement-_generalization.0" general="Element"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="MultiplicityElement-isOrdered" name="isOrdered" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-isOrdered-_ownedComment.0" annotatedElement="MultiplicityElement-isOrdered">
+          <body>For a multivalued multiplicity, this attribute specifies whether the values in an instantiation of this element are sequentially ordered.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Boolean"/>
+        <defaultValue xmi:type="uml:LiteralBoolean" xmi:id="MultiplicityElement-isOrdered-_defaultValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="MultiplicityElement-isUnique" name="isUnique" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-isUnique-_ownedComment.0" annotatedElement="MultiplicityElement-isUnique">
+          <body>For a multivalued multiplicity, this attributes specifies whether the values in an instantiation of this element are unique.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Boolean"/>
+        <defaultValue xmi:type="uml:LiteralBoolean" xmi:id="MultiplicityElement-isUnique-_defaultValue" value="true"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="MultiplicityElement-lower" name="lower" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-lower-_ownedComment.0" annotatedElement="MultiplicityElement-lower">
+          <body>Specifies the lower bound of the multiplicity interval.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Integer"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="MultiplicityElement-lower-_lowerValue"/>
+        <defaultValue xmi:type="uml:LiteralInteger" xmi:id="MultiplicityElement-lower-_defaultValue" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="MultiplicityElement-upper" name="upper" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-upper-_ownedComment.0" annotatedElement="MultiplicityElement-upper">
+          <body>Specifies the upper bound of the multiplicity interval.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#UnlimitedNatural"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="MultiplicityElement-upper-_lowerValue"/>
+        <defaultValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="MultiplicityElement-upper-_defaultValue" value="1"/>
+      </ownedAttribute>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="MultiplicityElement-includesCardinality" name="includesCardinality" visibility="public" isQuery="true" precondition="MultiplicityElement-includesCardinality-pre" bodyCondition="MultiplicityElement-includesCardinality-spec">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-includesCardinality-_ownedComment.0" annotatedElement="MultiplicityElement-includesCardinality">
+          <body>The query includesCardinality() checks whether the specified cardinality is valid for this multiplicity.</body>
+        </ownedComment>
+        <ownedRule xmi:type="uml:Constraint" xmi:id="MultiplicityElement-includesCardinality-pre" name="pre" constrainedElement="MultiplicityElement-includesCardinality">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="MultiplicityElement-includesCardinality-pre-_specification">
+            <language>OCL</language>
+            <body>upperBound()-&gt;notEmpty() and lowerBound()-&gt;notEmpty()</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:Constraint" xmi:id="MultiplicityElement-includesCardinality-spec" name="spec" constrainedElement="MultiplicityElement-includesCardinality">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="MultiplicityElement-includesCardinality-spec-_specification">
+            <language>OCL</language>
+            <body>result = (lowerBound() &lt;= C) and (upperBound() &gt;= C)</body>
+          </specification>
+        </ownedRule>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="MultiplicityElement-includesCardinality-result" name="result" visibility="public" direction="return">
+          <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Boolean"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="MultiplicityElement-includesCardinality-C" name="C" visibility="public">
+          <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Integer"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="MultiplicityElement-includesMultiplicity" name="includesMultiplicity" visibility="public" isQuery="true" precondition="MultiplicityElement-includesMultiplicity-pre" bodyCondition="MultiplicityElement-includesMultiplicity-spec">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-includesMultiplicity-_ownedComment.0" annotatedElement="MultiplicityElement-includesMultiplicity">
+          <body>The query includesMultiplicity() checks whether this multiplicity includes all the cardinalities allowed by the specified multiplicity.</body>
+        </ownedComment>
+        <ownedRule xmi:type="uml:Constraint" xmi:id="MultiplicityElement-includesMultiplicity-pre" name="pre" constrainedElement="MultiplicityElement-includesMultiplicity">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="MultiplicityElement-includesMultiplicity-pre-_specification">
+            <language>OCL</language>
+            <body>self.upperBound()-&gt;notEmpty() and self.lowerBound()-&gt;notEmpty() and M.upperBound()-&gt;notEmpty() and M.lowerBound()-&gt;notEmpty()</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:Constraint" xmi:id="MultiplicityElement-includesMultiplicity-spec" name="spec" constrainedElement="MultiplicityElement-includesMultiplicity">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="MultiplicityElement-includesMultiplicity-spec-_specification">
+            <language>OCL</language>
+            <body>result = (self.lowerBound() &lt;= M.lowerBound()) and (self.upperBound() &gt;= M.upperBound())</body>
+          </specification>
+        </ownedRule>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="MultiplicityElement-includesMultiplicity-result" name="result" visibility="public" direction="return">
+          <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Boolean"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="MultiplicityElement-includesMultiplicity-M" name="M" visibility="public" type="MultiplicityElement"/>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="MultiplicityElement-isMultivalued" name="isMultivalued" visibility="public" isQuery="true" precondition="MultiplicityElement-isMultivalued-pre" bodyCondition="MultiplicityElement-isMultivalued-spec">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-isMultivalued-_ownedComment.0" annotatedElement="MultiplicityElement-isMultivalued">
+          <body>The query isMultivalued() checks whether this multiplicity has an upper bound greater than one.</body>
+        </ownedComment>
+        <ownedRule xmi:type="uml:Constraint" xmi:id="MultiplicityElement-isMultivalued-spec" name="spec" constrainedElement="MultiplicityElement-isMultivalued">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="MultiplicityElement-isMultivalued-spec-_specification">
+            <language>OCL</language>
+            <body>result = upperBound() &gt; 1</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:Constraint" xmi:id="MultiplicityElement-isMultivalued-pre" name="pre" constrainedElement="MultiplicityElement-isMultivalued">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="MultiplicityElement-isMultivalued-pre-_specification">
+            <language>OCL</language>
+            <body>upperBound()-&gt;notEmpty()</body>
+          </specification>
+        </ownedRule>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="MultiplicityElement-isMultivalued-result" name="result" visibility="public" direction="return">
+          <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Boolean"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="MultiplicityElement-lowerBound" name="lowerBound" visibility="public" isQuery="true" bodyCondition="MultiplicityElement-lowerBound-spec">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-lowerBound-_ownedComment.0" annotatedElement="MultiplicityElement-lowerBound">
+          <body>The query lowerBound() returns the lower bound of the multiplicity as an integer.</body>
+        </ownedComment>
+        <ownedRule xmi:type="uml:Constraint" xmi:id="MultiplicityElement-lowerBound-spec" name="spec" constrainedElement="MultiplicityElement-lowerBound">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="MultiplicityElement-lowerBound-spec-_specification">
+            <language>OCL</language>
+            <body>result = if lower-&gt;notEmpty() then lower else 1 endif</body>
+          </specification>
+        </ownedRule>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="MultiplicityElement-lowerBound-result" name="result" visibility="public" direction="return">
+          <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Integer"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="MultiplicityElement-lowerBound-result-_lowerValue"/>
+        </ownedParameter>
+      </ownedOperation>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="MultiplicityElement-upperBound" name="upperBound" visibility="public" isQuery="true" bodyCondition="MultiplicityElement-upperBound-spec">
+        <ownedComment xmi:type="uml:Comment" xmi:id="MultiplicityElement-upperBound-_ownedComment.0" annotatedElement="MultiplicityElement-upperBound">
+          <body>The query upperBound() returns the upper bound of the multiplicity for a bounded multiplicity as an unlimited natural.</body>
+        </ownedComment>
+        <ownedRule xmi:type="uml:Constraint" xmi:id="MultiplicityElement-upperBound-spec" name="spec" constrainedElement="MultiplicityElement-upperBound">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="MultiplicityElement-upperBound-spec-_specification">
+            <language>OCL</language>
+            <body>result = if upper-&gt;notEmpty() then upper else 1 endif</body>
+          </specification>
+        </ownedRule>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="MultiplicityElement-upperBound-result" name="result" visibility="public" direction="return">
+          <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#UnlimitedNatural"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="MultiplicityElement-upperBound-result-_lowerValue"/>
+        </ownedParameter>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="NamedElement" name="NamedElement" isAbstract="true">
+      <ownedComment xmi:type="uml:Comment" xmi:id="NamedElement-_ownedComment.0" annotatedElement="NamedElement">
+        <body>A named element represents an element with a name.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="NamedElement-_generalization.0" general="Element"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="NamedElement-name" name="name" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="NamedElement-name-_ownedComment.0" annotatedElement="NamedElement-name">
+          <body>The name of the NamedElement.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="NamedElement-name-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="Operation" name="Operation">
+      <ownedComment xmi:type="uml:Comment" xmi:id="Operation-_ownedComment.0" annotatedElement="Operation">
+        <body>An operation is owned by a class and may be invoked in the context of objects that are instances of that class. It is a typed element and a multiplicity element.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="Operation-_generalization.0" general="MultiplicityElement"/>
+      <generalization xmi:type="uml:Generalization" xmi:id="Operation-_generalization.1" general="TypedElement"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Operation-class" name="class" visibility="public" type="Class" association="A_ownedOperation_class">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Operation-class-_ownedComment.0" annotatedElement="Operation-class">
+          <body>The class that owns the operation.</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Operation-class-_lowerValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Operation-ownedParameter" name="ownedParameter" visibility="public" type="Parameter" isOrdered="true" aggregation="composite" association="A_ownedParameter_operation">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Operation-ownedParameter-_ownedComment.0" annotatedElement="Operation-ownedParameter">
+          <body>The parameters to the operation.</body>
+        </ownedComment>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="Operation-ownedParameter-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Operation-ownedParameter-_lowerValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Operation-raisedException" name="raisedException" visibility="public" type="Type" association="A_raisedException_operation">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Operation-raisedException-_ownedComment.0" annotatedElement="Operation-raisedException">
+          <body>The exceptions that are declared as possible during an invocation of the operation.</body>
+        </ownedComment>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="Operation-raisedException-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Operation-raisedException-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="Package" name="Package">
+      <ownedComment xmi:type="uml:Comment" xmi:id="Package-_ownedComment.0" annotatedElement="Package">
+        <body>A package is a container for types and other packages.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="Package-_generalization.0" general="NamedElement"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Package-nestedPackage" name="nestedPackage" visibility="public" type="Package" aggregation="composite" association="A_nestedPackage_nestingPackage">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Package-nestedPackage-_ownedComment.0" annotatedElement="Package-nestedPackage">
+          <body>The set of contained packages.</body>
+        </ownedComment>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="Package-nestedPackage-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Package-nestedPackage-_lowerValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Package-nestingPackage" name="nestingPackage" visibility="public" type="Package" association="A_nestedPackage_nestingPackage">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Package-nestingPackage-_ownedComment.0" annotatedElement="Package-nestingPackage">
+          <body>The containing package.</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Package-nestingPackage-_lowerValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Package-ownedType" name="ownedType" visibility="public" type="Type" aggregation="composite" association="A_ownedType_package">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Package-ownedType-_ownedComment.0" annotatedElement="Package-ownedType">
+          <body>The set of contained types.</body>
+        </ownedComment>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="Package-ownedType-_upperValue" value="*"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Package-ownedType-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="Parameter" name="Parameter">
+      <ownedComment xmi:type="uml:Comment" xmi:id="Parameter-_ownedComment.0" annotatedElement="Parameter">
+        <body>A parameter is a typed element that represents a parameter of an operation.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="Parameter-_generalization.0" general="TypedElement"/>
+      <generalization xmi:type="uml:Generalization" xmi:id="Parameter-_generalization.1" general="MultiplicityElement"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Parameter-operation" name="operation" visibility="public" type="Operation" association="A_ownedParameter_operation">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Parameter-operation-_ownedComment.0" annotatedElement="Parameter-operation">
+          <body>The operation that owns the parameter.</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Parameter-operation-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="PrimitiveType" name="PrimitiveType">
+      <ownedComment xmi:type="uml:Comment" xmi:id="PrimitiveType-_ownedComment.0" annotatedElement="PrimitiveType">
+        <body>A primitive type is a data type implemented by the underlying infrastructure and made available for modeling.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="PrimitiveType-_generalization.0" general="DataType"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="Property" name="Property">
+      <ownedComment xmi:type="uml:Comment" xmi:id="Property-_ownedComment.0" annotatedElement="Property">
+        <body>A property is a typed element that represents an attribute of a class.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="Property-_generalization.0" general="TypedElement"/>
+      <generalization xmi:type="uml:Generalization" xmi:id="Property-_generalization.1" general="MultiplicityElement"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Property-class" name="class" visibility="public" type="Class" association="A_ownedAttribute_class">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Property-class-_ownedComment.0" annotatedElement="Property-class">
+          <body>The class that owns the property, and of which the property is an attribute.</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Property-class-_lowerValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Property-default" name="default" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Property-default-_ownedComment.0" annotatedElement="Property-default">
+          <body>A string that is evaluated to give a default value for the attribute when an object of the owning class is instantiated.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Property-default-_lowerValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Property-isComposite" name="isComposite" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Property-isComposite-_ownedComment.0" annotatedElement="Property-isComposite">
+          <body>If isComposite is true, the object containing the attribute is a container for the object or value contained in the attribute.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Boolean"/>
+        <defaultValue xmi:type="uml:LiteralBoolean" xmi:id="Property-isComposite-_defaultValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Property-isDerived" name="isDerived" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Property-isDerived-_ownedComment.0" annotatedElement="Property-isDerived">
+          <body>If isDerived is true, the value of the attribute is derived from information elsewhere.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Boolean"/>
+        <defaultValue xmi:type="uml:LiteralBoolean" xmi:id="Property-isDerived-_defaultValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Property-isID" name="isID" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Property-isID-_ownedComment.0" annotatedElement="Property-isID">
+          <body>True indicates this property can be used to uniquely identify an instance of the containing Class.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Boolean"/>
+        <defaultValue xmi:type="uml:LiteralBoolean" xmi:id="Property-isID-_defaultValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Property-isReadOnly" name="isReadOnly" visibility="public">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Property-isReadOnly-_ownedComment.0" annotatedElement="Property-isReadOnly">
+          <body>If isReadOnly is true, the attribute may not be written to after initialization.</body>
+        </ownedComment>
+        <type href="http://www.omg.org/spec/UML/20100901/PrimitiveTypes.xmi#Boolean"/>
+        <defaultValue xmi:type="uml:LiteralBoolean" xmi:id="Property-isReadOnly-_defaultValue"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Property-opposite" name="opposite" visibility="public" type="Property" association="A_opposite_property">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Property-opposite-_ownedComment.0" annotatedElement="Property-opposite">
+          <body>Two attributes attr1 and attr2 of two objects o1 and o2 (which may be the same object) may be paired with each other so that o1.attr1 refers to o2 if and only if o2.attr2 refers to o1. In such a case attr1 is the opposite of attr2 and attr2 is the opposite of attr1.</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Property-opposite-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="Type" name="Type" isAbstract="true">
+      <ownedComment xmi:type="uml:Comment" xmi:id="Type-_ownedComment.0" annotatedElement="Type">
+        <body>A type is a named element that is used as the type for a typed element. A type can be contained in a package.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="Type-_generalization.0" general="NamedElement"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="Type-package" name="package" visibility="public" type="Package" association="A_ownedType_package">
+        <ownedComment xmi:type="uml:Comment" xmi:id="Type-package-_ownedComment.0" annotatedElement="Type-package">
+          <body>Specifies the owning package of this classifier, if any.</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="Type-package-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="TypedElement" name="TypedElement" isAbstract="true">
+      <ownedComment xmi:type="uml:Comment" xmi:id="TypedElement-_ownedComment.0" annotatedElement="TypedElement">
+        <body>A typed element is a kind of named element that represents an element with a type.</body>
+      </ownedComment>
+      <generalization xmi:type="uml:Generalization" xmi:id="TypedElement-_generalization.0" general="NamedElement"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="TypedElement-type" name="type" visibility="public" type="Type" association="A_type_typedElement">
+        <ownedComment xmi:type="uml:Comment" xmi:id="TypedElement-type-_ownedComment.0" annotatedElement="TypedElement-type">
+          <body>The type of the TypedElement.</body>
+        </ownedComment>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="TypedElement-type-_lowerValue"/>
+      </ownedAttribute>
+    </packagedElement>
+  </uml:Package>
+  <mofext:Tag xmi:type="mofext:Tag" xmi:id="_2" name="org.omg.xmi.nsPrefix" value="uml" element="_0"/>
+</xmi:XMI>
