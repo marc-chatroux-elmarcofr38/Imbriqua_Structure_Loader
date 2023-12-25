@@ -11,7 +11,7 @@ appenders:
 
     requests:
         kind: file
-        path: "imbriqua_engine.log"
+        path: "imbriqua_structure.log"
         encoder:
             pattern: "{d(%+)(utc)} [{f}:{L}] {h({l})} {M}: {m} {n}"
         filters:

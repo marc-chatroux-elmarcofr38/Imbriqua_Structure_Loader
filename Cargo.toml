@@ -1,5 +1,5 @@
 [package]
-name = "Imbriqua_Structure"
+name = "imbriqua_structure"
 description = "Imbriqua Structure : Interpreter of BPMN model files (in UML notation) for Imbriqua Engine project"
 version = "0.1.0"
 authors = ["Marc Chatroux <marc38.chatroux@free.fr>"]

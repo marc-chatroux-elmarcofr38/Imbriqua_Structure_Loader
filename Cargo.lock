@@ -3,16 +3,6 @@
 version = 3
 
 [[package]]
-name = "Imbriqua_Structure"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "log",
- "log4rs",
- "serde_yaml 0.9.29",
-]
-
-[[package]]
 name = "android-tzdata"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -160,6 +150,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f31827a206f56af32e590ba56d5d2d085f558508192593743f16b2306495269f"
 dependencies = [
  "cc",
+]
+
+[[package]]
+name = "imbriqua_structure"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "log",
+ "log4rs",
+ "serde_yaml 0.9.29",
 ]
 
 [[package]]
