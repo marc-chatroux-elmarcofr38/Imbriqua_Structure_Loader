@@ -1,10 +1,14 @@
 # Imbriqua Structure : Interpreter of BPMN model files (in UML notation) for Imbriqua Engine project
 
+
+
 ## Context
 
 The Object Management Group® (OMG®) is an international, open membership, not-for-profit technology standards consortium, who create and make evolve specification for modeling language.
 
 Updated in 2010, the BPMN™ (Business Process Model and Notation) specification propose a normative language for business process modeling. This notation is schematic-oriented and highly adaptive. BPMN project can be exchange in XML-structured files. This repository proposes to create a interpreter who generates BPMN class and function code (in RUST) from BPMN metamodel files.
+
+
 
 ## Goal
 
@@ -29,11 +33,17 @@ The following element aren't in the scope of the project :
 * Integrate SQL migration files : All execution don't take in account any old result and old input file. No file provide to migrate database after modification of classes or attributes
 
 
+
 ## How to use 
+
+
+
 
 ## Reference
 
-All resource and files for OMG consortium can be found in the folder "resource" of this repository. It contain actual and previus version of BPMN™, DD™, MOF™, OCL™, UML® and XMI® specification.
+All resource and files from OMG consortium can be found in the folder "resource" of this repository. It contain actual and previus version of BPMN™, DD™, MOF™, OCL™, UML® and XMI® specification.
+
+
 
 ## Copyright
 
@@ -46,4 +56,3 @@ Imbriqua Structure is free software: you can redistribute it and/or modify it un
 Imbriqua Structure is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Imbriqua Structure. If not, see <https://www.gnu.org/licenses/>.
-
