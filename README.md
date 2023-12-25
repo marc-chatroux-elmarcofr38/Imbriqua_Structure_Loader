@@ -16,17 +16,17 @@ Updated in 2010, the BPMN™ (Business Process Model and Notation) specification
 
  With the goal to create RUST structure and RUST traits based on BPMN Structute and BPMN Execution semantic, this repository propose to make the following task :
 
-* Generate RUST structures, with attributes and heritage
-    * For BPMN definition, using BPMN 2.0.2 CMOF files
-    * For BPMN execution, using custom CMOF files 
+* Generate RUST structures, with attributes, associations and heritage
+    * For BPMN definition, using BPMN 2.0.2 .cmof files
+    * For BPMN execution, using custom .cmof files 
 * Generate SQL up file, including creation of tables, attributes, foreign-key, and contraints
-    * For BPMN definition, using BPMN 2.0.2 CMOF files
-    * For BPMN execution, using custom CMOF files
+    * For BPMN definition, using BPMN 2.0.2 .cmof files
+    * For BPMN execution, using custom .cmof files
 * Generate SQL down file, including removal of tables, attributes, foreign-key, and contraints
-    * For BPMN definition, using BPMN 2.0.2 CMOF files
-    * For BPMN execution, using custom CMOF files
+    * For BPMN definition, using BPMN 2.0.2 .cmof files
+    * For BPMN execution, using custom .cmof files
 * Generate RUST traits for structures, for BPMN Execution
-    * For BPMN execution, using custom CMOF files
+    * For BPMN execution, using custom .cmof files
 
 The following element aren't in the scope of the project :
 
