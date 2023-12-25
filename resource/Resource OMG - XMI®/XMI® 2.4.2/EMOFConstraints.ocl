@@ -1,0 +1,286 @@
+-- author: Nicolas.F.Rouquette@jpl.nasa.gov
+-- December 2010
+
+-- This Complete OCL document is edited using an Eclipse XText-based OCL Editor in the UML-RTF project.
+-- The reference below corresponds to the Eclipse EMF-exported version of UML2.4 merged at L3.
+-- the uml.ecore file is not 100% accurate but it is adequate for defining the CMOF constraints for MOF2.4.
+
+import 'uml.ecore'
+
+package UML
+
+-- 12.4 [1] The type of Operation::raisedException is limited to be Class rather than Type.
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/operation-has-non-class-exception
+context Operation
+inv EMOF_12_4_1: raisedException->forAll(e | e.oclIsTypeOf(Class))
+	
+-- 12.4 [3] Names are required for all NamedElements except for ValueSpecifications.
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/named-element-has-no-name
+context NamedElement
+inv EMOF_12_4_3: not oclIsKindOf(ValueSpecification) implies (name <> null and name->notEmpty())
+
+-- 12.4 [4] Core::Basic and EMOF do not support visibilities. 
+-- All property visibilities must be explicitly set to public where applicable, that is for all NamedElements, ElementImports and PackageImports.
+-- Furthermore, no alias is allowed for any ElementImport.
+
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/named-element-is-not-public
+context NamedElement
+inv EMOF_12_4_4a: visibility = VisibilityKind::public
+	
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/element-import-is-not-public
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/element-import-has-alias
+context ElementImport
+inv EMOF_12_4_4b: visibility = VisibilityKind::public and alias->isEmpty()
+	
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/package-import-is-not-public
+context PackageImport
+inv EMOF_12_4_4c: visibility = VisibilityKind::public
+		
+-- 12.4 [8] An EMOF metamodel is restricted to use the following concrete metaclasses from UMLÕs Kernel.
+
+context Element
+def: isWithinEMOFSubset() : Boolean =
+	self.oclIsKindOf(Association) or
+	self.oclIsKindOf(Class) or
+	self.oclIsKindOf(Comment) or
+	self.oclIsKindOf(DataType) or
+	self.oclIsKindOf(Enumeration) or
+	self.oclIsKindOf(EnumerationLiteral) or
+	self.oclIsKindOf(Generalization) or
+	self.oclIsKindOf(InstanceValue) or
+	self.oclIsKindOf(LiteralBoolean) or
+	self.oclIsKindOf(LiteralInteger) or
+	self.oclIsKindOf(LiteralNull) or
+	self.oclIsKindOf(LiteralReal) or
+	self.oclIsKindOf(LiteralString) or
+	self.oclIsKindOf(LiteralUnlimitedNatural) or
+	self.oclIsKindOf(Operation) or
+	self.oclIsKindOf(Package) or
+	self.oclIsKindOf(Parameter) or
+	self.oclIsKindOf(PrimitiveType) or
+	self.oclIsKindOf(Property)
+	
+context Package
+inv EMOF_12_4_8: 
+	self->closure(ownedElement)->forAll(e | e.Element::isWithinEMOFSubset())
+	
+-- 12.4 [9] The following properties must be empty:
+-- Association::navigableOwnedEnd
+-- Class::nestedClassifier
+-- Classifier::/general for instances of Datatype
+-- Operation::bodyCondition
+-- Operation::postcondition
+-- Operation::precondition
+-- Operation::redefinedOperation
+-- Parameter::defaultValue
+-- Property::qualifier
+-- Property::redefinedProperty
+-- Property::subsettedProperty
+
+context Association
+inv EMOF_12_4_9a: navigableOwnedEnd->isEmpty()
+
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/class-has-nested-classifier
+context Class
+inv EMOF_12_4_9b: nestedClassifier->isEmpty()
+
+context DataType
+inv EMOF_12_4_9c: general->isEmpty()
+
+context Operation
+inv EMOF_12_4_9d: bodyCondition->isEmpty() and postcondition->isEmpty() and precondition->isEmpty() and redefinedOperation->isEmpty()
+
+context Parameter
+inv EMOF_12_4_9e: defaultValue->isEmpty()
+
+context Property
+inv EMOF_12_4_9f: qualifier->isEmpty() and redefinedProperty->isEmpty() and subsettedProperty->isEmpty()
+
+-- 12.4 [10] The following properties must be false:
+-- Association::isDerived
+-- Classifier::isFinalSpecialization
+-- Feature::isStatic
+-- Property::isDerivedUnion
+-- RedefinableElement::isLeaf
+-- The following properties must be true:
+-- Operation::isQuery
+
+context Association
+inv EMOF_12_4_10a: not isDerived
+
+context Classifier
+inv EMOF_12_4_10b: not isFinalSpecialization
+
+context Feature
+inv EMOF_12_4_10c: not isStatic
+
+context Property
+inv EMOF_12_4_10d: not isDerivedUnion
+
+context RedefinableElement
+inv EMOF_12_4_10e: not isLeaf
+
+context Operation
+inv EMOF_12_4_10f: isQuery = true
+
+-- 12.4 [11] Generalization::isSubstitutable must be true 
+
+context Generalization
+inv EMOF_12_4_11: isSubstitutable = true
+
+-- 12.4 [12] An Association has exactly 2 memberEnds, may never have an ownedNavigableEnd (they will always be owned by Classes) and may have at most one ownedEnd
+-- see also: Association::EMOF_12_4_9a
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/association-does-not-have-two-member-ends
+
+context Association
+inv EMOF_12_4_12: memberEnd->size() = 2 and ownedEnd->size() < 2
+	
+-- 12.4 [13] An Operation can have up to one Parameter whose direction is ÔreturnÕ; furthermore, an Operation cannot have any ParameterSet per 12.4 [8].
+
+context Operation
+inv EMOF_12_4_13: ownedParameter->select(direction = ParameterDirectionKind::return)->size() < 2 and ownedParameterSet->isEmpty()
+
+-- 12.4 [14] Comments may only annotate instances of NamedElement
+
+context Comment
+inv EMOF_12_4_14: annotatedElement->forAll(e | e.oclIsKindOf(NamedElement))
+
+-- see also: https://sites.google.com/site/metamodelingantipatterns/background/uml-metamodel/classifier-allattributes
+
+context Classifier
+def: allAttributes : Set(Property) = self->closure(general)->union(self)->attribute->asSet()
+
+-- 12.4 [15] Only one member attribute of a Class may have isId=true. 
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/class-has-more-than-one-id
+
+context Class
+inv EMOF_12_4_15: self->closure(general)->union(self)->attribute->asSet()->select(p:Property | p.isID)->size() < 2
+--inv EMOF_12_4_15: self.Classifier::allAttributes->select(p:Property | p.isID)->size() < 2
+
+-- 12.4 [16] Property::aggregation must be either ÔnoneÕ or ÔcompositeÕ 
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/property-has-shared-aggregation
+
+context Property
+inv EMOF_12_4_16: aggregation = AggregationKind::composite or aggregation = AggregationKind::none
+
+-- 12.4 [17] Enumerations may not have attributes or operations
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/enumeration-has-attributes
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/enumeration-has-operations
+
+context Enumeration
+inv EMOF_12_4_17: feature->isEmpty()
+
+-- 12.4 [18] BehavioralFeature must be sequential
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/behavioral-feature-is-not-sequential
+
+context BehavioralFeature
+inv EMOF_12_4_18: concurrency = CallConcurrencyKind::sequential
+
+-- 12.4 [19] Class must not be active
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/class-is-active
+
+context Class
+inv EMOF_12_4_19: not isActive
+
+-- 12.4 [20] An EnumerationLiteral must not have a ValueSpecification
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/enumeration-literal-has-specification
+
+context EnumerationLiteral
+inv EMOF_12_4_20: specification->isEmpty()
+
+-- 12.4 [21] An Operation Parameter must have no effect, exception or streaming characteristics
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/parameter-has-effect
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/parameter-is-exception
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/parameter-is-stream
+
+context Parameter
+inv EMOF_12_4_21: effect->isEmpty() and not (isException or isStream)
+
+-- 12.4 [22] A TypedElement cannot be typed by an Association
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/typed-element-has-association-type
+
+context TypedElement
+inv EMOF_12_4_22: not type.oclIsKindOf(Association)
+
+-- 12.4 [23] A TypedElement other than a LiteralSpecification or an OpaqueExpression must have a Type
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/typed-element-has-no-type
+
+context TypedElement
+inv EMOF_12_4_23: not (oclIsKindOf(LiteralSpecification) or oclIsKindOf(OpaqueExpression)) implies type->notEmpty()
+
+-- 12.4 [24] A TypedElement that is a kind of Parameter or Property typed by a Class cannot have a default value.
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/typed-element-is-complex-with-default-value
+
+context Parameter
+inv EMOF_12_4_24a: type.oclIsKindOf(Class) implies defaultValue->isEmpty()
+
+context Property
+inv EMOF_12_4_24b: type.oclIsKindOf(Class) implies defaultValue->isEmpty()
+
+-- 12.3 [25] For a TypedElement that is a kind of Parameter or Property typed by an Enumeration, the defaultValue, if any, must be a kind of InstanceValue.
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/typed-element-is-enumeration-with-non-instance-value-default
+
+context Parameter
+inv EMOF_12_4_25a: type.oclIsKindOf(Enumeration) and defaultValue->notEmpty() implies defaultValue.oclIsKindOf(InstanceValue)
+
+context Property
+inv EMOF_12_4_25b: type.oclIsKindOf(Enumeration) and defaultValue->notEmpty() implies defaultValue.oclIsKindOf(InstanceValue)
+
+-- 12.3 [26] For a TypedElement that is a kind of Parameter or Property typed by an PrimitiveType, the defaultValue, if any, must be a kind of LiteralSpecification.
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/typed-element-is-primitive-with-non-literal-default
+
+context Parameter
+inv EMOF_12_4_26a: type.oclIsKindOf(Enumeration) and defaultValue->notEmpty() implies defaultValue.oclIsKindOf(LiteralSpecification)
+
+context Property
+inv EMOF_12_4_26b: type.oclIsKindOf(Enumeration) and defaultValue->notEmpty() implies defaultValue.oclIsKindOf(LiteralSpecification)
+
+-- 12.4 [27] A composite subsetting Property with mandatory multiplicity cannot subset another composite Property with mandatory multiplicity.
+
+context Property
+inv EMOF_12_4_27: isComposite and lowerBound() = 1 implies subsettedProperty->forAll(not (isComposite and lowerBound() = 1))
+
+-- 12.4 [28] A Property typed by a kind of DataType must have aggregation = none.
+
+context Property
+inv EMOF_12_4_28: type.oclIsKindOf(DataType) implies aggregation = AggregationKind::none
+
+-- 12.4 [29] A Property owned by a DataType can only be typed by a DataType.
+
+context DataType
+inv EMOF_12_4_29: ownedAttribute.type.oclIsKindOf(DataType)
+
+-- 12.4 [30] Each Association memberEnd Property must be typed by a Class.
+
+context Association
+inv EMOF_12_4_30: memberEnd.type.oclIsKindOf(Class)
+
+-- 12.4 [31] A multi-valued Property or Parameter cannot have a default value. 
+-- The default value of a Property or Parameter typed by a PrimitiveType must be a kind of LiteralSpecification. 
+-- The default value of a Property or Parameter typed by an Enumeration must be a kind of InstanceValue. 
+-- A Property or Parameter typed by a Class cannot have a default value.
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/parameter-has-invalid-default-value
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/property-has-invalid-default-value
+
+context Parameter
+inv EMOF_12_4_30a: (upperBound() > 1 or type.oclIsKindOf(Class) implies defaultValue->isEmpty())
+inv EMOF_12_4_30b: defaultValue->notEmpty() implies 
+ 	(upperBound() <= 1 and
+	 ((type.oclIsKindOf(PrimitiveType) and defaultValue.oclIsKindOf(LiteralSpecification)) or
+	  (type.oclIsKindOf(Enumeration) and defaultValue.oclIsKindOf(InstanceValue))))
+
+context Property
+inv EMOF_12_4_30c: (upperBound() > 1 or type.oclIsKindOf(Class) implies defaultValue->isEmpty())
+inv EMOF_12_4_30d: defaultValue->notEmpty() implies 
+ 	(upperBound() <= 1 and
+	 ((type.oclIsKindOf(PrimitiveType) and defaultValue.oclIsKindOf(LiteralSpecification)) or
+	  (type.oclIsKindOf(Enumeration) and defaultValue.oclIsKindOf(InstanceValue))))
+	  
+-- 12.4 [31] The values of MultiplicityElement::lowerValue and upperValue must be of kind LiteralInteger and LiteralUnlimitedNatural respectively
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/multiplicity-element-has-non-integer-lower-value
+-- see also: https://sites.google.com/site/metamodelingantipatterns/catalog/mof/multiplicity-element-has-non-unlimited-natural-upper-value
+
+context MultiplicityElement
+inv EMOF_12_4_31: lowerValue.oclIsKindOf(LiteralInteger) and upperValue.oclIsKindOf(LiteralUnlimitedNatural)
+
+endpackage

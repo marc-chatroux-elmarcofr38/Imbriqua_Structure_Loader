@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/XMI/20100901" targetNamespace="http://www.omg.org/spec/XMI/20100901">
+
+<xsd:attribute name="id" type="xsd:ID"/>
+
+<xsd:attributeGroup name="IdentityAttribs">
+   <xsd:attribute name="uuid" type="xsd:string" use="optional" form="qualified"/>
+</xsd:attributeGroup>
+
+<xsd:attributeGroup name="LinkAttribs">
+   <xsd:attribute name="href" type="xsd:anyURI" use="optional"/>
+   <xsd:attribute name="idref" type="xsd:IDREF" use="optional" form="qualified"/>
+</xsd:attributeGroup>
+
+<xsd:attributeGroup name="ObjectAttribs">
+   <xsd:attributeGroup ref="IdentityAttribs"/>
+   <xsd:attributeGroup ref="LinkAttribs"/>
+   <xsd:attribute name="type" type="xsd:QName" form="qualified"/>
+</xsd:attributeGroup>
+
+<xsd:complexType name="XMI">
+  <xsd:choice minOccurs="0" maxOccurs="unbounded">
+    <xsd:any processContents="strict"/>
+  </xsd:choice>
+  <xsd:attribute ref="id"/>
+</xsd:complexType>
+
+<xsd:element name="XMI" type="XMI"/>
+
+<xsd:complexType name="Any">
+  <xsd:choice minOccurs="0" maxOccurs="unbounded">
+     <xsd:any processContents="skip"/>
+  </xsd:choice>
+  <xsd:anyAttribute processContents="skip"/>
+</xsd:complexType>
+
+</xsd:schema>

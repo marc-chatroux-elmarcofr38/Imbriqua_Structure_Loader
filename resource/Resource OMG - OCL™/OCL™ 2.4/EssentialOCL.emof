@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" 
+     xmlns:emof="http://www.omg.org/spec/MOF/200601/emof">
+<emof:Package xmi:id="EssentialOCL" name="EssentialOCL">
+  <nestedPackage xmi:id="Expressions" xmi:type="emof:Package" name="Expressions">
+    <ownedType xmi:id="BooleanLiteralExp" xmi:type="emof:Class" name="BooleanLiteralExp" superClass="PrimitiveLiteralExp">
+      <ownedAttribute xmi:type="emof:Property" name="booleanSymbol" type="emof:Boolean"/>
+    </ownedType>
+    <ownedType xmi:id="CallExp" xmi:type="emof:Class" isAbstract="true" name="CallExp" superClass="OclExpression">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="source" lower="0" type="OclExpression"/>
+    </ownedType>
+    <ownedType xmi:id="CollectionKind" xmi:type="emof:Enumeration" name="CollectionKind">
+      <ownedLiteral xmi:type="emof:EnumerationLiteral" name="Collection"/>
+      <ownedLiteral xmi:type="emof:EnumerationLiteral" name="Set"/>
+      <ownedLiteral xmi:type="emof:EnumerationLiteral" name="OrderedSet"/>
+      <ownedLiteral xmi:type="emof:EnumerationLiteral" name="Bag"/>
+      <ownedLiteral xmi:type="emof:EnumerationLiteral" name="Sequence"/>
+    </ownedType>
+    <ownedType xmi:id="OclExpression" xmi:type="emof:Class" isAbstract="true" name="OclExpression" superClass="emof:TypedElement"/>
+    <ownedType xmi:id="UnlimitedNaturalExp" xmi:type="emof:Class" name="UnlimitedNaturalExp" superClass="NumericLiteralExp">
+      <ownedAttribute xmi:type="emof:Property" name="symbol" type="emof:UnlimitedNatural"/>
+    </ownedType>
+    <ownedType xmi:id="EnumLiteralExp" xmi:type="emof:Class" name="EnumLiteralExp" superClass="LiteralExp">
+      <ownedAttribute xmi:type="emof:Property" name="referredEnumLiteral" lower="0" type="emof:EnumerationLiteral"/>
+    </ownedType>
+    <ownedType xmi:id="IfExp" xmi:type="emof:Class" name="IfExp" superClass="OclExpression">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="condition" type="OclExpression"/>
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="thenExpression" type="OclExpression"/>
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="elseExpression" type="OclExpression"/>
+    </ownedType>
+    <ownedType xmi:id="LetExp" xmi:type="emof:Class" name="LetExp" superClass="OclExpression">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="in" type="OclExpression"/>
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="variable" type="Variable"/>
+    </ownedType>
+    <ownedType xmi:id="Variable" xmi:type="emof:Class" name="Variable" superClass="emof:TypedElement">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="initExpression" lower="0" type="OclExpression"/>
+      <ownedAttribute xmi:type="emof:Property" name="representedParameter" lower="0" type="emof:Parameter"/>
+    </ownedType>
+    <ownedType xmi:id="PropertyCallExp" xmi:type="emof:Class" name="PropertyCallExp" superClass="NavigationCallExp">
+      <ownedAttribute xmi:type="emof:Property" name="referredProperty" lower="0" type="emof:Property"/>
+    </ownedType>
+    <ownedType xmi:id="VariableExp" xmi:type="emof:Class" name="VariableExp" superClass="OclExpression">
+      <ownedAttribute xmi:type="emof:Property" name="referredVariable" lower="0" type="Variable"/>
+    </ownedType>
+    <ownedType xmi:id="TypeExp" xmi:type="emof:Class" name="TypeExp" superClass="OclExpression">
+      <ownedAttribute xmi:type="emof:Property" name="referredType" lower="0" type="emof:Type"/>
+    </ownedType>
+    <ownedType xmi:id="LoopExp" xmi:type="emof:Class" isAbstract="true" name="LoopExp" superClass="CallExp">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="body" type="OclExpression"/>
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="iterator" isOrdered="true" lower="0" upper="-1" type="Variable"/>
+    </ownedType>
+    <ownedType xmi:id="IteratorExp" xmi:type="emof:Class" name="IteratorExp" superClass="LoopExp"/>
+    <ownedType xmi:id="StringLiteralExp" xmi:type="emof:Class" name="StringLiteralExp" superClass="PrimitiveLiteralExp">
+      <ownedAttribute xmi:type="emof:Property" name="stringSymbol" type="emof:String"/>
+    </ownedType>
+    <ownedType xmi:id="IntegerLiteralExp" xmi:type="emof:Class" name="IntegerLiteralExp" superClass="NumericLiteralExp">
+      <ownedAttribute xmi:type="emof:Property" name="integerSymbol" type="emof:Integer"/>
+    </ownedType>
+    <ownedType xmi:id="OperationCallExp" xmi:type="emof:Class" name="OperationCallExp" superClass="FeatureCallExp">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="argument" isOrdered="true" lower="0" upper="-1" type="OclExpression"/>
+      <ownedAttribute xmi:type="emof:Property" name="referredOperation" lower="0" type="emof:Operation"/>
+    </ownedType>
+    <ownedType xmi:id="RealLiteralExp" xmi:type="emof:Class" name="RealLiteralExp" superClass="NumericLiteralExp">
+      <ownedAttribute xmi:type="emof:Property" name="realSymbol" type="Real"/>
+    </ownedType>
+    <ownedType xmi:id="LiteralExp" xmi:type="emof:Class" isAbstract="true" name="LiteralExp" superClass="OclExpression"/>
+    <ownedType xmi:id="IterateExp" xmi:type="emof:Class" name="IterateExp" superClass="LoopExp">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="result" lower="0" type="Variable"/>
+    </ownedType>
+    <ownedType xmi:id="PrimitiveLiteralExp" xmi:type="emof:Class" isAbstract="true" name="PrimitiveLiteralExp" superClass="LiteralExp"/>
+    <ownedType xmi:id="NumericLiteralExp" xmi:type="emof:Class" isAbstract="true" name="NumericLiteralExp" superClass="PrimitiveLiteralExp"/>
+    <ownedType xmi:id="CollectionLiteralExp" xmi:type="emof:Class" name="CollectionLiteralExp" superClass="LiteralExp">
+      <ownedAttribute xmi:type="emof:Property" name="kind" type="CollectionKind"/>
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="part" isOrdered="true" lower="0" upper="-1" type="CollectionLiteralPart"/>
+    </ownedType>
+    <ownedType xmi:id="CollectionLiteralPart" xmi:type="emof:Class" isAbstract="true" name="CollectionLiteralPart" superClass="emof:TypedElement">
+    </ownedType>
+    <ownedType xmi:id="CollectionItem" xmi:type="emof:Class" name="CollectionItem" superClass="CollectionLiteralPart">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="item" type="OclExpression"/>
+    </ownedType>
+    <ownedType xmi:id="CollectionRange" xmi:type="emof:Class" name="CollectionRange" superClass="CollectionLiteralPart">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="first" type="OclExpression"/>
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="last" type="OclExpression"/>
+    </ownedType>
+    <ownedType xmi:id="TupleLiteralExp" xmi:type="emof:Class" name="TupleLiteralExp" superClass="LiteralExp">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="part" isOrdered="true" lower="0" upper="-1" type="CollectionLiteralExp"/>
+    </ownedType>
+    <ownedType xmi:id="NullLiteralExp" xmi:type="emof:Class" name="NullLiteralExp" superClass="PrimitiveLiteralExp"/>
+    <ownedType xmi:id="ExpressionInOcl" xmi:type="emof:Class" name="ExpressionInOcl" superClass="OpaqueExpression">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="bodyExpression" type="OclExpression"/>
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="contextVariable" lower="0" type="Variable"/>
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="resultVariable" lower="0" type="Variable"/>
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="parameterVariable" isOrdered="true" lower="0" upper="-1" type="Variable"/>
+    </ownedType>
+    <ownedType xmi:id="OpaqueExpression" xmi:type="emof:Class" name="OpaqueExpression"/>
+    <ownedType xmi:id="InvalidLiteralExp" xmi:type="emof:Class" name="InvalidLiteralExp" superClass="LiteralExp"/>
+    <ownedType xmi:id="FeatureCallExp" xmi:type="emof:Class" isAbstract="true" name="FeatureCallExp" superClass="CallExp"/>
+    <ownedType xmi:id="TupleLiteralPart" xmi:type="emof:Class" name="TupleLiteralPart" superClass="emof:TypedElement">
+      <ownedAttribute xmi:type="emof:Property" isComposite="true" name="attribute" lower="0" type="emof:Property"/>
+    </ownedType>
+    <ownedType xmi:id="NavigationCallExp" xmi:type="emof:Class" isAbstract="true" name="NavigationCallExp" superClass="FeatureCallExp">
+    </ownedType>
+  </nestedPackage>
+  <nestedPackage xmi:id="Types" xmi:type="emof:Package" name="Types">
+    <ownedType xmi:id="BagType" xmi:type="emof:Class" name="BagType" superClass="CollectionType"/>
+    <ownedType xmi:id="CollectionType" xmi:type="emof:Class" name="CollectionType" superClass="emof:DataType">
+      <ownedAttribute xmi:type="emof:Property" name="elementType" type="emof:Type"/>
+    </ownedType>
+    <ownedType xmi:id="VoidType" xmi:type="emof:Class" name="VoidType" superClass="emof:Type"/>
+    <ownedType xmi:id="TupleType" xmi:type="emof:Class" name="TupleType" superClass="emof:DataType emof:Class"/>
+    <ownedType xmi:id="SetType" xmi:type="emof:Class" name="SetType" superClass="CollectionType"/>
+    <ownedType xmi:id="SequenceType" xmi:type="emof:Class" name="SequenceType" superClass="CollectionType"/>
+    <ownedType xmi:id="OrderedSetType" xmi:type="emof:Class" name="OrderedSetType" superClass="CollectionType"/>
+    <ownedType xmi:id="InvalidType" xmi:type="emof:Class" name="InvalidType" superClass="emof:Type"/>
+    <ownedType xmi:id="TemplateParameterType" xmi:type="emof:Class" name="TemplateParameterType" superClass="emof:Type">
+      <ownedAttribute xmi:type="emof:Property" name="specification" lower="0" type="emof:String"/>
+    </ownedType>
+    <ownedType xmi:id="AnyType" xmi:type="emof:Class" name="AnyType"/>
+    <ownedType xmi:id="Real" xmi:type="emof:PrimitiveType" name="Real"/>
+  </nestedPackage>
+</emof:Package>
+</xmi:XMI>
