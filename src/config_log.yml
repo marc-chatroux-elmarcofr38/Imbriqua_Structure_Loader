@@ -1,0 +1,25 @@
+# REMEMBER of Log level : Error, Warn, Info, Debug, Trace
+
+appenders:
+    stdout:
+        kind: console
+        encoder:
+            pattern: "{M}: {m} {n}"
+        filters:
+            - kind: threshold
+              level: info
+
+    requests:
+        kind: file
+        path: "imbriqua_engine.log"
+        encoder:
+            pattern: "{d(%+)(utc)} [{f}:{L}] {h({l})} {M}: {m} {n}"
+        filters:
+            - kind: threshold
+              level: trace
+
+root:
+    level: debug
+    appenders:
+        - stdout
+        - requests
