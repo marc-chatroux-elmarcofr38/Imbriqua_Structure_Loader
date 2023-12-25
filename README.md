@@ -33,7 +33,7 @@ The following element aren't in the scope of the project :
 
 ## Reference
 
-All resource and files for OMG consortium can be found in the folder "resource" of this repository. It contain actual and previus version of BPMN™, MOF™ and UML® specification.
+All resource and files for OMG consortium can be found in the folder "resource" of this repository. It contain actual and previus version of BPMN™, DD™, MOF™, OCL™, UML® and XMI® specification.
 
 ## Copyright
 
