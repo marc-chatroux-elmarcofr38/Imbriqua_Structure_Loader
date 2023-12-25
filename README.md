@@ -1,8 +1,3 @@
-<!--
-
-
--->
-
 # Imbriqua Structure : Interpreter of BPMN model files (in UML notation) for Imbriqua Engine project
 
 ## Context
@@ -11,22 +6,34 @@ The Object Management Group® (OMG®) is an international, open membership, not-
 
 Updated in 2010, the BPMN™ (Business Process Model and Notation) specification propose a normative language for business process modeling. This notation is schematic-oriented and highly adaptive. BPMN project can be exchange in XML-structured files. This repository proposes to create a interpreter who generates BPMN class and function code (in RUST) from BPMN metamodel files.
 
- Based on MOF™ (Meta Object Facility) and UML® (Unified Modeling Language) specification, 
+## Goal
 
-Break
+ Based on MOF™ (Meta Object Facility) and on UML® (Unified Modeling Language) specification, the BPMN™ 2.0.2 specification publish consumable file of BPMN class model in UML language.
 
-* metamodel
-* Running system
+ With the goal to create RUST structure and RUST traits based on BPMN Structute and BPMN Execution semantic, this repository propose to make the following task :
 
-## Result
+* Generate RUST structures, with attributes and heritage
+    * For BPMN definition, using BPMN 2.0.2 CMOF files
+    * For BPMN execution, using custom CMOF files 
+* Generate SQL up file, including creation of tables, attributes, foreign-key, and contraints
+    * For BPMN definition, using BPMN 2.0.2 CMOF files
+    * For BPMN execution, using custom CMOF files
+* Generate SQL down file, including removal of tables, attributes, foreign-key, and contraints
+    * For BPMN definition, using BPMN 2.0.2 CMOF files
+    * For BPMN execution, using custom CMOF files
+* Generate RUST traits for structures, for BPMN Execution
+    * For BPMN execution, using custom CMOF files
 
-* Generate .SQL file, for Diesel migration (up and down)
-* Generate rust structures file,
-* Generate rust traits file
+The following element aren't in the scope of the project :
+
+* Integrate SQL migration files : All execution don't take in account any old result and old input file. No file provide to migrate database after modification of classes or attributes
+
 
 ## How to use 
 
 ## Reference
+
+All resource and files for OMG consortium can be found in the folder "resource" of this repository. It contain actual and previus version of  
 
 ## Copyright
 
