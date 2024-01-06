@@ -17,7 +17,10 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 mod module_log;
+mod module_file_output;
 mod module_load_classes;
+
+use log::error;
 
 fn main() {
 
@@ -26,9 +29,28 @@ fn main() {
         panic!("Error during the loading on logs modules")
     }
 
+    // Set used folders (input folder and output folder)
+    let file_env = match module_file_output::get_folders() {
+        Ok(result) => {
+            result
+        },
+        Err(error) => {
+            error!("{}", error);
+            panic!("Error during the initialisation of input and output folders")
+        },
+    };
+
+    for file in module_file_output::get_item_list(&file_env).unwrap() {
+        println!("{}", file);
+    }
     if module_load_classes::run().is_err() {
         panic!("Error during the loading of classes")
     }
 
-    todo!("just, .... TODO !!!")
+    // Delete output folder if is empty
+    module_file_output::delete_empty_folders(file_env);
+
+    if false {
+        todo!("just, .... TODO !!!")
+    }
 }
