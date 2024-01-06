@@ -12,6 +12,9 @@ pub struct FileEnv {
 }
 
 pub fn get_folders() -> FileEnv {
+    /*
+        Task function for definition on input folder and output folder
+    */
 
     // Load folders
     let file_env = sub_get_folders();
@@ -26,6 +29,9 @@ pub fn get_folders() -> FileEnv {
 }
 
 fn sub_get_folders() -> Result<FileEnv> {
+    /*
+        Process function for definition on input folder and output folder
+    */
     
     // Check input main folder
     let input_folder = String::from("metamodel_file/");
@@ -54,6 +60,9 @@ fn sub_get_folders() -> Result<FileEnv> {
 }
 
 pub fn get_item_list(file_env : &FileEnv) -> Vec<(String, String)> {
+    /*
+        Task function for iteration of input files and output files
+    */
 
     // Load folders
     let item_list = sub_get_item_list(file_env);
@@ -68,11 +77,15 @@ pub fn get_item_list(file_env : &FileEnv) -> Vec<(String, String)> {
 }
 
 fn sub_get_item_list(file_env : &FileEnv) -> Result<Vec<(String, String)>> {
+    /*
+        Process function for iteration of input files and output files
+    */
 
+    // Result object
     let mut result: Vec<(String, String)> = Vec::new();
-    let iter_input = read_dir(&file_env.input_folder)?;
     
-    // Sorting
+    // Paths in input folder, sorted
+    let iter_input = read_dir(&file_env.input_folder)?;
     let mut iter_input : Vec<_> = iter_input.map(|r| r.unwrap()).collect();
     iter_input.sort_by_key(|dir| dir.path());
 
@@ -93,11 +106,15 @@ fn sub_get_item_list(file_env : &FileEnv) -> Result<Vec<(String, String)>> {
     Ok(result)
 }
 
-
-
 pub fn delete_empty_folders (file_env : FileEnv) {
+    /*
+        Process function for removing output folder if no result
+    */
+
+    // Get path
     let read_result = Path::new(file_env.output_folder.as_str()).read_dir();
 
+    // Remove if empty
     match read_result {
         Ok(mut result) => {
             if result.next().is_none() {
