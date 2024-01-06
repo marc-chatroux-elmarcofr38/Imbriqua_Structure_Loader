@@ -1,119 +1,32 @@
-2023-12-25T18:59:46.362613442+00:00 [src/module_log.rs:19] INFO Imbriqua_Structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-25T21:17:24.824985268+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-25T22:04:21.684752972+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-25T22:10:25.104679332+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-25T22:10:55.962717450+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-25T22:11:26.162348201+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-25T22:11:42.632958600+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-25T22:33:56.559868895+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-26T18:27:26.843852201+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-26T18:27:46.168002196+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-26T18:35:22.267488791+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-26T18:43:19.238647056+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-26T18:43:19.239017870+00:00 [src/module_file_output.rs:29] INFO imbriqua_structure::module_file_output: folder output_file/2023-12-26_19h43m19/ created 
-2023-12-26T18:44:21.827406915+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-26T18:44:21.827658181+00:00 [src/module_file_output.rs:29] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-26_19h44m21/" created 
-2023-12-26T18:44:21.827705714+00:00 [src/module_file_output.rs:42] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-26_19h44m21/" deleted (because is empty) 
-2023-12-26T18:44:36.175711098+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-26T18:44:36.175954198+00:00 [src/module_file_output.rs:29] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-26_19h44m36/" created 
-2023-12-26T18:44:36.176000375+00:00 [src/module_file_output.rs:42] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-26_19h44m36/" deleted (because is empty) 
-2023-12-26T18:44:41.273082716+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-26T18:44:41.273697352+00:00 [src/module_file_output.rs:29] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-26_19h44m41/" created 
-2023-12-26T18:44:41.274066799+00:00 [src/module_file_output.rs:42] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-26_19h44m41/" deleted (because is empty) 
-2023-12-27T17:47:54.800803281+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-27T17:47:54.801075723+00:00 [src/module_file_output.rs:29] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-27_18h47m54/" created 
-2023-12-27T17:47:54.801125766+00:00 [src/main.rs:43] INFO imbriqua_structure: metamodel_file/ 
-2023-12-27T17:47:54.801155349+00:00 [src/main.rs:44] INFO imbriqua_structure: output_file/2023-12-27_18h47m54/ 
-2023-12-27T17:47:54.801211242+00:00 [src/module_file_output.rs:49] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-27_18h47m54/" deleted (because is empty) 
-2023-12-27T17:48:21.513229063+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-27T17:48:21.513935574+00:00 [src/module_file_output.rs:29] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-27_18h48m21/" created 
-2023-12-27T17:48:21.514032007+00:00 [src/main.rs:43] INFO imbriqua_structure: test : metamodel_file/ 
-2023-12-27T17:48:21.514081395+00:00 [src/main.rs:44] INFO imbriqua_structure: test : output_file/2023-12-27_18h48m21/ 
-2023-12-27T17:48:21.514181238+00:00 [src/module_file_output.rs:49] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-27_18h48m21/" deleted (because is empty) 
-2023-12-27T17:49:25.428742770+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-27T17:49:25.429999525+00:00 [src/module_file_output.rs:30] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-27_18h49m25/" created 
-2023-12-27T17:49:25.430553937+00:00 [src/main.rs:43] INFO imbriqua_structure: test : metamodel_file/ 
-2023-12-27T17:49:25.430925439+00:00 [src/main.rs:44] INFO imbriqua_structure: test : output_file/2023-12-27_18h49m25/ 
-2023-12-27T17:49:25.431517660+00:00 [src/module_file_output.rs:50] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-27_18h49m25/" deleted (because is empty) 
-2023-12-27T17:49:25.432025252+00:00 [src/module_file_output.rs:59] ERROR imbriqua_structure::module_file_output: Can evaluate the necessity of removing "output_file/2023-12-27_18h49m25/" : No such file or directory (os error 2) 
-2023-12-27T21:29:17.801055072+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2023-12-27T21:29:17.801364820+00:00 [src/module_file_output.rs:38] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-27_22h29m17/" created 
-2023-12-27T21:29:17.801446130+00:00 [src/main.rs:43] INFO imbriqua_structure: test : metamodel_file/ 
-2023-12-27T21:29:17.801479829+00:00 [src/main.rs:44] INFO imbriqua_structure: test : output_file/2023-12-27_22h29m17/ 
-2023-12-27T21:29:17.801547065+00:00 [src/module_file_output.rs:64] INFO imbriqua_structure::module_file_output: folder "output_file/2023-12-27_22h29m17/" deleted (because is empty) 
-2023-12-27T21:29:17.801629335+00:00 [src/module_file_output.rs:73] ERROR imbriqua_structure::module_file_output: Can't evaluate the necessity of removing "output_file/2023-12-27_22h29m17/" : No such file or directory (os error 2) 
-2024-01-06T01:35:02.290876990+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-01-06T01:35:02.291675032+00:00 [src/module_file_output.rs:30] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_02h35m02/" created 
-2024-01-06T01:35:02.291739791+00:00 [src/main.rs:43] INFO imbriqua_structure: test : metamodel_file/ 
-2024-01-06T01:35:02.291776132+00:00 [src/main.rs:44] INFO imbriqua_structure: test : output_file/2024-01-06_02h35m02/ 
-2024-01-06T01:35:02.291845791+00:00 [src/module_file_output.rs:68] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_02h35m02/" deleted (because is empty) 
-2024-01-06T01:35:02.291936027+00:00 [src/module_file_output.rs:77] ERROR imbriqua_structure::module_file_output: Can't evaluate the necessity of removing "output_file/2024-01-06_02h35m02/" : No such file or directory (os error 2) 
-2024-01-06T01:40:08.327139516+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-01-06T01:40:08.328165805+00:00 [src/module_file_output.rs:30] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_02h40m08/" created 
-2024-01-06T01:40:08.328506179+00:00 [src/main.rs:43] INFO imbriqua_structure: test : metamodel_file/ 
-2024-01-06T01:40:08.328784636+00:00 [src/main.rs:44] INFO imbriqua_structure: test : output_file/2024-01-06_02h40m08/ 
-2024-01-06T01:40:08.329098355+00:00 [src/module_file_output.rs:68] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_02h40m08/" deleted (because is empty) 
-2024-01-06T01:48:36.605563224+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-01-06T01:48:36.605855329+00:00 [src/module_file_output.rs:30] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_02h48m36/" created 
-2024-01-06T01:48:36.605911634+00:00 [src/main.rs:43] INFO imbriqua_structure: test : metamodel_file/ 
-2024-01-06T01:48:36.605944041+00:00 [src/main.rs:44] INFO imbriqua_structure: test : output_file/2024-01-06_02h48m36/ 
-2024-01-06T01:48:36.605986581+00:00 [src/module_file_output.rs:53] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/030_bpmn_metamodel.cmof 
-2024-01-06T01:48:36.606006494+00:00 [src/module_file_output.rs:53] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/040_bpmn_di_metamodel.cmof 
-2024-01-06T01:48:36.606022342+00:00 [src/module_file_output.rs:53] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/020_dc_metamodel.cmof 
-2024-01-06T01:48:36.606038045+00:00 [src/module_file_output.rs:53] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/010_di_metamodel.cmof 
-2024-01-06T01:48:36.606118772+00:00 [src/module_file_output.rs:70] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_02h48m36/" deleted (because is empty) 
-2024-01-06T02:01:26.773487952+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-01-06T02:01:26.773784112+00:00 [src/module_file_output.rs:30] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h01m26/" created 
-2024-01-06T02:01:26.773832439+00:00 [src/main.rs:43] INFO imbriqua_structure: test : metamodel_file/ 
-2024-01-06T02:01:26.773861869+00:00 [src/main.rs:44] INFO imbriqua_structure: test : output_file/2024-01-06_03h01m26/ 
-2024-01-06T02:01:26.773901944+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/030_bpmn_metamodel.cmof 
-2024-01-06T02:01:26.773920419+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/040_bpmn_di_metamodel.cmof 
-2024-01-06T02:01:26.773934534+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/020_dc_metamodel.cmof 
-2024-01-06T02:01:26.773948238+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/010_di_metamodel.cmof 
-2024-01-06T02:01:26.774019509+00:00 [src/module_file_output.rs:74] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h01m26/" deleted (because is empty) 
-2024-01-06T02:01:43.670037785+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-01-06T02:01:43.670906647+00:00 [src/module_file_output.rs:30] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h01m43/" created 
-2024-01-06T02:01:43.671235813+00:00 [src/main.rs:43] INFO imbriqua_structure: test : metamodel_file/ 
-2024-01-06T02:01:43.671544782+00:00 [src/main.rs:44] INFO imbriqua_structure: test : output_file/2024-01-06_03h01m43/ 
-2024-01-06T02:01:43.671635999+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/030_bpmn_metamodel.cmof 
-2024-01-06T02:01:43.671660550+00:00 [src/module_file_output.rs:53] DEBUG imbriqua_structure::module_file_output: Path "metamodel_file/eeeeee" is unused because is not a file (in path "metamodel_file/") 
-2024-01-06T02:01:43.671678132+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/040_bpmn_di_metamodel.cmof 
-2024-01-06T02:01:43.671694566+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/020_dc_metamodel.cmof 
-2024-01-06T02:01:43.671710243+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: metamodel_file/010_di_metamodel.cmof 
-2024-01-06T02:01:43.672956566+00:00 [src/module_file_output.rs:74] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h01m43/" deleted (because is empty) 
-2024-01-06T02:03:08.281430528+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-01-06T02:03:08.281727119+00:00 [src/module_file_output.rs:30] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h03m08/" created 
-2024-01-06T02:03:08.281782383+00:00 [src/main.rs:43] INFO imbriqua_structure: test : metamodel_file/ 
-2024-01-06T02:03:08.281814081+00:00 [src/main.rs:44] INFO imbriqua_structure: test : output_file/2024-01-06_03h03m08/ 
-2024-01-06T02:03:08.281858589+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/030_bpmn_metamodel.cmof" 
-2024-01-06T02:03:08.281878852+00:00 [src/module_file_output.rs:53] DEBUG imbriqua_structure::module_file_output: Path "metamodel_file/eeeeee" is unused because is not a file (in path "metamodel_file/") 
-2024-01-06T02:03:08.281908538+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/040_bpmn_di_metamodel.cmof" 
-2024-01-06T02:03:08.281924181+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/020_dc_metamodel.cmof" 
-2024-01-06T02:03:08.281938945+00:00 [src/module_file_output.rs:57] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/010_di_metamodel.cmof" 
-2024-01-06T02:03:08.282022474+00:00 [src/module_file_output.rs:74] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h03m08/" deleted (because is empty) 
-2024-01-06T02:13:22.267695970+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-01-06T02:13:22.268001624+00:00 [src/module_file_output.rs:30] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h13m22/" created 
-2024-01-06T02:13:22.268060442+00:00 [src/main.rs:43] INFO imbriqua_structure: test : metamodel_file/ 
-2024-01-06T02:13:22.268094207+00:00 [src/main.rs:44] INFO imbriqua_structure: test : output_file/2024-01-06_03h13m22/ 
-2024-01-06T02:13:22.268141709+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/030_bpmn_metamodel.cmof" 
-2024-01-06T02:13:22.268168206+00:00 [src/module_file_output.rs:55] DEBUG imbriqua_structure::module_file_output: Path "metamodel_file/eeeeee" is unused because is not a file 
-2024-01-06T02:13:22.268185483+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/040_bpmn_di_metamodel.cmof" 
-2024-01-06T02:13:22.268203688+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/020_dc_metamodel.cmof" 
-2024-01-06T02:13:22.268221090+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/010_di_metamodel.cmof" 
-2024-01-06T02:13:22.268315284+00:00 [src/module_file_output.rs:78] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h13m22/" deleted (because is empty) 
-2024-01-06T02:13:46.721843193+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-01-06T02:13:46.722140999+00:00 [src/module_file_output.rs:30] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h13m46/" created 
-2024-01-06T02:13:46.722212545+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/030_bpmn_metamodel.cmof" 
-2024-01-06T02:13:46.722241395+00:00 [src/module_file_output.rs:55] DEBUG imbriqua_structure::module_file_output: Path "metamodel_file/eeeeee" is unused because is not a file 
-2024-01-06T02:13:46.722259065+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/040_bpmn_di_metamodel.cmof" 
-2024-01-06T02:13:46.722288933+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/020_dc_metamodel.cmof" 
-2024-01-06T02:13:46.722308822+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/010_di_metamodel.cmof" 
-2024-01-06T02:13:46.722401805+00:00 [src/module_file_output.rs:78] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h13m46/" deleted (because is empty) 
-2024-01-06T02:14:23.787564988+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-01-06T02:14:23.788182074+00:00 [src/module_file_output.rs:30] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h14m23/" created 
-2024-01-06T02:14:23.788277149+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/030_bpmn_metamodel.cmof" 
-2024-01-06T02:14:23.788307860+00:00 [src/module_file_output.rs:55] DEBUG imbriqua_structure::module_file_output: Path "metamodel_file/eeeeee" is unused because is not a file 
-2024-01-06T02:14:23.788323967+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/040_bpmn_di_metamodel.cmof" 
-2024-01-06T02:14:23.788340766+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/020_dc_metamodel.cmof" 
-2024-01-06T02:14:23.788357525+00:00 [src/module_file_output.rs:58] DEBUG imbriqua_structure::module_file_output: Name: "metamodel_file/010_di_metamodel.cmof" 
-2024-01-06T02:14:23.789628755+00:00 [src/module_file_output.rs:78] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h14m23/" deleted (because is empty) 
+2024-01-06T02:46:57.543505612+00:00 [src/module_log.rs:27] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-01-06T02:46:57.544796571+00:00 [src/module_file_output.rs:44] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h46m57/" created 
+2024-01-06T02:46:57.544961584+00:00 [src/module_file_output.rs:86] DEBUG imbriqua_structure::module_file_output: Use path "metamodel_file/010_di_metamodel.cmof" 
+2024-01-06T02:46:57.544990471+00:00 [src/module_file_output.rs:86] DEBUG imbriqua_structure::module_file_output: Use path "metamodel_file/020_dc_metamodel.cmof" 
+2024-01-06T02:46:57.545008310+00:00 [src/module_file_output.rs:86] DEBUG imbriqua_structure::module_file_output: Use path "metamodel_file/030_bpmn_metamodel.cmof" 
+2024-01-06T02:46:57.545036146+00:00 [src/module_file_output.rs:86] DEBUG imbriqua_structure::module_file_output: Use path "metamodel_file/040_bpmn_di_metamodel.cmof" 
+2024-01-06T02:46:57.545050287+00:00 [src/module_file_output.rs:83] DEBUG imbriqua_structure::module_file_output: Path "metamodel_file/eeeeee" is unused because is not a file 
+2024-01-06T02:46:57.545345837+00:00 [src/module_load_classes.rs:5] INFO imbriqua_structure::module_load_classes: Starting of loading input file "metamodel_file/010_di_metamodel.cmof" to file "gh" 
+2024-01-06T02:46:57.545685083+00:00 [src/module_load_classes.rs:10] INFO imbriqua_structure::module_load_classes: End of loading input file "metamodel_file/010_di_metamodel.cmof" to file "gh" 
+2024-01-06T02:46:57.545973957+00:00 [src/module_load_classes.rs:5] INFO imbriqua_structure::module_load_classes: Starting of loading input file "metamodel_file/020_dc_metamodel.cmof" to file "gh" 
+2024-01-06T02:46:57.546256895+00:00 [src/module_load_classes.rs:10] INFO imbriqua_structure::module_load_classes: End of loading input file "metamodel_file/020_dc_metamodel.cmof" to file "gh" 
+2024-01-06T02:46:57.546591118+00:00 [src/module_load_classes.rs:5] INFO imbriqua_structure::module_load_classes: Starting of loading input file "metamodel_file/030_bpmn_metamodel.cmof" to file "gh" 
+2024-01-06T02:46:57.547033556+00:00 [src/module_load_classes.rs:10] INFO imbriqua_structure::module_load_classes: End of loading input file "metamodel_file/030_bpmn_metamodel.cmof" to file "gh" 
+2024-01-06T02:46:57.547333263+00:00 [src/module_load_classes.rs:5] INFO imbriqua_structure::module_load_classes: Starting of loading input file "metamodel_file/040_bpmn_di_metamodel.cmof" to file "gh" 
+2024-01-06T02:46:57.547671088+00:00 [src/module_load_classes.rs:10] INFO imbriqua_structure::module_load_classes: End of loading input file "metamodel_file/040_bpmn_di_metamodel.cmof" to file "gh" 
+2024-01-06T02:46:57.547961140+00:00 [src/module_file_output.rs:104] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h46m57/" deleted (because is empty) 
+2024-01-06T02:49:55.109030710+00:00 [src/module_log.rs:27] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-01-06T02:49:55.109877171+00:00 [src/module_file_output.rs:44] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h49m55/" created 
+2024-01-06T02:49:55.109971944+00:00 [src/module_file_output.rs:86] DEBUG imbriqua_structure::module_file_output: Use path "metamodel_file/010_di_metamodel.cmof" 
+2024-01-06T02:49:55.109996273+00:00 [src/module_file_output.rs:86] DEBUG imbriqua_structure::module_file_output: Use path "metamodel_file/020_dc_metamodel.cmof" 
+2024-01-06T02:49:55.110011593+00:00 [src/module_file_output.rs:86] DEBUG imbriqua_structure::module_file_output: Use path "metamodel_file/030_bpmn_metamodel.cmof" 
+2024-01-06T02:49:55.110025492+00:00 [src/module_file_output.rs:86] DEBUG imbriqua_structure::module_file_output: Use path "metamodel_file/040_bpmn_di_metamodel.cmof" 
+2024-01-06T02:49:55.110039321+00:00 [src/module_file_output.rs:83] DEBUG imbriqua_structure::module_file_output: Path "metamodel_file/eeeeee" is unused because is not a file 
+2024-01-06T02:49:55.110331910+00:00 [src/module_load_classes.rs:5] INFO imbriqua_structure::module_load_classes: Starting of loading input file "metamodel_file/010_di_metamodel.cmof" to file "output_file/2024-01-06_03h49m55/010_di_metamodel.cmof" 
+2024-01-06T02:49:55.110641003+00:00 [src/module_load_classes.rs:10] INFO imbriqua_structure::module_load_classes: End of loading input file "metamodel_file/010_di_metamodel.cmof" to file "output_file/2024-01-06_03h49m55/010_di_metamodel.cmof" 
+2024-01-06T02:49:55.110937473+00:00 [src/module_load_classes.rs:5] INFO imbriqua_structure::module_load_classes: Starting of loading input file "metamodel_file/020_dc_metamodel.cmof" to file "output_file/2024-01-06_03h49m55/020_dc_metamodel.cmof" 
+2024-01-06T02:49:55.111188748+00:00 [src/module_load_classes.rs:10] INFO imbriqua_structure::module_load_classes: End of loading input file "metamodel_file/020_dc_metamodel.cmof" to file "output_file/2024-01-06_03h49m55/020_dc_metamodel.cmof" 
+2024-01-06T02:49:55.111469603+00:00 [src/module_load_classes.rs:5] INFO imbriqua_structure::module_load_classes: Starting of loading input file "metamodel_file/030_bpmn_metamodel.cmof" to file "output_file/2024-01-06_03h49m55/030_bpmn_metamodel.cmof" 
+2024-01-06T02:49:55.111822578+00:00 [src/module_load_classes.rs:10] INFO imbriqua_structure::module_load_classes: End of loading input file "metamodel_file/030_bpmn_metamodel.cmof" to file "output_file/2024-01-06_03h49m55/030_bpmn_metamodel.cmof" 
+2024-01-06T02:49:55.112081620+00:00 [src/module_load_classes.rs:5] INFO imbriqua_structure::module_load_classes: Starting of loading input file "metamodel_file/040_bpmn_di_metamodel.cmof" to file "output_file/2024-01-06_03h49m55/040_bpmn_di_metamodel.cmof" 
+2024-01-06T02:49:55.112335454+00:00 [src/module_load_classes.rs:10] INFO imbriqua_structure::module_load_classes: End of loading input file "metamodel_file/040_bpmn_di_metamodel.cmof" to file "output_file/2024-01-06_03h49m55/040_bpmn_di_metamodel.cmof" 
+2024-01-06T02:49:55.112811364+00:00 [src/module_file_output.rs:106] INFO imbriqua_structure::module_file_output: folder "output_file/2024-01-06_03h49m55/" deleted (because is empty) 

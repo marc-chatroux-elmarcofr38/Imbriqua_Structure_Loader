@@ -20,31 +20,18 @@ mod module_log;
 mod module_file_output;
 mod module_load_classes;
 
-use log::error;
-
 fn main() {
 
     // Initialise global logger
-    if module_log::open_module().is_err() {
-        panic!("Error during the loading on logs modules")
-    }
+    module_log::open_module();
 
     // Set used folders (input folder and output folder)
-    let file_env = match module_file_output::get_folders() {
-        Ok(result) => {
-            result
-        },
-        Err(error) => {
-            error!("{}", error);
-            panic!("Error during the initialisation of input and output folders")
-        },
-    };
+    let file_env = module_file_output::get_folders();
+    let iter_file_env = module_file_output::get_item_list(&file_env);
 
-    for file in module_file_output::get_item_list(&file_env).unwrap() {
-        println!("{}", file);
-    }
-    if module_load_classes::run().is_err() {
-        panic!("Error during the loading of classes")
+    //
+    for (input_file, output_file) in iter_file_env {
+        module_load_classes::run(input_file, output_file);
     }
 
     // Delete output folder if is empty

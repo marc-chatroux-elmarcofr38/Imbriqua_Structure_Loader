@@ -7,8 +7,16 @@ use log4rs::encode::pattern::PatternEncoder;
 use log4rs::config::{Appender, Config, Logger, Root};
 use serde_yaml::from_str;
 
+pub fn open_module() {
 
-pub fn open_module() -> Result<()> {
+    // Exit if error
+    if sub_open_module().is_err() {
+        panic!("Error during the loading on logs modules")
+    }
+}
+
+
+fn sub_open_module() -> Result<()> {
     /*
         main fucntion for configuration of gloabal logger
         Try to load the configuration file, else try to load a backup configuration
