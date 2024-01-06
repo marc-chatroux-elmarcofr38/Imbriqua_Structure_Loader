@@ -22,6 +22,7 @@ pub fn get_folders() -> FileEnv {
     // Exit if error
     if file_env.is_err() {
         error!("{}", file_env.err().unwrap());
+        error!("Panic : Error during the initialisation of input and output folders");
         panic!("Error during the initialisation of input and output folders");
     }
 
@@ -70,6 +71,7 @@ pub fn get_item_list(file_env : &FileEnv) -> Vec<(String, String)> {
     // Exit if error
     if item_list.is_err() {
         error!("{}", item_list.err().unwrap());
+        error!("Panic : Error during the get of item list");
         panic!("Error during the get of item list");
     }
 
