@@ -21,7 +21,6 @@ pub fn get_folders() -> FileEnv {
 
     // Exit if error
     if file_env.is_err() {
-        error!("{}", file_env.err().unwrap());
         error!("Panic : Error during the initialisation of input and output folders");
         panic!("Error during the initialisation of input and output folders");
     }
@@ -35,23 +34,56 @@ fn sub_get_folders() -> Result<FileEnv> {
     */
     
     // Check input main folder
-    let input_folder = String::from("metamodel_file/");
-    let _ = Path::new(input_folder.as_str()).read_dir()?;
+    let str_input_folder : &str = "metamodel_file/";
+    let input_folder : String = String::from(str_input_folder);
+    match Path::new(str_input_folder).read_dir() {
+        Ok(_) => {
+            debug!("Input main folder is valid \"{}\"", str_input_folder);
+        }
+        Err(err_object) => {
+            error!("Input main folder isn't valid \"{}\" : {}", str_input_folder, err_object);
+            return Err(anyhow::Error::new(err_object));
+        }
+    };
 
     // Check output main folder
-    let output_folder = String::from("output_file/");
-    let _ = Path::new(output_folder.as_str()).read_dir()?;
+    let str_output_folder : &str = "output_file/";
+    let output_folder : String = String::from(str_output_folder);
+    match Path::new(str_output_folder).read_dir() {
+        Ok(_) => {
+            debug!("Output main folder is valid \"{}\"", str_output_folder);
+        }
+        Err(err_object) => {
+            error!("Output main folder isn't valid \"{}\" : {}", str_output_folder, err_object);
+            return Err(anyhow::Error::new(err_object));
+        }
+    };
 
     // Get time identifing string
-    let time_string = Local::now().format("%Y-%m-%d_%Hh%Mm%S/").to_string();
+    let time_string : String = Local::now().format("%Y-%m-%d_%Hh%Mm%S/").to_string();
 
     // Create sub output_folder
     let output_subfolder = output_folder + time_string.as_str();
-    create_dir(&output_subfolder)?;
-    info!("folder \"{}\" created", output_subfolder);
+    match create_dir(&output_subfolder) {
+        Ok(_) => {
+            debug!("Output sub folder created \"{}\"", output_subfolder.as_str());
+        }
+        Err(err_object) => {
+            error!("Output sub folder not created \"{}\" : {}", output_subfolder.as_str(), err_object);
+            return Err(anyhow::Error::new(err_object));
+        }
+    };
 
     // Check suboutput folder
-    let _ = Path::new(output_subfolder.as_str()).read_dir()?;
+    match Path::new(output_subfolder.as_str()).read_dir() {
+        Ok(_) => {
+            debug!("Output sub folder is valid \"{}\"", output_subfolder.as_str());
+        }
+        Err(err_object) => {
+            error!("Output sub folder isn't valid \"{}\" : {}", output_subfolder.as_str(), err_object);
+            return Err(anyhow::Error::new(err_object));
+        }
+    };
 
     // Create file_env
     Ok(FileEnv{
@@ -70,7 +102,6 @@ pub fn get_item_list(file_env : &FileEnv) -> Vec<(String, String)> {
 
     // Exit if error
     if item_list.is_err() {
-        error!("{}", item_list.err().unwrap());
         error!("Panic : Error during the get of item list");
         panic!("Error during the get of item list");
     }
@@ -87,7 +118,16 @@ fn sub_get_item_list(file_env : &FileEnv) -> Result<Vec<(String, String)>> {
     let mut result: Vec<(String, String)> = Vec::new();
     
     // Paths in input folder, sorted
-    let iter_input = read_dir(&file_env.input_folder)?;
+    let iter_input = match read_dir(&file_env.input_folder) {
+        Ok(result) => {
+            debug!("Input main folder readed \"{}\"", &file_env.input_folder);
+            result
+        }
+        Err(err_object) => {
+            error!("Input main folder unreadable \"{}\" : {}", &file_env.input_folder, err_object);
+            return Err(anyhow::Error::new(err_object));
+        }
+    };
     let mut iter_input : Vec<_> = iter_input.map(|r| r.unwrap()).collect();
     iter_input.sort_by_key(|dir| dir.path());
 
