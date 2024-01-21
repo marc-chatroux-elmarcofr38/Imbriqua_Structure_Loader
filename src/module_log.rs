@@ -122,7 +122,7 @@ fn get_backup_config() -> Result<Config> {
     // Setup of file logging tools
     let requests = FileAppender::builder()
         .encoder(Box::new(PatternEncoder::new("{d(%+)(utc)} [{f}:{L}] {h({l})} ! BACKUP_LOGGER ! {M}: {m} {n}")))
-        .build("imbriqua_engine.log")?;
+        .build("imbriqua_structure.log")?;
 
     // Setup of global logger
     let config = Config::builder()
