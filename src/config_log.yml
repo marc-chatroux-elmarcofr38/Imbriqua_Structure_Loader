@@ -19,7 +19,7 @@ appenders:
               level: trace
 
 root:
-    level: tracee
+    level: trace
     appenders:
         - stdout
         - requests

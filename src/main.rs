@@ -17,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 use chrono::Local;
+use log::error;
 
 mod module_log;
 mod module_file_output;
@@ -29,7 +30,9 @@ fn main() {
 
     // Initialise global logger
     let (_handle, _config, is_backup) = module_log::open_module();
-    if !is_backup {
+    if is_backup {
+        // Because backup configuration isn't normal way to work
+        error!("ERR_LOG02 - Using backup logging configuration, exit...");
         return ()
     } 
 

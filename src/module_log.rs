@@ -1,9 +1,7 @@
 use anyhow::Result;
-use log::{info, warn, LevelFilter};
-//use log4rs::filter::Response
+use log::{info, warn, error, LevelFilter};
 use log4rs::init_config;
 use log4rs::Handle;
-// use log4rs::init_raw_config;
 use log4rs::append::console::ConsoleAppender;
 use log4rs::append::file::FileAppender;
 use log4rs::encode::pattern::PatternEncoder;
@@ -11,11 +9,15 @@ use log4rs::config::{Appender, RawConfig, Config, Deserializers, Logger, Root};
 use serde_yaml::from_str;
 
 pub fn open_module() -> (Handle, Config, bool) {
+    /*
+        main function for configuration of gloabal logger
+        Try to load the configuration file, else try to load a backup configuration
+    */
 
     // Exit if error
     let result = sub_open_module();
     if result.is_err() {
-        panic!("Error during the loading on logs modules")
+        panic!("PANIC_LOG01 - Error during the loading on logs modules")
     };
 
     result.unwrap()
@@ -23,7 +25,7 @@ pub fn open_module() -> (Handle, Config, bool) {
 
 fn sub_open_module() -> Result<(log4rs::Handle, Config, bool)> {
     /*
-        main fucntion for configuration of gloabal logger
+        main function for configuration of gloabal logger
         Try to load the configuration file, else try to load a backup configuration
     */
 
@@ -33,14 +35,15 @@ fn sub_open_module() -> Result<(log4rs::Handle, Config, bool)> {
             Ok(result)
         },
         Err(error) => {
+            warn!("WARN_LOG01 - Error during default configuration loading \"{}\": {}", "config_log.yml", error);
             match load_configuration_backup() {
                 Ok(result) => {
                     info!("Logger init success : use of \"{}\"", "!!! BACKUP CONFIGURATION !!!");
-                    warn!("Error during default configuration loading : {}", error);
                     Ok(result)
                 },
                 Err(error) => {
-                    panic!("Error during backup configuration loading {}", error);
+                    error!("ERR_LOG01 - Error during backup configuration loading : {}", error);
+                    Err(error)
                 },
             }
         },
