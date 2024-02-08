@@ -8,56 +8,92 @@ use log::{debug, info, error};
 #[derive(Clone, Debug)]
 pub struct FileEnv {
     pub input_folder : String,
-    pub output_folder : String,
+    pub output_subfolder : String,
 }
 
 pub fn get_folders() -> FileEnv {
     /*
-        Task function for definition on input folder and output folder
+        Task function for definition of input folder and output folder
     */
 
-    // Load folders
-    let file_env = sub_get_folders();
-
-    // Exit if error
-    if file_env.is_err() {
-        error!("Panic : Error during the initialisation of input and output folders");
-        panic!("Error during the initialisation of input and output folders");
-    }
-
-    file_env.ok().unwrap()
-}
-
-fn sub_get_folders() -> Result<FileEnv> {
-    /*
-        Process function for definition on input folder and output folder
-    */
-    
-    // Check input main folder
-    let str_input_folder : &str = "metamodel_file/";
-    let input_folder : String = String::from(str_input_folder);
-    match Path::new(str_input_folder).read_dir() {
-        Ok(_) => {
-            debug!("Input main folder is valid \"{}\"", str_input_folder);
+    let input_folder = match get_input_folder() {
+        Ok(result) => {
+            result
         }
-        Err(err_object) => {
-            error!("Input main folder isn't valid \"{}\" : {}", str_input_folder, err_object);
-            return Err(anyhow::Error::new(err_object));
+        Err(_) => {
+            panic!("PANIC_FILE01 - Input main folder isn't readable");
         }
     };
+
+    let output_folder = match get_output_folder() {
+        Ok(result) => {
+            result
+        }
+        Err(_) => {
+            panic!("PANIC_FILE02 - Output main folder isn't readable");
+        }
+    };
+
+    let output_subfolder = match create_output_subfolder(output_folder) {
+        Ok(result) => {
+            result
+        }
+        Err(_) => {
+            panic!("PANIC_FILE03 - Error during creation and controle of output subfolder");
+        }
+    };
+
+    // Create file_env
+    FileEnv{
+        input_folder : input_folder,
+        output_subfolder : output_subfolder,
+    }
+}
+
+fn get_input_folder() -> Result<String> {
+    /*
+        Process function for definition on input folder
+    */
+
+    // Check input main folder
+    let str_input_folder : &str = "metamodel_file/";
+
+    match Path::new(str_input_folder).read_dir() {
+        Ok(_) => {
+            debug!("Input main folder is readable \"{}\"", str_input_folder);
+            Ok(String::from(str_input_folder))
+        }
+        Err(err_object) => {
+            error!("ERROR_FILE01 - Input main folder isn't readable \"{}\" : {}", str_input_folder, err_object);
+            Err(anyhow::Error::new(err_object))
+        }
+    }
+}
+
+fn get_output_folder() -> Result<String> {
+    /*
+        Process function for definition of output folder
+    */
 
     // Check output main folder
     let str_output_folder : &str = "output_file/";
-    let output_folder : String = String::from(str_output_folder);
+    
     match Path::new(str_output_folder).read_dir() {
         Ok(_) => {
-            debug!("Output main folder is valid \"{}\"", str_output_folder);
+            debug!("Output main folder is readable \"{}\"", str_output_folder);
+            Ok(String::from(str_output_folder))
         }
         Err(err_object) => {
-            error!("Output main folder isn't valid \"{}\" : {}", str_output_folder, err_object);
-            return Err(anyhow::Error::new(err_object));
+            error!("ERROR_FILE02 - Output main folder isn't readable \"{}\" : {}", str_output_folder, err_object);
+            Err(anyhow::Error::new(err_object))
         }
-    };
+    }
+}
+
+fn create_output_subfolder(output_folder : String) -> Result<String> {
+    /*
+        Process function for definition and creation of output folder
+    */
 
     // Get time identifing string
     let time_string : String = Local::now().format("%Y-%m-%d_%Hh%Mm%S/").to_string();
@@ -66,10 +102,10 @@ fn sub_get_folders() -> Result<FileEnv> {
     let output_subfolder = output_folder + time_string.as_str();
     match create_dir(&output_subfolder) {
         Ok(_) => {
-            debug!("Output sub folder created \"{}\"", output_subfolder.as_str());
+            debug!("Output subfolder created \"{}\"", output_subfolder.as_str());
         }
         Err(err_object) => {
-            error!("Output sub folder not created \"{}\" : {}", output_subfolder.as_str(), err_object);
+            error!("ERROR_FILE03 - Output subfolder uncreatable \"{}\" : {}", output_subfolder.as_str(), err_object);
             return Err(anyhow::Error::new(err_object));
         }
     };
@@ -77,19 +113,15 @@ fn sub_get_folders() -> Result<FileEnv> {
     // Check suboutput folder
     match Path::new(output_subfolder.as_str()).read_dir() {
         Ok(_) => {
-            debug!("Output sub folder is valid \"{}\"", output_subfolder.as_str());
+            debug!("Output subfolder is readable \"{}\"", output_subfolder.as_str());
         }
         Err(err_object) => {
-            error!("Output sub folder isn't valid \"{}\" : {}", output_subfolder.as_str(), err_object);
+            error!("ERROR_FILE04 - Output subfolder isn't readable \"{}\" : {}", output_subfolder.as_str(), err_object);
             return Err(anyhow::Error::new(err_object));
         }
     };
 
-    // Create file_env
-    Ok(FileEnv{
-        input_folder : input_folder,
-        output_folder : output_subfolder,
-    })
+    Ok(output_subfolder)
 }
 
 pub fn get_item_list(file_env : &FileEnv) -> Vec<(String, String)> {
@@ -140,7 +172,7 @@ fn sub_get_item_list(file_env : &FileEnv) -> Result<Vec<(String, String)>> {
         else {
             debug!("Use path \"{}\"", file.path().display());
             let input_file = String::from(file.path().to_str().unwrap());
-            let output_file = file_env.output_folder.clone() + file.file_name().to_str().unwrap();
+            let output_file = file_env.output_subfolder.clone() + file.file_name().to_str().unwrap();
             result.push((input_file, output_file));
         }
     };
@@ -154,24 +186,24 @@ pub fn delete_empty_folders (file_env : FileEnv) {
     */
 
     // Get path
-    let read_result = Path::new(file_env.output_folder.as_str()).read_dir();
+    let read_result = Path::new(file_env.output_subfolder.as_str()).read_dir();
 
     // Remove if empty
     match read_result {
         Ok(mut result) => {
             if result.next().is_none() {
-                match remove_dir(&file_env.output_folder) {
+                match remove_dir(&file_env.output_subfolder) {
                     Ok(_) => {
-                        info!("folder \"{}\" deleted (because is empty)", &file_env.output_folder);
+                        info!("folder \"{}\" deleted (because is empty)", &file_env.output_subfolder);
                     },
                     Err(error) => {
-                        error!("Error during removing of \"{}\" (empty folder) : {}", &file_env.output_folder, error)
+                        error!("Error during removing of \"{}\" (empty folder) : {}", &file_env.output_subfolder, error)
                     },
                 }
             }            
         },
         Err(error) => {
-            error!("Can't evaluate the necessity of removing \"{}\" : {}", &file_env.output_folder, error)
+            error!("Can't evaluate the necessity of removing \"{}\" : {}", &file_env.output_subfolder, error)
         },
     }
 }
