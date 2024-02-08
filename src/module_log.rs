@@ -1,5 +1,5 @@
 use anyhow::Result;
-use log::{info, warn, error, LevelFilter};
+use log::{info, warn, LevelFilter};
 use log4rs::init_config;
 use log4rs::Handle;
 use log4rs::append::console::ConsoleAppender;
@@ -14,43 +14,27 @@ pub fn open_module() -> (Handle, Config, bool) {
         Try to load the configuration file, else try to load a backup configuration
     */
 
-    // Exit if error
-    let result = sub_open_module();
-    if result.is_err() {
-        panic!("PANIC_LOG01 - Error during the loading on logs modules")
-    };
-
-    result.unwrap()
-}
-
-fn sub_open_module() -> Result<(log4rs::Handle, Config, bool)> {
-    /*
-        main function for configuration of gloabal logger
-        Try to load the configuration file, else try to load a backup configuration
-    */
-
-    match load_configuration_file() {
+    match load_configuration_by_file() {
         Ok(result) => {
             info!("Logger init success : use of \"{}\"", "config_log.yml");
-            Ok(result)
+            result
         },
         Err(error) => {
-            warn!("WARN_LOG01 - Error during default configuration loading \"{}\": {}", "config_log.yml", error);
-            match load_configuration_backup() {
+            match load_configuration_by_backup() {
                 Ok(result) => {
+                    warn!("WARN_LOG01 - Error during default configuration loading \"{}\": {}", "config_log.yml", error);
                     info!("Logger init success : use of \"{}\"", "!!! BACKUP CONFIGURATION !!!");
-                    Ok(result)
+                    result
                 },
-                Err(error) => {
-                    error!("ERR_LOG01 - Error during backup configuration loading : {}", error);
-                    Err(error)
+                Err(_) => {
+                    panic!("PANIC_LOG01 - Error during the loading on logs modules")
                 },
             }
         },
     }
 }
 
-fn load_configuration_file() -> Result<(log4rs::Handle, Config, bool)> {
+fn load_configuration_by_file() -> Result<(log4rs::Handle, Config, bool)> {
     /*
         Try to load a default configuration for global logger.
         It use the following file : "config_log.yml"
@@ -94,25 +78,25 @@ fn get_config_by_file() -> Result<Config> {
     Ok(config)
 }
 
-fn load_configuration_backup() -> Result<(log4rs::Handle, Config, bool)> {
+fn load_configuration_by_backup() -> Result<(log4rs::Handle, Config, bool)> {
     /*
         Try to load a backup configuration for global logger.
         Use a "hard writted" configuration
     */
 
     // Get backup config
-    let config = get_backup_config()?;
+    let config = get_config_by_backup()?;
 
     // Itinialisation of global logger
     let handle = init_config(config)?;
 
     // Get backup config
-    let config = get_backup_config()?;
+    let config = get_config_by_backup()?;
 
     Ok((handle, config, true))
 }
 
-fn get_backup_config() -> Result<Config> {
+fn get_config_by_backup() -> Result<Config> {
     /*
         Define a backup config
     */
