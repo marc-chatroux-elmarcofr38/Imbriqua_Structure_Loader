@@ -1,3 +1,0 @@
-2024-01-21T10:53:57.942645831+00:00 [src/module_log.rs:38] INFO ! BACKUP_LOGGER ! imbriqua_structure::module_log: Logger init success : use of "!!! BACKUP CONFIGURATION !!!" 
-2024-01-21T10:53:57.942969935+00:00 [src/module_log.rs:39] WARN ! BACKUP_LOGGER ! imbriqua_structure::module_log: Error during default configuration loading : root.level: unknown variant `tracez`, expected one of `OFF`, `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE` at line 22 column 12 
-2024-01-21T10:54:02.676990072+00:00 [src/main.rs:34] ERROR ! BACKUP_LOGGER ! imbriqua_structure: Using backup logging configuration, exit... 
