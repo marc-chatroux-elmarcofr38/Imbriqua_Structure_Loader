@@ -31,8 +31,8 @@ fn main() {
     let (_handle, _config, _is_backup) = module_log::open_module();
 
     // Set used folders (input folder and output folder)
-    let file_env = module_file_config::get_folders();
-    let iter_file_env = module_file_config::get_item_list(&file_env);
+    let file_env = module_file_config::FileEnv::new();
+    let iter_file_env = file_env.get_item_list();
 
     //
     for (input_file, output_file) in iter_file_env {
@@ -40,5 +40,5 @@ fn main() {
     }
 
     // Delete output folder if is empty
-    module_file_config::delete_empty_folders(file_env);
+    file_env.delete_if_empty();
 }
