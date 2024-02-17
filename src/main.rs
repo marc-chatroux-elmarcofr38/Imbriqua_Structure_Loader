@@ -32,10 +32,9 @@ fn main() {
 
     // Set used folders (input folder and output folder)
     let file_env = module_file_config::FileEnv::new();
-    let iter_file_env = file_env.get_item_list();
 
     //
-    for (input_file, output_file) in iter_file_env {
+    for (input_file, output_file) in file_env.get_item_list() {
         module_load_classes::run(input_file, output_file);
     }
 
