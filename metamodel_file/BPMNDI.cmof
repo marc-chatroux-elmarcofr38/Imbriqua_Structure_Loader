@@ -2,7 +2,7 @@
   
 From OMG website
  - link : https://www.omg.org/spec/BPMN/20100501/BPMNDI.cmof
- - original filename : BPMNDI.cmof
+ - original file : BPMNDI.cmof
 
 -->
 
@@ -14,6 +14,9 @@ From OMG website
     </packageImport>
     <packageImport xmi:type="cmof:PackageImport" xmi:id="_packageImport.1" importingNamespace="_0">
       <importedPackage xmi:type="cmof:Package" href="DC.cmof#_0"/>
+    </packageImport>
+    <packageImport xmi:type="cmof:PackageImport" xmi:id="_packageImport.2" importingNamespace="_0">
+      <importedPackage xmi:type="cmof:Package" href="BPMN20.cmof#_0"/>
     </packageImport>
     <ownedMember xmi:type="cmof:Class" xmi:id="BPMNDiagram" name="BPMNDiagram">
       <ownedAttribute xmi:type="cmof:Property" xmi:id="BPMNDiagram-plane" name="plane" visibility="public" type="BPMNPlane" isComposite="true" association="A_plane_diagram">

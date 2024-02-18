@@ -31,10 +31,10 @@ fn main() {
     let (_handle, _config, _is_backup) = module_log::open_module();
 
     // Set used folders (input folder and output folder)
-    let file_env = module_file_config::FileEnv::new();
+    let mut file_env = module_file_config::FileEnv::new();
 
     //
-    for (input_file, output_file) in file_env.get_item_list() {
+    for (input_file, output_file) in file_env.get_item_list("DI.cmof") {
         module_load_classes::run(input_file, output_file);
     }
 

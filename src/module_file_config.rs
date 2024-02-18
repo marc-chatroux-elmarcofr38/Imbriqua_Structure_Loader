@@ -1,6 +1,6 @@
 use std::path::Path;
 use chrono::Local;
-use std::fs::{create_dir, read_dir, remove_dir};
+use std::fs::{create_dir, read_dir, read_to_string, remove_dir, DirEntry};
 
 use log::{trace, debug, info, error};
 
@@ -9,6 +9,7 @@ pub struct FileEnv {
     pub input_folder : String,
     output_folder : String,
     pub output_subfolder : String,
+    dependencies : Vec<(String, String)>,
 }
 
 impl FileEnv {
@@ -24,6 +25,7 @@ impl FileEnv {
             input_folder : str_input_folder.clone(),
             output_folder : str_output_folder.clone(),
             output_subfolder : str_output_folder.clone() + time_string.as_str(),
+            dependencies : Vec::new(),
         };
         
         // Checking instance
@@ -64,27 +66,79 @@ impl FileEnv {
         }
     }
 
-    pub fn get_item_list(&self) -> Vec<(String, String)> {
+    pub fn get_item_list(&mut self, main_file : &str) -> Vec<(String, String)> {
         /*
             Process function for iteration of input files and output files
         */
     
-        // Result object
-        let mut result: Vec<(String, String)> = Vec::new();
+        // If already calculate
+        if self.dependencies.is_empty() {
+            // Check if path is readable
+            path_read_check(&self.input_folder, "PANIC_FILE02 - Input main folder isn't readable");
+    
+            // Check if the main file exist
+            self.add_dependencies_of(main_file);
+        };
 
-        // Check if path is readable
-        path_read_check(&self.input_folder, "PANIC_FILE02 - Input main folder isn't readable");
+        // Return result
+        debug!("{:?}", self.dependencies);
+        self.dependencies.clone()
+    }
+/*
+    fn get_sorted_files(&self) -> Vec<DirEntry> {
 
         // Paths in input folder, sorted
         let iter_input = read_dir(&self.input_folder).unwrap();
-        let mut iter_input : Vec<_> = iter_input.map(|r| r.unwrap()).collect();
+        let mut iter_input : Vec<DirEntry> = iter_input.map(|r| r.unwrap()).collect();
         iter_input.sort_by_key(|dir| dir.path());
 
+        iter_input
+    }
+*/
+    fn add_dependencies_of(&mut self, main_file : &str) {
+        /*
+            Read main files
+            Find dependencies files
+            Add it to self.dependencies
+        */
+
+        // Check if main file exist and is readable
+        let mut file : String = self.input_folder.clone();
+        file.push_str(main_file);
+        file_exist_check(file.as_str(), "PANIC_FILE07 - A CMOF dependencies doesn't exist");
+        file_read_check(file.as_str(), "PANIC_FILE08 - A CMOF dependencies isn't readable");
+
+        // Add main file to dependencies
+        let mut new = Vec::new();
+        new.push((file, String::from(&self.output_subfolder) + main_file));
+        self.dependencies.retain(|x| x != &new[0]);
+        self.dependencies.splice(0..0, new);
+
+        // Find dependencies
+        let mut dependencies_file = Vec::new();
+
+        if main_file == "DI.cmof" {
+            dependencies_file.push("DC.cmof");
+        }
+        else if main_file == "BPMNDI.cmof" {
+            dependencies_file.push("DI.cmof");
+            dependencies_file.push("DC.cmof");
+            dependencies_file.push("BPMN20.cmof");
+        };
+
+        // Find dependencies of dependencies
+        for file in dependencies_file {
+            self.add_dependencies_of(file);
+        }
         // Explore input folder
-        for file in iter_input {
+        /*
+        for file in self.get_sorted_files() {
             if !file.file_type().unwrap().is_file() {
                 // Don't treat no file path
                 trace!("Path \"{}\" is unused because is not a file", file.path().display());
+            }
+            else if file.file_name().to_str().unwrap().chars().nth(0).unwrap() == '#' {
+                trace!("Path \"{}\" is unused because is start with a \"#\" char (inhibitor char)", file.path().display());
             }
             else {
                 trace!("Use path \"{}\"", file.path().display());
@@ -92,10 +146,8 @@ impl FileEnv {
                 let output_file = String::from(&self.output_subfolder) + file.file_name().to_str().unwrap();
                 result.push((input_file, output_file));
             }
-        };
+        };*/
 
-        // Return result
-        result
     }
 }
 
@@ -119,7 +171,7 @@ fn path_create_dir(file_path_str : &str, error_str : &str) -> () {
     // Create the dir
     match create_dir(&file_path_str) {
         Ok(_) => {
-            debug!("Output subfolder created \"{}\"", &file_path_str);
+            trace!("Output subfolder created \"{}\"", &file_path_str);
         }
         Err(err_object) => {
             error!("ERROR_FILE01 - \"{}\" : {}", &file_path_str, err_object);
@@ -136,10 +188,44 @@ fn path_read_check(file_path_str : &str, error_str : &str) {
     // Check if the folder is readable
     match Path::new(file_path_str).read_dir() {
         Ok(_) => {
-            debug!("Folder is readable \"{}\"", file_path_str);
+            trace!("Folder is readable \"{}\"", file_path_str);
         }
         Err(err_object) => {
             error!("ERROR_FILE02 - \"{}\" : {}", &file_path_str, err_object);
+            panic!("{} \"{}\" : {}", &error_str, &file_path_str, err_object);
+        }
+    }
+}
+
+fn file_exist_check(file_path_str : &str, error_str : &str) -> () {
+    /*
+        Check if the file exist
+    */
+
+    // Exit if the folder exist
+    match Path::new(&file_path_str).exists() {
+        true => {
+            trace!("Folder \"{}\" exist", &file_path_str);
+        },
+        false => {
+            error!("ERROR_FILE04 - \"{}\"", &file_path_str);
+            panic!("{} \"{}\"", &error_str, &file_path_str);
+        },
+    };
+}
+
+fn file_read_check(file_path_str : &str, error_str : &str) {
+    /*
+        Check if the file is readable
+    */
+
+    // Check if the file is readable 
+    match read_to_string(file_path_str) {
+        Ok(_) => {
+            trace!("File is readable \"{}\"", file_path_str);
+        }
+        Err(err_object) => {
+            error!("ERROR_FILE05 - \"{}\" : {}", &file_path_str, err_object);
             panic!("{} \"{}\" : {}", &error_str, &file_path_str, err_object);
         }
     }
