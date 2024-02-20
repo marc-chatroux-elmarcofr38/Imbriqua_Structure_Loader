@@ -34,7 +34,7 @@ fn main() {
     let mut file_env = module_file_config::FileEnv::new();
 
     //
-    for (input_file, output_file) in file_env.get_item_list("DI.cmof") {
+    for (input_file, output_file) in file_env.get_package("DI.cmof") {
         module_load_classes::run(input_file, output_file);
     }
 
