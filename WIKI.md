@@ -22,34 +22,44 @@
     * Cause : The error come from __load_configuration_backup()__ function or __get_backup_config()__
         
 * PANIC_FILE01 - Input main folder can't be created
+    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
     * Panic action caused by __ERROR_FILE01__
     * See __ERROR_FILE01__ information
         
 * PANIC_FILE02 - Input main folder isn't readable
+    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
     * Panic action caused by __ERROR_FILE02__
     * See __ERROR_FILE02__ information
         
 * PANIC_FILE03 - Output main folder can't be created
+    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
     * Panic action caused by __ERROR_FILE01__
     * See __ERROR_FILE01__ information
         
 * PANIC_FILE04 - Output main folder isn't readable
+    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
     * Panic action caused by __ERROR_FILE02__
     * See __ERROR_FILE02__ information
         
 * PANIC_FILE05 - Output subfolder can't be created
+    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
     * Panic action caused by __ERROR_FILE01__
     * See __ERROR_FILE01__ information
         
 * PANIC_FILE06 - Output subfolder isn't readable
+    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
     * Panic action caused by __ERROR_FILE02__
     * See __ERROR_FILE02__ information
         
 * PANIC_FILE07 - A CMOF dependencies doesn't exist
+    * ??????????????????????????
+    * Context : __module_dependencies_explorer.rs/open_modules()__
     * Panic action caused by __ERROR_FILE04__
     * See __ERROR_FILE04__ information
         
 * PANIC_FILE08 - A CMOF dependencies isn't readable
+    * ??????????????????????????
+    * Context : __module_dependencies_explorer.rs/open_modules()__
     * Panic action caused by __ERROR_FILE05__
     * See __ERROR_FILE05__ information
 
@@ -58,23 +68,23 @@
 ## List of Errors
 
 * ERROR_FILE01 - A folder can't be created
-    * Context : __module_file_config.rs/path_create_dir()__
+    * Context : __module_dependencies_explorer.rs/path_create_dir()__
     * Cause : see details in logs file to get __create_dir()__ error informations
 
 * ERROR_FILE02 - A folder can't be readed
-    * Context : __module_file_config.rs/path_read_check()__
+    * Context : __module_dependencies_explorer.rs/path_read_check()__
     * Cause : see details in logs file to get __read_dir()__ error informations
 
 * ERROR_FILE03 - Error during removing
-    * Context : __module_file_config.rs/delete_if_empty()__
+    * Context : __module_dependencies_explorer.rs/FileEnv::delete_if_empty()__
     * Cause : see details in logs file to get __remove_dir()__ error informations
 
 * ERROR_FILE04 - A necessery file doesn't exist
-    * Context : __module_file_config.rs/file_exist_check()__
+    * Context : __module_dependencies_explorer.rs/file_exist_check()__
     * Cause : see details in logs file to get __exists()__ error informations
 
 * ERROR_FILE05 - A necessery file can't be readed
-    * Context : __module_file_config.rs/file_read_check()__
+    * Context : __module_dependencies_explorer.rs/file_read_check()__
     * Cause : see details in logs file to get __read_to_string()__ error informations
 
 

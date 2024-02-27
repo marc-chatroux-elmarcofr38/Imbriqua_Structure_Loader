@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>.
 use chrono::Local;
 
 mod module_log;
-mod module_file_config;
+mod module_dependencies_explorer;
 mod module_load_classes;
 
 fn main() {
@@ -31,13 +31,11 @@ fn main() {
     let (_handle, _config, _is_backup) = module_log::open_module();
 
     // Set used folders (input folder and output folder)
-    let mut file_env = module_file_config::FileEnv::new();
+    let mut loading_env = module_dependencies_explorer::LoadingTracker::new();
 
     //
-    for (input_file, output_file) in file_env.get_package("DI.cmof") {
-        module_load_classes::run(input_file, output_file);
-    }
+    loading_env.load_dependencies("DI.cmof", "DI");
 
     // Delete output folder if is empty
-    file_env.delete_if_empty();
+    loading_env.close();
 }
