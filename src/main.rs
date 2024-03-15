@@ -33,7 +33,7 @@ fn main() {
     // Set used folders (input folder and output folder)
     let mut loading_env = module_dependencies_explorer::LoadingTracker::new();
 
-    //
+    // Load ordered packages list
     loading_env.load_dependencies("DI.cmof", "DI");
 
     // Delete output folder if is empty

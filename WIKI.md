@@ -20,72 +20,72 @@
     * Context : __module_log.rs/open_modules()__
     * Info : No logs are provided, so, make panic
     * Cause : The error come from __load_configuration_backup()__ function or __get_backup_config()__
-        
-* PANIC_FILE01 - Input main folder can't be created
-    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
+
+* PANIC_FILE01 - A folder can't be created
+    * Context : __module_dependencies_explorer.rs/check_folder_exist()__
     * Panic action caused by __ERROR_FILE01__
     * See __ERROR_FILE01__ information
-        
-* PANIC_FILE02 - Input main folder isn't readable
-    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
+
+* PANIC_FILE02 - A folder isn't readable
+    * Context : __module_dependencies_explorer.rs/check_read_path()__
     * Panic action caused by __ERROR_FILE02__
     * See __ERROR_FILE02__ information
-        
-* PANIC_FILE03 - Output main folder can't be created
-    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
-    * Panic action caused by __ERROR_FILE01__
-    * See __ERROR_FILE01__ information
-        
-* PANIC_FILE04 - Output main folder isn't readable
-    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
-    * Panic action caused by __ERROR_FILE02__
-    * See __ERROR_FILE02__ information
-        
-* PANIC_FILE05 - Output subfolder can't be created
-    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
-    * Panic action caused by __ERROR_FILE01__
-    * See __ERROR_FILE01__ information
-        
-* PANIC_FILE06 - Output subfolder isn't readable
-    * Context : __module_dependencies_explorer.rs/FileEnv::new()__
-    * Panic action caused by __ERROR_FILE02__
-    * See __ERROR_FILE02__ information
-        
-* PANIC_FILE07 - A CMOF dependencies doesn't exist
-    * ??????????????????????????
-    * Context : __module_dependencies_explorer.rs/open_modules()__
+
+* PANIC_FILE03 - A file don't exist
+    * Context : __module_dependencies_explorer.rs/check_file_exist()__
+    * Panic action caused by __ERROR_FILE03__
+    * See __ERROR_FILE03__ information
+
+* PANIC_FILE04 - A file isn't readable
+    * Context : __module_dependencies_explorer.rs/check_read_file()__
     * Panic action caused by __ERROR_FILE04__
     * See __ERROR_FILE04__ information
-        
-* PANIC_FILE08 - A CMOF dependencies isn't readable
-    * ??????????????????????????
-    * Context : __module_dependencies_explorer.rs/open_modules()__
+
+* PANIC_FILE05- A file isn't parsable
+    * Context : __module_dependencies_explorer.rs/get_element_from_path()__
     * Panic action caused by __ERROR_FILE05__
     * See __ERROR_FILE05__ information
 
+ 
 
 
 ## List of Errors
 
 * ERROR_FILE01 - A folder can't be created
-    * Context : __module_dependencies_explorer.rs/path_create_dir()__
-    * Cause : see details in logs file to get __create_dir()__ error informations
+    * Context : __module_dependencies_explorer.rs/check_folder_exist()__
+    * Cause : see details in logs file to get :
+        * Value of folder path
+        * error informations of __std::fs::create_dir()__
 
 * ERROR_FILE02 - A folder can't be readed
-    * Context : __module_dependencies_explorer.rs/path_read_check()__
-    * Cause : see details in logs file to get __read_dir()__ error informations
+    * Context : __module_dependencies_explorer.rs/check_read_path()__
+    * Cause : see details in logs file to get :
+        * Value of folder path
+        * error informations of __std::path::Path::read_dir()__
 
-* ERROR_FILE03 - Error during removing
-    * Context : __module_dependencies_explorer.rs/FileEnv::delete_if_empty()__
-    * Cause : see details in logs file to get __remove_dir()__ error informations
+* ERROR_FILE03 - A file don't exist
+    * Context : __module_dependencies_explorer.rs/check_file_exist()__
+    * Cause : see details in logs file to get :
+        * Value of file path
 
-* ERROR_FILE04 - A necessery file doesn't exist
-    * Context : __module_dependencies_explorer.rs/file_exist_check()__
-    * Cause : see details in logs file to get __exists()__ error informations
+* ERROR_FILE04 - A file can't be readed
+    * Context : __module_dependencies_explorer.rs/check_read_file()__
+    * Cause : see details in logs file to get :
+        * Value of file path
+        * error informations of __std::fs::read_to_string()__
 
-* ERROR_FILE05 - A necessery file can't be readed
-    * Context : __module_dependencies_explorer.rs/file_read_check()__
-    * Cause : see details in logs file to get __read_to_string()__ error informations
+* ERROR_FILE05 - A file isn't parsable
+    * Context : __module_dependencies_explorer.rs/get_element_from_path()__
+    * Cause : see details in logs file to get :
+        * Value of file path
+        * error informations of Element parsing
+
+* ERROR_FILE10 - Error during removing of a empty folder
+    * Context : __module_dependencies_explorer.rs/check_remove_dir()__
+    * Cause : see details in logs file to get :
+        * Value of file path
+        * error informations of __std::fs::remove_dir()__
+
 
 
 

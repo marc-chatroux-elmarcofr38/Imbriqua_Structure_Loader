@@ -2,9 +2,8 @@ extern crate minidom;
 
 use std::path::Path;
 use std::collections::HashMap;
-use std::fs::{create_dir, read_to_string, remove_dir};
+use std::fs::{create_dir, read_to_string, remove_dir, ReadDir};
 use chrono::Local;
-use anyhow::Result;
 use log::{trace, info, error};
 use minidom::Element;
 
@@ -13,10 +12,6 @@ pub struct FileEnv {
     pub input_folder : String,
     output_folder : String,
     pub output_subfolder : String,
-}
-
-pub fn get_new_file_env() -> FileEnv{
-    FileEnv::new()
 }
 
 impl FileEnv {
@@ -36,12 +31,12 @@ impl FileEnv {
         };
         
         // Checking instance
-        path_create_dir(&result.input_folder     , "PANIC_FILE01 - Input main folder can't be created");
-        path_read_check(&result.input_folder     , "PANIC_FILE02 - Input main folder isn't readable");
-        path_create_dir(&result.output_folder    , "PANIC_FILE03 - Output main folder can't be created");
-        path_read_check(&result.output_folder    , "PANIC_FILE04 - Output main folder isn't readable");
-        path_create_dir(&result.output_subfolder , "PANIC_FILE05 - Output subfolder can't be created");
-        path_read_check(&result.output_subfolder , "PANIC_FILE06 - Output subfolder isn't readable");
+        check_folder_exist(&result.input_folder);
+        check_read_path(&result.input_folder);
+        check_folder_exist(&result.output_folder);
+        check_read_path(&result.output_folder);
+        check_folder_exist(&result.output_subfolder);
+        check_read_path(&result.output_subfolder);
 
         // Return result
         result
@@ -52,122 +47,11 @@ impl FileEnv {
             Process function for removing output folder if no result
         */
     
-        // Checking instance
-        path_read_check(&self.output_subfolder , "PANIC_FILE06 - Output subfolder isn't readable");
-
-        // Remove if empty
-        if !Path::new(self.output_subfolder.as_str()).read_dir().unwrap().next().is_none() {
-            trace!("Output subfolder isn't empty \"{}\"", self.output_subfolder.as_str());
-        } else {
-            trace!("Output subfolder is empty \"{}\"", self.output_subfolder.as_str());
-            return
-        };
-
-        match remove_dir(&self.output_subfolder) {
-            Ok(_) => {
+        if check_remove_dir(&self.output_subfolder.as_str()) {
                 info!("folder \"{}\" deleted (because is empty)", self.output_subfolder);
-            },
-            Err(error) => {
-                error!("ERROR_FILE03 - Error during removing of \"{}\" (empty folder) : {}", self.output_subfolder, error)
-            },
         }
     }
 }
-
-fn path_create_dir(file_path_str : &str, error_str : &str) -> () {
-    /*
-        Check if the folder exist
-        Else, try to create it
-    */
-
-    // Exit if the folder exist
-    match Path::new(&file_path_str).exists() {
-        false => {
-            trace!("Folder \"{}\" don't exist", &file_path_str);
-        },
-        true => {
-            trace!("Folder \"{}\" exist", &file_path_str);
-            return ();
-        },
-    };
-
-    // Create the dir
-    match create_dir(&file_path_str) {
-        Ok(_) => {
-            trace!("Output subfolder created \"{}\"", &file_path_str);
-        }
-        Err(err_object) => {
-            error!("ERROR_FILE01 - \"{}\" : {}", &file_path_str, err_object);
-            panic!("{} \"{}\" : {}", &error_str, &file_path_str, err_object);
-        }
-    };
-}
-
-fn path_read_check(file_path_str : &str, error_str : &str) {
-    /*
-        Check if the folder is readable
-    */
-
-    // Check if the folder is readable
-    match Path::new(file_path_str).read_dir() {
-        Ok(_) => {
-            trace!("Folder is readable \"{}\"", file_path_str);
-        }
-        Err(err_object) => {
-            error!("ERROR_FILE02 - \"{}\" : {}", &file_path_str, err_object);
-            panic!("{} \"{}\" : {}", &error_str, &file_path_str, err_object);
-        }
-    }
-}
-
-fn file_exist_check(file_path_str : &str, error_str : &str) -> () {
-    /*
-        Check if the file exist
-    */
-
-    // Exit if the folder exist
-    match Path::new(&file_path_str).exists() {
-        true => {
-            trace!("Folder \"{}\" exist", &file_path_str);
-        },
-        false => {
-            error!("ERROR_FILE04 - \"{}\"", &file_path_str);
-            panic!("{} \"{}\"", &error_str, &file_path_str);
-        },
-    };
-}
-
-fn file_read_check(file_path_str : &str, error_str : &str) {
-    /*
-        Check if the file is readable
-    */
-
-    // Check if the file is readable 
-    match read_to_string(file_path_str) {
-        Ok(_) => {
-            trace!("File is readable \"{}\"", file_path_str);
-        }
-        Err(err_object) => {
-            error!("ERROR_FILE05 - \"{}\" : {}", &file_path_str, err_object);
-            panic!("{} \"{}\" : {}", &error_str, &file_path_str, err_object);
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 struct LoadingPackage {
     filename : String,
@@ -210,11 +94,200 @@ impl LoadingTracker {
     
         info!("End of loading input file \"{}\" to file \"{}\"", &input_file, &output_file);
         */
-        let _a = main_file;
-        let _b = main_package;
+
+        let mut file_path = self.file_env.input_folder.clone();
+        file_path.push_str(main_file);
+        let element = get_element_from_path(file_path.as_str());
+
+
+        // let result = find_dependencies(element);
     }
 
     pub fn close(&self) {
         self.file_env.delete_if_empty();
     }
+}
+
+
+
+
+
+// #############################################################
+//
+//    TOOLS FUNCTIONS
+//
+// #############################################################
+
+fn check_folder_exist(file_path_str : &str) -> () {
+    /*
+        Make sure that a folder exist
+        Check if the folder exist, else, try to create it
+
+        Input :
+         - file_path_str (&str) : dir path to create ifdon't exist
+
+        Error :
+         - jumping error of std::fs::create_dir
+    */
+
+    // Exit if the folder exist
+    match Path::new(&file_path_str).exists() {
+        false => {
+            trace!("Folder \"{}\" don't exist", &file_path_str);
+        },
+        true => {
+            trace!("Folder \"{}\" exist", &file_path_str);
+            return ();
+        },
+    };
+
+    // Create the dir
+    match create_dir(&file_path_str) {
+        Ok(_) => {
+            trace!("Output subfolder created \"{}\"", &file_path_str);
+        }
+        Err(err_object) => {
+            error!("ERROR_FILE01 - \"{}\" : {}", &file_path_str, err_object);
+            panic!("PANIC_FILE01 - A folder can't be created - \"{}\" : {}", &file_path_str, err_object);
+        }
+    };
+}
+
+fn check_read_path(file_path_str : &str) -> ReadDir{
+    /*
+        Check if a folder is readable
+
+        Input :
+         - file_path_str (&str) : dir path to check
+
+        Error :
+         - jumping error of std::path::Path::read_dir
+    */
+
+    // Check if the folder exist
+    check_folder_exist(file_path_str);
+
+    // Check if the folder is readable
+    match Path::new(file_path_str).read_dir() {
+        Ok(result_object) => {
+            trace!("Folder is readable \"{}\"", file_path_str);
+            result_object
+        }
+        Err(err_object) => {
+            error!("ERROR_FILE02 - \"{}\" : {}", &file_path_str, err_object);
+            panic!("PANIC_FILE02 - A folder isn't readable - \"{}\" : {}", &file_path_str, err_object);
+        }
+    }
+}
+
+fn check_file_exist(file_path_str : &str) -> () {
+    /*
+        Check if the file exist
+
+        Input :
+         - file_path_str (&str) : file path to check
+
+        Error :
+         - none
+    */
+
+    // Exit if the folder exist
+    match Path::new(&file_path_str).exists() {
+        true => {
+            trace!("Folder \"{}\" exist", &file_path_str);
+        },
+        false => {
+            error!("ERROR_FILE03 - \"{}\" don't exist", &file_path_str);
+            panic!("PANIC_FILE03 - A file don't exist - \"{}\"", &file_path_str);
+        },
+    };
+}
+
+fn check_read_file(file_path_str : &str) -> String {
+    /*
+        Check if the file is readable
+
+        Input :
+         - file_path_str (&str) : file path to check
+
+        Error :
+         - jumping error of std::fs::read_to_string
+    */
+
+    // Check if the file exist
+    check_file_exist(file_path_str);
+
+    // Check if the file is readable 
+    match read_to_string(file_path_str) {
+        Ok(result_object) => {
+            trace!("File is readable \"{}\"", file_path_str);
+            result_object
+        }
+        Err(err_object) => {
+            error!("ERROR_FILE04 - \"{}\" : {}", &file_path_str, err_object);
+            panic!("PANIC_FILE04 - A file isn't readable - \"{}\" : {}", &file_path_str, err_object);
+        }
+    }
+}
+
+fn check_remove_dir(file_path_str : &str) -> bool {
+    /*
+        Check if the folder is deletable (empty)
+
+        Input :
+         - file_path_str (&str) : file path to delete
+
+        Output :
+         - true if removed, else false
+
+        Error :
+         - jumping error of std::fs::remove_dir
+    */
+
+        // Exit if not empty
+        if !check_read_path(file_path_str).next().is_none() {
+            trace!("Output subfolder isn't empty \"{}\"", file_path_str);
+            return false
+        } else {
+            trace!("Output subfolder is empty \"{}\"", file_path_str);
+        };
+
+        match remove_dir(file_path_str) {
+            Ok(_) => {
+                return true
+            },
+            Err(error) => {
+                error!("ERROR_FILE10 - Error during removing of a empty folder - \"{}\" : {}", file_path_str, error);
+                return false
+            },
+        }
+}
+
+fn get_element_from_path(file_path_str : &str) -> Element {
+    /*
+        Return the minidom element stored in the input file path
+
+        Input :
+         - file_path_str (&str) : file path to read
+
+        Error :
+         - jump error of check_read_file
+         - jump error of Element parsing
+    */
+    
+    // Check if the file is readable
+    let file = check_read_file(file_path_str);
+
+    // Parsing file content to Element object class
+    let element_object : Element = match file.parse() {
+        Ok(result_object) => {
+            result_object
+        }
+        Err(err_object) => {
+            error!("ERROR_FILE05 - \"{}\" : {}", &file_path_str, err_object);
+            panic!("PANIC_FILE05 - A file isn't parsable - \"{}\" : {}", &file_path_str, err_object);}
+    };
+
+    // Result
+    element_object
 }
