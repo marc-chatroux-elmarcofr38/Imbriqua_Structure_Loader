@@ -4,7 +4,7 @@ use std::path::Path;
 use std::collections::HashMap;
 use std::fs::{create_dir, read_to_string, remove_dir, ReadDir};
 use chrono::Local;
-use log::{trace, info, error};
+use log::{trace, info, error, warn};
 use minidom::Element;
 
 #[derive(Clone, Debug)]
@@ -78,19 +78,33 @@ impl LoadingTracker {
     }
 
     pub fn load_dependencies_file(&mut self, main_file : &str, main_package : &str) {
+        /*
+            Load minidom element from a gived package, including dependencies
+            Save element in loaded_package
     
-        //
+            Input :
+             - main_file (&str) : file to load in self.input_folder
+             - main_package (&str) : package name wanted in main_file
+    
+            Error :
+             - none
+        */
+        
+        // Add empty element entry in loaded_package (prevent circular loading)
+        self.add_empty_package(main_file, main_package);
+    
+        // Generate file path
         let mut file_path = self.file_env.input_folder.clone();
         file_path.push_str(main_file);
 
-        //
+        // Load package element
         let package_element = get_package_from_path(file_path.as_str(), main_package);
 
-        // 
-        &self.add_dependencies(&package_element);
+        // Evaluate dependencies, and load it
+        self.add_dependencies(&package_element);
         
-        // 
-        &self.add_package(package_element, main_file, main_package);
+        // Add package element in loaded_package
+        self.add_package(package_element, main_file, main_package);
     }
 
     fn add_dependencies(&mut self, element : &Element) {
@@ -100,31 +114,78 @@ impl LoadingTracker {
 
         for child in element.children() {
             if child.is("packageImport", "") {
-                trace!("need to load {}", child.children().next().unwrap().attr("href").unwrap())
+                warn!("need to load \"{}\"", child.children().next().unwrap().attr("href").unwrap())
             }
         }
     }
 
-    fn add_package(&mut self, element : Element, file : &str, package : &str) {
+    fn add_empty_package(&mut self, file : &str, package : &str) {
         /*
-        
+            Save minimal LoadingPackage object in loaded_package, to prevent circular dependencies loading
+    
+            Input :
+             - file (&str) : file to load in self.input_folder
+             - package (&str) : package name wanted in main_file
+    
+            Error :
+             - none
         */
 
-        //
+        // Create minimal LoadingPackage
+        let package_object = LoadingPackage {
+            filename : String::from(file),
+            id : String::from(package),
+            object : Element::builder("", "").build(),
+        };
+
+        // Define hashmap key
+        let mut label = String::from(file);
+        label.push_str(":");
+        label.push_str(package);
+
+        // Save object in hashmap attribute
+        self.loaded_package.insert(label, package_object);
+    }
+
+    fn add_package(&mut self, element : Element, file : &str, package : &str) {
+        /*
+            Save complete LoadingPackage object in loaded_package
+    
+            Input :
+             - element (minidom::element::Element) : Element to save
+             - file (&str) : file to load in self.input_folder
+             - package (&str) : package name wanted in main_file
+    
+            Error :
+             - none
+        */
+
+        // Create full LoadingPackage
         let package_object = LoadingPackage {
             filename : String::from(file),
             id : String::from(package),
             object : element,
         };
 
-        //
+        // Define hashmap key
         let mut label = String::from(file);
         label.push_str(":");
         label.push_str(package);
 
 
-        //
+        // Save object in hashmap attribute
         self.loaded_package.insert(label, package_object);
+    }
+
+    fn is_package_already_loaded(&self, file : &str, package : &str) -> bool {
+
+        // Define hashmap key
+        let mut label = String::from(file);
+        label.push_str(":");
+        label.push_str(package);
+
+        // Check if the key is already used
+        self.loaded_package.contains_key(&label)
     }
 
     pub fn close(&self) {
