@@ -16,16 +16,10 @@ You should have received a copy of the GNU General Public License along with Imb
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-use chrono::Local;
-
 mod module_log;
 mod module_dependencies_explorer;
-mod module_load_classes;
 
 fn main() {
-
-    // Set session name
-    let _session_time : String = Local::now().format("%Y-%m-%d_%Hh%Mm%S/").to_string();
 
     // Initialise global logger
     let (_handle, _config, _is_backup) = module_log::open_module();
@@ -34,7 +28,7 @@ fn main() {
     let mut loading_env = module_dependencies_explorer::LoadingTracker::new();
 
     // Load ordered packages list
-    loading_env.load_dependencies("DI.cmof", "DI");
+    loading_env.load_dependencies_file("DI.cmof", "DI");
 
     // Delete output folder if is empty
     loading_env.close();

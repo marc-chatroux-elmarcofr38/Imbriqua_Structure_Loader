@@ -1,5 +1,13 @@
+<!--
+  
+From OMG website
+ - link : https://www.omg.org/spec/BPMN/20100501/BPMN20.cmof
+ - original file : BPMN20.cmof
+
+-->
+
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:cmof="http://schema.omg.org/spec/MOF/2.0/cmof.xml" xmlns="">
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:cmof="http://schema.omg.org/spec/MOF/2.0/cmof.xml">
   <cmof:Package xmi:id="_0" name="BPMN20" uri="http://www.omg.org/spec/BPMN/20100524/MODEL-XMI">
     <ownedMember xmi:type="cmof:Association" xmi:id="A_errorRefs_operation" name="A_errorRefs_operation" visibility="private" memberEnd="Operation-errorRefs A_errorRefs_operation-operation">
       <ownedEnd xmi:type="cmof:Property" xmi:id="A_errorRefs_operation-operation" name="operation" type="Operation" upper="*" lower="0" owningAssociation="A_errorRefs_operation" association="A_errorRefs_operation"/>
@@ -1367,11 +1375,3 @@
   <cmof:Tag xmi:id="_1" name="org.omg.xmi.nsPrefix" value="bpmn" element="_0"/>
   <cmof:Tag xmi:id="_2" name="org.omg.xmi.nsURI" value="http://www.omg.org/spec/BPMN/20100524/MODEL-XMI" element="_0"/>
 </xmi:XMI>
-
-<!--
-  
-From OMG website
- - link : https://www.omg.org/spec/BPMN/20100501/BPMN20.cmof
- - original file : BPMN20.cmof
-
--->

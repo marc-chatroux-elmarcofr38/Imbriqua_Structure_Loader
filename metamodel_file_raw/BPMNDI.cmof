@@ -7,7 +7,7 @@ From OMG website
 -->
 
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:cmof="http://schema.omg.org/spec/MOF/2.0/cmof.xml">
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:cmof="http://schema.omg.org/spec/MOF/2.0/cmof.xml" xmlns="">
   <cmof:Package xmi:id="_0" name="BPMNDI" uri="http://www.omg.org/spec/BPMN/20100524/DI-XMI">
     <packageImport xmi:type="cmof:PackageImport" xmi:id="_packageImport.0" importingNamespace="_0">
       <importedPackage xmi:type="cmof:Package" href="DI.cmof#_0"/>

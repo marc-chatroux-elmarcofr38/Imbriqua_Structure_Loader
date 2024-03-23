@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::fs::{create_dir, read_to_string, remove_dir, ReadDir};
 use chrono::Local;
 use log::{trace, info, error};
-use minidom::{element, Element};
+use minidom::Element;
 
 #[derive(Clone, Debug)]
 pub struct FileEnv {
@@ -77,30 +77,20 @@ impl LoadingTracker {
         result
     }
 
-    pub fn load_dependencies(&mut self, main_file : &str, main_package : &str) {
+    pub fn load_dependencies_file(&mut self, main_file : &str, main_package : &str) {
     
-        /*/
-        let (input_file, output_file) : (String, String) = package_env;
-    
-        info!("Starting of loading input file \"{}\" to file \"{}\"", &input_file, &output_file);
-    
-        let sub_run_result = sub_run();
-    
-        if sub_run_result.is_err() {
-            error!("{}", sub_run_result.err().unwrap());
-            error!("Panic : Error during loading of a input file");
-            panic!("Error during loading of a input file");
-        }
-    
-        info!("End of loading input file \"{}\" to file \"{}\"", &input_file, &output_file);
-        */
-
+        //
         let mut file_path = self.file_env.input_folder.clone();
         file_path.push_str(main_file);
-        let element = get_package_from_path(file_path.as_str(), main_package);
-        &self.add_dependencies(&element);
-        &self.add_element(element, main_file, main_package);
-        // let result = find_dependencies(element);
+
+        //
+        let package_element = get_package_from_path(file_path.as_str(), main_package);
+
+        // 
+        &self.add_dependencies(&package_element);
+        
+        // 
+        &self.add_package(package_element, main_file, main_package);
     }
 
     fn add_dependencies(&mut self, element : &Element) {
@@ -108,24 +98,33 @@ impl LoadingTracker {
         
         */
 
+        for child in element.children() {
+            if child.is("packageImport", "") {
+                trace!("need to load {}", child.children().next().unwrap().attr("href").unwrap())
+            }
+        }
     }
 
-    fn add_element(&mut self, element : Element, file : &str, package : &str) {
+    fn add_package(&mut self, element : Element, file : &str, package : &str) {
         /*
         
         */
 
+        //
         let package_object = LoadingPackage {
             filename : String::from(file),
-            id : String::from(file),
+            id : String::from(package),
             object : element,
         };
 
+        //
         let mut label = String::from(file);
         label.push_str(":");
         label.push_str(package);
 
-        &self.loaded_package.insert(label, package_object);
+
+        //
+        self.loaded_package.insert(label, package_object);
     }
 
     pub fn close(&self) {
@@ -304,42 +303,24 @@ fn get_package_from_path(file_path_str : &str, package_name : &str) -> Element {
     let file = check_read_file(file_path_str);
 
     // Parsing file content to Element object class
-    let element_object : Element = match file.parse() {
+    let element_file : Element = match file.parse() {
         Ok(result_object) => {
-            select_package_from_element(result_object, package_name)
+            result_object
         }
         Err(err_object) => {
             error!("ERROR_FILE05 - \"{}\" : {}", &file_path_str, err_object);
             panic!("PANIC_FILE05 - A file isn't parsable - \"{}\" : {}", &file_path_str, err_object);}
     };
 
-    // Result
-    element_object
-}
-
-fn select_package_from_element(element : Element, package_name : &str) -> &Element {
-
-    for child in element.children() {
-        if child.name() != "Package" {
-            continue;
-        } else if child.attr("name").is_none() {
-            continue;
-        } else if child.attr("name").unwrap() != package_name {
-            continue;            
+    // Find "package_name" child
+    for child in element_file.children() {
+        if child.is("Package", "http://schema.omg.org/spec/MOF/2.0/cmof.xml") {
+            if child.attr("name") == Some(package_name) {
+                return child.clone()
+            }
         }
-
-        return child
     };
 
-    panic!();
-}
-
-fn get_packageimport_child(element : &Element) {
-    /*
-    
-    */
-
-    for child in element.children() {
-
-    }
+    error!("ERROR_FILE06 - file name = \"{}\", package name = \"{}\"", &file_path_str, package_name);
+    panic!("PANIC_FILE06 - CMOF file don't contain the needed package - file name = \"{}\", package name = \"{}\"", &file_path_str, package_name);
 }

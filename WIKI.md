@@ -41,7 +41,12 @@
     * Panic action caused by __ERROR_FILE04__
     * See __ERROR_FILE04__ information
 
-* PANIC_FILE05- A file isn't parsable
+* PANIC_FILE05 - A file isn't parsable
+    * Context : __module_dependencies_explorer.rs/get_package_from_path()__
+    * Panic action caused by __ERROR_FILE05__
+    * See __ERROR_FILE05__ information
+
+* PANIC_FILE06 - CMOF file don't contain the needed package
     * Context : __module_dependencies_explorer.rs/get_package_from_path()__
     * Panic action caused by __ERROR_FILE05__
     * See __ERROR_FILE05__ information
@@ -79,6 +84,12 @@
     * Cause : see details in logs file to get :
         * Value of file path
         * error informations of Element parsing
+
+* ERROR_FILE06 - CMOF file don't contain the needed package
+    * Context : __module_dependencies_explorer.rs/get_package_from_path()__
+    * Cause : see details in logs file to get :
+        * file name
+        * readed package name
 
 * ERROR_FILE10 - Error during removing of a empty folder
     * Context : __module_dependencies_explorer.rs/check_remove_dir()__
