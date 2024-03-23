@@ -42,7 +42,7 @@
     * See __ERROR_FILE04__ information
 
 * PANIC_FILE05- A file isn't parsable
-    * Context : __module_dependencies_explorer.rs/get_element_from_path()__
+    * Context : __module_dependencies_explorer.rs/get_package_from_path()__
     * Panic action caused by __ERROR_FILE05__
     * See __ERROR_FILE05__ information
 
@@ -75,7 +75,7 @@
         * error informations of __std::fs::read_to_string()__
 
 * ERROR_FILE05 - A file isn't parsable
-    * Context : __module_dependencies_explorer.rs/get_element_from_path()__
+    * Context : __module_dependencies_explorer.rs/get_package_from_path()__
     * Cause : see details in logs file to get :
         * Value of file path
         * error informations of Element parsing
