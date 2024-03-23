@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::fs::{create_dir, read_to_string, remove_dir, ReadDir};
 use chrono::Local;
 use log::{trace, info, error};
-use minidom::Element;
+use minidom::{element, Element};
 
 #[derive(Clone, Debug)]
 pub struct FileEnv {
@@ -97,10 +97,35 @@ impl LoadingTracker {
 
         let mut file_path = self.file_env.input_folder.clone();
         file_path.push_str(main_file);
-        let element = get_element_from_path(file_path.as_str());
-
-
+        let element = get_package_from_path(file_path.as_str(), main_package);
+        &self.add_dependencies(&element);
+        &self.add_element(element, main_file, main_package);
         // let result = find_dependencies(element);
+    }
+
+    fn add_dependencies(&mut self, element : &Element) {
+        /*
+        
+        */
+
+    }
+
+    fn add_element(&mut self, element : Element, file : &str, package : &str) {
+        /*
+        
+        */
+
+        let package_object = LoadingPackage {
+            filename : String::from(file),
+            id : String::from(file),
+            object : element,
+        };
+
+        let mut label = String::from(file);
+        label.push_str(":");
+        label.push_str(package);
+
+        &self.loaded_package.insert(label, package_object);
     }
 
     pub fn close(&self) {
@@ -263,7 +288,7 @@ fn check_remove_dir(file_path_str : &str) -> bool {
         }
 }
 
-fn get_element_from_path(file_path_str : &str) -> Element {
+fn get_package_from_path(file_path_str : &str, package_name : &str) -> Element {
     /*
         Return the minidom element stored in the input file path
 
@@ -281,7 +306,7 @@ fn get_element_from_path(file_path_str : &str) -> Element {
     // Parsing file content to Element object class
     let element_object : Element = match file.parse() {
         Ok(result_object) => {
-            result_object
+            select_package_from_element(result_object, package_name)
         }
         Err(err_object) => {
             error!("ERROR_FILE05 - \"{}\" : {}", &file_path_str, err_object);
@@ -290,4 +315,31 @@ fn get_element_from_path(file_path_str : &str) -> Element {
 
     // Result
     element_object
+}
+
+fn select_package_from_element(element : Element, package_name : &str) -> &Element {
+
+    for child in element.children() {
+        if child.name() != "Package" {
+            continue;
+        } else if child.attr("name").is_none() {
+            continue;
+        } else if child.attr("name").unwrap() != package_name {
+            continue;            
+        }
+
+        return child
+    };
+
+    panic!();
+}
+
+fn get_packageimport_child(element : &Element) {
+    /*
+    
+    */
+
+    for child in element.children() {
+
+    }
 }

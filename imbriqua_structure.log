@@ -1,86 +1,213 @@
-2024-03-15T20:21:34.353764041+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-03-15T20:21:34.353865979+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
-2024-03-15T20:21:34.353887872+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
-2024-03-15T20:21:34.353917314+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
-2024-03-15T20:21:34.353943222+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
-2024-03-15T20:21:34.353960376+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
-2024-03-15T20:21:34.353979241+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
-2024-03-15T20:21:34.354016110+00:00 [src/module_dependencies_explorer.rs:152] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_21h21m34/" don't exist 
-2024-03-15T20:21:34.354085435+00:00 [src/module_dependencies_explorer.rs:163] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_21h21m34/" 
-2024-03-15T20:21:34.354106424+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_21h21m34/" exist 
-2024-03-15T20:21:34.354126260+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_21h21m34/" 
-2024-03-15T20:21:34.354148981+00:00 [src/module_dependencies_explorer.rs:213] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
-2024-03-15T20:21:34.354183266+00:00 [src/module_dependencies_explorer.rs:239] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
-2024-03-15T20:21:34.360829300+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_21h21m34/" exist 
-2024-03-15T20:21:34.361044843+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_21h21m34/" 
-2024-03-15T20:21:34.361178229+00:00 [src/module_dependencies_explorer.rs:58] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_21h21m34/" 
-2024-03-15T20:21:34.364446822+00:00 [src/module_dependencies_explorer.rs:63] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_21h21m34/" deleted (because is empty) 
-2024-03-15T21:26:45.125422470+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-03-15T21:26:45.125508513+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
-2024-03-15T21:26:45.125528451+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
-2024-03-15T21:26:45.125552989+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
-2024-03-15T21:26:45.125576555+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
-2024-03-15T21:26:45.125591819+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
-2024-03-15T21:26:45.125610106+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
-2024-03-15T21:26:45.125659681+00:00 [src/module_dependencies_explorer.rs:152] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h26m45/" don't exist 
-2024-03-15T21:26:45.125732599+00:00 [src/module_dependencies_explorer.rs:163] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_22h26m45/" 
-2024-03-15T21:26:45.125769396+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h26m45/" exist 
-2024-03-15T21:26:45.125789992+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h26m45/" 
-2024-03-15T21:26:45.125817364+00:00 [src/module_dependencies_explorer.rs:213] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
-2024-03-15T21:26:45.125853409+00:00 [src/module_dependencies_explorer.rs:239] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
-2024-03-15T21:26:45.132462275+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h26m45/" exist 
-2024-03-15T21:26:45.132656009+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h26m45/" 
-2024-03-15T21:26:45.132771277+00:00 [src/module_dependencies_explorer.rs:58] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_22h26m45/" 
-2024-03-15T21:26:45.133737160+00:00 [src/module_dependencies_explorer.rs:63] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_22h26m45/" deleted (because is empty) 
-2024-03-15T21:27:25.278624195+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-03-15T21:27:25.278752226+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
-2024-03-15T21:27:25.278776378+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
-2024-03-15T21:27:25.278806214+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
-2024-03-15T21:27:25.278833336+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
-2024-03-15T21:27:25.278859722+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
-2024-03-15T21:27:25.278882820+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
-2024-03-15T21:27:25.278922184+00:00 [src/module_dependencies_explorer.rs:152] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h27m25/" don't exist 
-2024-03-15T21:27:25.278999344+00:00 [src/module_dependencies_explorer.rs:163] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_22h27m25/" 
-2024-03-15T21:27:25.279021886+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h27m25/" exist 
-2024-03-15T21:27:25.279043120+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h27m25/" 
-2024-03-15T21:27:25.279067115+00:00 [src/module_dependencies_explorer.rs:213] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
-2024-03-15T21:27:25.279102918+00:00 [src/module_dependencies_explorer.rs:239] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
-2024-03-15T21:27:25.283665693+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h27m25/" exist 
-2024-03-15T21:27:25.284141391+00:00 [src/module_dependencies_explorer.rs:189] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h27m25/" 
-2024-03-15T21:27:25.284809594+00:00 [src/module_dependencies_explorer.rs:58] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_22h27m25/" 
-2024-03-15T21:27:25.288311892+00:00 [src/module_dependencies_explorer.rs:63] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_22h27m25/" deleted (because is empty) 
-2024-03-15T21:29:02.896019172+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-03-15T21:29:02.896119726+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
-2024-03-15T21:29:02.896142453+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
-2024-03-15T21:29:02.896172194+00:00 [src/module_dependencies_explorer.rs:178] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
-2024-03-15T21:29:02.896200168+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
-2024-03-15T21:29:02.896427175+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
-2024-03-15T21:29:02.896496988+00:00 [src/module_dependencies_explorer.rs:178] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
-2024-03-15T21:29:02.896538929+00:00 [src/module_dependencies_explorer.rs:141] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h29m02/" don't exist 
-2024-03-15T21:29:02.896618927+00:00 [src/module_dependencies_explorer.rs:152] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_22h29m02/" 
-2024-03-15T21:29:02.896641642+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h29m02/" exist 
-2024-03-15T21:29:02.896662682+00:00 [src/module_dependencies_explorer.rs:178] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h29m02/" 
-2024-03-15T21:29:02.896687023+00:00 [src/module_dependencies_explorer.rs:202] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
-2024-03-15T21:29:02.896731083+00:00 [src/module_dependencies_explorer.rs:228] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
-2024-03-15T21:29:02.901811832+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h29m02/" exist 
-2024-03-15T21:29:02.902036586+00:00 [src/module_dependencies_explorer.rs:178] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h29m02/" 
-2024-03-15T21:29:02.902113661+00:00 [src/module_dependencies_explorer.rs:260] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_22h29m02/" 
-2024-03-15T21:29:02.903331406+00:00 [src/module_dependencies_explorer.rs:265] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_22h29m02/" deleted (because is empty) 
-2024-03-15T21:29:02.903383425+00:00 [src/module_dependencies_explorer.rs:52] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_22h29m02/" deleted (because is empty) 
-2024-03-15T21:32:00.500044659+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-03-15T21:32:00.500164157+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
-2024-03-15T21:32:00.500187039+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
-2024-03-15T21:32:00.500252153+00:00 [src/module_dependencies_explorer.rs:178] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
-2024-03-15T21:32:00.500398168+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
-2024-03-15T21:32:00.500444745+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
-2024-03-15T21:32:00.500470902+00:00 [src/module_dependencies_explorer.rs:178] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
-2024-03-15T21:32:00.500518206+00:00 [src/module_dependencies_explorer.rs:141] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h32m00/" don't exist 
-2024-03-15T21:32:00.500604711+00:00 [src/module_dependencies_explorer.rs:152] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_22h32m00/" 
-2024-03-15T21:32:00.500629134+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h32m00/" exist 
-2024-03-15T21:32:00.500651841+00:00 [src/module_dependencies_explorer.rs:178] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h32m00/" 
-2024-03-15T21:32:00.500676618+00:00 [src/module_dependencies_explorer.rs:202] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
-2024-03-15T21:32:00.500717370+00:00 [src/module_dependencies_explorer.rs:228] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
-2024-03-15T21:32:00.508541174+00:00 [src/module_dependencies_explorer.rs:144] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h32m00/" exist 
-2024-03-15T21:32:00.508870247+00:00 [src/module_dependencies_explorer.rs:178] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h32m00/" 
-2024-03-15T21:32:00.509045164+00:00 [src/module_dependencies_explorer.rs:257] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_22h32m00/" 
-2024-03-15T21:32:00.512466897+00:00 [src/module_dependencies_explorer.rs:52] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_22h32m00/" deleted (because is empty) 
+2024-03-15T21:52:05.188909770+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T21:52:05.189013666+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T21:52:05.189042206+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T21:52:05.189069310+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T21:52:05.189094685+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T21:52:05.189117845+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T21:52:05.189137761+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T21:52:05.189178655+00:00 [src/module_dependencies_explorer.rs:137] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h52m05/" don't exist 
+2024-03-15T21:52:05.189277968+00:00 [src/module_dependencies_explorer.rs:148] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_22h52m05/" 
+2024-03-15T21:52:05.189302734+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h52m05/" exist 
+2024-03-15T21:52:05.189322804+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h52m05/" 
+2024-03-15T21:52:05.189345280+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T21:52:05.189381923+00:00 [src/module_dependencies_explorer.rs:224] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T21:52:05.194951841+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h52m05/" exist 
+2024-03-15T21:52:05.195292620+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h52m05/" 
+2024-03-15T21:52:05.195494854+00:00 [src/module_dependencies_explorer.rs:253] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_22h52m05/" 
+2024-03-15T21:52:05.197450570+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_22h52m05/" deleted (because is empty) 
+2024-03-15T21:54:07.206079856+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T21:54:07.206166895+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T21:54:07.206197418+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T21:54:07.206257039+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T21:54:07.206289914+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T21:54:07.206307612+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T21:54:07.206326953+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T21:54:07.206379401+00:00 [src/module_dependencies_explorer.rs:137] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h54m07/" don't exist 
+2024-03-15T21:54:07.206468608+00:00 [src/module_dependencies_explorer.rs:148] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_22h54m07/" 
+2024-03-15T21:54:07.206490445+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h54m07/" exist 
+2024-03-15T21:54:07.206512101+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h54m07/" 
+2024-03-15T21:54:07.206535489+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T21:54:07.206575578+00:00 [src/module_dependencies_explorer.rs:224] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T21:58:37.203090406+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T21:58:37.203304158+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T21:58:37.203330865+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T21:58:37.203365991+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T21:58:37.209420820+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T21:58:37.212004720+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T21:58:37.212327033+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T21:58:37.212556579+00:00 [src/module_dependencies_explorer.rs:137] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h58m37/" don't exist 
+2024-03-15T21:58:37.213010862+00:00 [src/module_dependencies_explorer.rs:148] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_22h58m37/" 
+2024-03-15T21:58:37.213198641+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h58m37/" exist 
+2024-03-15T21:58:37.213421190+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h58m37/" 
+2024-03-15T21:58:37.213613083+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T21:58:37.213817161+00:00 [src/module_dependencies_explorer.rs:224] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T21:58:38.684928262+00:00 [src/module_dependencies_explorer.rs:140] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h58m37/" exist 
+2024-03-15T21:58:38.685059074+00:00 [src/module_dependencies_explorer.rs:174] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h58m37/" 
+2024-03-15T21:58:38.685102255+00:00 [src/module_dependencies_explorer.rs:253] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_22h58m37/" 
+2024-03-15T21:58:38.685207776+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_22h58m37/" deleted (because is empty) 
+2024-03-15T21:59:18.557559032+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T21:59:18.557638277+00:00 [src/module_dependencies_explorer.rs:138] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T21:59:18.557659310+00:00 [src/module_dependencies_explorer.rs:138] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T21:59:18.557687337+00:00 [src/module_dependencies_explorer.rs:172] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T21:59:18.557713902+00:00 [src/module_dependencies_explorer.rs:138] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T21:59:18.557732247+00:00 [src/module_dependencies_explorer.rs:138] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T21:59:18.557752815+00:00 [src/module_dependencies_explorer.rs:172] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T21:59:18.557793246+00:00 [src/module_dependencies_explorer.rs:135] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h59m18/" don't exist 
+2024-03-15T21:59:18.557862961+00:00 [src/module_dependencies_explorer.rs:146] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_22h59m18/" 
+2024-03-15T21:59:18.557882692+00:00 [src/module_dependencies_explorer.rs:138] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h59m18/" exist 
+2024-03-15T21:59:18.557903394+00:00 [src/module_dependencies_explorer.rs:172] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h59m18/" 
+2024-03-15T21:59:18.557925456+00:00 [src/module_dependencies_explorer.rs:196] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T21:59:18.557965111+00:00 [src/module_dependencies_explorer.rs:222] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T21:59:18.564514152+00:00 [src/module_dependencies_explorer.rs:138] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_22h59m18/" exist 
+2024-03-15T21:59:18.564815448+00:00 [src/module_dependencies_explorer.rs:172] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_22h59m18/" 
+2024-03-15T21:59:18.565007189+00:00 [src/module_dependencies_explorer.rs:251] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_22h59m18/" 
+2024-03-15T21:59:18.578289441+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_22h59m18/" deleted (because is empty) 
+2024-03-15T22:05:15.135111459+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T22:05:15.136194574+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:05:15.136457135+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:05:15.136736006+00:00 [src/module_dependencies_explorer.rs:192] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T22:05:15.136941249+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:05:15.137118451+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:05:15.137321674+00:00 [src/module_dependencies_explorer.rs:192] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T22:05:15.137539790+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h05m15/" don't exist 
+2024-03-15T22:05:15.137980186+00:00 [src/module_dependencies_explorer.rs:166] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_23h05m15/" 
+2024-03-15T22:05:15.138159863+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h05m15/" exist 
+2024-03-15T22:05:15.138371498+00:00 [src/module_dependencies_explorer.rs:192] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h05m15/" 
+2024-03-15T22:05:15.138556068+00:00 [src/module_dependencies_explorer.rs:216] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T22:05:15.138750470+00:00 [src/module_dependencies_explorer.rs:242] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T22:05:15.143550905+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h05m15/" exist 
+2024-03-15T22:05:15.143922118+00:00 [src/module_dependencies_explorer.rs:192] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h05m15/" 
+2024-03-15T22:05:15.144139170+00:00 [src/module_dependencies_explorer.rs:271] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_23h05m15/" 
+2024-03-15T22:05:15.148341320+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_23h05m15/" deleted (because is empty) 
+2024-03-15T22:05:33.661992519+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T22:05:33.662077679+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:05:33.662100345+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:05:33.662144506+00:00 [src/module_dependencies_explorer.rs:192] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T22:05:33.662179341+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:05:33.662199036+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:05:33.662757661+00:00 [src/module_dependencies_explorer.rs:192] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T22:05:33.662849115+00:00 [src/module_dependencies_explorer.rs:155] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h05m33/" don't exist 
+2024-03-15T22:05:33.662930856+00:00 [src/module_dependencies_explorer.rs:166] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_23h05m33/" 
+2024-03-15T22:05:33.662955029+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h05m33/" exist 
+2024-03-15T22:05:33.662977559+00:00 [src/module_dependencies_explorer.rs:192] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h05m33/" 
+2024-03-15T22:05:33.663002656+00:00 [src/module_dependencies_explorer.rs:216] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T22:05:33.663052452+00:00 [src/module_dependencies_explorer.rs:242] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T22:07:13.594011534+00:00 [src/module_dependencies_explorer.rs:158] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h05m33/" exist 
+2024-03-15T22:07:13.594459444+00:00 [src/module_dependencies_explorer.rs:192] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h05m33/" 
+2024-03-15T22:07:13.594598483+00:00 [src/module_dependencies_explorer.rs:271] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_23h05m33/" 
+2024-03-15T22:07:13.596743447+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_23h05m33/" deleted (because is empty) 
+2024-03-15T22:07:21.045624159+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T22:07:21.045736235+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:07:21.045764546+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:07:21.045793380+00:00 [src/module_dependencies_explorer.rs:193] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T22:07:21.045821642+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:07:21.045838526+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:07:21.045857667+00:00 [src/module_dependencies_explorer.rs:193] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T22:07:21.045893418+00:00 [src/module_dependencies_explorer.rs:156] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h07m21/" don't exist 
+2024-03-15T22:07:21.045975802+00:00 [src/module_dependencies_explorer.rs:167] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_23h07m21/" 
+2024-03-15T22:07:21.045998304+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h07m21/" exist 
+2024-03-15T22:07:21.046018984+00:00 [src/module_dependencies_explorer.rs:193] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h07m21/" 
+2024-03-15T22:07:21.046042203+00:00 [src/module_dependencies_explorer.rs:217] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T22:07:21.046078499+00:00 [src/module_dependencies_explorer.rs:243] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T22:07:22.093815498+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h07m21/" exist 
+2024-03-15T22:07:22.093927601+00:00 [src/module_dependencies_explorer.rs:193] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h07m21/" 
+2024-03-15T22:07:22.093972021+00:00 [src/module_dependencies_explorer.rs:272] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_23h07m21/" 
+2024-03-15T22:07:22.095348026+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_23h07m21/" deleted (because is empty) 
+2024-03-15T22:07:26.189703624+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T22:07:26.189831296+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:07:26.189867006+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:07:26.189899133+00:00 [src/module_dependencies_explorer.rs:193] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T22:07:26.189928612+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:07:26.189947846+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:07:26.189968996+00:00 [src/module_dependencies_explorer.rs:193] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T22:07:26.190008421+00:00 [src/module_dependencies_explorer.rs:156] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h07m26/" don't exist 
+2024-03-15T22:07:26.190092353+00:00 [src/module_dependencies_explorer.rs:167] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_23h07m26/" 
+2024-03-15T22:07:26.190115917+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h07m26/" exist 
+2024-03-15T22:07:26.190138238+00:00 [src/module_dependencies_explorer.rs:193] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h07m26/" 
+2024-03-15T22:07:26.190165075+00:00 [src/module_dependencies_explorer.rs:217] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T22:07:26.190207116+00:00 [src/module_dependencies_explorer.rs:243] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T22:09:03.716495653+00:00 [src/module_dependencies_explorer.rs:159] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h07m26/" exist 
+2024-03-15T22:09:03.716728139+00:00 [src/module_dependencies_explorer.rs:193] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h07m26/" 
+2024-03-15T22:09:03.716818998+00:00 [src/module_dependencies_explorer.rs:272] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_23h07m26/" 
+2024-03-15T22:09:03.718720475+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_23h07m26/" deleted (because is empty) 
+2024-03-15T22:09:19.706400506+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T22:09:19.706504963+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:09:19.706536746+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:09:19.706638558+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T22:09:19.706689022+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:09:19.706710412+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:09:19.706731685+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T22:09:19.706771171+00:00 [src/module_dependencies_explorer.rs:161] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h09m19/" don't exist 
+2024-03-15T22:09:19.706884442+00:00 [src/module_dependencies_explorer.rs:172] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_23h09m19/" 
+2024-03-15T22:09:19.706909886+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h09m19/" exist 
+2024-03-15T22:09:19.706931382+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h09m19/" 
+2024-03-15T22:09:19.706955509+00:00 [src/module_dependencies_explorer.rs:222] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T22:09:19.706996766+00:00 [src/module_dependencies_explorer.rs:248] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T22:29:52.312651383+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T22:29:52.312768611+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:29:52.312801365+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:29:52.312834076+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T22:29:52.312870345+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:29:52.312890557+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:29:52.312911884+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T22:29:52.312951821+00:00 [src/module_dependencies_explorer.rs:161] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h29m52/" don't exist 
+2024-03-15T22:29:52.313027646+00:00 [src/module_dependencies_explorer.rs:172] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_23h29m52/" 
+2024-03-15T22:29:52.313050390+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h29m52/" exist 
+2024-03-15T22:29:52.313072605+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h29m52/" 
+2024-03-15T22:29:52.313096910+00:00 [src/module_dependencies_explorer.rs:222] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T22:29:52.313134802+00:00 [src/module_dependencies_explorer.rs:248] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T22:29:56.959997873+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h29m52/" exist 
+2024-03-15T22:29:56.960335775+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h29m52/" 
+2024-03-15T22:29:56.960466626+00:00 [src/module_dependencies_explorer.rs:277] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_23h29m52/" 
+2024-03-15T22:29:56.969365481+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_23h29m52/" deleted (because is empty) 
+2024-03-15T22:34:23.597526479+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T22:34:23.601320231+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:34:23.601538792+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:34:23.601722813+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T22:34:23.601873498+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:34:23.601980254+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:34:23.602103974+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T22:34:23.602255313+00:00 [src/module_dependencies_explorer.rs:161] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h34m23/" don't exist 
+2024-03-15T22:34:23.602542406+00:00 [src/module_dependencies_explorer.rs:172] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_23h34m23/" 
+2024-03-15T22:34:23.602672157+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h34m23/" exist 
+2024-03-15T22:34:23.602778103+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h34m23/" 
+2024-03-15T22:34:23.602911058+00:00 [src/module_dependencies_explorer.rs:222] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T22:34:23.603053518+00:00 [src/module_dependencies_explorer.rs:248] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T22:34:27.837026375+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h34m23/" exist 
+2024-03-15T22:34:27.837347241+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h34m23/" 
+2024-03-15T22:34:27.837465750+00:00 [src/module_dependencies_explorer.rs:277] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_23h34m23/" 
+2024-03-15T22:34:27.837759958+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_23h34m23/" deleted (because is empty) 
+2024-03-15T22:34:46.586199838+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T22:34:46.586316633+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:34:46.586348409+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:34:46.586378908+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T22:34:46.586412629+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:34:46.586432686+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:34:46.586454155+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T22:34:46.586502876+00:00 [src/module_dependencies_explorer.rs:161] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h34m46/" don't exist 
+2024-03-15T22:34:46.586576610+00:00 [src/module_dependencies_explorer.rs:172] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_23h34m46/" 
+2024-03-15T22:34:46.586598889+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h34m46/" exist 
+2024-03-15T22:34:46.586619937+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h34m46/" 
+2024-03-15T22:34:46.586643544+00:00 [src/module_dependencies_explorer.rs:222] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T22:34:46.586679049+00:00 [src/module_dependencies_explorer.rs:248] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T22:34:51.637393013+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h34m46/" exist 
+2024-03-15T22:34:51.637650132+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h34m46/" 
+2024-03-15T22:34:51.637762235+00:00 [src/module_dependencies_explorer.rs:277] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_23h34m46/" 
+2024-03-15T22:34:51.638138428+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_23h34m46/" deleted (because is empty) 
+2024-03-15T22:36:16.518170972+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-15T22:36:16.518330879+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:36:16.518353791+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/" exist 
+2024-03-15T22:36:16.518382880+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "metamodel_file/" 
+2024-03-15T22:36:16.518412799+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:36:16.518429018+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/" exist 
+2024-03-15T22:36:16.518448284+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/" 
+2024-03-15T22:36:16.518483259+00:00 [src/module_dependencies_explorer.rs:161] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h36m16/" don't exist 
+2024-03-15T22:36:16.518563368+00:00 [src/module_dependencies_explorer.rs:172] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder created "output_file/2024-03-15_23h36m16/" 
+2024-03-15T22:36:16.518585377+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h36m16/" exist 
+2024-03-15T22:36:16.518605239+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h36m16/" 
+2024-03-15T22:36:16.518630831+00:00 [src/module_dependencies_explorer.rs:222] TRACE imbriqua_structure::module_dependencies_explorer: Folder "metamodel_file/DI.cmof" exist 
+2024-03-15T22:36:16.518676138+00:00 [src/module_dependencies_explorer.rs:248] TRACE imbriqua_structure::module_dependencies_explorer: File is readable "metamodel_file/DI.cmof" 
+2024-03-15T22:36:18.896004146+00:00 [src/module_dependencies_explorer.rs:164] TRACE imbriqua_structure::module_dependencies_explorer: Folder "output_file/2024-03-15_23h36m16/" exist 
+2024-03-15T22:36:18.896312233+00:00 [src/module_dependencies_explorer.rs:198] TRACE imbriqua_structure::module_dependencies_explorer: Folder is readable "output_file/2024-03-15_23h36m16/" 
+2024-03-15T22:36:18.896440159+00:00 [src/module_dependencies_explorer.rs:277] TRACE imbriqua_structure::module_dependencies_explorer: Output subfolder is empty "output_file/2024-03-15_23h36m16/" 
+2024-03-15T22:36:18.900568872+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: folder "output_file/2024-03-15_23h36m16/" deleted (because is empty) 
