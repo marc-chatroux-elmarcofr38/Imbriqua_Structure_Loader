@@ -28,7 +28,7 @@ fn main() {
     let mut loading_env = module_dependencies_explorer::LoadingTracker::new();
 
     // Load ordered packages list
-    loading_env.load_dependencies_file("BPMN20.cmof", "BPMN20");
+    loading_env.import_dependencies_file("BPMNDI.cmof", "_0", "root");
 
     // Delete output folder if is empty
     loading_env.close();
