@@ -82,7 +82,7 @@
         * Value of folder path
         * error informations of __std::fs::create_dir()__
 
-* ERROR_FILE02 - A folder can't be readed
+* ERROR_FILE02 - A folder isn't readable
     * Context : __module_dependencies_explorer.rs/check_read_path()__
     * Cause : see details in logs file to get :
         * Value of folder path
@@ -93,7 +93,7 @@
     * Cause : see details in logs file to get :
         * Value of file path
 
-* ERROR_FILE04 - A file can't be readed
+* ERROR_FILE04 - A file isn't readable
     * Context : __module_dependencies_explorer.rs/check_read_file()__
     * Cause : see details in logs file to get :
         * Value of file path
@@ -119,31 +119,20 @@
         * dependencies package
 
 * ERROR_FILE08 - __packageImport__ element without __importedPackage__ child
-    * Context : __module_dependencies_explorer.rs/LoadingTracker::import_dependencies_file()__
+    * Context : __module_dependencies_explorer.rs/LoadingTracker::add_dependencies()__
     * Cause : see details in logs file to get :
         * name of package with error
 
 * ERROR_FILE09 - __importedPackage__ element without __href__ attribute
-    * Context : __module_dependencies_explorer.rs/LoadingTracker::import_dependencies_file()__
+    * Context : __module_dependencies_explorer.rs/LoadingTracker::add_dependencies()__
     * Cause : see details in logs file to get :
         * name of package with error
 
-
-
-* PANIC_FILE10 - __href__ attribute without '#' separator
-    * Context : __module_dependencies_explorer.rs/LoadingTracker::add_dependencies()__
-    * Panic action caused by __ERROR_FILE10__
-    * See __ERROR_FILE10__ information
-
 * ERROR_FILE10 - __href__ attribute without '#' separator
-    * Context : __module_dependencies_explorer.rs/LoadingTracker::import_dependencies_file()__
-    * Cause : a dependencies of the file was previously reserved (circular exploration)
+    * Context : __module_dependencies_explorer.rs/LoadingTracker::add_dependencies()__
     * Cause : see details in logs file to get :
-        * main package
-        * dependencies package
-
-
-
+        * name of package with error
+        * value of href
 
 * ERROR_FILE50 - Error during removing of a empty folder
     * Context : __module_dependencies_explorer.rs/check_remove_dir()__

@@ -106,16 +106,16 @@ impl LoadingTracker {
         label.push_str(":");
         label.push_str(package_id);
 
-                                            // Check if the loading is necessary
-                                            if self.is_package_already_loaded(label.clone()) && self.loaded_package.get_key_value(&label.clone()).unwrap().1.state == LoadingState::Empty {
-                                                error!("Loading \"{a}\" : NOPE : already planified (cause : circular loading) ({a} importing {b})", a=label.clone(), b=parent_label);
-                                                panic!("");
-                                            }else if self.is_package_already_loaded(label.clone()) {
-                                                info!("Loading \"{}\" : NOPE : already loaded", label.clone());
-                                                return
-                                            } else {
-                                                info!("Loading \"{}\" : START", label.clone());
-                                            }
+        // Check if the loading is necessary
+        if self.is_package_already_loaded(label.clone()) && self.loaded_package.get_key_value(&label.clone()).unwrap().1.state == LoadingState::Empty {
+            error!("ERROR_FILE07 - Unloaded dependencies : suspicious of circular dependencies ({a} importing {b})", a=label.clone(), b=parent_label);
+            panic!("PANIC_FILE07 - Unloaded dependencies : suspicious of circular dependencies ({a} importing {b})", a=label.clone(), b=parent_label);
+        }else if self.is_package_already_loaded(label.clone()) {
+            info!("Loading \"{}\" : NOPE : already loaded", label.clone());
+            return
+        } else {
+            info!("Loading \"{}\" : START", label.clone());
+        }
 
         // Add empty element entry in loaded_package (prevent circular loading)
         self.add_empty_package(main_file, package_id, label.clone());
@@ -185,7 +185,7 @@ impl LoadingTracker {
                     },
                     None => {
                         error!("ERROR_FILE08 - packageImport element without importedPackage child : package = \"{}\"", label);
-                        panic!("ERROR_FILE08 - packageImport element without importedPackage child : package = \"{}\"", label);
+                        panic!("PANIC_FILE08 - packageImport element without importedPackage child : package = \"{}\"", label);
                     },
                 };
 
@@ -196,7 +196,7 @@ impl LoadingTracker {
                     },
                     None => {
                         error!("ERROR_FILE09 - importedPackage element without href attribute : package = \"{}\"", label);
-                        panic!("ERROR_FILE09 - importedPackage element without href attribute : package = \"{}\"", label);
+                        panic!("PANIC_FILE09 - importedPackage element without href attribute : package = \"{}\"", label);
                     },
                 };
 
@@ -212,7 +212,7 @@ impl LoadingTracker {
                     }
                     None => {
                         error!("ERROR_FILE10 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
-                        panic!("ERROR_FILE10 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
+                        panic!("PANIC_FILE10 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
                     }
                 }
             };
@@ -220,32 +220,31 @@ impl LoadingTracker {
     }
 
     fn add_package(&mut self, element : Element, file : &str, package : &str, label : String) {
-                                            /*
-                                                Save complete LoadingPackage object in loaded_package
-                                        
-                                                Input :
-                                                - element (minidom::element::Element) : Element to save
-                                                - file (&str) : file to load in self.input_folder
-                                                - package (&str) : package name wanted in main_file
-                                        
-                                                Error :
-                                                - none
-                                            */
+        /*
+            Save complete LoadingPackage object in loaded_package
+    
+            Input :
+            - element (minidom::element::Element) : Element to save
+            - file (&str) : file to load in self.input_folder
+            - package (&str) : package name wanted in main_file
+    
+            Error :
+            - none
+        */
 
-                                            // Create full LoadingPackage
-                                            let package_object = LoadingPackage {
-                                                filename : String::from(file),
-                                                id : String::from(package),
-                                                object : element,
-                                                state : LoadingState::Loaded,
-                                            };
+        // Create full LoadingPackage
+        let package_object = LoadingPackage {
+            filename : String::from(file),
+            id : String::from(package),
+            object : element,
+            state : LoadingState::Loaded,
+        };
 
-                                            // Save object in hashmap attribute
-                                            self.loaded_package.insert(label.clone(), package_object);
+        // Save object in hashmap attribute
+        self.loaded_package.insert(label.clone(), package_object);
 
-                                            //
-                                            debug!("                    {} - {}", label.clone(), self.importing_order.len() + 1);
-                                            self.importing_order.insert(label, self.importing_order.len() + 1);
+        // Define treatment order
+        self.importing_order.insert(label, self.importing_order.len() + 1);
     }
 
     fn is_package_already_loaded(&self, label : String) -> bool {
@@ -298,7 +297,7 @@ fn check_folder_exist(file_path_str : &str) -> () {
             trace!("CheckFile : Output subfolder created \"{}\"", &file_path_str);
         }
         Err(err_object) => {
-            error!("ERROR_FILE01 - \"{}\" : {}", &file_path_str, err_object);
+            error!("ERROR_FILE01 - A folder can't be created - \"{}\" : {}", &file_path_str, err_object);
             panic!("PANIC_FILE01 - A folder can't be created - \"{}\" : {}", &file_path_str, err_object);
         }
     };
@@ -325,7 +324,7 @@ fn check_read_path(file_path_str : &str) -> ReadDir{
             result_object
         }
         Err(err_object) => {
-            error!("ERROR_FILE02 - \"{}\" : {}", &file_path_str, err_object);
+            error!("ERROR_FILE02 - A folder isn't readable - \"{}\" : {}", &file_path_str, err_object);
             panic!("PANIC_FILE02 - A folder isn't readable - \"{}\" : {}", &file_path_str, err_object);
         }
     }
@@ -348,7 +347,7 @@ fn check_file_exist(file_path_str : &str) -> () {
             trace!("CheckFile : Folder \"{}\" exist", &file_path_str);
         },
         false => {
-            error!("ERROR_FILE03 - \"{}\" don't exist", &file_path_str);
+            error!("ERROR_FILE03 - A file don't exist - \"{}\"", &file_path_str);
             panic!("PANIC_FILE03 - A file don't exist - \"{}\"", &file_path_str);
         },
     };
@@ -375,7 +374,7 @@ fn check_read_file(file_path_str : &str) -> String {
             result_object
         }
         Err(err_object) => {
-            error!("ERROR_FILE04 - \"{}\" : {}", &file_path_str, err_object);
+            error!("ERROR_FILE04 - A file isn't readable - \"{}\" : {}", &file_path_str, err_object);
             panic!("PANIC_FILE04 - A file isn't readable - \"{}\" : {}", &file_path_str, err_object);
         }
     }
