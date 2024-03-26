@@ -5,9 +5,10 @@ use std::collections::HashMap;
 use std::fs::{create_dir, read_to_string, remove_dir, ReadDir};
 use chrono::Local;
 use log::{debug, error, info, trace, warn};
+use std::fmt;
 use minidom::Element;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct FileEnv {
     pub input_folder : String,
     output_folder : String,
@@ -53,13 +54,14 @@ impl FileEnv {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 enum LoadingState {
     Empty,      // No Element
     Loaded,     // With Element
     Finished,   // Element converted
 }
 
+#[derive(Clone, PartialEq, Debug)]
 struct LoadingPackage {
     filename : String,
     id : String,
@@ -67,6 +69,7 @@ struct LoadingPackage {
     state : LoadingState,
 }
 
+#[derive(Clone, PartialEq, Debug)]
 pub struct LoadingTracker {
     file_env : FileEnv,
     loaded_package : HashMap<String, LoadingPackage>,
@@ -103,7 +106,7 @@ impl LoadingTracker {
 
         // Define hashmap key
         let mut label = String::from(main_file);
-        label.push_str(":");
+        label.push_str("#");
         label.push_str(package_id);
 
         // Check if the loading is necessary
@@ -203,7 +206,7 @@ impl LoadingTracker {
                 //
                 match package_to_import.find('#') {
                     Some(split_index) => {
-                        warn!("Loading \"{}\" : need to load \"{}\"", label.clone(), package_to_import);
+                        info!("Loading \"{}\" : need to load \"{}\"", label.clone(), package_to_import);
                         let package_file : String = package_to_import[..split_index].to_string();
                         let split_index = split_index + 1;
                         let package_id : String = package_to_import[split_index..].to_string();
@@ -255,6 +258,26 @@ impl LoadingTracker {
 
     pub fn close(&self) {
         self.file_env.delete_if_empty();
+    }
+}
+
+impl fmt::Display for LoadingTracker {
+    fn fmt(&self, f : &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut result : String = String::new();
+        result.push_str("---- LoadingTracker ---");
+        result.push_str("\n");
+        result.push_str("\n file_env : ");
+        result.push_str(format!("{:#?}", &self.file_env).as_str());
+        result.push_str("\n importing_order : ");
+        result.push_str(format!("{:#?}", &self.importing_order).as_str());
+        result.push_str("\n");
+        write!(f, "{}", result.as_str())
+    }
+}
+
+impl LoadingTracker {
+    pub fn prebuild(&self) {
+        
     }
 }
 

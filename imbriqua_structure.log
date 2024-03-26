@@ -1,40 +1,110 @@
-2024-03-24T22:35:32.036682014+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
-2024-03-24T22:35:32.036890046+00:00 [src/module_dependencies_explorer.rs:289] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
-2024-03-24T22:35:32.037125223+00:00 [src/module_dependencies_explorer.rs:289] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
-2024-03-24T22:35:32.037250736+00:00 [src/module_dependencies_explorer.rs:323] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "metamodel_file/" 
-2024-03-24T22:35:32.037363380+00:00 [src/module_dependencies_explorer.rs:289] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
-2024-03-24T22:35:32.037496117+00:00 [src/module_dependencies_explorer.rs:289] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
-2024-03-24T22:35:32.037606220+00:00 [src/module_dependencies_explorer.rs:323] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/" 
-2024-03-24T22:35:32.037806592+00:00 [src/module_dependencies_explorer.rs:286] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-03-24_23h35m32/" don't exist 
-2024-03-24T22:35:32.038256601+00:00 [src/module_dependencies_explorer.rs:297] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder created "output_file/2024-03-24_23h35m32/" 
-2024-03-24T22:35:32.038436447+00:00 [src/module_dependencies_explorer.rs:289] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-03-24_23h35m32/" exist 
-2024-03-24T22:35:32.038639458+00:00 [src/module_dependencies_explorer.rs:323] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-03-24_23h35m32/" 
-2024-03-24T22:35:32.038837296+00:00 [src/module_dependencies_explorer.rs:117] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof:_0" : START 
-2024-03-24T22:35:32.039055818+00:00 [src/module_dependencies_explorer.rs:347] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/BPMNDI.cmof" exist 
-2024-03-24T22:35:32.039252179+00:00 [src/module_dependencies_explorer.rs:373] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/BPMNDI.cmof" 
-2024-03-24T22:35:32.044519587+00:00 [src/module_dependencies_explorer.rs:434] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/BPMNDI.cmof" 
-2024-03-24T22:35:32.045390498+00:00 [src/module_dependencies_explorer.rs:206] WARN imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof:_0" : need to load "DI.cmof#_0" 
-2024-03-24T22:35:32.045746579+00:00 [src/module_dependencies_explorer.rs:117] INFO imbriqua_structure::module_dependencies_explorer: Loading "DI.cmof:_0" : START 
-2024-03-24T22:35:32.045870622+00:00 [src/module_dependencies_explorer.rs:347] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/DI.cmof" exist 
-2024-03-24T22:35:32.045991199+00:00 [src/module_dependencies_explorer.rs:373] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/DI.cmof" 
-2024-03-24T22:35:32.049611986+00:00 [src/module_dependencies_explorer.rs:434] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/DI.cmof" 
-2024-03-24T22:35:32.054096813+00:00 [src/module_dependencies_explorer.rs:206] WARN imbriqua_structure::module_dependencies_explorer: Loading "DI.cmof:_0" : need to load "DC.cmof#_0" 
-2024-03-24T22:35:32.054661472+00:00 [src/module_dependencies_explorer.rs:117] INFO imbriqua_structure::module_dependencies_explorer: Loading "DC.cmof:_0" : START 
-2024-03-24T22:35:32.054825768+00:00 [src/module_dependencies_explorer.rs:347] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/DC.cmof" exist 
-2024-03-24T22:35:32.054970258+00:00 [src/module_dependencies_explorer.rs:373] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/DC.cmof" 
-2024-03-24T22:35:32.056415914+00:00 [src/module_dependencies_explorer.rs:434] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/DC.cmof" 
-2024-03-24T22:35:32.058156993+00:00 [src/module_dependencies_explorer.rs:137] INFO imbriqua_structure::module_dependencies_explorer: Loading "DC.cmof:_0" : Finished 
-2024-03-24T22:35:32.059163707+00:00 [src/module_dependencies_explorer.rs:137] INFO imbriqua_structure::module_dependencies_explorer: Loading "DI.cmof:_0" : Finished 
-2024-03-24T22:35:32.059720495+00:00 [src/module_dependencies_explorer.rs:206] WARN imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof:_0" : need to load "DC.cmof#_0" 
-2024-03-24T22:35:32.061052700+00:00 [src/module_dependencies_explorer.rs:114] INFO imbriqua_structure::module_dependencies_explorer: Loading "DC.cmof:_0" : NOPE : already loaded 
-2024-03-24T22:35:32.061702706+00:00 [src/module_dependencies_explorer.rs:206] WARN imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof:_0" : need to load "BPMN20.cmof#_0" 
-2024-03-24T22:35:32.063005642+00:00 [src/module_dependencies_explorer.rs:117] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMN20.cmof:_0" : START 
-2024-03-24T22:35:32.063227413+00:00 [src/module_dependencies_explorer.rs:347] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/BPMN20.cmof" exist 
-2024-03-24T22:35:32.063594995+00:00 [src/module_dependencies_explorer.rs:373] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/BPMN20.cmof" 
-2024-03-24T22:35:32.136038982+00:00 [src/module_dependencies_explorer.rs:434] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/BPMN20.cmof" 
-2024-03-24T22:35:32.144727892+00:00 [src/module_dependencies_explorer.rs:137] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMN20.cmof:_0" : Finished 
-2024-03-24T22:35:32.147055865+00:00 [src/module_dependencies_explorer.rs:137] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof:_0" : Finished 
-2024-03-24T22:35:32.147478389+00:00 [src/module_dependencies_explorer.rs:289] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-03-24_23h35m32/" exist 
-2024-03-24T22:35:32.147700218+00:00 [src/module_dependencies_explorer.rs:323] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-03-24_23h35m32/" 
-2024-03-24T22:35:32.147929690+00:00 [src/module_dependencies_explorer.rs:402] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder is empty "output_file/2024-03-24_23h35m32/" 
-2024-03-24T22:35:32.153028326+00:00 [src/module_dependencies_explorer.rs:51] INFO imbriqua_structure::module_dependencies_explorer: FileEnv : folder "output_file/2024-03-24_23h35m32/" deleted (because is empty) 
+2024-03-26T21:52:11.296233840+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-26T21:52:11.296430318+00:00 [src/module_dependencies_explorer.rs:306] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
+2024-03-26T21:52:11.296464454+00:00 [src/module_dependencies_explorer.rs:306] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
+2024-03-26T21:52:11.296494452+00:00 [src/module_dependencies_explorer.rs:340] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "metamodel_file/" 
+2024-03-26T21:52:11.296519660+00:00 [src/module_dependencies_explorer.rs:306] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
+2024-03-26T21:52:11.296538231+00:00 [src/module_dependencies_explorer.rs:306] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
+2024-03-26T21:52:11.296557756+00:00 [src/module_dependencies_explorer.rs:340] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/" 
+2024-03-26T21:52:11.296597587+00:00 [src/module_dependencies_explorer.rs:303] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-03-26_22h52m11/" don't exist 
+2024-03-26T21:52:11.296683551+00:00 [src/module_dependencies_explorer.rs:314] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder created "output_file/2024-03-26_22h52m11/" 
+2024-03-26T21:52:11.296706325+00:00 [src/module_dependencies_explorer.rs:306] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-03-26_22h52m11/" exist 
+2024-03-26T21:52:11.296727252+00:00 [src/module_dependencies_explorer.rs:340] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-03-26_22h52m11/" 
+2024-03-26T21:52:11.296762263+00:00 [src/module_dependencies_explorer.rs:120] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof#_0" : START 
+2024-03-26T21:52:11.296803198+00:00 [src/module_dependencies_explorer.rs:364] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/BPMNDI.cmof" exist 
+2024-03-26T21:52:11.296844407+00:00 [src/module_dependencies_explorer.rs:390] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/BPMNDI.cmof" 
+2024-03-26T21:52:11.301987713+00:00 [src/module_dependencies_explorer.rs:451] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/BPMNDI.cmof" 
+2024-03-26T21:52:11.302891197+00:00 [src/module_dependencies_explorer.rs:209] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof#_0" : need to load "DI.cmof#_0" 
+2024-03-26T21:52:11.303069551+00:00 [src/module_dependencies_explorer.rs:120] INFO imbriqua_structure::module_dependencies_explorer: Loading "DI.cmof#_0" : START 
+2024-03-26T21:52:11.303179806+00:00 [src/module_dependencies_explorer.rs:364] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/DI.cmof" exist 
+2024-03-26T21:52:11.303323611+00:00 [src/module_dependencies_explorer.rs:390] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/DI.cmof" 
+2024-03-26T21:52:11.307234167+00:00 [src/module_dependencies_explorer.rs:451] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/DI.cmof" 
+2024-03-26T21:52:11.308088934+00:00 [src/module_dependencies_explorer.rs:209] INFO imbriqua_structure::module_dependencies_explorer: Loading "DI.cmof#_0" : need to load "DC.cmof#_0" 
+2024-03-26T21:52:11.308270551+00:00 [src/module_dependencies_explorer.rs:120] INFO imbriqua_structure::module_dependencies_explorer: Loading "DC.cmof#_0" : START 
+2024-03-26T21:52:11.308481147+00:00 [src/module_dependencies_explorer.rs:364] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/DC.cmof" exist 
+2024-03-26T21:52:11.308625821+00:00 [src/module_dependencies_explorer.rs:390] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/DC.cmof" 
+2024-03-26T21:52:11.310002105+00:00 [src/module_dependencies_explorer.rs:451] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/DC.cmof" 
+2024-03-26T21:52:11.310387490+00:00 [src/module_dependencies_explorer.rs:140] INFO imbriqua_structure::module_dependencies_explorer: Loading "DC.cmof#_0" : Finished 
+2024-03-26T21:52:11.310759150+00:00 [src/module_dependencies_explorer.rs:140] INFO imbriqua_structure::module_dependencies_explorer: Loading "DI.cmof#_0" : Finished 
+2024-03-26T21:52:11.310975170+00:00 [src/module_dependencies_explorer.rs:209] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof#_0" : need to load "DC.cmof#_0" 
+2024-03-26T21:52:11.311083055+00:00 [src/module_dependencies_explorer.rs:117] INFO imbriqua_structure::module_dependencies_explorer: Loading "DC.cmof#_0" : NOPE : already loaded 
+2024-03-26T21:52:11.311181956+00:00 [src/module_dependencies_explorer.rs:209] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof#_0" : need to load "BPMN20.cmof#_0" 
+2024-03-26T21:52:11.311310946+00:00 [src/module_dependencies_explorer.rs:120] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMN20.cmof#_0" : START 
+2024-03-26T21:52:11.311420565+00:00 [src/module_dependencies_explorer.rs:364] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/BPMN20.cmof" exist 
+2024-03-26T21:52:11.311697737+00:00 [src/module_dependencies_explorer.rs:390] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/BPMN20.cmof" 
+2024-03-26T21:52:11.400286532+00:00 [src/module_dependencies_explorer.rs:451] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/BPMN20.cmof" 
+2024-03-26T21:52:11.408456877+00:00 [src/module_dependencies_explorer.rs:140] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMN20.cmof#_0" : Finished 
+2024-03-26T21:52:11.410284385+00:00 [src/module_dependencies_explorer.rs:140] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof#_0" : Finished 
+2024-03-26T21:52:11.410539087+00:00 [src/main.rs:34] INFO imbriqua_structure:  
+2024-03-26T21:52:11.410770275+00:00 [src/main.rs:35] INFO imbriqua_structure: ---- LoadingTracker ---
+
+ file_env : FileEnv {
+    input_folder: "metamodel_file/",
+    output_folder: "output_file/",
+    output_subfolder: "output_file/2024-03-26_22h52m11/",
+}
+ importing_order : {
+    "BPMN20.cmof#_0": 3,
+    "DC.cmof#_0": 1,
+    "DI.cmof#_0": 2,
+    "BPMNDI.cmof#_0": 4,
+}
+ 
+2024-03-26T21:52:11.410879100+00:00 [src/main.rs:36] INFO imbriqua_structure:  
+2024-03-26T21:52:11.410975542+00:00 [src/module_dependencies_explorer.rs:306] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-03-26_22h52m11/" exist 
+2024-03-26T21:52:11.411092616+00:00 [src/module_dependencies_explorer.rs:340] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-03-26_22h52m11/" 
+2024-03-26T21:52:11.411358986+00:00 [src/module_dependencies_explorer.rs:419] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder is empty "output_file/2024-03-26_22h52m11/" 
+2024-03-26T21:52:11.412564954+00:00 [src/module_dependencies_explorer.rs:52] INFO imbriqua_structure::module_dependencies_explorer: FileEnv : folder "output_file/2024-03-26_22h52m11/" deleted (because is empty) 
+2024-03-26T22:07:19.572153711+00:00 [src/module_log.rs:19] INFO imbriqua_structure::module_log: Logger init success : use of "config_log.yml" 
+2024-03-26T22:07:19.572370859+00:00 [src/module_dependencies_explorer.rs:312] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
+2024-03-26T22:07:19.572416341+00:00 [src/module_dependencies_explorer.rs:312] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
+2024-03-26T22:07:19.572449087+00:00 [src/module_dependencies_explorer.rs:346] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "metamodel_file/" 
+2024-03-26T22:07:19.572475616+00:00 [src/module_dependencies_explorer.rs:312] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
+2024-03-26T22:07:19.572494030+00:00 [src/module_dependencies_explorer.rs:312] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
+2024-03-26T22:07:19.572514574+00:00 [src/module_dependencies_explorer.rs:346] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/" 
+2024-03-26T22:07:19.572553980+00:00 [src/module_dependencies_explorer.rs:309] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-03-26_23h07m19/" don't exist 
+2024-03-26T22:07:19.572647298+00:00 [src/module_dependencies_explorer.rs:320] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder created "output_file/2024-03-26_23h07m19/" 
+2024-03-26T22:07:19.572671510+00:00 [src/module_dependencies_explorer.rs:312] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-03-26_23h07m19/" exist 
+2024-03-26T22:07:19.572693827+00:00 [src/module_dependencies_explorer.rs:346] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-03-26_23h07m19/" 
+2024-03-26T22:07:19.573255351+00:00 [src/module_dependencies_explorer.rs:120] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof#_0" : START 
+2024-03-26T22:07:19.573352686+00:00 [src/module_dependencies_explorer.rs:370] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/BPMNDI.cmof" exist 
+2024-03-26T22:07:19.573406124+00:00 [src/module_dependencies_explorer.rs:396] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/BPMNDI.cmof" 
+2024-03-26T22:07:19.577968313+00:00 [src/module_dependencies_explorer.rs:457] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/BPMNDI.cmof" 
+2024-03-26T22:07:19.578588745+00:00 [src/module_dependencies_explorer.rs:209] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof#_0" : need to load "DI.cmof#_0" 
+2024-03-26T22:07:19.578771128+00:00 [src/module_dependencies_explorer.rs:120] INFO imbriqua_structure::module_dependencies_explorer: Loading "DI.cmof#_0" : START 
+2024-03-26T22:07:19.578891172+00:00 [src/module_dependencies_explorer.rs:370] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/DI.cmof" exist 
+2024-03-26T22:07:19.579016155+00:00 [src/module_dependencies_explorer.rs:396] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/DI.cmof" 
+2024-03-26T22:07:19.582964542+00:00 [src/module_dependencies_explorer.rs:457] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/DI.cmof" 
+2024-03-26T22:07:19.583558565+00:00 [src/module_dependencies_explorer.rs:209] INFO imbriqua_structure::module_dependencies_explorer: Loading "DI.cmof#_0" : need to load "DC.cmof#_0" 
+2024-03-26T22:07:19.584492903+00:00 [src/module_dependencies_explorer.rs:120] INFO imbriqua_structure::module_dependencies_explorer: Loading "DC.cmof#_0" : START 
+2024-03-26T22:07:19.584874526+00:00 [src/module_dependencies_explorer.rs:370] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/DC.cmof" exist 
+2024-03-26T22:07:19.585123364+00:00 [src/module_dependencies_explorer.rs:396] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/DC.cmof" 
+2024-03-26T22:07:19.587166075+00:00 [src/module_dependencies_explorer.rs:457] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/DC.cmof" 
+2024-03-26T22:07:19.587563544+00:00 [src/module_dependencies_explorer.rs:140] INFO imbriqua_structure::module_dependencies_explorer: Loading "DC.cmof#_0" : Finished 
+2024-03-26T22:07:19.587930799+00:00 [src/module_dependencies_explorer.rs:140] INFO imbriqua_structure::module_dependencies_explorer: Loading "DI.cmof#_0" : Finished 
+2024-03-26T22:07:19.588147580+00:00 [src/module_dependencies_explorer.rs:209] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof#_0" : need to load "DC.cmof#_0" 
+2024-03-26T22:07:19.588293676+00:00 [src/module_dependencies_explorer.rs:117] INFO imbriqua_structure::module_dependencies_explorer: Loading "DC.cmof#_0" : NOPE : already loaded 
+2024-03-26T22:07:19.588414501+00:00 [src/module_dependencies_explorer.rs:209] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof#_0" : need to load "BPMN20.cmof#_0" 
+2024-03-26T22:07:19.588527934+00:00 [src/module_dependencies_explorer.rs:120] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMN20.cmof#_0" : START 
+2024-03-26T22:07:19.589301918+00:00 [src/module_dependencies_explorer.rs:370] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/BPMN20.cmof" exist 
+2024-03-26T22:07:19.589638836+00:00 [src/module_dependencies_explorer.rs:396] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : File is readable "metamodel_file/BPMN20.cmof" 
+2024-03-26T22:07:19.650111680+00:00 [src/module_dependencies_explorer.rs:457] TRACE imbriqua_structure::module_dependencies_explorer: FileEnv : Reading Element from "metamodel_file/BPMN20.cmof" 
+2024-03-26T22:07:19.660387962+00:00 [src/module_dependencies_explorer.rs:140] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMN20.cmof#_0" : Finished 
+2024-03-26T22:07:19.662307155+00:00 [src/module_dependencies_explorer.rs:140] INFO imbriqua_structure::module_dependencies_explorer: Loading "BPMNDI.cmof#_0" : Finished 
+2024-03-26T22:07:19.662609769+00:00 [src/main.rs:34] INFO imbriqua_structure: ---- LoadingTracker ---
+
+ file_env : FileEnv {
+    input_folder: "metamodel_file/",
+    output_folder: "output_file/",
+    output_subfolder: "output_file/2024-03-26_23h07m19/",
+}
+ importing_order : {
+    "BPMN20.cmof#_0": 3,
+    "DC.cmof#_0": 1,
+    "BPMNDI.cmof#_0": 4,
+    "DI.cmof#_0": 2,
+}
+ 
+2024-03-26T22:07:19.662732049+00:00 [src/module_dependencies_explorer.rs:312] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-03-26_23h07m19/" exist 
+2024-03-26T22:07:19.662854494+00:00 [src/module_dependencies_explorer.rs:346] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-03-26_23h07m19/" 
+2024-03-26T22:07:19.662971175+00:00 [src/module_dependencies_explorer.rs:425] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder is empty "output_file/2024-03-26_23h07m19/" 
+2024-03-26T22:07:19.664126868+00:00 [src/module_dependencies_explorer.rs:52] INFO imbriqua_structure::module_dependencies_explorer: FileEnv : folder "output_file/2024-03-26_23h07m19/" deleted (because is empty) 

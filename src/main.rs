@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 mod module_log;
 mod module_dependencies_explorer;
+use log::info;
 
 fn main() {
 
@@ -29,6 +30,10 @@ fn main() {
 
     // Load ordered packages list
     loading_env.import_dependencies_file("BPMNDI.cmof", "_0", "root");
+
+    info!("{}", loading_env);
+
+    loading_env.prebuild();
 
     // Delete output folder if is empty
     loading_env.close();
