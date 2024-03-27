@@ -2,10 +2,11 @@ extern crate minidom;
 
 use std::path::Path;
 use std::collections::HashMap;
-use std::fs::{create_dir, read_to_string, remove_dir, ReadDir};
-use chrono::Local;
-use log::{debug, error, info, trace, warn};
+use std::fs::{create_dir, read_to_string, remove_dir, ReadDir, File};
+use std::io::Write;
 use std::fmt;
+use chrono::Local;
+use log::{error, info, trace};
 use minidom::Element;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -15,6 +16,11 @@ pub struct FileEnv {
     pub output_subfolder : String,
 }
 
+/// Example
+/// ```rust
+/// let fourtytwo = "42".parse::<u32>()?;
+/// println!("{} + 10 = {}", fourtytwo, fourtytwo+10);
+/// ```
 impl FileEnv {
     pub fn new() -> Self {
 
@@ -58,7 +64,7 @@ impl FileEnv {
 enum LoadingState {
     Empty,      // No Element
     Loaded,     // With Element
-    Finished,   // Element converted
+    _Finished,   // Element converted
 }
 
 #[derive(Clone, PartialEq, Debug)]
@@ -69,9 +75,18 @@ struct LoadingPackage {
     state : LoadingState,
 }
 
+impl LoadingPackage {
+    pub fn get_lowercase_name(&self) -> String {
+        let str_result = self.filename.as_str().to_ascii_lowercase();
+        let str_result = str_result.replace(".", "_");
+        let str_result = str_result.replace("#", "_");
+        String::from("cmof_") + str_result.as_str() + self.id.as_str().to_ascii_lowercase().as_str()
+    }
+}
+
 #[derive(Clone, PartialEq, Debug)]
 pub struct LoadingTracker {
-    file_env : FileEnv,
+    pub file_env : FileEnv,
     loaded_package : HashMap<String, LoadingPackage>,
     importing_order : HashMap<String, usize>,
 }
@@ -276,8 +291,22 @@ impl fmt::Display for LoadingTracker {
 }
 
 impl LoadingTracker {
-    pub fn prebuild(&self) {
+    pub fn prebuild(&self, str_file_name : &str) {
+        /*
         
+        */
+
+        let mut file_name = self.file_env.output_subfolder.clone();
+        file_name.push_str(str_file_name);
+        let mut writing_file = create_file(file_name.as_str());
+        for (_, package) in &self.loaded_package {
+            //writing_file.write_all(&format!("0{:b}", package.get_lowercase_name().into_bytes()));
+            let _ = write!(writing_file, "mod {} {{\n\n}}\n\n", package.get_lowercase_name());
+        }
+    }
+
+    fn _check_lowercase () {
+
     }
 }
 
@@ -473,4 +502,9 @@ fn get_package_from_path(file_path_str : &str, package_id : &str) -> Element {
 
     error!("ERROR_FILE06 - file name = \"{}\", package name = \"{}\"", &file_path_str, package_id);
     panic!("PANIC_FILE06 - CMOF file don't contain the needed package - file name = \"{}\", package name = \"{}\"", &file_path_str, package_id);
+}
+
+fn create_file(file_path_str : &str) -> File {
+    let file = File::create(file_path_str).unwrap();
+    file
 }

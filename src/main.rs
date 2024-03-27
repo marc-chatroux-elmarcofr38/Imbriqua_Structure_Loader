@@ -15,10 +15,17 @@ PURPOSE.See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with Imbriqua Structure.
 If not, see <https://www.gnu.org/licenses/>.
 */
+#![warn(missing_docs)]
+#![warn(rustdoc::missing_doc_code_examples)]
 
 mod module_log;
 mod module_dependencies_explorer;
 use log::info;
+
+use std::fs;
+
+// Checking if compiling
+mod cmof_module;
 
 fn main() {
 
@@ -33,7 +40,9 @@ fn main() {
 
     info!("{}", loading_env);
 
-    loading_env.prebuild();
+    loading_env.prebuild("cmof_module.rs");
+
+    let _ = fs::copy(loading_env.file_env.output_subfolder.clone() + "cmof_module.rs", "src/cmof_module.rs");
 
     // Delete output folder if is empty
     loading_env.close();
