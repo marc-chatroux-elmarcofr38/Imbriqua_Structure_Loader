@@ -41,13 +41,13 @@ fn load_configuration_by_file() -> Result<(log4rs::Handle, Config, bool)> {
     */
 
     // Get config
-    let config = get_config_by_file()?;
+    let config : Config = get_config_by_file()?;
 
     // Itinialisation of global logger
     let handle : Handle = init_config(config)?;
 
     // Get config
-    let config = get_config_by_file()?;
+    let config : Config = get_config_by_file()?;
 
     Ok((handle, config, false))
 }
@@ -58,7 +58,7 @@ fn get_config_by_file() -> Result<Config> {
     */
 
     // Loading the file
-    let default_config_str = include_str!("config_log.yml");
+    let default_config_str : &'static str = include_str!("config_log.yml");
 
     // Deserialize
     let config : RawConfig = from_str(default_config_str)?;
@@ -70,7 +70,7 @@ fn get_config_by_file() -> Result<Config> {
     }
 
     // Initialise config object
-    let config = Config::builder()
+    let config : Config = Config::builder()
         .appenders(appenders)
         .loggers(config.loggers())
         .build(config.root())?;
@@ -85,13 +85,13 @@ fn load_configuration_by_backup() -> Result<(log4rs::Handle, Config, bool)> {
     */
 
     // Get backup config
-    let config = get_config_by_backup()?;
+    let config : Config = get_config_by_backup()?;
 
     // Itinialisation of global logger
-    let handle = init_config(config)?;
+    let handle : Handle = init_config(config)?;
 
     // Get backup config
-    let config = get_config_by_backup()?;
+    let config : Config = get_config_by_backup()?;
 
     Ok((handle, config, true))
 }
@@ -102,17 +102,17 @@ fn get_config_by_backup() -> Result<Config> {
     */
 
     // Setup of console logging output
-    let stdout = ConsoleAppender::builder()
+    let stdout : ConsoleAppender = ConsoleAppender::builder()
         .encoder(Box::new(PatternEncoder::new("{M}: {m} {n}")))
         .build();
 
     // Setup of file logging tools
-    let requests = FileAppender::builder()
+    let requests : FileAppender = FileAppender::builder()
         .encoder(Box::new(PatternEncoder::new("{d(%+)(utc)} [{f}:{L}] {h({l})} ! BACKUP_LOGGER ! {M}: {m} {n}")))
         .build("imbriqua_structure.log")?;
 
     // Setup of global logger
-    let config = Config::builder()
+    let config : Config = Config::builder()
         .appender(Appender::builder().build("stdout", Box::new(stdout)))
         .appender(Appender::builder().build("requests", Box::new(requests)))
         .logger(Logger::builder().appender("stdout").build("app::stdout", LevelFilter::Debug))
@@ -120,4 +120,30 @@ fn get_config_by_backup() -> Result<Config> {
         .build(Root::builder().appender("stdout").appender("requests").build(LevelFilter::Debug))?;
 
     Ok(config)
+}
+
+#[test]
+fn check_load_configuration_by_file() {
+
+    // Checking execution
+    let result = load_configuration_by_file();
+
+    // Checking Result
+    assert!(result.is_ok());
+
+    // Checking len and type
+    let (_unpack_1, _unpack_2, _unpack_3) : (log4rs::Handle, Config, bool) = result.unwrap();
+}
+
+#[test]
+fn check_load_configuration_by_backup() {
+
+    // Checking execution
+    let result = load_configuration_by_backup();
+    
+    // Checking Result
+    assert!(result.is_ok());
+
+    // Checking len and type
+    let (_unpack_1, _unpack_2, _unpack_3) : (log4rs::Handle, Config, bool) = result.unwrap();
 }
