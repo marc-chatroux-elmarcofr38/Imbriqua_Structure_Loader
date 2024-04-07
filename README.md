@@ -1,4 +1,4 @@
-# Imbriqua Structure : Interpreter of BPMN model files (in UML notation) for Imbriqua Engine project
+# Imbriqua Structure Loader : Interpreter of BPMN model files (in UML notation) for Imbriqua Engine project
 
 ## Copyright
 
