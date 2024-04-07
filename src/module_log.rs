@@ -15,25 +15,97 @@ PURPOSE.See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with Imbriqua Structure.
 If not, see <https://www.gnu.org/licenses/>.
 */
-#![warn(missing_docs)]
-#![warn(rustdoc::missing_doc_code_examples)]
 
-//! # eee
+#![warn(missing_docs)]
+
+//! Configure resilient logger : this module provide logger config using two configuration
 //! 
-//! eeeee
-//! eeeee
+//! # How to use
+//! 
+//! Configure logger with YAML configuration file, after configuring logger with backup configuration (described in next section)
+//! 
+//! This two-step provide a working detailed logging backup configuration during configuration file error
+//! 
+//! ## Minimal usecase
 //! 
 //! ```
 //! # fn f() {
-//! use module_log.rs;
+//! mod module_log;
+//! use log::{error, warn, info, debug, trace};
 //! 
 //! fn main() {
 //! 
-//!     let handle = open_module();
+//!     let _handle = module_log::open_module();
+//! 
+//!     error!("It's an error log");
+//!     warn!("It's a warn log");
+//!     info!("It's an info log");
+//!     debug!("It's a debug log");
+//!     trace!("It's a trace log");
 //! 
 //! }
 //! # }
 //! # fn main() {}
+//! ```
+//! 
+//! ## Customization
+//! 
+//! Edit config_log.yaml file configuration this log4rs notation
+//! 
+//! ## Example config_log.yaml file configuration
+//! 
+//! ```
+//! appenders:
+//!     stdout:
+//!         kind: console
+//!         encoder:
+//!             pattern: "{M}: {m} {n}"
+//!         filters:
+//!             - kind: threshold
+//!               level: info
+//! 
+//!     requests:
+//!         kind: file
+//!         path: "imbriqua_structure.log"
+//!         encoder:
+//!             pattern: "{d(%+)(utc)} [{f}:{L}] {h({l})} {M}: {m} {n}"
+//!         filters:
+//!             - kind: threshold
+//!               level: trace
+//! 
+//! root:
+//!     level: trace
+//!     appenders:
+//!         - stdout
+//!         - requests
+//! ```
+//! 
+//! ## Equivalent YAML file of backup configuration
+//! 
+//! ```
+//! appenders:
+//!     stdout:
+//!         kind: console
+//!         encoder:
+//!             pattern: "! BACKUP_LOGGER ! {M}: {m} {n}"
+//!         filters:
+//!             - kind: threshold
+//!               level: trace
+//! 
+//!     requests:
+//!         kind: file
+//!         path: "imbriqua_structure.log"
+//!         encoder:
+//!             pattern: "{d(%+)(utc)} [{f}:{L}] {h({l})} ! BACKUP_LOGGER ! {M}: {m} {n}"
+//!         filters:
+//!             - kind: threshold
+//!               level: trace
+//! 
+//! root:
+//!     level: trace
+//!     appenders:
+//!         - stdout
+//!         - requests
 //! ```
 //! 
 
@@ -48,30 +120,22 @@ use log4rs::config::{Appender, RawConfig, Config, Deserializers, Logger, Root};
 use serde_yaml::from_str;
 
 pub fn open_module() -> Handle {
-    /*
-        main function for configuration of gloabal logger
-        Try to load the configuration file, else try to load a backup configuration
+    //! Configure logger with config_log.yml, after configure it with a backup configuation
+    //! 
+    //! Try to load a backup configuration ("hard writted" configuration)
+    //! After, try to load "config_log.yml" configuration
 
-        Try to load a backup configuration for global logger.
-        Use a "hard writted" configuration
-
-        Try to load a default configuration for global logger.
-        It use the following file : "config_log.yml"
-    */
-
-
-    // Itinialisation of global logger with backup config
+    // Itinialisation of global logger with backup configuration
     let config : Config = match get_config_by_backup() {
         Ok(result) => {result},
         Err(_) => {panic!("PANIC_LOG01 - Error during the loading on logs modules")},
     };
-
     let handle : Handle = match init_config(config) {
         Ok(result) => {result},
         Err(_) => {panic!("PANIC_LOG02 - Error during the loading on logs modules")},
     };
 
-    // Get file config
+    // Itinialisation of global logger with "config_log.yml" configuration
     let config : Config = match get_config_by_file() {
         Ok(result) => {
             result
@@ -82,8 +146,6 @@ pub fn open_module() -> Handle {
             return handle
         },
     };
-
-    // Itinialisation of global logger with file config
     handle.set_config(config);
 
     // Get config
@@ -91,9 +153,7 @@ pub fn open_module() -> Handle {
 }
 
 fn get_config_by_file() -> Result<Config> {
-    /*
-        Define a config by loading "config_log.yml"
-    */
+    //! Define a config by loading "config_log.yml"
 
     // Loading the file
     let default_config_str : &'static str = include_str!("config_log.yml");
@@ -117,19 +177,11 @@ fn get_config_by_file() -> Result<Config> {
 }
 
 fn get_config_by_backup() -> Result<Config> {
-    //!
-    //! dfbdfxb
-    //! 
-    //! 
-    //! dehdxg
-    //! 
-    /*
-        Define a backup config
-    */
+    //! Define a backup config (hard-writted)
 
     // Setup of console logging output
     let stdout : ConsoleAppender = ConsoleAppender::builder()
-        .encoder(Box::new(PatternEncoder::new("{M}: {m} {n}")))
+        .encoder(Box::new(PatternEncoder::new("! BACKUP_LOGGER ! {M}: {m} {n}")))
         .build();
 
     // Setup of file logging tools
@@ -141,29 +193,25 @@ fn get_config_by_backup() -> Result<Config> {
     let config : Config = Config::builder()
         .appender(Appender::builder().build("stdout", Box::new(stdout)))
         .appender(Appender::builder().build("requests", Box::new(requests)))
-        .logger(Logger::builder().appender("stdout").build("app::stdout", LevelFilter::Debug))
-        .logger(Logger::builder().appender("requests").build("app::requests", LevelFilter::Debug))
-        .build(Root::builder().appender("stdout").appender("requests").build(LevelFilter::Debug))?;
+        .logger(Logger::builder().appender("stdout").build("app::stdout", LevelFilter::Trace))
+        .logger(Logger::builder().appender("requests").build("app::requests", LevelFilter::Trace))
+        .build(Root::builder().appender("stdout").appender("requests").build(LevelFilter::Trace))?;
 
     Ok(config)
 }
 
 #[test]
 fn check_configuration_by_backup() {
-
     // Checking execution
     let result = get_config_by_backup();
-    
     // Checking Result
     assert!(result.is_ok());
 }
 
 #[test]
 fn check_configuration_by_file() {
-
     // Checking execution
     let result = get_config_by_file();
-    
     // Checking Result
     assert!(result.is_ok());
 }
