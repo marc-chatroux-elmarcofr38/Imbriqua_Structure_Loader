@@ -1,5 +1,4 @@
-/target/*
-!/target/doc
+/target
 .vscode/
 /output_file
 imbriqua_structure_loader.log
