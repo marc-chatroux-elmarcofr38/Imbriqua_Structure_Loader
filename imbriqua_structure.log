@@ -3494,3 +3494,45 @@
 2024-04-07T14:22:42.090408950+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-04-07_16h22m41/" exist 
 2024-04-07T14:22:42.090480580+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-04-07_16h22m41/" 
 2024-04-07T14:22:42.090521093+00:00 [src/module_dependencies_explorer.rs:451] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder isn't empty "output_file/2024-04-07_16h22m41/" 
+2024-04-07T14:41:35.563408328+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
+2024-04-07T14:41:35.563479712+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
+2024-04-07T14:41:35.563510381+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "metamodel_file/" 
+2024-04-07T14:41:35.563531631+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
+2024-04-07T14:41:35.563545707+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
+2024-04-07T14:41:35.563610171+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/" 
+2024-04-07T14:41:35.563642104+00:00 [src/module_dependencies_explorer.rs:338] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-04-07_16h41m35/" don't exist 
+2024-04-07T14:41:35.563713297+00:00 [src/module_dependencies_explorer.rs:349] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder created "output_file/2024-04-07_16h41m35/" 
+2024-04-07T14:41:35.563732248+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-04-07_16h41m35/" exist 
+2024-04-07T14:41:35.563749099+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-04-07_16h41m35/" 
+2024-04-07T14:41:35.563767508+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-04-07_16h41m35/" exist 
+2024-04-07T14:41:35.563783695+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-04-07_16h41m35/" 
+2024-04-07T14:41:35.563805289+00:00 [src/module_dependencies_explorer.rs:454] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder is empty "output_file/2024-04-07_16h41m35/" 
+2024-04-07T14:41:35.563887048+00:00 [src/module_dependencies_explorer.rs:58] INFO imbriqua_structure::module_dependencies_explorer: FileEnv : folder "output_file/2024-04-07_16h41m35/" deleted (because is empty) 
+2024-04-07T14:42:35.007388594+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
+2024-04-07T14:42:35.007433415+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
+2024-04-07T14:42:35.007460302+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "metamodel_file/" 
+2024-04-07T14:42:35.007480316+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
+2024-04-07T14:42:35.007494209+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
+2024-04-07T14:42:35.007511354+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/" 
+2024-04-07T14:42:35.007535669+00:00 [src/module_dependencies_explorer.rs:338] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-04-07_16h42m35/" don't exist 
+2024-04-07T14:42:35.007597734+00:00 [src/module_dependencies_explorer.rs:349] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder created "output_file/2024-04-07_16h42m35/" 
+2024-04-07T14:42:35.007614579+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-04-07_16h42m35/" exist 
+2024-04-07T14:42:35.007632156+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-04-07_16h42m35/" 
+2024-04-07T14:42:35.007649347+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-04-07_16h42m35/" exist 
+2024-04-07T14:42:35.007665401+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-04-07_16h42m35/" 
+2024-04-07T14:42:35.007685824+00:00 [src/module_dependencies_explorer.rs:454] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder is empty "output_file/2024-04-07_16h42m35/" 
+2024-04-07T14:42:35.009058973+00:00 [src/module_dependencies_explorer.rs:58] INFO imbriqua_structure::module_dependencies_explorer: FileEnv : folder "output_file/2024-04-07_16h42m35/" deleted (because is empty) 
+2024-04-07T14:42:42.609990027+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
+2024-04-07T14:42:42.610039812+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "metamodel_file/" exist 
+2024-04-07T14:42:42.610067215+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "metamodel_file/" 
+2024-04-07T14:42:42.610089161+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
+2024-04-07T14:42:42.610103944+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/" exist 
+2024-04-07T14:42:42.610120403+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/" 
+2024-04-07T14:42:42.610145992+00:00 [src/module_dependencies_explorer.rs:338] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-04-07_16h42m42/" don't exist 
+2024-04-07T14:42:42.610221052+00:00 [src/module_dependencies_explorer.rs:349] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder created "output_file/2024-04-07_16h42m42/" 
+2024-04-07T14:42:42.610239494+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-04-07_16h42m42/" exist 
+2024-04-07T14:42:42.610258601+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-04-07_16h42m42/" 
+2024-04-07T14:42:42.610277212+00:00 [src/module_dependencies_explorer.rs:341] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder "output_file/2024-04-07_16h42m42/" exist 
+2024-04-07T14:42:42.610294520+00:00 [src/module_dependencies_explorer.rs:375] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Folder is readable "output_file/2024-04-07_16h42m42/" 
+2024-04-07T14:42:42.610316760+00:00 [src/module_dependencies_explorer.rs:454] TRACE imbriqua_structure::module_dependencies_explorer: CheckFile : Output subfolder is empty "output_file/2024-04-07_16h42m42/" 
+2024-04-07T14:42:42.610410676+00:00 [src/module_dependencies_explorer.rs:58] INFO imbriqua_structure::module_dependencies_explorer: FileEnv : folder "output_file/2024-04-07_16h42m42/" deleted (because is empty) 
