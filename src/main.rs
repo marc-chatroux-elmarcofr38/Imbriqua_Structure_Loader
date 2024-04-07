@@ -17,10 +17,11 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 #![warn(missing_docs)]
 
-//! 
+//! AAAAAAAAAAAHHHHHHHHHHHHHHs
 
 mod module_log;
 mod module_dependencies_explorer;
+mod module_result_check;
 use log::info;
 
 fn main() {
@@ -40,6 +41,11 @@ fn main() {
 
     // Delete output folder if is empty
     loading_env.close();
+
+    let result_str : String = loading_env.file_env.output_subfolder + "cmof_module.rs";
+
+    module_result_check::move_result(result_str.as_str(), "../../Imbriqua_Structure_Result/");
+    module_result_check::check_result("../../Imbriqua_Structure_Result/");
 }
 
 /*
