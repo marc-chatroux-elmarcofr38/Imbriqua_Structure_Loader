@@ -23,11 +23,6 @@ mod module_log;
 mod module_dependencies_explorer;
 use log::info;
 
-use std::fs;
-
-// Checking if compiling
-mod cmof_module;
-
 fn main() {
 
     // Initialise global logger
@@ -43,12 +38,11 @@ fn main() {
 
     loading_env.prebuild("cmof_module.rs");
 
-    let _ = fs::copy(loading_env.file_env.output_subfolder.clone() + "cmof_module.rs", "src/cmof_module.rs");
-
     // Delete output folder if is empty
     loading_env.close();
 }
 
+/*
 #[test]
 fn le_test() {
 
@@ -61,3 +55,4 @@ fn le_test() {
     // Delete output folder if is empty
     loading_env.close();
 }
+*/

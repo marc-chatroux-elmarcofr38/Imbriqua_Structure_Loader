@@ -164,7 +164,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "imbriqua_structure"
+name = "imbriqua_structure_loader"
 version = "0.1.0"
 dependencies = [
  "anyhow",

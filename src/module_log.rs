@@ -66,7 +66,7 @@ If not, see <https://www.gnu.org/licenses/>.
 //! 
 //!     requests:
 //!         kind: file
-//!         path: "imbriqua_structure.log"
+//!         path: "imbriqua_structure_loader.log"
 //!         encoder:
 //!             pattern: "{d(%+)(utc)} [{f}:{L}] {h({l})} {M}: {m} {n}"
 //!         filters:
@@ -94,7 +94,7 @@ If not, see <https://www.gnu.org/licenses/>.
 //! 
 //!     requests:
 //!         kind: file
-//!         path: "imbriqua_structure.log"
+//!         path: "imbriqua_structure_loader.log"
 //!         encoder:
 //!             pattern: "{d(%+)(utc)} [{f}:{L}] {h({l})} ! BACKUP_LOGGER ! {M}: {m} {n}"
 //!         filters:
@@ -113,7 +113,7 @@ If not, see <https://www.gnu.org/licenses/>.
 //! * WARN_LOG01 - Error during default configuration loading
 //!     * Context : __module_log.rs/open_modules()__
 //!     * Info : The file __config_log.yml__ can't be loaded in log4rs configuration
-//!     * Info : A backup logging configuration may be load,logs are in __imbriqua_structure.log__ file
+//!     * Info : A backup logging configuration may be load,logs are in __imbriqua_structure_loader.log__ file
 //!     * Cause : See logs for syntaxe error details, or deserialize error details
 //! 
 //! * PANIC_LOG01 - Error during the loading on logs modules
@@ -205,7 +205,7 @@ fn get_config_by_backup() -> Result<Config> {
     // Setup of file logging tools
     let requests : FileAppender = FileAppender::builder()
         .encoder(Box::new(PatternEncoder::new("{d(%+)(utc)} [{f}:{L}] {h({l})} ! BACKUP_LOGGER ! {M}: {m} {n}")))
-        .build("imbriqua_structure.log")?;
+        .build("imbriqua_structure_loader.log")?;
 
     // Setup of global logger
     let config : Config = Config::builder()

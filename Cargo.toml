@@ -3,7 +3,7 @@ name = "imbriqua_structure_loader"
 description = "Imbriqua Structure Loader : Interpreter of BPMN model files (in UML notation) for Imbriqua Engine project"
 version = "0.1.0"
 authors = ["Marc Chatroux <marc38.chatroux@free.fr>"]
-edition = "2024"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
