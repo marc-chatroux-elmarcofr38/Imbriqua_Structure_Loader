@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"imbriqua_structure_loader":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.77.0/core/fmt/trait.Display.html\" title=\"trait core::fmt::Display\">Display</a> for <a class=\"struct\" href=\"imbriqua_structure_loader/module_dependencies_explorer/struct.LoadingTracker.html\" title=\"struct imbriqua_structure_loader::module_dependencies_explorer::LoadingTracker\">LoadingTracker</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
