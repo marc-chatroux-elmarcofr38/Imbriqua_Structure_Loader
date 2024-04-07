@@ -1,3 +1,42 @@
+/*
+Copyright 2023-2024 CHATROUX MARC
+
+This file is part of Imbriqua Structure, a interpreter of BPMN model files (in UML notation) for
+Imbriqua Engine project
+
+Imbriqua Structure is free software: you can redistribute it and/or modify it under the terms of
+the GNU General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
+
+Imbriqua Structure is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with Imbriqua Structure.
+If not, see <https://www.gnu.org/licenses/>.
+*/
+#![warn(missing_docs)]
+#![warn(rustdoc::missing_doc_code_examples)]
+
+//! # eee
+//! 
+//! eeeee
+//! eeeee
+//! 
+//! ```
+//! # fn f() {
+//! use module_log.rs;
+//! 
+//! fn main() {
+//! 
+//!     let handle = open_module();
+//! 
+//! }
+//! # }
+//! # fn main() {}
+//! ```
+//! 
+
 use anyhow::Result;
 use log::{info, warn, LevelFilter};
 use log4rs::init_config;
@@ -8,48 +47,47 @@ use log4rs::encode::pattern::PatternEncoder;
 use log4rs::config::{Appender, RawConfig, Config, Deserializers, Logger, Root};
 use serde_yaml::from_str;
 
-pub fn open_module() -> (Handle, Config, bool) {
+pub fn open_module() -> Handle {
     /*
         main function for configuration of gloabal logger
         Try to load the configuration file, else try to load a backup configuration
-    */
 
-    match load_configuration_by_file() {
-        Ok(result) => {
-            info!("Logger init success : use of \"{}\"", "config_log.yml");
-            result
-        },
-        Err(error) => {
-            match load_configuration_by_backup() {
-                Ok(result) => {
-                    warn!("WARN_LOG01 - Error during default configuration loading \"{}\": {}", "config_log.yml", error);
-                    info!("Logger init success : use of \"{}\"", "!!! BACKUP CONFIGURATION !!!");
-                    result
-                },
-                Err(_) => {
-                    panic!("PANIC_LOG01 - Error during the loading on logs modules")
-                },
-            }
-        },
-    }
-}
+        Try to load a backup configuration for global logger.
+        Use a "hard writted" configuration
 
-fn load_configuration_by_file() -> Result<(log4rs::Handle, Config, bool)> {
-    /*
         Try to load a default configuration for global logger.
         It use the following file : "config_log.yml"
     */
 
+
+    // Itinialisation of global logger with backup config
+    let config : Config = match get_config_by_backup() {
+        Ok(result) => {result},
+        Err(_) => {panic!("PANIC_LOG01 - Error during the loading on logs modules")},
+    };
+
+    let handle : Handle = match init_config(config) {
+        Ok(result) => {result},
+        Err(_) => {panic!("PANIC_LOG02 - Error during the loading on logs modules")},
+    };
+
+    // Get file config
+    let config : Config = match get_config_by_file() {
+        Ok(result) => {
+            result
+        },
+        Err(error) => {
+            warn!("WARN_LOG01 - Error during default configuration loading \"{}\": {}", "config_log.yml", error);
+            info!("Logger init success : use of \"{}\"", "!!! BACKUP CONFIGURATION !!!");
+            return handle
+        },
+    };
+
+    // Itinialisation of global logger with file config
+    handle.set_config(config);
+
     // Get config
-    let config : Config = get_config_by_file()?;
-
-    // Itinialisation of global logger
-    let handle : Handle = init_config(config)?;
-
-    // Get config
-    let config : Config = get_config_by_file()?;
-
-    Ok((handle, config, false))
+    handle
 }
 
 fn get_config_by_file() -> Result<Config> {
@@ -78,25 +116,13 @@ fn get_config_by_file() -> Result<Config> {
     Ok(config)
 }
 
-fn load_configuration_by_backup() -> Result<(log4rs::Handle, Config, bool)> {
-    /*
-        Try to load a backup configuration for global logger.
-        Use a "hard writted" configuration
-    */
-
-    // Get backup config
-    let config : Config = get_config_by_backup()?;
-
-    // Itinialisation of global logger
-    let handle : Handle = init_config(config)?;
-
-    // Get backup config
-    let config : Config = get_config_by_backup()?;
-
-    Ok((handle, config, true))
-}
-
 fn get_config_by_backup() -> Result<Config> {
+    //!
+    //! dfbdfxb
+    //! 
+    //! 
+    //! dehdxg
+    //! 
     /*
         Define a backup config
     */
@@ -123,27 +149,21 @@ fn get_config_by_backup() -> Result<Config> {
 }
 
 #[test]
-fn check_load_configuration_by_file() {
+fn check_configuration_by_backup() {
 
     // Checking execution
-    let result = load_configuration_by_file();
-
-    // Checking Result
-    assert!(result.is_ok());
-
-    // Checking len and type
-    let (_unpack_1, _unpack_2, _unpack_3) : (log4rs::Handle, Config, bool) = result.unwrap();
-}
-
-#[test]
-fn check_load_configuration_by_backup() {
-
-    // Checking execution
-    let result = load_configuration_by_backup();
+    let result = get_config_by_backup();
     
     // Checking Result
     assert!(result.is_ok());
+}
 
-    // Checking len and type
-    let (_unpack_1, _unpack_2, _unpack_3) : (log4rs::Handle, Config, bool) = result.unwrap();
+#[test]
+fn check_configuration_by_file() {
+
+    // Checking execution
+    let result = get_config_by_file();
+    
+    // Checking Result
+    assert!(result.is_ok());
 }

@@ -1,8 +1,8 @@
-mod cmof_bpmndi_cmof_0 {
+mod cmof_di_cmof_0 {
 
 }
 
-mod cmof_di_cmof_0 {
+mod cmof_bpmndi_cmof_0 {
 
 }
 

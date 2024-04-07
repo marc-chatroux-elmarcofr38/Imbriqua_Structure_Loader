@@ -19,7 +19,12 @@
 * PANIC_LOG01 - Error during the loading on logs modules
     * Context : __module_log.rs/open_modules()__
     * Info : No logs are provided, so, make panic
-    * Cause : The error come from __load_configuration_backup()__ function or __get_backup_config()__
+    * Cause : The error come from __get_config_by_backup()__ function
+
+* PANIC_LOG02 - Error during the loading on logs modules
+    * Context : __module_log.rs/open_modules()__
+    * Info : No logs are provided, so, make panic
+    * Cause : The error come from __log4rs::init_config()__ function
 
 * PANIC_FILE01 - A folder can't be created
     * Context : __module_dependencies_explorer.rs/check_folder_exist()__

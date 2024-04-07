@@ -41,7 +41,7 @@ mod cmof_module;
 fn main() {
 
     // Initialise global logger
-    let (_handle, _config, _is_backup) = module_log::open_module();
+    let _handle = module_log::open_module();
 
     // Set used folders (input folder and output folder)
     let mut loading_env = module_dependencies_explorer::LoadingTracker::new();
@@ -63,7 +63,7 @@ fn main() {
 fn le_test() {
 
     // Initialise global logger
-    let (_handle, _config, _is_backup) = module_log::open_module();
+    let _handle = module_log::open_module();
 
     // Set used folders (input folder and output folder)
     let loading_env = module_dependencies_explorer::LoadingTracker::new();
