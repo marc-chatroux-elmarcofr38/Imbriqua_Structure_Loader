@@ -299,6 +299,7 @@ impl LoadingTracker {
         let mut file_name = self.file_env.output_subfolder.clone();
         file_name.push_str(str_file_name);
         let mut writing_file = create_file(file_name.as_str());
+        let _ = write!(writing_file, "#![doc = include_str!(\"../README.md\")]\n\n//! Imported from {}\n\n", self.file_env.output_subfolder);
         for (_, package) in &self.loaded_package {
             //writing_file.write_all(&format!("0{:b}", package.get_lowercase_name().into_bytes()));
             let _ = write!(writing_file, "mod {} {{\n\n}}\n\n", package.get_lowercase_name());
@@ -396,7 +397,7 @@ fn check_file_exist(file_path_str : &str) -> () {
     // Exit if the folder exist
     match Path::new(&file_path_str).exists() {
         true => {
-            trace!("CheckFile : Folder \"{}\" exist", &file_path_str);
+            trace!("CheckFile : File \"{}\" exist", &file_path_str);
         },
         false => {
             error!("ERROR_FILE03 - A file don't exist - \"{}\"", &file_path_str);
