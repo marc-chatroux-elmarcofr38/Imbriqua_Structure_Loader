@@ -419,17 +419,8 @@ pub fn check_result(relative_path_result_package : &str) {
                    .arg("--no-run")
                    .arg("--lib")
                    .output().expect("process failed to execute");
-                
-    debug!(
-        "\n\n cargo test : succes {}\n\nSTDOUT 1 : \n\n{}\n\nSTDERR 1 : \n\n{}",
-        cargo_1.output().unwrap().status.success(),
-        std::str::from_utf8(&cargo_1.output().unwrap().stdout).unwrap(),
-        std::str::from_utf8(&cargo_1.output().unwrap().stderr).unwrap()
-    );
 
-    let succes = &cargo_1.output().unwrap().status.success();
-    let succes = if *succes {"SUCCES"} else {"ERROR"};
-    info!("Get {} on {:?}", succes, &cargo_1);
+    represent_command_output(&mut cargo_1);
     
     let mut cargo_2 = Command::new("cargo");
     let _ = cargo_2.arg("doc")
@@ -437,16 +428,23 @@ pub fn check_result(relative_path_result_package : &str) {
                    .arg("--no-deps")
                    .output().expect("process failed to execute");
                 
+    represent_command_output(&mut cargo_2);
+}
+
+fn represent_command_output(command : &mut Command) {
+    //! Printing command result
+                
+    let command_output = command.output().unwrap();
+    let str_stdout = std::str::from_utf8(&command_output.stdout).unwrap();
+    let str_stderr = std::str::from_utf8(&command_output.stderr).unwrap();
+
     debug!(
         "\n\ncargo test : succes {}\n\nSTDOUT 2 : \n\n{}\n\nSTDERR 2 : \n\n{}",
-        cargo_2.output().unwrap().status.success(),
-        std::str::from_utf8(&cargo_2.output().unwrap().stdout).unwrap(),
-        std::str::from_utf8(&cargo_2.output().unwrap().stderr).unwrap()
+        command_output.status.success(), str_stdout, str_stderr
     );
 
-    let succes = &cargo_2.output().unwrap().status.success();
-    let succes = if *succes {"SUCCES"} else {"ERROR"};
-    info!("Get {} on {:?}", succes, &cargo_2);
+    let succes = if command_output.status.success() {"SUCCES"} else {"ERROR"};
+    info!("Get {} on {:#?}", succes, &command);
 }
 
 #[cfg(test)]
