@@ -155,7 +155,7 @@ If not, see <https://www.gnu.org/licenses/>.
 //! 
 
 use std::path::Path;
-use std::fs::copy;
+use fs_extra::dir::{CopyOptions, copy};
 use log::{error, debug, info};
 
 pub fn copy_result(loader_result_file_path : &str, relative_path_result_package : &str) {
@@ -204,7 +204,9 @@ pub fn copy_result(loader_result_file_path : &str, relative_path_result_package 
         },
     };
 
-    match copy(loader_result_file_path, file_result_package_path) {
+    let options = CopyOptions::new(); 
+
+    match copy(loader_result_file_path, file_result_package_path, &options) {
         Ok(_) => {
             info!("Copy OK");
         },
@@ -249,6 +251,7 @@ pub fn check_result(relative_path_result_package : &str) {
         std::str::from_utf8(&cargo_2.output().unwrap().stderr).unwrap()
     );
 }
+
 
 
 #[cfg(test)]

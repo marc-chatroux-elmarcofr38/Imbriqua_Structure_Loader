@@ -38,12 +38,12 @@ fn main() {
 
     // info!("{}", loading_env);
 
-    loading_env.prebuild("cmof_module.rs");
+    loading_env.prebuild("lib.rs");
 
     // Delete output folder if is empty
     loading_env.close();
 
-    let result_str : String = loading_env.file_env.output_subfolder + "cmof_module.rs";
+    let result_str : String = loading_env.file_env.output_subfolder;
 
     module_output_checker::copy_result(result_str.as_str(), "../Imbriqua_Structure_Result/");
     module_output_checker::check_result("../Imbriqua_Structure_Result/");
