@@ -42,7 +42,7 @@ If not, see <https://www.gnu.org/licenses/>.
 //!         // script part generating file in relative path "../Project_B/src/lib.rs"
 //!     }
 //!     
-//!     module_output_checker::check_result("../Project_B/src/lib.rs");
+//!     module_output_checker::check_result("../Project_B/");
 //! }
 //! # }
 //! # fn main() {}
@@ -85,7 +85,32 @@ If not, see <https://www.gnu.org/licenses/>.
 //! 
 //! ## Optimal usecase
 //! 
+//! * __/Project_A/main.rs__
 //! 
+//! ```
+//! # fn main() {
+//! mod module_output_checker;
+//! 
+//! fn main() {
+//! 
+//!     fn generate_code () {
+//!         // script part generating file in relative path "../Project_B/src/lib.rs"
+//!     }
+//!     
+//!     module_output_checker::check_result("../Project_B/");
+//! }
+//! # }
+//! # fn main() {}
+//! ```
+//! 
+//! * Bash cargo equivalent
+//! 
+//! ```bash
+//! $ cargo test --manifest-path=".../Project_B/" --all-features --no-run --lib
+//! $ cargo doc --manifest-path=".../Project_B/" --no-deps
+//! ```
+//! 
+//! * File tree
 //! 
 //! ```text
 //! .
