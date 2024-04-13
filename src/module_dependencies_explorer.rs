@@ -26,7 +26,7 @@ impl FileEnv {
 
         //Set input folder path and output subfolder path
         let str_input_folder : String = String::from("metamodel_file/");
-        let str_output_folder : String = String::from("output_file/");
+        let str_output_folder : String = String::from("../Output_file/");
         let time_string : String = Local::now().format("%Y-%m-%d_%Hh%Mm%S/").to_string();
 
         // Create instance
@@ -299,7 +299,7 @@ impl LoadingTracker {
         let mut file_name = self.file_env.output_subfolder.clone();
         file_name.push_str(str_file_name);
         let mut writing_file = create_file(file_name.as_str());
-        let _ = write!(writing_file, "#![doc = include_str!(\"../README.md\")]\n\n//! Imported from {}\n\n", self.file_env.output_subfolder);
+        let _ = write!(writing_file, "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {}\n\n", self.file_env.output_subfolder);
         for (_, package) in &self.loaded_package {
             //writing_file.write_all(&format!("0{:b}", package.get_lowercase_name().into_bytes()));
             let _ = write!(writing_file, "mod {} {{\n\n}}\n\n", package.get_lowercase_name());

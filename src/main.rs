@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 mod module_log;
 mod module_dependencies_explorer;
-mod module_result_checker;
+mod module_output_checker;
 
 // use log::info;
 
@@ -45,8 +45,8 @@ fn main() {
 
     let result_str : String = loading_env.file_env.output_subfolder + "cmof_module.rs";
 
-    module_result_checker::copy_result(result_str.as_str(), "../Imbriqua_Structure_Result/");
-    module_result_checker::check_result("../Imbriqua_Structure_Result/");
+    module_output_checker::copy_result(result_str.as_str(), "../Imbriqua_Structure_Result/");
+    module_output_checker::check_result("../Imbriqua_Structure_Result/");
 }
 
 /*
