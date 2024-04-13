@@ -304,6 +304,12 @@ impl LoadingTracker {
             //writing_file.write_all(&format!("0{:b}", package.get_lowercase_name().into_bytes()));
             let _ = write!(writing_file, "mod {} {{\n\n}}\n\n", package.get_lowercase_name());
         }
+/*
+        let mut file_path_str = self.file_env.output_subfolder.clone();
+        file_path_str.push_str("eeeee/");
+        check_folder_exist(file_path_str.as_str());
+        file_path_str.push_str("ee.txt");
+        let _writing_file = create_file(file_path_str.as_str());*/
     }
 
     fn _check_lowercase () {

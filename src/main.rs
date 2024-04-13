@@ -45,8 +45,12 @@ fn main() {
 
     let result_str : String = loading_env.file_env.output_subfolder;
 
-    module_output_checker::copy_result(result_str.as_str(), "../Imbriqua_Structure_Result/");
+    module_output_checker::purge_folder("../Imbriqua_Structure_Result/src/");
+    module_output_checker::copy_result(result_str.as_str(), "../Imbriqua_Structure_Result/src/");
     module_output_checker::check_result("../Imbriqua_Structure_Result/");
+
+
+    // module_output_checker::purge_folder("../Output_file");
 }
 
 /*

@@ -128,7 +128,7 @@ If not, see <https://www.gnu.org/licenses/>.
 //! 
 
 use anyhow::Result;
-use log::{info, warn, LevelFilter};
+use log::{info, warn, error, LevelFilter};
 use log4rs::init_config;
 use log4rs::Handle;
 use log4rs::append::console::ConsoleAppender;
@@ -146,11 +146,17 @@ pub fn open_module() -> Handle {
     // Itinialisation of global logger with backup configuration
     let config : Config = match get_config_by_backup() {
         Ok(result) => {result},
-        Err(_) => {panic!("PANIC_LOG01 - Error during the loading on logs modules")},
+        Err(error) => {
+            error!("PANIC_LOG01 - Error during the loading on logs modules - {}", error);
+            panic!("PANIC_LOG01 - Error during the loading on logs modules")},
+        
     };
     let handle : Handle = match init_config(config) {
         Ok(result) => {result},
-        Err(_) => {panic!("PANIC_LOG02 - Error during the loading on logs modules")},
+        Err(error) => {
+            error!("PANIC_LOG01 - Error during the loading on logs modules - {}", error);
+            panic!("PANIC_LOG02 - Error during the loading on logs modules")
+        },
     };
 
     // Itinialisation of global logger with "config_log.yml" configuration
