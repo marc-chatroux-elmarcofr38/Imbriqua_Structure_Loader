@@ -502,6 +502,7 @@ pub fn check_result(relative_path_result_package : &str) -> bool {
     result_1 && result_2
 }
 
+#[allow(dead_code)]
 pub fn clean_target_result(relative_path_result_package : &str) -> bool {
     //! Running cargo clean command
     //! 
@@ -526,6 +527,7 @@ pub fn clean_target_result(relative_path_result_package : &str) -> bool {
     result_1
 }
 
+#[allow(dead_code)]
 pub fn cargo_custom_command(args : Vec<&str>, relative_path_result_package : &str) -> bool {
     //! Running cargo custom command
     //! 

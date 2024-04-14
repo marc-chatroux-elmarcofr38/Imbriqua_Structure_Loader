@@ -47,14 +47,11 @@ fn main() {
 
     module_output_checker::purge_folder("../Imbriqua_Structure_Result/src/");
     module_output_checker::copy_folder(result_str.as_str(), "../Imbriqua_Structure_Result/src/");
-    let _ = module_output_checker::clean_target_result("../Imbriqua_Structure_Result/");
     let result = module_output_checker::check_result("../Imbriqua_Structure_Result/");
 
     if !result {
         panic!()
     }
-
-    let _ = module_output_checker::cargo_custom_command(vec!["build"], "../Imbriqua_Structure_Result/");
 
     // module_output_checker::purge_folder("../Output_file");
 }
