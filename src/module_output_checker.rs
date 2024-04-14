@@ -459,7 +459,7 @@ pub fn copy_folder(loader_result_file_path : &str, relative_path_result_package 
     };
 }
 
-pub fn check_result(relative_path_result_package : &str) {
+pub fn check_result(relative_path_result_package : &str) -> bool {
     //! Checking package of a gived folder, with cargo bash command
     //! 
     //! relative_path_result_package (&str) : root of the package to check (normally, the cargo.toml file is in this folder)
@@ -480,7 +480,7 @@ pub fn check_result(relative_path_result_package : &str) {
                    .arg("--lib")
                    .output().expect("process failed to execute");
 
-    represent_command_output(&mut cargo_1);
+    let result_1 = represent_command_output(&mut cargo_1);
     
     let mut cargo_2 = Command::new("cargo");
     let _ = cargo_2.arg("doc")
@@ -488,7 +488,9 @@ pub fn check_result(relative_path_result_package : &str) {
                    .arg("--no-deps")
                    .output().expect("process failed to execute");
                 
-    represent_command_output(&mut cargo_2);
+    let result_2 = represent_command_output(&mut cargo_2);
+
+    result_1.is_some_and(|x| x == true) && result_2.is_some_and(|x| x == true) 
 }
 
 fn represent_command_output(command : &mut Command) -> Option<bool> {
@@ -628,4 +630,19 @@ mod copy_folder {
 
 #[cfg(test)]
 mod check_result {
+    use super::check_result;
+
+    #[test]
+    fn succes_check_result() {
+        //! This folder can be copied
+        let result = check_result("./tests/module_output_checker/succes_check_result/Project_B/");
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn error_check_result() {
+        //! This folder can be copied
+        let result = check_result("./tests/module_output_checker/error_check_result/Project_B/");
+        assert_eq!(result, false);
+    }
 }
