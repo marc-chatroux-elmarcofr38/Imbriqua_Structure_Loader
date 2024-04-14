@@ -226,18 +226,24 @@ fn get_config_by_backup() -> Result<Config> {
     Ok(config)
 }
 
-#[test]
-fn check_configuration_by_backup() {
-    // Checking execution
-    let result = get_config_by_backup();
-    // Checking Result
-    assert!(result.is_ok());
-}
 
-#[test]
-fn check_configuration_by_file() {
-    // Checking execution
-    let result = get_config_by_file();
-    // Checking Result
-    assert!(result.is_ok());
+#[cfg(test)]
+mod test_log {
+    use crate::module_log::{get_config_by_backup, get_config_by_file};
+
+    #[test]
+    fn check_configuration_by_backup() {
+        // Checking execution
+        let result = get_config_by_backup();
+        // Checking Result
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn check_configuration_by_file() {
+        // Checking execution
+        let result = get_config_by_file();
+        // Checking Result
+        assert!(result.is_ok());
+    }
 }
