@@ -47,13 +47,7 @@ fn main() {
 
     module_output_checker::purge_folder("../Imbriqua_Structure_Result/src/");
     module_output_checker::copy_folder(result_str.as_str(), "../Imbriqua_Structure_Result/src/");
-    let result = module_output_checker::check_result("../Imbriqua_Structure_Result/");
-
-    if !result {
-        panic!()
-    }
-
-    // module_output_checker::purge_folder("../Output_file");
+    if !module_output_checker::check_result("../Imbriqua_Structure_Result/") {panic!()}
 }
 
 /*
