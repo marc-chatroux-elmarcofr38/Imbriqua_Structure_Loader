@@ -275,7 +275,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 use std::{process::Command, path::Path, fs};
 use fs_extra::{dir::copy, dir::CopyOptions, remove_items};
-use log::{debug, error, info, warn};
+use log::{error, warn, info, trace, debug};
 
 pub fn purge_folder(folder_path : &str) {
     //! Removing subelement of a target folder
@@ -292,7 +292,7 @@ pub fn purge_folder(folder_path : &str) {
 
     // Checking if exist
     match Path::new(&folder_path).exists() {
-        true => {info!("CheckFile : Folder \"{}\" exist", &folder_path);},
+        true => {trace!("CheckFile : Folder \"{}\" exist", &folder_path);},
         false => {
             error!("PANIC_OUT01 - The folder don't exist during purge - {}", &folder_path);
             panic!("PANIC_OUT01 - The folder don't exist during purge - {}", &folder_path);
@@ -336,7 +336,7 @@ pub fn purge_folder(folder_path : &str) {
 
         match remove_items(&vec_entry) {
             Ok(_) => {
-                info!("Removing \"{}\"", entry_path);
+                trace!("purge : Removing \"{}\"", entry_path);
             },
             Err(error) => {
                 error!("WARN_OUT03 - Error in removing entry - {} - {}", &entry_path, error);
@@ -362,7 +362,7 @@ pub fn copy_folder(loader_result_file_path : &str, relative_path_result_package 
     // Checking if 'loader_result_file_path' exist
     match Path::new(&loader_result_file_path).exists() {
         true => {
-            info!("CheckFile : Folder \"{}\" exist", &loader_result_file_path);
+            trace!("CheckFile : Folder \"{}\" exist", &loader_result_file_path);
         },
         false => {
             error!("PANIC_OUT03 - The 'from' folder don't exist (copying) - \"{}\"", &loader_result_file_path);
@@ -373,7 +373,7 @@ pub fn copy_folder(loader_result_file_path : &str, relative_path_result_package 
     // Checking if 'relative_path_result_package' exist
     match Path::new(&relative_path_result_package).exists() {
         true => {
-            info!("CheckFile : Folder \"{}\" exist", &relative_path_result_package);
+            trace!("CheckFile : Folder \"{}\" exist", &relative_path_result_package);
         },
         false => {
             error!("PANIC_OUT04 - The 'to' folder don't exist (copying) - \"{}\"", &relative_path_result_package);
@@ -438,7 +438,7 @@ pub fn copy_folder(loader_result_file_path : &str, relative_path_result_package 
         if entry_type.is_dir() {
             match copy(&fr, relative_path_result_package, &options) {
                 Ok(_) => {
-                    info!("Copying folder \"{}\" to \"{}\"", fr, go);
+                    info!("copy : copying folder \"{}\" to \"{}\"", fr, go);
                 },
                 Err(error) => {
                     error!("PANIC_OUT06 - Can't copying \"{}\" folder to \"{}\" - {}", fr, go, error);
@@ -448,7 +448,7 @@ pub fn copy_folder(loader_result_file_path : &str, relative_path_result_package 
         } else {
             match fs::copy(&fr, &go) {
                 Ok(_) => {
-                    info!("Copying file \"{}\" to \"{}\"", fr, go);
+                    info!("copy : copying file \"{}\" to \"{}\"", fr, go);
                 },
                 Err(error) => {
                     error!("PANIC_OUT07 - Can't copying \"{}\" file to \"{}\" - {}", fr, go, error);
@@ -480,7 +480,8 @@ pub fn check_result(relative_path_result_package : &str) -> bool {
                    .arg("--lib")
                    .output().expect("process failed to execute");
 
-    let result_1 = represent_command_output(&mut cargo_1);
+    let result_1 = represent_command_output(&mut cargo_1).is_some_and(|x| x == true);
+    info!("Running cargo test : {}", if result_1 {"succes"} else {"error"});
     
     let mut cargo_2 = Command::new("cargo");
     let _ = cargo_2.arg("doc")
@@ -488,9 +489,10 @@ pub fn check_result(relative_path_result_package : &str) -> bool {
                    .arg("--no-deps")
                    .output().expect("process failed to execute");
                 
-    let result_2 = represent_command_output(&mut cargo_2);
+    let result_2 = represent_command_output(&mut cargo_2).is_some_and(|x| x == true);
+    info!("Running cargo doc : {}", if result_2 {"succes"} else {"error"});
 
-    result_1.is_some_and(|x| x == true) && result_2.is_some_and(|x| x == true) 
+    result_1 && result_2
 }
 
 pub fn clean_target_result(relative_path_result_package : &str) -> bool {
@@ -511,9 +513,10 @@ pub fn clean_target_result(relative_path_result_package : &str) -> bool {
                    .arg(format!("--manifest-path={}Cargo.toml", relative_path_result_package))
                    .output().expect("process failed to execute");
 
-    let result_1 = represent_command_output(&mut cargo_1);
+    let result_1 = represent_command_output(&mut cargo_1).is_some_and(|x| x == true);
+    info!("Running cargo clean : {}", if result_1 {"succes"} else {"error"});
 
-    result_1.is_some_and(|x| x == true)
+    result_1
 }
 
 fn represent_command_output(command : &mut Command) -> Option<bool> {
