@@ -503,7 +503,7 @@ pub fn check_result(relative_path_result_package : &str) -> bool {
 }
 
 pub fn clean_target_result(relative_path_result_package : &str) -> bool {
-    //! Running cargo clean
+    //! Running cargo clean command
     //! 
     //! relative_path_result_package (&str) : root of the package to check (normally, the cargo.toml file is in this folder)
     //! 
@@ -698,9 +698,9 @@ mod check_result_clean_and_custom {
         //! This folder can be copied
         let result = check_result("./tests/module_output_checker/succes_check_result/Project_B/");
         assert_eq!(result, true);
-        let result = clean_target_result("./tests/module_output_checker/succes_check_result/Project_B/");
-        assert_eq!(result, true);
         let result = cargo_custom_command(vec!["build"], "./tests/module_output_checker/succes_check_result/Project_B/");
+        assert_eq!(result, true);
+        let result = clean_target_result("./tests/module_output_checker/succes_check_result/Project_B/");
         assert_eq!(result, true);
     }
 
