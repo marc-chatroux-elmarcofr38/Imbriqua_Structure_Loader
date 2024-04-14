@@ -26,13 +26,18 @@ If not, see <https://www.gnu.org/licenses/>.
 //! 
 //! With __purge_folder__, this module provide purging folder (as example, before copying content).
 //! 
-//! With __copy_result__, this module provide copying file and folder with availibility check.
+//! With __copy_folder__, this module provide copying file and folder with availibility check.
 //! 
 //! With __check_result__, this module provite __cargo__ command call (test, doc and other).
 //! 
 //! ## Minimal usecase
 //! 
-//! * __/Project_A/main.rs__
+//! In the case of yout making a package __Project_A__ gererating a Rust library file to test, the TODO list is :
+//! * Create a minimal cargo library package (like Imbriqua_Structure_Result, see file tree)
+//! * Create code generation script (Project_A objective) writing result in lib.rs file of Project_B
+//! * In main of Project_A, use check_result function to test Project_B with cargo
+//! 
+//! ### __/Project_A/main.rs__
 //! 
 //! ```rust
 //! # fn main() {
@@ -40,7 +45,7 @@ If not, see <https://www.gnu.org/licenses/>.
 //! 
 //! fn main() {
 //! 
-//!     fn generate_code () {
+//!     fn generate_code ("../Project_B/src/lib.rs") {
 //!         // script part generating file in relative path "../Project_B/src/lib.rs"
 //!     }
 //!     
@@ -50,14 +55,14 @@ If not, see <https://www.gnu.org/licenses/>.
 //! # fn main() {}
 //! ```
 //! 
-//! * Bash cargo equivalent
+//! ### Bash cargo equivalent
 //! 
 //! ```bash
 //! $ cargo test --manifest-path=".../Project_B/" --all-features --no-run --lib
 //! $ cargo doc --manifest-path=".../Project_B/" --no-deps
 //! ```
 //! 
-//! * File tree
+//! ### File tree
 //! 
 //! ```text
 //! .
@@ -87,7 +92,14 @@ If not, see <https://www.gnu.org/licenses/>.
 //! 
 //! ## Optimal usecase
 //! 
-//! * __/Project_A/main.rs__
+//! In the case of yout making a package __Project_A__ gererating a Rust library file to test, the TODO list is :
+//! * Create a minimal cargo library package (like Imbriqua_Structure_Result, see file tree)
+//! * Create code generation script (Project_A objective) writing result in a output folder, classified by run time (like versioning folder or archives)
+//! * In main of Project_A, use purge_folder function to remove all files in source folder of Project_B (removing old file name)
+//! * In main of Project_A, use copy_folder function to copying last result files in source folder of Project_B
+//! * In main of Project_A, use check_result function to test Project_B with cargo
+//! 
+//! ### __/Project_A/main.rs__
 //! 
 //! ```
 //! # fn main() {
@@ -102,22 +114,22 @@ If not, see <https://www.gnu.org/licenses/>.
 //!     
 //!     let output_path = format!("../Output_folder/{}", time_name);
 //! 
-//!     module_output_checker::purge_folder("../Project_B/src");
-//!     module_output_checker::copy_result(output_path.as_str(), "../Project_B/src");
+//!     module_output_checker::purge_folder("../Project_B/src/");
+//!     module_output_checker::copy_folder(output_path.as_str(), "../Project_B/src/");
 //!     module_output_checker::check_result("../Project_B/");
 //! }
 //! # }
 //! # fn main() {}
 //! ```
 //! 
-//! * Bash cargo equivalent
+//! ### Bash cargo equivalent
 //! 
 //! ```bash
 //! $ cargo test --manifest-path=".../Project_B/" --all-features --no-run --lib
 //! $ cargo doc --manifest-path=".../Project_B/" --no-deps
 //! ```
 //! 
-//! * File tree
+//! ### File tree
 //! 
 //! ```text
 //! .
@@ -172,53 +184,53 @@ If not, see <https://www.gnu.org/licenses/>.
 //!         * error informations of __std::path::Path::read_dir()__
 //!
 //! * PANIC_OUT03 - The 'from' folder don't exist (copying)
-//!     * Context : __module_output_checker.rs/copy_result()__
+//!     * Context : __module_output_checker.rs/copy_folder()__
 //!     * Info : Can't find provided folder
 //!     * Cause : see details in logs file to get :
 //!         * Value of folder path
 //!         * error informations of __std::path::Path::exist()__
 //! 
 //! * PANIC_OUT04 - The 'to' folder don't exist (copying)
-//!     * Context : __module_output_checker.rs/copy_result()__
+//!     * Context : __module_output_checker.rs/copy_folder()__
 //!     * Info : Can't find provided folder
 //!     * Cause : see details in logs file to get :
 //!         * Value of folder path
 //!         * error informations of __std::path::Path::exist()__
 //! 
 //! * PANIC_OUT05 - The folder isn't readable (copying)
-//!     * Context : __module_output_checker.rs/copy_result()__
+//!     * Context : __module_output_checker.rs/copy_folder()__
 //!     * Info : Can't read provided folder
 //!     * Cause : see details in logs file to get :
 //!         * Value of folder path
 //!         * error informations of __std::path::Path::read_dir()__
 //! 
 //! * PANIC_OUT06 - Can't copying folder
-//!     * Context : __module_output_checker.rs/copy_result()__
+//!     * Context : __module_output_checker.rs/copy_folder()__
 //!     * Cause : see details in logs file to get :
 //!         * Value of folder path
 //!         * error informations of __std::fs_extra::copy()__
 //! 
 //! * PANIC_OUT07 - Can't copying file
-//!     * Context : __module_output_checker.rs/copy_result()__
+//!     * Context : __module_output_checker.rs/copy_folder()__
 //!     * Cause : see details in logs file to get :
 //!         * Value of folder path
 //!         * error informations of __std::fs::copy()__
 //! 
 //! * PANIC_OUT08 - Error in ReadDir iterator
-//!     * Context : __module_output_checker.rs/copy_result()__
+//!     * Context : __module_output_checker.rs/copy_folder()__
 //!     * Info : Can't copy provided entry
 //!     * Cause : see details in logs file to get :
 //!         * error informations of __ReadDir::Iterator__
 //! 
 //! * PANIC_OUT09 - Error in OsString::to_str()
-//!     * Context : __module_output_checker.rs/copy_result()__
+//!     * Context : __module_output_checker.rs/copy_folder()__
 //!     * Info : Can't copy provided entry
-//!     * Cause : see details in documentation of 
+//!     * Cause : see details in logs file to get :
 //!         * Value of entry (debuging syntax)
 //!         * documentation of ReadDir::Iterator
 //! 
 //! * PANIC_OUT10 - Error in DirEntry::file_type()
-//!     * Context : __module_output_checker.rs/copy_result()__
+//!     * Context : __module_output_checker.rs/copy_folder()__
 //!     * Info : Can't copy provided entry
 //!     * Cause : see details in logs file to get :
 //!         * error informations of __DirEntry::file_type__
@@ -236,20 +248,47 @@ If not, see <https://www.gnu.org/licenses/>.
 //! * WARN_OUT03 - Error in removing entry
 //!     * Context : __module_output_checker.rs/purge_folder()__
 //!     * Info : Can't remove provided entry
-//!     * Cause : see details in documentation of 
+//!     * Cause : see details in logs file to get :
 //!         * Value of folder path
 //!         * error informations of __std::fs_extra::remove_items()__
 //! 
+//! * WARN_OUT04 - Cound't get output
+//!     * Context : __module_output_checker.rs/represent_command_output()__
+//!     * Info : Can't get output information
+//!     * Cause : see details in logs file to get :
+//!         * the command
+//!         * error informations of __std::process::Command::output()__
+//! 
+//! * WARN_OUT05 - Couldn't get STDOUT
+//!     * Context : __module_output_checker.rs/represent_command_output()__
+//!     * Info : Can't print output information
+//!     * Cause : see details in logs file to get :
+//!         * the command
+//!         * error informations of __std::str::from_utf8()__
+//! 
+//! * WARN_OUT06 - Couldn't get STDERR
+//!     * Context : __module_output_checker.rs/represent_command_output()__
+//!     * Info : Can't print output information
+//!     * Cause : see details in logs file to get :
+//!         * the command
+//!         * error informations of __std::str::from_utf8()__ 
 
-use std::path::Path;
-use std::fs;
-use fs_extra::dir::{copy, CopyOptions};
-use fs_extra::remove_items;
+use std::{process::Command, path::Path, fs};
+use fs_extra::{dir::copy, dir::CopyOptions, remove_items};
 use log::{debug, error, info, warn};
-use std::process::Command;
 
 pub fn purge_folder(folder_path : &str) {
-    //! Removing all element of a folder
+    //! Removing subelement of a target folder
+    //! 
+    //! folder_path (&str) : target folder
+    //! 
+    //! # Errors
+    //! 
+    //! See module_output_checker documentation page for errors details
+    //! 
+    //! # Examples
+    //! 
+    //! See module_output_checker documentation page for examples
 
     // Checking if exist
     match Path::new(&folder_path).exists() {
@@ -306,8 +345,19 @@ pub fn purge_folder(folder_path : &str) {
     }
 }
 
-pub fn copy_result(loader_result_file_path : &str, relative_path_result_package : &str) {
-    //! Copy library folder into a define folder (checking environment)
+pub fn copy_folder(loader_result_file_path : &str, relative_path_result_package : &str) {
+    //! Copy all subelement of a source folder in a target folder
+    //! 
+    //! loader_result_file_path (&str) : source folder
+    //! relative_path_result_package (&str) : target forder
+    //! 
+    //! # Errors
+    //! 
+    //! See module_output_checker documentation page for errors details
+    //! 
+    //! # Examples
+    //! 
+    //! See module_output_checker documentation page for examples
 
     // Checking if 'loader_result_file_path' exist
     match Path::new(&loader_result_file_path).exists() {
@@ -411,6 +461,16 @@ pub fn copy_result(loader_result_file_path : &str, relative_path_result_package 
 
 pub fn check_result(relative_path_result_package : &str) {
     //! Checking package of a gived folder, with cargo bash command
+    //! 
+    //! relative_path_result_package (&str) : root of the package to check (normally, the cargo.toml file is in this folder)
+    //! 
+    //! # Errors
+    //! 
+    //! See module_output_checker documentation page for errors details
+    //! 
+    //! # Examples
+    //! 
+    //! See module_output_checker documentation page for examples
 
     let mut cargo_1 = Command::new("cargo");
     let _ = cargo_1.arg("test")
@@ -431,46 +491,133 @@ pub fn check_result(relative_path_result_package : &str) {
     represent_command_output(&mut cargo_2);
 }
 
-fn represent_command_output(command : &mut Command) {
-    //! Printing command result
+fn represent_command_output(command : &mut Command) -> Option<bool> {
+    //! Printing command result, used by __check_result__ function
+    //! 
+    //! # Errors
+    //! 
+    //! See module_output_checker documentation page for errors details
+    //! 
+    //! # Examples
+    //! 
+    //! See module_output_checker documentation page for examples
                 
-    let command_output = command.output().unwrap();
-    let str_stdout = std::str::from_utf8(&command_output.stdout).unwrap();
-    let str_stderr = std::str::from_utf8(&command_output.stderr).unwrap();
+    let command_output= match command.output() {
+        Ok(result) => {
+            result
+        },
+        Err(error) => {
+            warn!("WARN_OUT04 - Cound't get output of {:?} - {}", &command, error);
+            return None;
+        },
+    };
 
-    debug!(
-        "\n\ncargo test : succes {}\n\nSTDOUT 2 : \n\n{}\n\nSTDERR 2 : \n\n{}",
-        command_output.status.success(), str_stdout, str_stderr
-    );
+    let str_stdout = match std::str::from_utf8(&command_output.stdout) {
+        Ok(result) => {
+            result
+        },
+        Err(error) => {
+            warn!("WARN_OUT05 - Couldn't get STDOUT of {:?} - {}", &command, error);
+            return None;
+        },
+    };
 
-    let succes = if command_output.status.success() {"SUCCES"} else {"ERROR"};
-    info!("Get {} on {:#?}", succes, &command);
+    let str_stderr = match std::str::from_utf8(&command_output.stderr) {
+        Ok(result) => {
+            result
+        },
+        Err(error) => {
+            warn!("WARN_OUT06 - Couldn't get STDERR of {:?} - {}", &command, error);
+            return None;
+        },
+    };
+
+    debug!("\nsucces:\n{}\ncommand:\n{:#?}\nstdout:\n{}\nstderr:\n{}", command_output.status.success(), &command, str_stdout, str_stderr);
+    Some(command_output.status.success())
 }
 
 #[cfg(test)]
-mod copy_result {
-    #[test]
-    fn file_1() {
+mod purge_folder {
+    use super::purge_folder;
+    use super::copy_folder;
 
+    #[test]
+    fn succes_purge_folder() {
+        //! This folder exist
+        copy_folder("./tests/module_output_checker/succes_purge_folder/from/", "./tests/module_output_checker/succes_purge_folder/to/");
+        purge_folder("./tests/module_output_checker/succes_purge_folder/to/");
     }
 
     #[test]
-    #[should_panic]
-    fn file_2() {
-        panic!()
+    #[should_panic(expected = "PANIC_OUT01")]
+    fn panic_out01_purge_folder() {
+        //! This folder don't exist
+        purge_folder("./tests/module_output_checker/panic_out01_purge_folder/to/");
+    }
+
+    #[test]
+    #[should_panic(expected = "PANIC_OUT02")]
+    fn panic_out02_purge_folder() {
+        //! This folder is owned by root, and other have "none" access
+        purge_folder("./tests/module_output_checker/panic_out02_purge_folder/to/");
+    }
+}
+
+#[cfg(test)]
+mod copy_folder {
+    use super::purge_folder;
+    use super::copy_folder;
+
+    #[test]
+    fn succes_copy_folder() {
+        //! This folder can be copied
+        purge_folder("./tests/module_output_checker/succes_copy_folder/to/");
+        copy_folder("./tests/module_output_checker/succes_copy_folder/from/", "./tests/module_output_checker/succes_copy_folder/to/");
+    }
+
+    #[test]
+    #[should_panic(expected = "PANIC_OUT03")]
+    fn panic_out03_copy_folder() {
+        //! The source folder don't exist
+        purge_folder("./tests/module_output_checker/panic_out03_copy_folder/to/");
+        copy_folder("./tests/module_output_checker/panic_out03_copy_folder/from/", "./tests/module_output_checker/panic_out03_copy_folder/to/");
+    }
+
+    #[test]
+    #[should_panic(expected = "PANIC_OUT04")]
+    fn panic_out04_copy_folder() {
+        //! The target folder don't exist
+        copy_folder("./tests/module_output_checker/panic_out04_copy_folder/from/", "./tests/module_output_checker/panic_out04_copy_folder/to/");
+    }
+
+    #[test]
+    #[should_panic(expected = "PANIC_OUT05")]
+    fn panic_out05_copy_folder() {
+        //! The source folder isn't readable
+        purge_folder("./tests/module_output_checker/panic_out05_copy_folder/to/");
+        copy_folder("./tests/module_output_checker/panic_out05_copy_folder/to (template)/", "./tests/module_output_checker/panic_out05_copy_folder/to/");
+        copy_folder("./tests/module_output_checker/panic_out05_copy_folder/from/", "./tests/module_output_checker/panic_out05_copy_folder/to/");
+    }
+
+    #[test]
+    #[should_panic(expected = "PANIC_OUT06")]
+    fn panic_out06_copy_folder() {
+        //! Can't copy a folder, owner by root without read accces
+        purge_folder("./tests/module_output_checker/panic_out06_copy_folder/to/");
+        copy_folder("./tests/module_output_checker/panic_out06_copy_folder/to (template)/", "./tests/module_output_checker/panic_out06_copy_folder/to/");
+        copy_folder("./tests/module_output_checker/panic_out06_copy_folder/from/", "./tests/module_output_checker/panic_out06_copy_folder/to/");
+    }
+
+    #[test]
+    #[should_panic(expected = "PANIC_OUT07")]
+    fn panic_out07_copy_folder() {
+        //! Can't copy a file, owner by root without read accces
+        purge_folder("./tests/module_output_checker/panic_out07_copy_folder/to/");
+        copy_folder("./tests/module_output_checker/panic_out07_copy_folder/to (template)/", "./tests/module_output_checker/panic_out07_copy_folder/to/");
+        copy_folder("./tests/module_output_checker/panic_out07_copy_folder/from/", "./tests/module_output_checker/panic_out07_copy_folder/to/");
     }
 }
 
 #[cfg(test)]
 mod check_result {
-    #[test]
-    fn file_1() {
-
-    }
-
-    #[test]
-    #[should_panic]
-    fn file_2() {
-        panic!()
-    }
 }
