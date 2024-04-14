@@ -172,6 +172,8 @@ pub fn open_module() -> Handle {
     };
     handle.set_config(config);
 
+    info!("Log handle loaded");
+
     // Get config
     handle
 }
