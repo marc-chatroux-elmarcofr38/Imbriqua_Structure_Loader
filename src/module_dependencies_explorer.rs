@@ -129,10 +129,10 @@ impl LoadingTracker {
             error!("ERROR_FILE07 - Unloaded dependencies : suspicious of circular dependencies ({a} importing {b})", a=label.clone(), b=parent_label);
             panic!("PANIC_FILE07 - Unloaded dependencies : suspicious of circular dependencies ({a} importing {b})", a=label.clone(), b=parent_label);
         }else if self.is_package_already_loaded(label.clone()) {
-            info!("Loading \"{}\" : NOPE : already loaded", label.clone());
+            trace!("Loading \"{}\" : NOPE : already loaded", label.clone());
             return
         } else {
-            info!("Loading \"{}\" : START", label.clone());
+            trace!("Loading \"{}\" : START", label.clone());
         }
 
         // Add empty element entry in loaded_package (prevent circular loading)
@@ -221,7 +221,7 @@ impl LoadingTracker {
                 //
                 match package_to_import.find('#') {
                     Some(split_index) => {
-                        info!("Loading \"{}\" : need to load \"{}\"", label.clone(), package_to_import);
+                        trace!("Loading \"{}\" : need to load \"{}\"", label.clone(), package_to_import);
                         let package_file : String = package_to_import[..split_index].to_string();
                         let split_index = split_index + 1;
                         let package_id : String = package_to_import[split_index..].to_string();
