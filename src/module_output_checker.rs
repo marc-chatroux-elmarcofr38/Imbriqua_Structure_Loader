@@ -493,6 +493,29 @@ pub fn check_result(relative_path_result_package : &str) -> bool {
     result_1.is_some_and(|x| x == true) && result_2.is_some_and(|x| x == true) 
 }
 
+pub fn clean_target_result(relative_path_result_package : &str) -> bool {
+    //! Running cargo clean
+    //! 
+    //! relative_path_result_package (&str) : root of the package to check (normally, the cargo.toml file is in this folder)
+    //! 
+    //! # Errors
+    //! 
+    //! See module_output_checker documentation page for errors details
+    //! 
+    //! # Examples
+    //! 
+    //! See module_output_checker documentation page for examples
+
+    let mut cargo_1 = Command::new("cargo");
+    let _ = cargo_1.arg("clean")
+                   .arg(format!("--manifest-path={}Cargo.toml", relative_path_result_package))
+                   .output().expect("process failed to execute");
+
+    let result_1 = represent_command_output(&mut cargo_1);
+
+    result_1.is_some_and(|x| x == true)
+}
+
 fn represent_command_output(command : &mut Command) -> Option<bool> {
     //! Printing command result, used by __check_result__ function
     //! 
@@ -631,11 +654,14 @@ mod copy_folder {
 #[cfg(test)]
 mod check_result {
     use super::check_result;
+    use super::clean_target_result;
 
     #[test]
     fn succes_check_result() {
         //! This folder can be copied
         let result = check_result("./tests/module_output_checker/succes_check_result/Project_B/");
+        assert_eq!(result, true);
+        let result = clean_target_result("./tests/module_output_checker/succes_check_result/Project_B/");
         assert_eq!(result, true);
     }
 
@@ -644,5 +670,7 @@ mod check_result {
         //! This folder can be copied
         let result = check_result("./tests/module_output_checker/error_check_result/Project_B/");
         assert_eq!(result, false);
+        let result = clean_target_result("./tests/module_output_checker/error_check_result/Project_B/");
+        assert_eq!(result, true);
     }
 }
