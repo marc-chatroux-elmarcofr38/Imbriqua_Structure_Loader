@@ -114,9 +114,16 @@ If not, see <https://www.gnu.org/licenses/>.
 //!     
 //!     let output_path = format!("../Output_folder/{}", time_name);
 //! 
+//!     // cargo clean, 
+//!     module_output_checker::clean_target_result("../Project_B/");
+//! 
+//!     // copying and checking
 //!     module_output_checker::purge_folder("../Project_B/src/");
 //!     module_output_checker::copy_folder(output_path.as_str(), "../Project_B/src/");
 //!     module_output_checker::check_result("../Project_B/");
+//! 
+//!     // cargo build, for example
+//!     module_output_checker::cargo_custom_command(vec!["build"], "../Project_B/");
 //! }
 //! # }
 //! # fn main() {}
@@ -519,6 +526,31 @@ pub fn clean_target_result(relative_path_result_package : &str) -> bool {
     result_1
 }
 
+pub fn cargo_custom_command(args : Vec<&str>, relative_path_result_package : &str) -> bool {
+    //! Running cargo custom command
+    //! 
+    //! args (Vec<&str>) : list of arg to forward to the command
+    //! relative_path_result_package (&str) : root of the package to check (normally, the cargo.toml file is in this folder)
+    //! 
+    //! # Errors
+    //! 
+    //! See module_output_checker documentation page for errors details
+    //! 
+    //! # Examples
+    //! 
+    //! See module_output_checker documentation page for examples
+
+    let mut cargo_1 = Command::new("cargo");
+    let _ = cargo_1.args(args)
+                   .arg(format!("--manifest-path={}Cargo.toml", relative_path_result_package))
+                   .output().expect("process failed to execute");
+
+    let result_1 = represent_command_output(&mut cargo_1).is_some_and(|x| x == true);
+    info!("Running cargo custom : {}", if result_1 {"succes"} else {"error"});
+
+    result_1
+}
+
 fn represent_command_output(command : &mut Command) -> Option<bool> {
     //! Printing command result, used by __check_result__ function
     //! 
@@ -655,7 +687,9 @@ mod copy_folder {
 }
 
 #[cfg(test)]
-mod check_result {
+mod check_result_clean_and_custom {
+    use crate::module_output_checker::cargo_custom_command;
+
     use super::check_result;
     use super::clean_target_result;
 
@@ -665,6 +699,8 @@ mod check_result {
         let result = check_result("./tests/module_output_checker/succes_check_result/Project_B/");
         assert_eq!(result, true);
         let result = clean_target_result("./tests/module_output_checker/succes_check_result/Project_B/");
+        assert_eq!(result, true);
+        let result = cargo_custom_command(vec!["build"], "./tests/module_output_checker/succes_check_result/Project_B/");
         assert_eq!(result, true);
     }
 

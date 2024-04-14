@@ -54,6 +54,7 @@ fn main() {
         panic!()
     }
 
+    let _ = module_output_checker::cargo_custom_command(vec!["build"], "../Imbriqua_Structure_Result/");
 
     // module_output_checker::purge_folder("../Output_file");
 }
