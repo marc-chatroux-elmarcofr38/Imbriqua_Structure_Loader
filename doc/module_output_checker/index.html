@@ -1,0 +1,315 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Tools for cargo checking of a library folder"><title>imbriqua_structure_loader::module_output_checker - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="imbriqua_structure_loader" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0 (aedd173a2 2024-03-17) (Fedora 1.77.0-1.fc38)" data-channel="1.77.0" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../imbriqua_structure_loader/index.html">imbriqua_structure_loader</a><span class="version">0.1.0</span></h2></div><h2 class="location"><a href="#">Module module_output_checker</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#functions">Functions</a></li></ul></section><h2><a href="../index.html">In crate imbriqua_structure_loader</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../imbriqua_structure_loader/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">imbriqua_structure_loader</a>::<wbr><a class="mod" href="#">module_output_checker</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/imbriqua_structure_loader/module_output_checker.rs.html#19-717">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Tools for cargo checking of a library folder</p>
+<h2 id="how-to-use"><a class="doc-anchor" href="#how-to-use">§</a>How to use</h2>
+<p>Allowing to checking (with cargo) a Rust library file or a Rust executable file, previously genereted.</p>
+<p>With <strong>purge_folder</strong>, this module provide purging folder (as example, before copying content).</p>
+<p>With <strong>copy_folder</strong>, this module provide copying file and folder with availibility check.</p>
+<p>With <strong>check_result</strong>, this module provite <strong>cargo</strong> command call (test, doc and other).</p>
+<h3 id="minimal-usecase"><a class="doc-anchor" href="#minimal-usecase">§</a>Minimal usecase</h3>
+<p>In the case of yout making a package <strong>Project_A</strong> gererating a Rust library file to test, the TODO list is :</p>
+<ul>
+<li>Create a minimal cargo library package (like Imbriqua_Structure_Result, see file tree)</li>
+<li>Create code generation script (Project_A objective) writing result in lib.rs file of Project_B</li>
+<li>In main of Project_A, use check_result function to test Project_B with cargo</li>
+</ul>
+<h4 id="project_amainrs"><a class="doc-anchor" href="#project_amainrs">§</a><strong>/Project_A/main.rs</strong></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">mod </span>module_output_checker;
+ 
+<span class="kw">fn </span>main() {
+ 
+    <span class="kw">fn </span>generate_code (<span class="string">"../Project_B/src/lib.rs"</span>) {
+        <span class="comment">// script part generating file in relative path "../Project_B/src/lib.rs"
+    </span>}
+     
+    module_output_checker::check_result(<span class="string">"../Project_B/"</span>);
+}</code></pre></div>
+<h4 id="bash-cargo-equivalent"><a class="doc-anchor" href="#bash-cargo-equivalent">§</a>Bash cargo equivalent</h4><div class="example-wrap"><pre class="language-bash"><code>$ cargo test --manifest-path=&quot;.../Project_B/&quot; --all-features --no-run --lib
+$ cargo doc --manifest-path=&quot;.../Project_B/&quot; --no-deps
+</code></pre></div><h4 id="file-tree"><a class="doc-anchor" href="#file-tree">§</a>File tree</h4><div class="example-wrap"><pre class="language-text"><code>.
+├── Project_A/ (executable package, like Imbriqua_Structure_Loader)
+│   ├── README.md
+│   ├── Cargo.toml
+│   ├── Cargo.lock
+│   ├── src/
+│   │   ├── main.rs
+│   │   ├── module_output_checker.rs
+│   │   └── ...
+│   └── ...
+│
+├── Project_B/ (library package to check, like Imbriqua_Structure_Result)
+│   ├── README.md
+│   ├── Cargo.toml
+│   ├── Cargo.lock
+│   ├── src/
+│   │   └── lib.rs
+│   └── ...
+│
+└── ...
+ 
+PS : Of course, you can have a similar folder tree for executable package check
+</code></pre></div><h3 id="optimal-usecase"><a class="doc-anchor" href="#optimal-usecase">§</a>Optimal usecase</h3>
+<p>In the case of yout making a package <strong>Project_A</strong> gererating a Rust library file to test, the TODO list is :</p>
+<ul>
+<li>Create a minimal cargo library package (like Imbriqua_Structure_Result, see file tree)</li>
+<li>Create code generation script (Project_A objective) writing result in a output folder, classified by run time (like versioning folder or archives)</li>
+<li>In main of Project_A, use purge_folder function to remove all files in source folder of Project_B (removing old file name)</li>
+<li>In main of Project_A, use copy_folder function to copying last result files in source folder of Project_B</li>
+<li>In main of Project_A, use check_result function to test Project_B with cargo</li>
+</ul>
+<h4 id="project_amainrs-1"><a class="doc-anchor" href="#project_amainrs-1">§</a><strong>/Project_A/main.rs</strong></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">mod </span>module_output_checker;
+ 
+<span class="kw">fn </span>main() {
+ 
+    <span class="kw">fn </span>generate_code () {
+        <span class="comment">// script part generating file and complex folder
+        // in relative path "../Output_file/{time_name}/src"
+    </span>}
+     
+    <span class="kw">let </span>output_path = <span class="macro">format!</span>(<span class="string">"../Output_folder/{}"</span>, time_name);
+ 
+    <span class="comment">// cargo clean, 
+    </span>module_output_checker::clean_target_result(<span class="string">"../Project_B/"</span>);
+ 
+    <span class="comment">// copying and checking
+    </span>module_output_checker::purge_folder(<span class="string">"../Project_B/src/"</span>);
+    module_output_checker::copy_folder(output_path.as_str(), <span class="string">"../Project_B/src/"</span>);
+    module_output_checker::check_result(<span class="string">"../Project_B/"</span>);
+ 
+    <span class="comment">// cargo build, for example
+    </span>module_output_checker::cargo_custom_command(<span class="macro">vec!</span>[<span class="string">"build"</span>], <span class="string">"../Project_B/"</span>);
+}</code></pre></div>
+<h4 id="bash-cargo-equivalent-1"><a class="doc-anchor" href="#bash-cargo-equivalent-1">§</a>Bash cargo equivalent</h4><div class="example-wrap"><pre class="language-bash"><code>$ cargo test --manifest-path=&quot;.../Project_B/&quot; --all-features --no-run --lib
+$ cargo doc --manifest-path=&quot;.../Project_B/&quot; --no-deps
+</code></pre></div><h4 id="file-tree-1"><a class="doc-anchor" href="#file-tree-1">§</a>File tree</h4><div class="example-wrap"><pre class="language-text"><code>.
+├── Imbriqua_Structure_Loader/ (executable package)
+│   ├── README.md
+│   ├── Cargo.toml
+│   ├── Cargo.lock
+│   ├── src/
+│   │   ├── main.rs
+│   │   ├── module_output_checker.rs
+│   │   └── ...
+│   └── ...
+│
+├── Imbriqua_Structure_Result/ (library package or executable package)
+│   ├── README.md
+│   ├── Cargo.toml
+│   ├── Cargo.lock
+│   ├── src/
+│   │   ├── lib.rs
+│   │   └── lib_folder/ 
+│   │       └── ...
+│   └── ...
+│
+├── Output_folder/
+│   ├── 2024-04-13_12h36m50/
+│   │   ├── lib.rs
+│   │   └── lib_folder/
+│   │       └── ...
+│   ├── 2024-04-12_08h47m01/
+│   │   ├── lib.rs
+│   │   └── lib_folder/
+│   │       └── ...
+│   └── ...
+│
+└── ...
+
+PS : Of course, you can have a similar folder tree for executable package check
+</code></pre></div><h2 id="panic-and-failure"><a class="doc-anchor" href="#panic-and-failure">§</a>Panic and failure</h2>
+<ul>
+<li>
+<p>PANIC_OUT01 - The folder don’t exist during purge</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/purge_folder()</strong></li>
+<li>Info : Can’t find provided folder</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>Value of folder path</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>PANIC_OUT02 - The folder isn’t readable during purge</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/purge_folder()</strong></li>
+<li>Info : Can’t read provided folder</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>Value of folder path</li>
+<li>error informations of <strong>std::path::Path::read_dir()</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>PANIC_OUT03 - The ‘from’ folder don’t exist (copying)</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/copy_folder()</strong></li>
+<li>Info : Can’t find provided folder</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>Value of folder path</li>
+<li>error informations of <strong>std::path::Path::exist()</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>PANIC_OUT04 - The ‘to’ folder don’t exist (copying)</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/copy_folder()</strong></li>
+<li>Info : Can’t find provided folder</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>Value of folder path</li>
+<li>error informations of <strong>std::path::Path::exist()</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>PANIC_OUT05 - The folder isn’t readable (copying)</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/copy_folder()</strong></li>
+<li>Info : Can’t read provided folder</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>Value of folder path</li>
+<li>error informations of <strong>std::path::Path::read_dir()</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>PANIC_OUT06 - Can’t copying folder</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/copy_folder()</strong></li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>Value of folder path</li>
+<li>error informations of <strong>std::fs_extra::copy()</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>PANIC_OUT07 - Can’t copying file</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/copy_folder()</strong></li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>Value of folder path</li>
+<li>error informations of <strong>std::fs::copy()</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>PANIC_OUT08 - Error in ReadDir iterator</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/copy_folder()</strong></li>
+<li>Info : Can’t copy provided entry</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>error informations of <strong>ReadDir::Iterator</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>PANIC_OUT09 - Error in OsString::to_str()</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/copy_folder()</strong></li>
+<li>Info : Can’t copy provided entry</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>Value of entry (debuging syntax)</li>
+<li>documentation of ReadDir::Iterator</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>PANIC_OUT10 - Error in DirEntry::file_type()</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/copy_folder()</strong></li>
+<li>Info : Can’t copy provided entry</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>error informations of <strong>DirEntry::file_type</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>WARN_OUT01 - Error in ReadDir iterator</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/purge_folder()</strong></li>
+<li>Info : Can’t remove provided entry</li>
+<li>Cause : see details in documentation of ReadDir::Iterator</li>
+</ul>
+</li>
+<li>
+<p>WARN_OUT02 - Error in pathBuf::to_str()</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/purge_folder()</strong></li>
+<li>Info : Can’t remove provided entry</li>
+<li>Cause : see details in documentation of PathBuf::to_str</li>
+</ul>
+</li>
+<li>
+<p>WARN_OUT03 - Error in removing entry</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/purge_folder()</strong></li>
+<li>Info : Can’t remove provided entry</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>Value of folder path</li>
+<li>error informations of <strong>std::fs_extra::remove_items()</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>WARN_OUT04 - Cound’t get output</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/represent_command_output()</strong></li>
+<li>Info : Can’t get output information</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>the command</li>
+<li>error informations of <strong>std::process::Command::output()</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>WARN_OUT05 - Couldn’t get STDOUT</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/represent_command_output()</strong></li>
+<li>Info : Can’t print output information</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>the command</li>
+<li>error informations of <strong>std::str::from_utf8()</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>WARN_OUT06 - Couldn’t get STDERR</p>
+<ul>
+<li>Context : <strong>module_output_checker.rs/represent_command_output()</strong></li>
+<li>Info : Can’t print output information</li>
+<li>Cause : see details in logs file to get :
+<ul>
+<li>the command</li>
+<li>error informations of <strong>std::str::from_utf8()</strong> </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div></details><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.cargo_custom_command.html" title="fn imbriqua_structure_loader::module_output_checker::cargo_custom_command">cargo_custom_command</a></div><div class="desc docblock-short">Running cargo custom command</div></li><li><div class="item-name"><a class="fn" href="fn.check_result.html" title="fn imbriqua_structure_loader::module_output_checker::check_result">check_result</a></div><div class="desc docblock-short">Checking package of a gived folder, with cargo bash command</div></li><li><div class="item-name"><a class="fn" href="fn.clean_target_result.html" title="fn imbriqua_structure_loader::module_output_checker::clean_target_result">clean_target_result</a></div><div class="desc docblock-short">Running cargo clean command</div></li><li><div class="item-name"><a class="fn" href="fn.copy_folder.html" title="fn imbriqua_structure_loader::module_output_checker::copy_folder">copy_folder</a></div><div class="desc docblock-short">Copy all subelement of a source folder in a target folder</div></li><li><div class="item-name"><a class="fn" href="fn.purge_folder.html" title="fn imbriqua_structure_loader::module_output_checker::purge_folder">purge_folder</a></div><div class="desc docblock-short">Removing subelement of a target folder</div></li><li><div class="item-name"><a class="fn" href="fn.represent_command_output.html" title="fn imbriqua_structure_loader::module_output_checker::represent_command_output">represent_command_output</a><span title="Restricted Visibility">&nbsp;🔒</span> </div><div class="desc docblock-short">Printing command result, used by <strong>check_result</strong> function</div></li></ul></section></div></main></body></html>
