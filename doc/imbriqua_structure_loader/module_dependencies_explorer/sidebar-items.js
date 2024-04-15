@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["LoadingState"],"fn":["check_file_exist","check_folder_exist","check_read_file","check_read_path","check_remove_dir","create_file","get_package_from_path"],"struct":["FileEnv","LoadingPackage","LoadingTracker"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["main"],"mod":["module_dependencies_explorer","module_log","module_output_checker"]};

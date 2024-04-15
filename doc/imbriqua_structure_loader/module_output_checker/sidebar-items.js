@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["cargo_custom_command","check_result","clean_target_result","copy_folder","purge_folder","represent_command_output"]};

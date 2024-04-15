@@ -17,7 +17,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 #![warn(missing_docs)]
 
-//! AAAAAAAAAAAHHHHHHHHHHHHHHs
+//! To be defined
 
 mod module_log;
 mod module_dependencies_explorer;
