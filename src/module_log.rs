@@ -19,6 +19,10 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../doc/module_output_checker.md")]
 
+
+use std::fs::read_to_string;
+use log::trace;
+
 use anyhow::Result;
 use log::{info, warn, error, LevelFilter};
 use log4rs::init_config;
@@ -74,7 +78,20 @@ fn get_config_by_file() -> Result<Config> {
     //! Define a config by loading "config_log.yml"
 
     // Loading the file
-    let default_config_str : &'static str = include_str!("config_log.yml");
+    // let default_config_str : &'static str = include_str!("config_log.yml");
+
+    // Check if the file is readable 
+    let str_result = match read_to_string("config_log.yml") {
+        Ok(result_object) => {
+            trace!("CheckFile : File is readable \"{}\"", "config_log.yml");
+            result_object
+        }
+        Err(err_object) => {
+            error!("ERROR_FILE04 - A file isn't readable - \"{}\" : {}", "config_log.yml", err_object);
+            panic!("PANIC_FILE04 - A file isn't readable - \"{}\" : {}", "config_log.yml", err_object);
+        }
+    };
+    let default_config_str = str_result.as_str();
 
     // Deserialize
     let config : RawConfig = from_str(default_config_str)?;

@@ -21,6 +21,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 mod module_log;
 mod module_dependencies_explorer;
+mod module_file_manager;
 mod module_output_checker;
 
 // use log::info;

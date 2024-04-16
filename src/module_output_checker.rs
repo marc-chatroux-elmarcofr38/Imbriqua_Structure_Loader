@@ -338,119 +338,72 @@ fn represent_command_output(command : &mut Command) -> Option<bool> {
 }
 
 #[cfg(test)]
-mod purge_folder {
-    use super::purge_folder;
-    use super::copy_folder;
+mod tests {
+    use crate::module_output_checker::purge_folder;
+    use crate::module_output_checker::copy_folder;
+    use crate::module_output_checker::check_result;
+    use crate::module_output_checker::clean_target_result;
+    use crate::module_output_checker::cargo_custom_command;
 
     #[test]
-    fn succes_purge_folder() {
-        //! This folder exist
-        copy_folder("./tests/module_output_checker/succes_purge_folder/from/", "./tests/module_output_checker/succes_purge_folder/to/");
-        purge_folder("./tests/module_output_checker/succes_purge_folder/to/");
+    fn module_out_01_succes_all_in_one() {
+        // Copy
+        copy_folder("tests/module_out_01_succes_all_in_one/output/", "tests/module_out_01_succes_all_in_one/project_b/src/");
+        // Check
+        let result = check_result("tests/module_out_01_succes_all_in_one/project_b/");
+        assert_eq!(result, true);
+        // Build
+        let result = cargo_custom_command(vec!["build"], "tests/module_out_01_succes_all_in_one/project_b/");
+        assert_eq!(result, true);
+        // Clean
+        let result = clean_target_result("tests/module_out_01_succes_all_in_one/project_b/");
+        assert_eq!(result, true);
+        // Purge
+        purge_folder("tests/module_out_01_succes_all_in_one/project_b/src/");
     }
 
     #[test]
     #[should_panic(expected = "PANIC_OUT01")]
-    fn panic_out01_purge_folder() {
-        //! This folder don't exist
-        purge_folder("./tests/module_output_checker/panic_out01_purge_folder/to/");
+    fn module_out_02_panic_out01() {
+        //! Folder don't exist
+        purge_folder("tests/module_out_02_panic_out01/to/");
     }
 
-    /* Can't generate read/write error on GitHub repositories folder
-    #[test]
-    #[should_panic(expected = "PANIC_OUT02")]
-    fn panic_out02_purge_folder() {
-        //! This folder is owned by root, and other have "none" access
-        purge_folder("./tests/module_output_checker/panic_out02_purge_folder/to/");
-    }
-    */
-}
-
-#[cfg(test)]
-mod copy_folder {
-    use super::purge_folder;
-    use super::copy_folder;
-
-    #[test]
-    fn succes_copy_folder() {
-        //! This folder can be copied
-        purge_folder("./tests/module_output_checker/succes_copy_folder/to/");
-        copy_folder("./tests/module_output_checker/succes_copy_folder/from/", "./tests/module_output_checker/succes_copy_folder/to/");
-    }
+    // module_out_03_panic_out02 - Can't generate read/write error on GitHub repositories folder
 
     #[test]
     #[should_panic(expected = "PANIC_OUT03")]
-    fn panic_out03_copy_folder() {
-        //! The source folder don't exist
-        purge_folder("./tests/module_output_checker/panic_out03_copy_folder/to/");
-        copy_folder("./tests/module_output_checker/panic_out03_copy_folder/from/", "./tests/module_output_checker/panic_out03_copy_folder/to/");
+    fn module_out_04_panic_out03() {
+        //! Source folder don't exist
+        purge_folder("tests/module_out_04_panic_out03/to/");
+        copy_folder("tests/module_out_04_panic_out03/from/", "tests/module_out_04_panic_out03/to/");
     }
 
     #[test]
     #[should_panic(expected = "PANIC_OUT04")]
-    fn panic_out04_copy_folder() {
-        //! The target folder don't exist
-        copy_folder("./tests/module_output_checker/panic_out04_copy_folder/from/", "./tests/module_output_checker/panic_out04_copy_folder/to/");
+    fn module_out_05_panic_out04() {
+        //! Target folder don't exist
+        copy_folder("tests/module_out_05_panic_out04/from/", "tests/module_out_05_panic_out04/to/");
     }
 
-    /* Can't generate read/write error on GitHub repositories folder
-    #[test]
-    #[should_panic(expected = "PANIC_OUT05")]
-    fn panic_out05_copy_folder() {
-        //! The source folder isn't readable
-        purge_folder("./tests/module_output_checker/panic_out05_copy_folder/to/");
-        copy_folder("./tests/module_output_checker/panic_out05_copy_folder/to (template)/", "./tests/module_output_checker/panic_out05_copy_folder/to/");
-        copy_folder("./tests/module_output_checker/panic_out05_copy_folder/from/", "./tests/module_output_checker/panic_out05_copy_folder/to/");
-    }
-    */
+    // module_out_06_panic_out05 - Can't generate read/write error on GitHub repositories folder
 
-    /* Can't generate read/write error on GitHub repositories folder
-    #[test]
-    #[should_panic(expected = "PANIC_OUT06")]
-    fn panic_out06_copy_folder() {
-        //! Can't copy a folder, owner by root without read accces
-        purge_folder("./tests/module_output_checker/panic_out06_copy_folder/to/");
-        copy_folder("./tests/module_output_checker/panic_out06_copy_folder/to (template)/", "./tests/module_output_checker/panic_out06_copy_folder/to/");
-        copy_folder("./tests/module_output_checker/panic_out06_copy_folder/from/", "./tests/module_output_checker/panic_out06_copy_folder/to/");
-    }
-    */
+    // module_out_07_panic_out06 - Can't generate read/write error on GitHub repositories folder
 
-    /* Can't generate read/write error on GitHub repositories folder
-    #[test]
-    #[should_panic(expected = "PANIC_OUT07")]
-    fn panic_out07_copy_folder() {
-        //! Can't copy a file, owner by root without read accces
-        purge_folder("./tests/module_output_checker/panic_out07_copy_folder/to/");
-        copy_folder("./tests/module_output_checker/panic_out07_copy_folder/to (template)/", "./tests/module_output_checker/panic_out07_copy_folder/to/");
-        copy_folder("./tests/module_output_checker/panic_out07_copy_folder/from/", "./tests/module_output_checker/panic_out07_copy_folder/to/");
-    }
-    */
-}
+    // module_out_08_panic_out07 - Can't generate read/write error on GitHub repositories folder
 
-#[cfg(test)]
-mod check_result_clean_and_custom {
-    use crate::module_output_checker::cargo_custom_command;
+    // module_out_09_panic_out08 - Can't generate read/write error on GitHub repositories folder
 
-    use super::check_result;
-    use super::clean_target_result;
+    // module_out_10_panic_out09 - Can't generate read/write error on GitHub repositories folder
+
+    // module_out_11_panic_out10 - Can't generate read/write error on GitHub repositories folder
 
     #[test]
-    fn succes_check_result() {
+    fn module_out_11_check_result_return_false() {
         //! This folder can be copied
-        let result = check_result("./tests/module_output_checker/succes_check_result/Project_B/");
-        assert_eq!(result, true);
-        let result = cargo_custom_command(vec!["build"], "./tests/module_output_checker/succes_check_result/Project_B/");
-        assert_eq!(result, true);
-        let result = clean_target_result("./tests/module_output_checker/succes_check_result/Project_B/");
-        assert_eq!(result, true);
-    }
-
-    #[test]
-    fn error_check_result() {
-        //! This folder can be copied
-        let result = check_result("./tests/module_output_checker/error_check_result/Project_B/");
+        let result = check_result("tests/module_out_11_check_result_return_false/project_b/");
         assert_eq!(result, false);
-        let result = clean_target_result("./tests/module_output_checker/error_check_result/Project_B/");
+        let result = clean_target_result("tests/module_out_11_check_result_return_false/project_b/");
         assert_eq!(result, true);
     }
 }
