@@ -17,14 +17,15 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/module_output_checker.md")]
+#![doc = include_str!("../doc/module_log.md")]
 
-
+// Package section
 use std::fs::read_to_string;
-use log::trace;
+pub use log::{error, warn, info, trace, debug};
 
+// Dependencies section
 use anyhow::Result;
-use log::{info, warn, error, LevelFilter};
+use log::LevelFilter;
 use log4rs::init_config;
 use log4rs::Handle;
 use log4rs::append::console::ConsoleAppender;
@@ -34,10 +35,10 @@ use log4rs::config::{Appender, RawConfig, Config, Deserializers, Logger, Root};
 use serde_yaml::from_str;
 
 pub fn open_module(config_file : &str) -> Handle {
-    //! Configure logger with config_log.yml, after configure it with a backup configuation
+    //! Configure logger with config_file, after configure it with a backup configuation
     //! 
     //! Try to load a backup configuration ("hard writted" configuration)
-    //! After, try to load "config_log.yml" configuration
+    //! After, try to load "config_file" configuration
 
     // Itinialisation of global logger with backup configuration
     let config : Config = match get_config_by_backup() {
@@ -55,13 +56,13 @@ pub fn open_module(config_file : &str) -> Handle {
         },
     };
 
-    // Itinialisation of global logger with "config_log.yml" configuration
+    // Itinialisation of global logger with "config_file" configuration
     let config : Config = match get_config_by_file(config_file) {
         Ok(result) => {
             result
         },
         Err(error) => {
-            warn!("WARN_LOG01 - Error during default configuration loading \"{}\": {}", "config_log.yml", error);
+            warn!("WARN_LOG01 - Error during default configuration loading \"{}\": {}", config_file, error);
             info!("Logger init success : use of \"{}\"", "!!! BACKUP CONFIGURATION !!!");
             return handle
         },
@@ -134,11 +135,11 @@ fn get_config_by_file(config_file : &str) -> Result<Config> {
 
 
 #[cfg(test)]
-mod test_log {
+mod tests {
     use crate::module_log::{get_config_by_backup, get_config_by_file};
 
     #[test]
-    fn check_configuration_by_backup() {
+    fn module_log_01_check_configuration_by_backup() {
         // Checking execution
         let result = get_config_by_backup();
         // Checking Result
@@ -146,9 +147,9 @@ mod test_log {
     }
 
     #[test]
-    fn check_configuration_by_file() {
+    fn module_log_02_check_configuration_by_file() {
         // Checking execution
-        let result = get_config_by_file("config_log.yml");
+        let result = get_config_by_file("tests/module_log_02_check_configuration_by_file/config_log.yml");
         // Checking Result
         assert!(result.is_ok());
     }

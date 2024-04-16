@@ -19,277 +19,282 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../doc/module_output_checker.md")]
 
-use std::{process::Command, path::Path, fs};
+// Package section
+use crate::module_file_manager;
+use crate::module_log::*;
+
+// Dependencies section
+use std::fs;
+use std::{process::Command, fs::canonicalize, path::PathBuf};
 use fs_extra::{dir::copy, dir::CopyOptions, remove_items};
-use log::{error, warn, info, trace, debug};
 
-pub fn purge_folder(folder_path : &str) {
-    //! Removing subelement of a target folder
-    //! 
-    //! folder_path (&str) : target folder
-    //! 
-    //! # Errors
-    //! 
-    //! See module_output_checker documentation page for errors details
-    //! 
-    //! # Examples
-    //! 
-    //! See module_output_checker documentation page for examples
+#[derive(Clone, PartialEq, Debug)]
+pub struct PackageLink {
+    absolute_path : Box<PathBuf>,
+}
 
-    // Checking if exist
-    match Path::new(&folder_path).exists() {
-        true => {trace!("CheckFile : Folder \"{}\" exist", &folder_path);},
-        false => {
-            error!("PANIC_OUT01 - The folder don't exist during purge - {}", &folder_path);
-            panic!("PANIC_OUT01 - The folder don't exist during purge - {}", &folder_path);
-        },
-    };
-
-    // Get content
-    let items = match fs::read_dir(folder_path) {
-        Ok(result) => {result},
-        Err(error) => {
-            error!("PANIC_OUT02 - The folder isn't readable during purge - {} - {}", &folder_path, error);
-            panic!("PANIC_OUT02 - The folder isn't readable during purge - {} - {}", &folder_path, error);
-        },
-    };
-
-    // Remove each entry
-    for entry in items {
-        let entry_path = match entry {
+impl PackageLink {
+    //! Represent a cargo package folder link, used to checking metacode result
+    pub fn from(str_relative_cargo_path : &str) -> Self {
+        //! Initialise a cargo package folder link from relative string path
+        
+        let var_absolute_path = match canonicalize(str_relative_cargo_path) {
             Ok(result) => {
-                result.path()
-            },
-            Err(_) => {
-                warn!("WARN_OUT_01 - Error in ReadDir iterator");
-                continue;
-            },
-        };
-        let entry_path = entry_path.to_str();
-
-        let entry_path = match entry_path {
-            Some(result) => {
+                info!("Can canonicalize {:?} to {:?}", str_relative_cargo_path, result);
                 result
             },
-            None => {
-                warn!("WARN_OUT_02 - Error in pathBuf::to_str()");
-                continue;
+            Err(error) => {
+                error!("PANIC_OUT01 - Can't canonicalize {:?} - {}", str_relative_cargo_path, error);
+                panic!("PANIC_OUT01 - Can't canonicalize {:?} - {}", str_relative_cargo_path, error);
             },
         };
 
-        let mut vec_entry = Vec::new();
-        vec_entry.push(entry_path);
+        let result = 
+            PackageLink {
+                absolute_path : Box::new(var_absolute_path)
+            };
 
-        match remove_items(&vec_entry) {
-            Ok(_) => {
-                trace!("purge : Removing \"{}\"", entry_path);
+        result.cargo_integrity_check();
+        result
+    }
+
+    fn get_string(&self) -> String {
+        format!("{}", self.absolute_path.to_string_lossy())
+    }
+
+    fn get_source(&self) -> String {
+        self.get_string().replace("/Cargo.toml", "") + "/src"
+    }
+
+    pub fn cargo_custom_command(&self, args : Vec<&str>) -> bool {
+        //! Running cargo custom command
+        //! 
+        //! args (Vec<&str>) : list of arg to forward to the command
+        //! 
+        //! # Errors
+        //! 
+        //! See module_output_checker documentation page for errors details
+        //! 
+        //! # Examples
+        //! 
+        //! See module_output_checker documentation page for examples
+    
+        let mut cargo_1 = Command::new("cargo");
+        let _ = cargo_1.args(args)
+                       .arg(format!("--manifest-path={}", self.absolute_path.to_string_lossy()))
+                       .output().expect("process failed to execute");
+    
+        let result_1 = represent_command_output(&mut cargo_1).is_some_and(|x| x == true);
+        trace!("Running cargo command : {} : {:?}", if result_1 {"succes"} else {"error"}, cargo_1);
+    
+        result_1
+    }
+
+    pub fn cargo_full_check(&self) -> bool {
+        //! Running cargo full check (check, test, build, doc)
+        //! 
+        //! # Errors
+        //! 
+        //! See module_output_checker documentation page for errors details
+        //! 
+        //! # Examples
+        //! 
+        //! See module_output_checker documentation page for examples
+
+        let result_1 = self.cargo_custom_command(vec!["check", "--all-features", "--lib"]);
+        let result_2 = self.cargo_custom_command(vec!["test", "--all-features", "--no-run", "--lib"]);
+        let result_3 = self.cargo_custom_command(vec!["build", "--all-features", "--lib"]);
+        let result_4 = self.cargo_custom_command(vec!["doc", "--no-deps"]);
+
+        result_1 && result_2 && result_3 && result_4
+    }
+
+    pub fn cargo_integrity_check(&self) {
+        //! Running cargo locate-project command, allowing to check existence of Cargo.toml file
+        //! 
+        //! # Errors
+        //! 
+        //! See module_output_checker documentation page for errors details
+        //! 
+        //! # Examples
+        //! 
+        //! See module_output_checker documentation page for examples
+
+        match &self.cargo_custom_command(vec!["locate-project"]) {
+            true => {
+                info!("Cargo.toml exist for {:?}", &self.absolute_path);
             },
-            Err(error) => {
-                error!("WARN_OUT03 - Error in removing entry - {} - {}", &entry_path, error);
+            false => {
+                error!("PANIC_OUT02 - Can't find cargo.toml {:?}", &self.absolute_path);
+                panic!("PANIC_OUT02 - Can't find cargo.toml {:?}", &self.absolute_path);
             },
+        };
+    }
+
+    pub fn cargo_clean(&self) {
+        //! Running cargo clean command, allowing to purge "target" folder
+        //! 
+        //! # Errors
+        //! 
+        //! See module_output_checker documentation page for errors details
+        //! 
+        //! # Examples
+        //! 
+        //! See module_output_checker documentation page for examples
+
+        match &self.cargo_custom_command(vec!["clean"]) {
+            true => {
+                info!("Cleaning {:?} package", &self.absolute_path);
+            },
+            false => {
+                error!("PANIC_OUT02 - Can't clean {:?}", &self.absolute_path);
+                panic!("PANIC_OUT02 - Can't clean {:?}", &self.absolute_path);
+            },
+        };
+    }
+
+    pub fn purge (&self) {
+        //! Removing subelement of a "/src" folder
+        //! 
+        //! # Errors
+        //! 
+        //! See module_output_checker documentation page for errors details
+        //! 
+        //! # Examples
+        //! 
+        //! See module_output_checker documentation page for examples
+
+        // Get content
+        let items = module_file_manager::check_read_folder_and_return(self.get_source().as_str() );
+
+        // Remove each entry
+        for entry in items {
+            let entry_path = match entry {
+                Ok(result) => {
+                    result.path()
+                },
+                Err(_) => {
+                    warn!("WARN_OUT_01 - Error in ReadDir iterator");
+                    continue;
+                },
+            };
+            let entry_path = entry_path.to_str();
+
+            let entry_path = match entry_path {
+                Some(result) => {
+                    result
+                },
+                None => {
+                    warn!("WARN_OUT_02 - Error in pathBuf::to_str()");
+                    continue;
+                },
+            };
+
+            let mut vec_entry = Vec::new();
+            vec_entry.push(entry_path);
+
+            match remove_items(&vec_entry) {
+                Ok(_) => {
+                    trace!("purge : Removing \"{}\"", entry_path);
+                },
+                Err(error) => {
+                    error!("WARN_OUT03 - Error in removing entry - {} - {}", &entry_path, error);
+                },
+            }
         }
     }
-}
 
-pub fn copy_folder(loader_result_file_path : &str, relative_path_result_package : &str) {
-    //! Copy all subelement of a source folder in a target folder
-    //! 
-    //! loader_result_file_path (&str) : source folder
-    //! relative_path_result_package (&str) : target forder
-    //! 
-    //! # Errors
-    //! 
-    //! See module_output_checker documentation page for errors details
-    //! 
-    //! # Examples
-    //! 
-    //! See module_output_checker documentation page for examples
-
-    // Checking if 'loader_result_file_path' exist
-    match Path::new(&loader_result_file_path).exists() {
-        true => {
-            trace!("CheckFile : Folder \"{}\" exist", &loader_result_file_path);
-        },
-        false => {
-            error!("PANIC_OUT03 - The 'from' folder don't exist (copying) - \"{}\"", &loader_result_file_path);
-            panic!("PANIC_OUT03 - The 'from' folder don't exist (copying) - \"{}\"", &loader_result_file_path);
-        },
-    };
-
-    // Checking if 'relative_path_result_package' exist
-    match Path::new(&relative_path_result_package).exists() {
-        true => {
-            trace!("CheckFile : Folder \"{}\" exist", &relative_path_result_package);
-        },
-        false => {
-            error!("PANIC_OUT04 - The 'to' folder don't exist (copying) - \"{}\"", &relative_path_result_package);
-            panic!("PANIC_OUT04 - The 'to' folder don't exist (copying) - \"{}\"", &relative_path_result_package);
-        },
-    };
-
-    let options = CopyOptions::new(); 
-
-    // Get content
-    let items = match fs::read_dir(loader_result_file_path) {
-        Ok(result) => {result},
-        Err(error) => {
-            error!("PANIC_OUT05 - The folder isn't readable (copying) - {} - {}", &loader_result_file_path, error);
-            panic!("PANIC_OUT05 - The folder isn't readable (copying) - {} - {}", &loader_result_file_path, error);
-        },
-    };
-
-    // Copying each entry
-    for entry in items {
-        // ReadDir error
-         let entry = match entry {
-            Ok(result) => {
-                result
-            },
-            Err(error) => {
-                error!("PANIC_OUT08 - Error in ReadDir iterator - {}", error);
-                panic!("PANIC_OUT08 - Error in ReadDir iterator - {}", error);
-            },
-        };
-        let entry_name = entry.file_name();
-
-        // OsString error
-        let entry_name = match entry_name.to_str() {
-            Some(result) => {
-                result
-            },
-            None => {
-                error!("PANIC_OUT09 - Error in OsString::to_str() - {:?}", entry_name);
-                panic!("PANIC_OUT09 - Error in OsString::to_str() - {:?}", entry_name);
-            },
-        };
-
-        // file_type error
-        let entry_type = match entry.file_type() {
-            Ok(result) => {
-                result
-            },
-            Err(error) => {
-                error!("PANIC_OUT10 - Error in DirEntry::file_type() - {}", error);
-                panic!("PANIC_OUT10 - Error in DirEntry::file_type() - {}", error);
-            },
-        };
-
-        // From
-        let mut fr = String::from(loader_result_file_path);
-        fr.push_str(entry_name);
-        // To
-        let mut go = String::from(relative_path_result_package);
-        go.push_str(entry_name);
-
-        if entry_type.is_dir() {
-            match copy(&fr, relative_path_result_package, &options) {
-                Ok(_) => {
-                    info!("copy : copying folder \"{}\" to \"{}\"", fr, go);
-                },
-                Err(error) => {
-                    error!("PANIC_OUT06 - Can't copying \"{}\" folder to \"{}\" - {}", fr, go, error);
-                    panic!("PANIC_OUT06 - Can't copying \"{}\" folder to \"{}\" - {}", fr, go, error);
-                },
-            }
-        } else {
-            match fs::copy(&fr, &go) {
-                Ok(_) => {
-                    info!("copy : copying file \"{}\" to \"{}\"", fr, go);
-                },
-                Err(error) => {
-                    error!("PANIC_OUT07 - Can't copying \"{}\" file to \"{}\" - {}", fr, go, error);
-                    panic!("PANIC_OUT07 - Can't copying \"{}\" file to \"{}\" - {}", fr, go, error);
-                },
-            }
-        }
-    };
-}
-
-pub fn check_result(relative_path_result_package : &str) -> bool {
-    //! Checking package of a gived folder, with cargo bash command
-    //! 
-    //! relative_path_result_package (&str) : root of the package to check (normally, the cargo.toml file is in this folder)
-    //! 
-    //! # Errors
-    //! 
-    //! See module_output_checker documentation page for errors details
-    //! 
-    //! # Examples
-    //! 
-    //! See module_output_checker documentation page for examples
-
-    let mut cargo_1 = Command::new("cargo");
-    let _ = cargo_1.arg("test")
-                   .arg(format!("--manifest-path={}Cargo.toml", relative_path_result_package))
-                   .arg("--all-features")
-                   .arg("--no-run")
-                   .arg("--lib")
-                   .output().expect("process failed to execute");
-
-    let result_1 = represent_command_output(&mut cargo_1).is_some_and(|x| x == true);
-    info!("Running cargo test : {}", if result_1 {"succes"} else {"error"});
+    pub fn load_from(&self, from_path : &str) {
+        //! Copy all subelement of a source folder in a target folder
+        //! 
+        //! from_path (&str) : source folder
+        //! to_path (&str) : target forder
+        //! 
+        //! # Errors
+        //! 
+        //! See module_output_checker documentation page for errors details
+        //! 
+        //! # Examples
+        //! 
+        //! See module_output_checker documentation page for examples
     
-    let mut cargo_2 = Command::new("cargo");
-    let _ = cargo_2.arg("doc")
-                   .arg(format!("--manifest-path={}Cargo.toml", relative_path_result_package))
-                   .arg("--no-deps")
-                   .output().expect("process failed to execute");
-                
-    let result_2 = represent_command_output(&mut cargo_2).is_some_and(|x| x == true);
-    info!("Running cargo doc : {}", if result_2 {"succes"} else {"error"});
+        // Checking 'from_path'
+        let items = module_file_manager::check_read_folder_and_return(from_path);
+    
+        // Checking 'to_path'
+        let to_path = self.get_source() + "/";
+        let to_path = to_path.as_str();
+        let _ = module_file_manager::check_read_folder_and_return(to_path);
+    
+        let options = CopyOptions::new(); 
+    
+        // Copying each entry
+        for entry in items {
+            // ReadDir error
+             let entry = match entry {
+                Ok(result) => {
+                    result
+                },
+                Err(error) => {
+                    error!("PANIC_OUT08 - Error in ReadDir iterator - {}", error);
+                    panic!("PANIC_OUT08 - Error in ReadDir iterator - {}", error);
+                },
+            };
+            let entry_name = entry.file_name();
+    
+            // OsString error
+            let entry_name = match entry_name.to_str() {
+                Some(result) => {
+                    result
+                },
+                None => {
+                    error!("PANIC_OUT09 - Error in OsString::to_str() - {:?}", entry_name);
+                    panic!("PANIC_OUT09 - Error in OsString::to_str() - {:?}", entry_name);
+                },
+            };
+    
+            // file_type error
+            let entry_type = match entry.file_type() {
+                Ok(result) => {
+                    result
+                },
+                Err(error) => {
+                    error!("PANIC_OUT10 - Error in DirEntry::file_type() - {}", error);
+                    panic!("PANIC_OUT10 - Error in DirEntry::file_type() - {}", error);
+                },
+            };
+    
+            // From
+            let mut fr = String::from(from_path);
+            fr.push_str(entry_name);
+            // To
+            let mut go = String::from(to_path);
+            go.push_str(entry_name);
+    
+            if entry_type.is_dir() {
+                match copy(&fr, to_path, &options) {
+                    Ok(_) => {
+                        info!("copy : copying folder \"{}\" to \"{}\"", fr, go);
+                    },
+                    Err(error) => {
+                        error!("PANIC_OUT06 - Can't copying \"{}\" folder to \"{}\" - {}", fr, go, error);
+                        panic!("PANIC_OUT06 - Can't copying \"{}\" folder to \"{}\" - {}", fr, go, error);
+                    },
+                }
+            } else {
+                match fs::copy(&fr, &go) {
+                    Ok(_) => {
+                        info!("copy : copying file \"{}\" to \"{}\"", fr, go);
+                    },
+                    Err(error) => {
+                        error!("PANIC_OUT07 - Can't copying \"{}\" file to \"{}\" - {}", fr, go, error);
+                        panic!("PANIC_OUT07 - Can't copying \"{}\" file to \"{}\" - {}", fr, go, error);
+                    },
+                }
+            }
+        };
 
-    result_1 && result_2
-}
-
-#[allow(dead_code)]
-pub fn clean_target_result(relative_path_result_package : &str) -> bool {
-    //! Running cargo clean command
-    //! 
-    //! relative_path_result_package (&str) : root of the package to check (normally, the cargo.toml file is in this folder)
-    //! 
-    //! # Errors
-    //! 
-    //! See module_output_checker documentation page for errors details
-    //! 
-    //! # Examples
-    //! 
-    //! See module_output_checker documentation page for examples
-
-    let mut cargo_1 = Command::new("cargo");
-    let _ = cargo_1.arg("clean")
-                   .arg(format!("--manifest-path={}Cargo.toml", relative_path_result_package))
-                   .output().expect("process failed to execute");
-
-    let result_1 = represent_command_output(&mut cargo_1).is_some_and(|x| x == true);
-    info!("Running cargo clean : {}", if result_1 {"succes"} else {"error"});
-
-    result_1
-}
-
-#[allow(dead_code)]
-pub fn cargo_custom_command(args : Vec<&str>, relative_path_result_package : &str) -> bool {
-    //! Running cargo custom command
-    //! 
-    //! args (Vec<&str>) : list of arg to forward to the command
-    //! relative_path_result_package (&str) : root of the package to check (normally, the cargo.toml file is in this folder)
-    //! 
-    //! # Errors
-    //! 
-    //! See module_output_checker documentation page for errors details
-    //! 
-    //! # Examples
-    //! 
-    //! See module_output_checker documentation page for examples
-
-    let mut cargo_1 = Command::new("cargo");
-    let _ = cargo_1.args(args)
-                   .arg(format!("--manifest-path={}Cargo.toml", relative_path_result_package))
-                   .output().expect("process failed to execute");
-
-    let result_1 = represent_command_output(&mut cargo_1).is_some_and(|x| x == true);
-    info!("Running cargo custom : {}", if result_1 {"succes"} else {"error"});
-
-    result_1
+    }
 }
 
 fn represent_command_output(command : &mut Command) -> Option<bool> {

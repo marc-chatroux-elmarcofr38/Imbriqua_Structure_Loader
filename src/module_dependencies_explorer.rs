@@ -19,10 +19,11 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../doc/module_dependencies_explorer.md")]
 
-extern crate minidom;
-
+// Package section
 use crate::module_file_manager;
 
+// Dependencies section
+extern crate minidom;
 use std::collections::HashMap;
 use std::io::Write;
 use std::fmt;
@@ -60,11 +61,11 @@ impl FileEnv {
         
         // Checking instance
         module_file_manager::check_folder_exist(&result.input_folder);
-        module_file_manager::check_read_path(&result.input_folder);
+        module_file_manager::check_read_folder_and_return(&result.input_folder);
         module_file_manager::check_folder_exist(&result.output_folder);
-        module_file_manager::check_read_path(&result.output_folder);
+        module_file_manager::check_read_folder_and_return(&result.output_folder);
         module_file_manager::check_folder_exist(&result.output_subfolder);
-        module_file_manager::check_read_path(&result.output_subfolder);
+        module_file_manager::check_read_folder_and_return(&result.output_subfolder);
 
         // Return result
         result
@@ -384,7 +385,7 @@ impl LoadingTracker {
     };
 } */
 
-/* fn check_read_path(file_path_str : &str) -> ReadDir{
+/* fn check_read_folder_and_return(file_path_str : &str) -> ReadDir{
     /*
         Check if a folder is readable
 
@@ -434,7 +435,7 @@ impl LoadingTracker {
     };
 } */
 
-/* fn check_read_file(file_path_str : &str) -> String {
+/* fn check_read_file_and_return(file_path_str : &str) -> String {
     /*
         Check if the file is readable
 
@@ -476,7 +477,7 @@ impl LoadingTracker {
     */
 
         // Exit if not empty
-        if !check_read_path(file_path_str).next().is_none() {
+        if !check_read_folder_and_return(file_path_str).next().is_none() {
             trace!("CheckFile : Output subfolder isn't empty \"{}\"", file_path_str);
             return false
         } else {
@@ -507,7 +508,7 @@ impl LoadingTracker {
     */
     
     // Check if the file is readable
-    let file = check_read_file(file_path_str);
+    let file = check_read_file_and_return(file_path_str);
 
     // Parsing file content to Element object class
     let element_file : Element = match file.parse() {

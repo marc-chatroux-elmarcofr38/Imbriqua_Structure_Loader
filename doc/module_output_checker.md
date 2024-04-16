@@ -152,18 +152,23 @@ PS : Of course, you can have a similar folder tree for executable package check
 
 # Panic and failure
 
-* PANIC_OUT01 - The folder don't exist during purge
-    * Context : __module_output_checker.rs/purge_folder()__
+* PANIC_OUT01 - PANIC_OUT01 - Can't canonicalize
+    * Context : __module_output_checker.rs/Package_Link::from()__
     * Info : Can't find provided folder
     * Cause : see details in logs file to get :
-        * Value of folder path
+        * Value of relative folder path
+        * Error of __std::fs::canonicalize()__
 
-* PANIC_OUT02 - The folder isn't readable during purge
-    * Context : __module_output_checker.rs/purge_folder()__
-    * Info : Can't read provided folder
+* PANIC_OUT02 - PANIC_OUT02 - Can't find cargo.toml
+    * Context : __module_output_checker.rs/Package_Link::from()__
+    * Info : Can't pass check of provided folder
     * Cause : see details in logs file to get :
         * Value of folder path
-        * error informations of __std::path::Path::read_dir()__
+        * error informations of __cargo locate-project__
+
+
+
+
 
 * PANIC_OUT03 - The 'from' folder don't exist (copying)
     * Context : __module_output_checker.rs/copy_folder()__

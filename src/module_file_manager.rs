@@ -17,10 +17,12 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/module_dependencies_explorer.md")]
+#![doc = include_str!("../doc/module_file_manager.md")]
 
+// Package section
+
+// Dependencies section
 extern crate minidom;
-
 use std::path::Path;
 use std::fs::{create_dir, read_to_string, remove_dir, ReadDir, File};
 use log::{error, trace};
@@ -61,7 +63,7 @@ pub fn check_folder_exist(file_path_str : &str) -> () {
     };
 }
 
-pub fn check_read_path(file_path_str : &str) -> ReadDir{
+pub fn check_read_folder_and_return(file_path_str : &str) -> ReadDir{
     /*
         Check if a folder is readable
 
@@ -111,12 +113,15 @@ pub fn check_file_exist(file_path_str : &str) -> () {
     };
 }
 
-pub fn check_read_file(file_path_str : &str) -> String {
+pub fn check_read_file_and_return(file_path_str : &str) -> String {
     /*
         Check if the file is readable
 
         Input :
          - file_path_str (&str) : file path to check
+
+        Output :
+         - return file content
 
         Error :
          - jumping error of std::fs::read_to_string
@@ -153,7 +158,7 @@ pub fn check_remove_dir(file_path_str : &str) -> bool {
     */
 
         // Exit if not empty
-        if !check_read_path(file_path_str).next().is_none() {
+        if !check_read_folder_and_return(file_path_str).next().is_none() {
             trace!("CheckFile : Output subfolder isn't empty \"{}\"", file_path_str);
             return false
         } else {
@@ -184,7 +189,7 @@ pub fn get_package_from_path(file_path_str : &str, package_id : &str) -> Element
     */
     
     // Check if the file is readable
-    let file = check_read_file(file_path_str);
+    let file = check_read_file_and_return(file_path_str);
 
     // Parsing file content to Element object class
     let element_file : Element = match file.parse() {

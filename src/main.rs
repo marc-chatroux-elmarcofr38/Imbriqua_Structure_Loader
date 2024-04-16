@@ -24,8 +24,6 @@ mod module_dependencies_explorer;
 mod module_file_manager;
 mod module_output_checker;
 
-// use log::info;
-
 fn main() {
 
     // Initialise global logger
@@ -46,9 +44,11 @@ fn main() {
 
     let result_str : String = loading_env.file_env.output_subfolder;
 
-    module_output_checker::purge_folder("../Imbriqua_Structure_Result/src/");
-    module_output_checker::copy_folder(result_str.as_str(), "../Imbriqua_Structure_Result/src/");
-    if !module_output_checker::check_result("../Imbriqua_Structure_Result/") {panic!()}
+    let result_package = module_output_checker::PackageLink::from("../Imbriqua_Structure_Result/Cargo.toml");
+    result_package.purge();
+    result_package.load_from(result_str.as_str());
+    if !result_package.cargo_full_check() {panic!()}
+    result_package.cargo_clean();
 }
 
 /*
