@@ -17,7 +17,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 #![warn(missing_docs)]
-#![doc = include_str!("module_output_checker.md")]
+#![doc = include_str!("../doc/module_output_checker.md")]
 
 use std::{process::Command, path::Path, fs};
 use fs_extra::{dir::copy, dir::CopyOptions, remove_items};

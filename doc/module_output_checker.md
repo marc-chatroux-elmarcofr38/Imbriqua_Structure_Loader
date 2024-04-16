@@ -1,4 +1,3 @@
-
 Tools for cargo checking of a library folder
 
 # How to use
@@ -68,7 +67,7 @@ PS : Of course, you can have a similar folder tree for executable package check
 ```
 
 
-## Optimal usecase
+## Advenced usecase
 
 In the case of yout making a package __Project_A__ gererating a Rust library file to test, the TODO list is :
 * Create a minimal cargo library package (like Imbriqua_Structure_Result, see file tree)
