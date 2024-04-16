@@ -17,7 +17,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 #![warn(missing_docs)]
 
-//! To be defined
+#![doc = include_str!("../README.md")]
 
 mod module_log;
 mod module_dependencies_explorer;
