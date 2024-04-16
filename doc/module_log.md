@@ -90,12 +90,6 @@ root:
 
 # Panic and failure
 
-* WARN_LOG01 - Error during default configuration loading
-    * Context : __module_log.rs/open_modules()__
-    * Info : The file __config_log.yml__ can't be loaded in log4rs configuration
-    * Info : A backup logging configuration may be load,logs are in __imbriqua_structure_loader.log__ file
-    * Cause : See logs for syntaxe error details, or deserialize error details
-
 * PANIC_LOG01 - Error during the loading on logs modules
     * Context : __module_log.rs/open_modules()__
     * Info : No logs are provided, so, make panic
@@ -105,3 +99,9 @@ root:
     * Context : __module_log.rs/open_modules()__
     * Info : No logs are provided, so, make panic
     * Cause : The error come from __log4rs::init_config()__ function
+
+* WARN_LOG01 - Error during default configuration loading
+    * Context : __module_log.rs/open_modules()__
+    * Info : The file __config_log.yml__ can't be loaded in log4rs configuration
+    * Info : A backup logging configuration may be load,logs are in __imbriqua_structure_loader.log__ file
+    * Cause : See logs for syntaxe error details, or deserialize error details

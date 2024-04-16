@@ -21,9 +21,9 @@ If not, see <https://www.gnu.org/licenses/>.
 
 extern crate minidom;
 
-use std::path::Path;
+use crate::module_file_manager;
+
 use std::collections::HashMap;
-use std::fs::{create_dir, read_to_string, remove_dir, ReadDir, File};
 use std::io::Write;
 use std::fmt;
 use chrono::Local;
@@ -59,12 +59,12 @@ impl FileEnv {
         };
         
         // Checking instance
-        check_folder_exist(&result.input_folder);
-        check_read_path(&result.input_folder);
-        check_folder_exist(&result.output_folder);
-        check_read_path(&result.output_folder);
-        check_folder_exist(&result.output_subfolder);
-        check_read_path(&result.output_subfolder);
+        module_file_manager::check_folder_exist(&result.input_folder);
+        module_file_manager::check_read_path(&result.input_folder);
+        module_file_manager::check_folder_exist(&result.output_folder);
+        module_file_manager::check_read_path(&result.output_folder);
+        module_file_manager::check_folder_exist(&result.output_subfolder);
+        module_file_manager::check_read_path(&result.output_subfolder);
 
         // Return result
         result
@@ -75,7 +75,7 @@ impl FileEnv {
             Process function for removing output folder if no result
         */
     
-        if check_remove_dir(&self.output_subfolder.as_str()) {
+        if module_file_manager::check_remove_dir(&self.output_subfolder.as_str()) {
                 info!("FileEnv : folder \"{}\" deleted (because is empty)", self.output_subfolder);
         }
     }
@@ -164,7 +164,7 @@ impl LoadingTracker {
         file_path.push_str(main_file);
 
         // Load package element
-        let package_element = get_package_from_path(file_path.as_str(), package_id);
+        let package_element = module_file_manager::get_package_from_path(file_path.as_str(), package_id);
 
         // Evaluate dependencies, and load it
         self.add_dependencies(package_element.clone(), label.clone());
@@ -319,7 +319,7 @@ impl LoadingTracker {
 
         let mut file_name = self.file_env.output_subfolder.clone();
         file_name.push_str(str_file_name);
-        let mut writing_file = create_file(file_name.as_str());
+        let mut writing_file = module_file_manager::create_file(file_name.as_str());
         let _ = write!(writing_file, "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {}\n\n", self.file_env.output_subfolder);
         for (_, package) in &self.loaded_package {
             //writing_file.write_all(&format!("0{:b}", package.get_lowercase_name().into_bytes()));
@@ -349,7 +349,7 @@ impl LoadingTracker {
 //
 // #############################################################
 
-fn check_folder_exist(file_path_str : &str) -> () {
+/* fn check_folder_exist(file_path_str : &str) -> () {
     /*
         Make sure that a folder exist
         Check if the folder exist, else, try to create it
@@ -382,9 +382,9 @@ fn check_folder_exist(file_path_str : &str) -> () {
             panic!("PANIC_FILE01 - A folder can't be created - \"{}\" : {}", &file_path_str, err_object);
         }
     };
-}
+} */
 
-fn check_read_path(file_path_str : &str) -> ReadDir{
+/* fn check_read_path(file_path_str : &str) -> ReadDir{
     /*
         Check if a folder is readable
 
@@ -409,9 +409,9 @@ fn check_read_path(file_path_str : &str) -> ReadDir{
             panic!("PANIC_FILE02 - A folder isn't readable - \"{}\" : {}", &file_path_str, err_object);
         }
     }
-}
+} */
 
-fn check_file_exist(file_path_str : &str) -> () {
+/* fn check_file_exist(file_path_str : &str) -> () {
     /*
         Check if the file exist
 
@@ -432,9 +432,9 @@ fn check_file_exist(file_path_str : &str) -> () {
             panic!("PANIC_FILE03 - A file don't exist - \"{}\"", &file_path_str);
         },
     };
-}
+} */
 
-fn check_read_file(file_path_str : &str) -> String {
+/* fn check_read_file(file_path_str : &str) -> String {
     /*
         Check if the file is readable
 
@@ -459,9 +459,9 @@ fn check_read_file(file_path_str : &str) -> String {
             panic!("PANIC_FILE04 - A file isn't readable - \"{}\" : {}", &file_path_str, err_object);
         }
     }
-}
+} */
 
-fn check_remove_dir(file_path_str : &str) -> bool {
+/* fn check_remove_dir(file_path_str : &str) -> bool {
     /*
         Check if the folder is deletable (empty)
 
@@ -492,9 +492,9 @@ fn check_remove_dir(file_path_str : &str) -> bool {
                 return false
             },
         }
-}
+} */
 
-fn get_package_from_path(file_path_str : &str, package_id : &str) -> Element {
+/* fn get_package_from_path(file_path_str : &str, package_id : &str) -> Element {
     /*
         Return the minidom element stored in the input file path
 
@@ -531,9 +531,9 @@ fn get_package_from_path(file_path_str : &str, package_id : &str) -> Element {
 
     error!("ERROR_FILE06 - file name = \"{}\", package name = \"{}\"", &file_path_str, package_id);
     panic!("PANIC_FILE06 - CMOF file don't contain the needed package - file name = \"{}\", package name = \"{}\"", &file_path_str, package_id);
-}
+} */
 
-fn create_file(file_path_str : &str) -> File {
+/* fn create_file(file_path_str : &str) -> File {
     let file = File::create(file_path_str).unwrap();
     file
-}
+}*/

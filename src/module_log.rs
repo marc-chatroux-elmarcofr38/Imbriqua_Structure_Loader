@@ -33,7 +33,7 @@ use log4rs::encode::pattern::PatternEncoder;
 use log4rs::config::{Appender, RawConfig, Config, Deserializers, Logger, Root};
 use serde_yaml::from_str;
 
-pub fn open_module() -> Handle {
+pub fn open_module(config_file : &str) -> Handle {
     //! Configure logger with config_log.yml, after configure it with a backup configuation
     //! 
     //! Try to load a backup configuration ("hard writted" configuration)
@@ -56,7 +56,7 @@ pub fn open_module() -> Handle {
     };
 
     // Itinialisation of global logger with "config_log.yml" configuration
-    let config : Config = match get_config_by_file() {
+    let config : Config = match get_config_by_file(config_file) {
         Ok(result) => {
             result
         },
@@ -72,43 +72,6 @@ pub fn open_module() -> Handle {
 
     // Get config
     handle
-}
-
-fn get_config_by_file() -> Result<Config> {
-    //! Define a config by loading "config_log.yml"
-
-    // Loading the file
-    // let default_config_str : &'static str = include_str!("config_log.yml");
-
-    // Check if the file is readable 
-    let str_result = match read_to_string("config_log.yml") {
-        Ok(result_object) => {
-            trace!("CheckFile : File is readable \"{}\"", "config_log.yml");
-            result_object
-        }
-        Err(err_object) => {
-            error!("ERROR_FILE04 - A file isn't readable - \"{}\" : {}", "config_log.yml", err_object);
-            panic!("PANIC_FILE04 - A file isn't readable - \"{}\" : {}", "config_log.yml", err_object);
-        }
-    };
-    let default_config_str = str_result.as_str();
-
-    // Deserialize
-    let config : RawConfig = from_str(default_config_str)?;
-    let (appenders, errors) = config.appenders_lossy(&Deserializers::default());
-    
-    // Error test
-    if !errors.is_empty() {
-        return Err(anyhow::Error::new(errors));
-    }
-
-    // Initialise config object
-    let config : Config = Config::builder()
-        .appenders(appenders)
-        .loggers(config.loggers())
-        .build(config.root())?;
-
-    Ok(config)
 }
 
 fn get_config_by_backup() -> Result<Config> {
@@ -135,6 +98,40 @@ fn get_config_by_backup() -> Result<Config> {
     Ok(config)
 }
 
+fn get_config_by_file(config_file : &str) -> Result<Config> {
+    //! Define a config by loading "config_file"
+
+    // Loading the file
+    let str_result = match read_to_string(config_file) {
+        Ok(result_object) => {
+            trace!("CheckFile : File is readable \"{}\"", config_file);
+            result_object
+        }
+        Err(err_object) => {
+            error!("ERROR_FILE04 - A file isn't readable - \"{}\" : {}", config_file, err_object);
+            panic!("PANIC_FILE04 - A file isn't readable - \"{}\" : {}", config_file, err_object);
+        }
+    };
+    let default_config_str = str_result.as_str();
+
+    // Deserialize
+    let config : RawConfig = from_str(default_config_str)?;
+    let (appenders, errors) = config.appenders_lossy(&Deserializers::default());
+    
+    // Error test
+    if !errors.is_empty() {
+        return Err(anyhow::Error::new(errors));
+    }
+
+    // Initialise config object
+    let config : Config = Config::builder()
+        .appenders(appenders)
+        .loggers(config.loggers())
+        .build(config.root())?;
+
+    Ok(config)
+}
+
 
 #[cfg(test)]
 mod test_log {
@@ -151,7 +148,7 @@ mod test_log {
     #[test]
     fn check_configuration_by_file() {
         // Checking execution
-        let result = get_config_by_file();
+        let result = get_config_by_file("config_log.yml");
         // Checking Result
         assert!(result.is_ok());
     }

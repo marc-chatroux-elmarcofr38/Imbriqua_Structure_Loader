@@ -29,7 +29,7 @@ mod module_output_checker;
 fn main() {
 
     // Initialise global logger
-    let _handle = module_log::open_module();
+    let _handle = module_log::open_module("config_log.yml");
 
     // Set used folders (input folder and output folder)
     let mut loading_env = module_dependencies_explorer::LoadingTracker::new();
