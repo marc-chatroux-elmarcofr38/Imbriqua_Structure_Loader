@@ -60,6 +60,7 @@ impl FileEnv {
         };
 
         // Checking instance
+        result.output_subfolder.create_folder();
         result.input_folder.get_folder_content();
         result.output_folder.get_folder_content();
         result.output_subfolder.get_folder_content();

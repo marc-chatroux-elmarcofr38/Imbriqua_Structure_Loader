@@ -40,7 +40,7 @@ fn main() {
     loading_env.prebuild("lib.rs");
 
     // Delete output folder if is empty
-    loading_env.close();
+    // loading_env.close();
 
     let result_str : String = loading_env.file_env.output_subfolder;
 
