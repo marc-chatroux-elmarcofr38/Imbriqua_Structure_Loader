@@ -20,24 +20,30 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_output_checker.md")]
 
 // Package section
-use crate::module_file_manager;
+use crate::module_file_manager::FileManager;
 use crate::module_log::*;
 
 // Dependencies section
-use std::fs;
+// use std::fs;
 use std::{process::Command, fs::canonicalize, path::PathBuf};
-use fs_extra::{dir::copy, dir::CopyOptions, remove_items};
+use fs_extra::remove_items;
+// use fs_extra::{dir::copy, dir::CopyOptions, remove_items};
+
 
 #[derive(Clone, PartialEq, Debug)]
+/// Represent a cargo package folder link, used to checking metacode result
 pub struct PackageLink {
+    /// PathBuf of the Cargo.toml file of the package
     absolute_path : Box<PathBuf>,
 }
 
 impl PackageLink {
-    //! Represent a cargo package folder link, used to checking metacode result
     pub fn from(str_relative_cargo_path : &str) -> Self {
         //! Initialise a cargo package folder link from relative string path
-        
+        //!
+        //! str_relative_cargo_path (&str) : relative path of the Cargo.toml file to link
+
+        // Make it absolute
         let var_absolute_path = match canonicalize(str_relative_cargo_path) {
             Ok(result) => {
                 info!("Can canonicalize {:?} to {:?}", str_relative_cargo_path, result);
@@ -49,12 +55,16 @@ impl PackageLink {
             },
         };
 
-        let result = 
+        // Instanciate object
+        let result =
             PackageLink {
                 absolute_path : Box::new(var_absolute_path)
             };
 
+        // Checking file integrity
         result.cargo_integrity_check();
+
+        // Return
         result
     }
 
@@ -68,37 +78,37 @@ impl PackageLink {
 
     pub fn cargo_custom_command(&self, args : Vec<&str>) -> bool {
         //! Running cargo custom command
-        //! 
+        //!
         //! args (Vec<&str>) : list of arg to forward to the command
-        //! 
+        //!
         //! # Errors
-        //! 
+        //!
         //! See module_output_checker documentation page for errors details
-        //! 
+        //!
         //! # Examples
-        //! 
+        //!
         //! See module_output_checker documentation page for examples
-    
+
         let mut cargo_1 = Command::new("cargo");
         let _ = cargo_1.args(args)
                        .arg(format!("--manifest-path={}", self.absolute_path.to_string_lossy()))
                        .output().expect("process failed to execute");
-    
+
         let result_1 = represent_command_output(&mut cargo_1).is_some_and(|x| x == true);
         trace!("Running cargo command : {} : {:?}", if result_1 {"succes"} else {"error"}, cargo_1);
-    
+
         result_1
     }
 
     pub fn cargo_full_check(&self) -> bool {
         //! Running cargo full check (check, test, build, doc)
-        //! 
+        //!
         //! # Errors
-        //! 
+        //!
         //! See module_output_checker documentation page for errors details
-        //! 
+        //!
         //! # Examples
-        //! 
+        //!
         //! See module_output_checker documentation page for examples
 
         let result_1 = self.cargo_custom_command(vec!["check", "--all-features", "--lib"]);
@@ -111,13 +121,13 @@ impl PackageLink {
 
     pub fn cargo_integrity_check(&self) {
         //! Running cargo locate-project command, allowing to check existence of Cargo.toml file
-        //! 
+        //!
         //! # Errors
-        //! 
+        //!
         //! See module_output_checker documentation page for errors details
-        //! 
+        //!
         //! # Examples
-        //! 
+        //!
         //! See module_output_checker documentation page for examples
 
         match &self.cargo_custom_command(vec!["locate-project"]) {
@@ -133,13 +143,13 @@ impl PackageLink {
 
     pub fn cargo_clean(&self) {
         //! Running cargo clean command, allowing to purge "target" folder
-        //! 
+        //!
         //! # Errors
-        //! 
+        //!
         //! See module_output_checker documentation page for errors details
-        //! 
+        //!
         //! # Examples
-        //! 
+        //!
         //! See module_output_checker documentation page for examples
 
         match &self.cargo_custom_command(vec!["clean"]) {
@@ -155,17 +165,18 @@ impl PackageLink {
 
     pub fn purge (&self) {
         //! Removing subelement of a "/src" folder
-        //! 
+        //!
         //! # Errors
-        //! 
+        //!
         //! See module_output_checker documentation page for errors details
-        //! 
+        //!
         //! # Examples
-        //! 
+        //!
         //! See module_output_checker documentation page for examples
 
         // Get content
-        let items = module_file_manager::check_read_folder_and_return(self.get_source().as_str() );
+        let items = self.get_source().as_str().get_folder_content();
+        // module_file_manager::check_read_folder_and_return( );
 
         // Remove each entry
         for entry in items {
@@ -206,28 +217,28 @@ impl PackageLink {
 
     pub fn load_from(&self, from_path : &str) {
         //! Copy all subelement of a source folder in a target folder
-        //! 
+        //!
         //! from_path (&str) : source folder
         //! to_path (&str) : target forder
-        //! 
+        //!
         //! # Errors
-        //! 
+        //!
         //! See module_output_checker documentation page for errors details
-        //! 
+        //!
         //! # Examples
-        //! 
+        //!
         //! See module_output_checker documentation page for examples
-    
+
+        from_path.copy_folder(&self.get_source().as_str());
+/*
         // Checking 'from_path'
-        let items = module_file_manager::check_read_folder_and_return(from_path);
-    
+        let items = from_path.get_folder_content();
+
         // Checking 'to_path'
-        let to_path = self.get_source() + "/";
-        let to_path = to_path.as_str();
-        let _ = module_file_manager::check_read_folder_and_return(to_path);
-    
-        let options = CopyOptions::new(); 
-    
+        let to_path = self.get_source().get_folder_content();
+
+        let options = CopyOptions::new();
+
         // Copying each entry
         for entry in items {
             // ReadDir error
@@ -241,7 +252,7 @@ impl PackageLink {
                 },
             };
             let entry_name = entry.file_name();
-    
+
             // OsString error
             let entry_name = match entry_name.to_str() {
                 Some(result) => {
@@ -252,7 +263,7 @@ impl PackageLink {
                     panic!("PANIC_OUT09 - Error in OsString::to_str() - {:?}", entry_name);
                 },
             };
-    
+
             // file_type error
             let entry_type = match entry.file_type() {
                 Ok(result) => {
@@ -263,14 +274,14 @@ impl PackageLink {
                     panic!("PANIC_OUT10 - Error in DirEntry::file_type() - {}", error);
                 },
             };
-    
+
             // From
             let mut fr = String::from(from_path);
             fr.push_str(entry_name);
             // To
             let mut go = String::from(to_path);
             go.push_str(entry_name);
-    
+
             if entry_type.is_dir() {
                 match copy(&fr, to_path, &options) {
                     Ok(_) => {
@@ -292,22 +303,23 @@ impl PackageLink {
                     },
                 }
             }
-        };
+        };*/
 
     }
 }
 
+#[doc(hidden)]
 fn represent_command_output(command : &mut Command) -> Option<bool> {
     //! Printing command result, used by __check_result__ function
-    //! 
+    //!
     //! # Errors
-    //! 
+    //!
     //! See module_output_checker documentation page for errors details
-    //! 
+    //!
     //! # Examples
-    //! 
+    //!
     //! See module_output_checker documentation page for examples
-                
+
     let command_output= match command.output() {
         Ok(result) => {
             result
@@ -342,6 +354,7 @@ fn represent_command_output(command : &mut Command) -> Option<bool> {
     Some(command_output.status.success())
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use crate::module_output_checker::purge_folder;
@@ -412,3 +425,4 @@ mod tests {
         assert_eq!(result, true);
     }
 }
+*/

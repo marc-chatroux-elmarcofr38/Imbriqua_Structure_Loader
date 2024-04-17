@@ -23,199 +23,569 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Dependencies section
 extern crate minidom;
-use std::path::Path;
-use std::fs::{create_dir, read_to_string, remove_dir, ReadDir, File};
+pub use std::path::Path;
+use std::fs::{ReadDir, File};
+use fs_extra;
 use log::{error, trace};
 use minidom::Element;
 
-pub fn check_folder_exist(file_path_str : &str) -> () {
-    /*
-        Make sure that a folder exist
-        Check if the folder exist, else, try to create it
+/// Provide shortcut to filesystem function, with error forwarding and panic control
+pub trait FileManager {
+    ///  Return the content of the folder (as ReadDir)
+    fn get_folder_content(&self) -> ReadDir;
 
-        Input :
-         - file_path_str (&str) : dir path to create ifdon't exist
+    /// Create the folder if don't exist
+    fn create_folder(&self) -> ();
 
-        Error :
-         - jumping error of std::fs::create_dir
-    */
+    /// Copy each item of a folder to a other
+    fn copy_folder(&self, to : &Self) -> ();
 
-    // Exit if the folder exist
-    match Path::new(&file_path_str).exists() {
-        false => {
-            trace!("CheckFile : Folder \"{}\" don't exist", &file_path_str);
-        },
-        true => {
-            trace!("CheckFile : Folder \"{}\" exist", &file_path_str);
-            return ();
-        },
-    };
+    /// Move each item of a folder to a other
+    fn move_folder(&self, to : &Self) -> ();
 
-    // Create the dir
-    match create_dir(&file_path_str) {
-        Ok(_) => {
-            trace!("CheckFile : Output subfolder created \"{}\"", &file_path_str);
-        }
-        Err(err_object) => {
-            error!("ERROR_FILE01 - A folder can't be created - \"{}\" : {}", &file_path_str, err_object);
-            panic!("PANIC_FILE01 - A folder can't be created - \"{}\" : {}", &file_path_str, err_object);
-        }
-    };
+    /// Delete the folder if it exist
+    fn delete_folder(&self, empty_only : bool) -> ();
+
+    /// Check if the file exist, and if it's file, and if it's readable and return it (as File)
+    fn get_file(&self) -> File;
+
+    /// Check if the file exist, and if it's file, and if it's readable and return this content (as String)
+    fn get_file_content(&self) -> String;
+
+    /// Check if the file exist, and if it's file, and if it's readable and return this content (as Element)
+    fn get_file_content_as_element(&self) -> Element;
+
+    /// Create the file if don't exist
+    fn create_file(&self) -> ();
+
+    /// Copy a file to a other location
+    fn copy_file(&self, to : &Self) -> ();
+
+    /// Move a file to a other location
+    fn move_file(&self, to : &Self) -> ();
+
+    /// Delete the file if it exist
+    fn delete_file(&self) -> ();
 }
 
-pub fn check_read_folder_and_return(file_path_str : &str) -> ReadDir{
-    /*
-        Check if a folder is readable
-
-        Input :
-         - file_path_str (&str) : dir path to check
-
-        Error :
-         - jumping error of std::path::Path::read_dir
-    */
-
-    // Check if the folder exist
-    check_folder_exist(file_path_str);
-
-    // Check if the folder is readable
-    match Path::new(file_path_str).read_dir() {
-        Ok(result_object) => {
-            trace!("CheckFile : Folder is readable \"{}\"", file_path_str);
-            result_object
-        }
-        Err(err_object) => {
-            error!("ERROR_FILE02 - A folder isn't readable - \"{}\" : {}", &file_path_str, err_object);
-            panic!("PANIC_FILE02 - A folder isn't readable - \"{}\" : {}", &file_path_str, err_object);
-        }
-    }
-}
-
-pub fn check_file_exist(file_path_str : &str) -> () {
-    /*
-        Check if the file exist
-
-        Input :
-         - file_path_str (&str) : file path to check
-
-        Error :
-         - none
-    */
-
-    // Exit if the folder exist
-    match Path::new(&file_path_str).exists() {
-        true => {
-            trace!("CheckFile : File \"{}\" exist", &file_path_str);
-        },
-        false => {
-            error!("ERROR_FILE03 - A file don't exist - \"{}\"", &file_path_str);
-            panic!("PANIC_FILE03 - A file don't exist - \"{}\"", &file_path_str);
-        },
-    };
-}
-
-pub fn check_read_file_and_return(file_path_str : &str) -> String {
-    /*
-        Check if the file is readable
-
-        Input :
-         - file_path_str (&str) : file path to check
-
-        Output :
-         - return file content
-
-        Error :
-         - jumping error of std::fs::read_to_string
-    */
-
-    // Check if the file exist
-    check_file_exist(file_path_str);
-
-    // Check if the file is readable 
-    match read_to_string(file_path_str) {
-        Ok(result_object) => {
-            trace!("CheckFile : File is readable \"{}\"", file_path_str);
-            result_object
-        }
-        Err(err_object) => {
-            error!("ERROR_FILE04 - A file isn't readable - \"{}\" : {}", &file_path_str, err_object);
-            panic!("PANIC_FILE04 - A file isn't readable - \"{}\" : {}", &file_path_str, err_object);
-        }
-    }
-}
-
-pub fn check_remove_dir(file_path_str : &str) -> bool {
-    /*
-        Check if the folder is deletable (empty)
-
-        Input :
-         - file_path_str (&str) : file path to delete
-
-        Output :
-         - true if removed, else false
-
-        Error :
-         - jumping error of std::fs::remove_dir
-    */
-
-        // Exit if not empty
-        if !check_read_folder_and_return(file_path_str).next().is_none() {
-            trace!("CheckFile : Output subfolder isn't empty \"{}\"", file_path_str);
-            return false
-        } else {
-            trace!("CheckFile : Output subfolder is empty \"{}\"", file_path_str);
-        };
-
-        match remove_dir(file_path_str) {
-            Ok(_) => {
-                return true
-            },
+impl FileManager for Path {
+    ///  Return the content of the folder (as ReadDir)
+    fn get_folder_content(&self) -> ReadDir {
+        // Get the content
+        match self.read_dir() {
+            Ok(result_object) => {
+                trace!("The 'folder' is readable : {:?}", self);
+                result_object
+            }
             Err(error) => {
-                error!("ERROR_FILE50 - Error during removing of a empty folder - \"{}\" : {}", file_path_str, error);
-                return false
-            },
-        }
-}
-
-pub fn get_package_from_path(file_path_str : &str, package_id : &str) -> Element {
-    /*
-        Return the minidom element stored in the input file path
-
-        Input :
-         - file_path_str (&str) : file path to read
-
-        Error :
-         - jump error of check_read_file
-         - jump error of Element parsing
-    */
-    
-    // Check if the file is readable
-    let file = check_read_file_and_return(file_path_str);
-
-    // Parsing file content to Element object class
-    let element_file : Element = match file.parse() {
-        Ok(result_object) => {
-            trace!("FileEnv : Reading Element from \"{}\"", file_path_str);
-            result_object
-        }
-        Err(err_object) => {
-            error!("ERROR_FILE05 - \"{}\" : {}", &file_path_str, err_object);
-            panic!("PANIC_FILE05 - A file isn't parsable - \"{}\" : {}", &file_path_str, err_object);}
-    };
-
-    // Find "package_id" child
-    for child in element_file.children() {
-        if child.is("Package", "http://schema.omg.org/spec/MOF/2.0/cmof.xml") {
-            if child.attr("xmi:id") == Some(package_id) {
-                return child.clone()
+                error!("PANIC_FLM01 - The 'folder' isn't readable : {:?} (err : {})", self, error);
+                panic!("PANIC_FLM01 - The 'folder' isn't readable : {:?} (err : {})", self, error);
             }
         }
-    };
+    }
 
-    error!("ERROR_FILE06 - file name = \"{}\", package name = \"{}\"", &file_path_str, package_id);
-    panic!("PANIC_FILE06 - CMOF file don't contain the needed package - file name = \"{}\", package name = \"{}\"", &file_path_str, package_id);
+    /// Create the folder if don't exist
+    fn create_folder(&self) -> ()  {
+        // Exit if the folder exist
+        if self.exists() {
+            trace!("Folder {:?} already exist (don't create)", self);
+            return;
+        }
+        // Else, create it
+        match fs_extra::dir::create_all(self, false) {
+            Ok(_) => {
+                trace!("Folder {:?} created", self);
+            }
+            Err(error) => {
+                error!("PANIC_FLM02 - The 'folder' can't be created : {:?} (err : {})", self, error);
+                panic!("PANIC_FLM02 - The 'folder' can't be created : {:?} (err : {})", self, error);
+            }
+        };
+    }
+
+    /// Copy each item of a folder to a other
+    fn copy_folder(&self, to : &Self) -> () {
+        // Setting options
+        let mut options_1 = fs_extra::dir::DirOptions::new();
+        options_1.depth = 1;
+        let options_2 = fs_extra::dir::CopyOptions::new();
+
+        // Get items
+        let mut from_paths: Vec<String> = Vec::new();
+        match fs_extra::dir::get_dir_content2(self, &options_1) {
+            Ok(result) => {
+                from_paths.extend(result.files);
+                from_paths.extend(result.directories);
+            },
+            Err(error) => {
+                error!("PANIC_FLM03 - The 'folder' can't be copied : {:?} (err_01 : {})", self, error);
+                panic!("PANIC_FLM03 - The 'folder' can't be copied : {:?} (err_01 : {})", self, error);
+            },
+        }
+        from_paths.retain(|x| Path::new(&x) != self);
+
+        // Copying file
+        match fs_extra::copy_items(&from_paths, to , &options_2) {
+            Ok(_) => {
+                trace!("File {:?} copied", self);
+            }
+            Err(error) => {
+                error!("PANIC_FLM03 - The 'folder' can't be copied : {:?} (err_02 : {})", self, error);
+                panic!("PANIC_FLM03 - The 'folder' can't be copied : {:?} (err_02 : {})", self, error);
+            }
+        };
+    }
+
+    /// Move each item of a folder to a other
+    fn move_folder(&self, to : &Self) -> () {
+        // Setting options
+        let mut options_1 = fs_extra::dir::DirOptions::new();
+        options_1.depth = 1;
+        let options_2 = fs_extra::dir::CopyOptions::new();
+
+        // Get items
+        let mut from_paths: Vec<String> = Vec::new();
+        match fs_extra::dir::get_dir_content2(self, &options_1) {
+            Ok(result) => {
+                from_paths.extend(result.files);
+                from_paths.extend(result.directories);
+            },
+            Err(error) => {
+                error!("PANIC_FLM04 - The 'folder' can't be moved : {:?} (err_01 : {})", self, error);
+                panic!("PANIC_FLM04 - The 'folder' can't be moved : {:?} (err_01 : {})", self, error);
+            },
+        }
+        from_paths.retain(|x| Path::new(&x) != self);
+
+
+        // Moving file
+        match fs_extra::move_items(&from_paths, to , &options_2) {
+            Ok(_) => {
+                trace!("File {:?} moved", self);
+            }
+            Err(error) => {
+                error!("PANIC_FLM04 - The 'folder' can't be moved : {:?} (err_02 : {})", self, error);
+                panic!("PANIC_FLM04 - The 'folder' can't be moved : {:?} (err_02 : {})", self, error);
+            }
+        };
+    }
+
+    /// Delete the folder if it exist
+    fn delete_folder(&self, empty_only : bool) -> () {
+        // Exit if not empty AND empty constraint
+        if empty_only && self.get_folder_content().next().is_none() {
+            trace!("Folder {:?} isn't empty (don't delete)", self);
+            return;
+        }
+        // Create it
+        match fs_extra::dir::remove(self) {
+            Ok(_) => {
+                trace!("Folder {:?} deleted", self);
+            }
+            Err(error) => {
+                error!("PANIC_FLM05 - The 'folder' can't be deleted : {:?} (err : {})", self, error);
+                panic!("PANIC_FLM05 - The 'folder' can't be deleted : {:?} (err : {})", self, error);
+            }
+        };
+    }
+
+    /// Check if the file exist, and if it's file, and if it's readable and return it (as File)
+    fn get_file(&self) -> File {
+        // Get the content
+        match File::open(self) {
+            Ok(result_object) => {
+                trace!("The 'file' is readable : {:?}", self);
+                result_object
+            }
+            Err(error) => {
+                error!("PANIC_FLM06 - The 'file' isn't readable (as File) : {:?} (err : {})", self, error);
+                panic!("PANIC_FLM06 - The 'file' isn't readable (as File) : {:?} (err : {})", self, error);
+            }
+        }
+    }
+
+    /// Check if the file exist, and if it's file, and if it's readable and return this content (as String)
+    fn get_file_content(&self) -> String {
+        // Get the content
+        match fs_extra::file::read_to_string(self) {
+            Ok(result_object) => {
+                trace!("The 'file' is readable : {:?}", self);
+                result_object
+            }
+            Err(error) => {
+                error!("PANIC_FLM07 - The 'file' isn't readable (as String) : {:?} (err : {})", self, error);
+                panic!("PANIC_FLM07 - The 'file' isn't readable (as String) : {:?} (err : {})", self, error);
+            }
+        }
+    }
+
+    /// Check if the file exist, and if it's file, and if it's readable and return this content (as Element)
+    fn get_file_content_as_element(&self) -> Element {
+
+        // Get the content
+        let content = self.get_file_content();
+
+        // Parsing file content to Element object class
+        let element_file : Element = match content.parse() {
+            Ok(result_object) => {
+                trace!("Parsing Element : {:?}", self);
+                result_object
+            }
+            Err(error) => {
+                error!("PANIC_FLM08 - The 'file' isn't parsable : {:?} (err : {})", self, error);
+                panic!("PANIC_FLM08 - The 'file' isn't parsable : {:?} (err : {})", self, error);
+            }
+        };
+
+        // Return result
+        element_file
+    }
+
+    /// Create the file if don't exist
+    fn create_file(&self) -> () {
+
+        // Exit if the file exist
+        if self.exists() {
+            trace!("File {:?} don't exist (don't create)", self);
+            return;
+        }
+
+        // Create it
+        match File::create(self) {
+            Ok(result) => {
+                trace!("File {:?} created", self);
+                result
+            }
+            Err(error) => {
+                error!("PANIC_FLM09 - The 'file' can't be created : {:?} (err : {})", self, error);
+                panic!("PANIC_FLM09 - The 'file' can't be created : {:?} (err : {})", self, error);
+            }
+        };
+    }
+
+    /// Copy a file to a other location
+    fn copy_file(&self, to : &Self) -> () {
+
+        let options = fs_extra::file::CopyOptions::new();
+
+        // Copying file
+        match fs_extra::file::copy(self, to , &options) {
+            Ok(_) => {
+                trace!("File {:?} copied", self);
+            }
+            Err(error) => {
+                error!("PANIC_FLM10 - The 'file' can't be copied : {:?} (err : {})", self, error);
+                panic!("PANIC_FLM10 - The 'file' can't be copied : {:?} (err : {})", self, error);
+            }
+        };
+    }
+
+    /// Move a file to a other location
+    fn move_file(&self, to : &Self) -> () {
+
+        let options = fs_extra::file::CopyOptions::new();
+
+        // Moving file
+        match fs_extra::file::move_file(self, to , &options) {
+            Ok(_) => {
+                trace!("File {:?} moved", self);
+            }
+            Err(error) => {
+                error!("PANIC_FLM11 - The 'file' can't be moved : {:?} (err : {})", self, error);
+                panic!("PANIC_FLM11 - The 'file' can't be moved : {:?} (err : {})", self, error);
+            }
+        };
+    }
+
+    /// Delete the file if it exist
+    fn delete_file(&self) -> () {
+
+        // Delete file
+        match fs_extra::file::remove(self) {
+            Ok(_) => {
+                trace!("File {:?} deleted", self);
+            }
+            Err(error) => {
+                error!("PANIC_FLM12 - The 'file' can't be deleted : {:?} (err : {})", self, error);
+                panic!("PANIC_FLM12 - The 'file' can't be deleted : {:?} (err : {})", self, error);
+            }
+        };
+    }
 }
 
-pub fn create_file(file_path_str : &str) -> File {
-    let file = File::create(file_path_str).unwrap();
-    file
+impl FileManager for &str {
+    ///  Return the content of the folder (as ReadDir)
+    fn get_folder_content(&self) -> ReadDir {
+        Path::new(self).get_folder_content()
+    }
+
+    /// Create the folder if don't exist
+    fn create_folder(&self) -> ()  {
+        Path::new(self).create_folder()
+    }
+
+    /// Copy each item of a folder to a other
+    fn copy_folder(&self, to : &Self) -> () {
+        Path::new(self).copy_folder(Path::new(to))
+    }
+
+    /// Move each item of a folder to a other
+    fn move_folder(&self, to : &Self) -> () {
+        Path::new(self).move_folder(Path::new(to))
+    }
+
+    /// Delete the folder if it exist
+    fn delete_folder(&self, empty_only : bool) -> () {
+        Path::new(self).delete_folder(empty_only)
+    }
+
+    /// Check if the file exist, and if it's file, and if it's readable and return it (as File)
+    fn get_file(&self) -> File {
+        Path::new(self).get_file()
+    }
+
+    /// Check if the file exist, and if it's file, and if it's readable and return this content (as String)
+    fn get_file_content(&self) -> String {
+        Path::new(self).get_file_content()
+    }
+
+    /// Check if the file exist, and if it's file, and if it's readable and return this content (as Element)
+    fn get_file_content_as_element(&self) -> Element {
+        Path::new(self).get_file_content_as_element()
+    }
+
+    /// Create the file if don't exist
+    fn create_file(&self) -> () {
+        Path::new(self).create_file()
+    }
+
+    /// Copy a file to a other location
+    fn copy_file(&self, to : &Self) -> () {
+        Path::new(self).copy_file(Path::new(to))
+    }
+
+    /// Move a file to a other location
+    fn move_file(&self, to : &Self) -> () {
+        Path::new(self).move_file(Path::new(to))
+    }
+
+    /// Delete the file if it exist
+    fn delete_file(&self) -> () {
+        Path::new(self).delete_file()
+    }
+}
+
+impl FileManager for String {
+    ///  Return the content of the folder (as ReadDir)
+    fn get_folder_content(&self) -> ReadDir {
+        Path::new(self).get_folder_content()
+    }
+
+    /// Create the folder if don't exist
+    fn create_folder(&self) -> () {
+        Path::new(self).create_folder()
+    }
+
+    /// Copy each item of a folder to a other
+    fn copy_folder(&self, to : &Self) -> () {
+        Path::new(self).copy_folder(Path::new(to))
+    }
+
+    /// Move each item of a folder to a other
+    fn move_folder(&self, to : &Self) -> () {
+        Path::new(self).move_folder(Path::new(to))
+    }
+
+    /// Delete the folder if it exist
+    fn delete_folder(&self, empty_only : bool) -> () {
+        Path::new(self).delete_folder(empty_only)
+    }
+
+    /// Check if the file exist, and if it's file, and if it's readable and return it (as File)
+    fn get_file(&self) -> File {
+        Path::new(self).get_file()
+    }
+
+    /// Check if the file exist, and if it's folder, and if it's readable and return this content (as String)
+    fn get_file_content(&self) -> String {
+        Path::new(self).get_file_content()
+    }
+
+    /// Check if the file exist, and if it's folder, and if it's readable and return this content (as Element)
+    fn get_file_content_as_element(&self) -> Element {
+        Path::new(self).get_file_content_as_element()
+    }
+
+    /// Create the file if don't exist
+    fn create_file(&self) -> () {
+        Path::new(self).create_file()
+    }
+
+    /// Copy a file to a other location
+    fn copy_file(&self, to : &Self) -> () {
+        Path::new(self).copy_file(Path::new(to))
+    }
+
+    /// Move a file to a other location
+    fn move_file(&self, to : &Self) -> () {
+        Path::new(self).move_file(Path::new(to))
+    }
+
+    /// Delete the file if it exist
+    fn delete_file(&self) -> () {
+        Path::new(self).delete_file()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::FileManager;
+    use super::Path;
+
+    #[test]
+    fn module_flm_01_get_folder_content() {
+        // As &str
+        let folder = "tests/module_file_manager/module_flm_01_get_folder_content";
+        folder.get_folder_content();
+        // As String
+        let folder = String::from(folder);
+        folder.get_folder_content();
+        // As Path
+        let folder = Path::new(&folder);
+        folder.get_folder_content();
+    }
+
+    #[test]
+    fn module_flm_02_create_folder_and_delete_folder() {
+        // As &str
+        let folder = "tests/module_file_manager/module_flm_02_create_folder_and_delete_folder/to_create";
+        folder.create_folder();
+        folder.get_folder_content();
+        folder.delete_folder(true);
+        // As String
+        let folder = String::from(folder);
+        folder.create_folder();
+        folder.get_folder_content();
+        folder.delete_folder(true);
+        // As Path
+        let folder = Path::new(&folder);
+        folder.create_folder();
+        folder.get_folder_content();
+        folder.delete_folder(true);
+    }
+
+    #[test]
+    fn module_flm_03_copy_folder_and_delete_folder() {
+        // As &str
+        let folder = "tests/module_file_manager/module_flm_03_copy_folder_and_delete_folder/from";
+        let to = "tests/module_file_manager/module_flm_03_copy_folder_and_delete_folder/to";
+        to.delete_folder(false);
+        to.create_folder();
+        folder.copy_folder(&to);
+        to.get_folder_content();
+        // As String
+        let folder = String::from(folder);
+        let to = String::from(to);
+        to.delete_folder(false);
+        to.create_folder();
+        folder.copy_folder(&to);
+        to.get_folder_content();
+        // As Path
+        let folder = Path::new(&folder);
+        let to = Path::new(&to);
+        to.delete_folder(false);
+        to.create_folder();
+        folder.copy_folder(&to);
+        to.get_folder_content();
+    }
+
+    #[test]
+    fn module_flm_04_move_folder_and_move_folder() {
+        // As &str
+        let folder = "tests/module_file_manager/module_flm_04_move_folder_and_move_folder/from";
+        let to = "tests/module_file_manager/module_flm_04_move_folder_and_move_folder/to";
+        to.delete_folder(false);
+        to.create_folder();
+        folder.move_folder(&to);
+        to.get_folder_content();
+        to.move_folder(&folder);
+        folder.get_folder_content();
+        // As String
+        let folder = String::from(folder);
+        let to = String::from(to);
+        to.delete_folder(false);
+        to.create_folder();
+        folder.move_folder(&to);
+        to.get_folder_content();
+        to.move_folder(&folder);
+        folder.get_folder_content();
+        // As Path
+        let folder = Path::new(&folder);
+        let to = Path::new(&to);
+        to.delete_folder(false);
+        to.create_folder();
+        folder.move_folder(&to);
+        to.get_folder_content();
+        to.move_folder(&folder);
+        folder.get_folder_content();
+    }
+
+    #[test]
+    fn module_flm_05_get_file() {
+        // As &str
+        let folder = "tests/module_file_manager/module_flm_05_get_file/file_to_read.txt";
+        folder.get_file();
+        // As String
+        let folder = String::from(folder);
+        folder.get_file();
+        // As Path
+        let folder = Path::new(&folder);
+        folder.get_file();
+    }
+
+    #[test]
+    fn module_flm_06_get_file_content() {
+        // As &str
+        let folder = "tests/module_file_manager/module_flm_06_get_file_content/file_to_read.txt";
+        folder.get_file_content();
+        // As String
+        let folder = String::from(folder);
+        folder.get_file_content();
+        // As Path
+        let folder = Path::new(&folder);
+        folder.get_file_content();
+    }
+
+    #[test]
+    fn module_flm_07_get_file_content_as_element() {
+        // As &str
+        let folder = "tests/module_file_manager/module_flm_07_get_file_content_as_element/file_to_read.txt";
+        folder.get_file_content_as_element();
+        // As String
+        let folder = String::from(folder);
+        folder.get_file_content_as_element();
+        // As Path
+        let folder = Path::new(&folder);
+        folder.get_file_content_as_element();
+    }
+
+    #[test]
+    fn module_flm_08_create_file_and_delete_file() {
+        // As &str
+        let folder = "tests/module_file_manager/module_flm_08_create_file_and_delete_file/file_to_create.txt";
+        folder.create_file();
+        folder.get_file_content();
+        folder.delete_file();
+        // As String
+        let folder = String::from(folder);
+        folder.create_file();
+        folder.get_file_content();
+        folder.delete_file();
+        // As Path
+        let folder = Path::new(&folder);
+        folder.create_file();
+        folder.get_file_content();
+        folder.delete_file();
+    }
+
 }

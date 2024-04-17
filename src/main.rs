@@ -17,12 +17,12 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 #![warn(missing_docs)]
 
-#![doc = include_str!("../README.md")]
+#![doc = include_str!("../README.MD")]
 
-mod module_log;
-mod module_dependencies_explorer;
-mod module_file_manager;
-mod module_output_checker;
+pub mod module_log;
+pub mod module_dependencies_explorer;
+pub mod module_file_manager;
+pub mod module_output_checker;
 
 fn main() {
 
@@ -45,10 +45,10 @@ fn main() {
     let result_str : String = loading_env.file_env.output_subfolder;
 
     let result_package = module_output_checker::PackageLink::from("../Imbriqua_Structure_Result/Cargo.toml");
+    result_package.cargo_clean();
     result_package.purge();
     result_package.load_from(result_str.as_str());
     if !result_package.cargo_full_check() {panic!()}
-    result_package.cargo_clean();
 }
 
 /*

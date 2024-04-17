@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_dependencies_explorer.md")]
 
 // Package section
-use crate::module_file_manager;
+use crate::module_file_manager::FileManager;
 
 // Dependencies section
 extern crate minidom;
@@ -58,14 +58,11 @@ impl FileEnv {
             output_subfolder : str_output_folder.clone() + time_string.as_str(),
             // dependencies : Vec::new(),
         };
-        
+
         // Checking instance
-        module_file_manager::check_folder_exist(&result.input_folder);
-        module_file_manager::check_read_folder_and_return(&result.input_folder);
-        module_file_manager::check_folder_exist(&result.output_folder);
-        module_file_manager::check_read_folder_and_return(&result.output_folder);
-        module_file_manager::check_folder_exist(&result.output_subfolder);
-        module_file_manager::check_read_folder_and_return(&result.output_subfolder);
+        result.input_folder.get_folder_content();
+        result.output_folder.get_folder_content();
+        result.output_subfolder.get_folder_content();
 
         // Return result
         result
@@ -75,10 +72,8 @@ impl FileEnv {
         /*
             Process function for removing output folder if no result
         */
-    
-        if module_file_manager::check_remove_dir(&self.output_subfolder.as_str()) {
-                info!("FileEnv : folder \"{}\" deleted (because is empty)", self.output_subfolder);
-        }
+
+        self.output_subfolder.delete_folder(true);
     }
 }
 
@@ -131,12 +126,12 @@ impl LoadingTracker {
         /*
             Load minidom element from a gived package, including dependencies
             Save element in loaded_package
-    
+
             Input :
              - main_file (&str) : file to load in self.input_folder
              - package_id (&str) : package name wanted in main_file
              - parent_label (&str) : parent package label, used in logs command
-    
+
             Error :
              - none
         */
@@ -159,20 +154,35 @@ impl LoadingTracker {
 
         // Add empty element entry in loaded_package (prevent circular loading)
         self.add_empty_package(main_file, package_id, label.clone());
-    
+
         // Generate file path
         let mut file_path = self.file_env.input_folder.clone();
         file_path.push_str(main_file);
 
         // Load package element
-        let package_element = module_file_manager::get_package_from_path(file_path.as_str(), package_id);
+        let package_element = file_path.get_file_content_as_element();
+        // module_file_manager::get_package_from_path(file_path.as_str(), package_id);
+
+
+
+        // Find "package_id" child
+        for child in package_element.children() {
+            if child.is("Package", "http://schema.omg.org/spec/MOF/2.0/cmof.xml") {
+                if child.attr("xmi:id") == Some(package_id) {
+                    let package_element = child.clone();
+                    break
+                }
+            }
+        };
+
+
 
         // Evaluate dependencies, and load it
         self.add_dependencies(package_element.clone(), label.clone());
-        
+
         // Add package element in loaded_package
         self.add_package(package_element.clone(), main_file, package_id, label.clone());
-        
+
         // End logs
         info!("Loading \"{}\" : Finished", label.clone());
     }
@@ -181,12 +191,12 @@ impl LoadingTracker {
         /*
             Save minimal LoadingPackage object in loaded_package
             Set "state" to empty to prevent circular dependencies loading (dependencies has loaded before changing "state")
-    
+
             Input :
              - file (&str) : file to load in self.input_folder
              - package (&str) : package name wanted in main_file
              - label (String) : label of the package
-    
+
             Error :
              - none
         */
@@ -207,11 +217,11 @@ impl LoadingTracker {
         /*
             Get dependencies of a Element (UML XMI notation)
             And import dependencies
-    
+
             Input :
              - element (Element) : Minidom ELement object to analyse
              - label (String) : package label
-    
+
             Error :
              - none
         */
@@ -262,12 +272,12 @@ impl LoadingTracker {
     fn add_package(&mut self, element : Element, file : &str, package : &str, label : String) {
         /*
             Save complete LoadingPackage object in loaded_package
-    
+
             Input :
             - element (minidom::element::Element) : Element to save
             - file (&str) : file to load in self.input_folder
             - package (&str) : package name wanted in main_file
-    
+
             Error :
             - none
         */
@@ -315,12 +325,13 @@ impl fmt::Display for LoadingTracker {
 impl LoadingTracker {
     pub fn prebuild(&self, str_file_name : &str) {
         /*
-        
+
         */
 
         let mut file_name = self.file_env.output_subfolder.clone();
         file_name.push_str(str_file_name);
-        let mut writing_file = module_file_manager::create_file(file_name.as_str());
+        file_name.create_file();
+        let mut writing_file = file_name.get_file();
         let _ = write!(writing_file, "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {}\n\n", self.file_env.output_subfolder);
         for (_, package) in &self.loaded_package {
             //writing_file.write_all(&format!("0{:b}", package.get_lowercase_name().into_bytes()));
@@ -449,7 +460,7 @@ impl LoadingTracker {
     // Check if the file exist
     check_file_exist(file_path_str);
 
-    // Check if the file is readable 
+    // Check if the file is readable
     match read_to_string(file_path_str) {
         Ok(result_object) => {
             trace!("CheckFile : File is readable \"{}\"", file_path_str);
@@ -506,7 +517,7 @@ impl LoadingTracker {
          - jump error of check_read_file
          - jump error of Element parsing
     */
-    
+
     // Check if the file is readable
     let file = check_read_file_and_return(file_path_str);
 
