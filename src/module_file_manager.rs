@@ -47,7 +47,7 @@ pub trait FileManager {
     fn delete_folder(&self, empty_only : bool) -> ();
 
     /// Check if the file exist, and if it's file, and if it's readable and return it (as File)
-    fn get_file(&self) -> File;
+    fn write_new_file(&self) -> File;
 
     /// Check if the file exist, and if it's file, and if it's readable and return this content (as String)
     fn get_file_content(&self) -> String;
@@ -190,9 +190,9 @@ impl FileManager for Path {
     }
 
     /// Check if the file exist, and if it's file, and if it's readable and return it (as File)
-    fn get_file(&self) -> File {
-        // Get the content
-        match File::open(self) {
+    fn write_new_file(&self) -> File {
+        // Create it
+        match File::create(self) {
             Ok(result_object) => {
                 trace!("The 'file' is readable : {:?}", self);
                 result_object
@@ -340,8 +340,8 @@ impl FileManager for &str {
     }
 
     /// Check if the file exist, and if it's file, and if it's readable and return it (as File)
-    fn get_file(&self) -> File {
-        Path::new(self).get_file()
+    fn write_new_file(&self) -> File {
+        Path::new(self).write_new_file()
     }
 
     /// Check if the file exist, and if it's file, and if it's readable and return this content (as String)
@@ -402,8 +402,8 @@ impl FileManager for String {
     }
 
     /// Check if the file exist, and if it's file, and if it's readable and return it (as File)
-    fn get_file(&self) -> File {
-        Path::new(self).get_file()
+    fn write_new_file(&self) -> File {
+        Path::new(self).write_new_file()
     }
 
     /// Check if the file exist, and if it's folder, and if it's readable and return this content (as String)
@@ -531,16 +531,16 @@ mod tests {
     }
 
     #[test]
-    fn module_flm_05_get_file() {
+    fn module_flm_05_write_new_file() {
         // As &str
-        let folder = "tests/module_file_manager/module_flm_05_get_file/file_to_read.txt";
-        folder.get_file();
+        let folder = "tests/module_file_manager/module_flm_05_write_new_file/file_to_read.txt";
+        folder.write_new_file();
         // As String
         let folder = String::from(folder);
-        folder.get_file();
+        folder.write_new_file();
         // As Path
         let folder = Path::new(&folder);
-        folder.get_file();
+        folder.write_new_file();
     }
 
     #[test]

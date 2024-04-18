@@ -331,9 +331,8 @@ impl LoadingTracker {
 
         let mut file_name = self.file_env.output_subfolder.clone();
         file_name.push_str(str_file_name);
-        file_name.create_file();
-        let mut writing_file = file_name.get_file();
-        let _ = write!(writing_file, "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {}\n\n", self.file_env.output_subfolder);
+        let mut writing_file = file_name.write_new_file();
+        let _ =     write!(writing_file, "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {}\n\n", self.file_env.output_subfolder);
         for (_, package) in &self.loaded_package {
             //writing_file.write_all(&format!("0{:b}", package.get_lowercase_name().into_bytes()));
             let str_element = format!("{:#?}", package.object);
