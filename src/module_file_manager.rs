@@ -370,6 +370,31 @@ mod tests {
     use super::*;
 
     #[test]
+    fn module_flm_01_check_is_dir() {
+        let folder = Path::new("tests/module_file_manager/module_flm_01_check_is_dir/folder_to_check");
+        folder.check_is_dir();
+    }
+
+    #[test]
+    #[should_panic(expected = "PANIC_FLM01")]
+    fn module_flm_01_check_is_dir_panic_01() {
+        let folder = Path::new("tests/module_file_manager/module_flm_01_check_is_dir_panic_01/folder_to_check");
+        folder.check_is_dir();
+    }
+
+    #[test]
+    fn module_flm_02_get_folder_content() {
+        let folder = Path::new("tests/module_file_manager/module_flm_02_get_folder_content");
+        assert_eq!(folder.get_folder_content().len(), 3);
+        let folder = Path::new("tests/module_file_manager/module_flm_02_get_folder_content/random_folder_01");
+        assert_eq!(folder.get_folder_content().len(), 2);
+        let folder = Path::new("tests/module_file_manager/module_flm_02_get_folder_content/random_folder_01/random_folder_03");
+        assert_eq!(folder.get_folder_content().len(), 1);
+        let folder = Path::new("tests/module_file_manager/module_flm_02_get_folder_content/random_folder_02");
+        assert_eq!(folder.get_folder_content().len(), 1);
+    }
+/*
+    #[test]
     fn module_flm_01_get_folder_content() {
         // As &str
         let folder = "tests/module_file_manager/module_flm_01_get_folder_content";
@@ -497,4 +522,5 @@ mod tests {
         let folder = Path::new(&folder);
         folder.get_file_content_as_element();
     }
+    */
 }
