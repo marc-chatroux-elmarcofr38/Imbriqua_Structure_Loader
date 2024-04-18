@@ -20,12 +20,12 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_output_checker.md")]
 
 // Package section
-use crate::module_file_manager::FileManager;
+use crate::module_file_manager::{FileManager, PathBuf, Path};
 use crate::module_log::*;
 
 // Dependencies section
 // use std::fs;
-use std::{process::Command, fs::canonicalize, path::PathBuf};
+use std::{process::Command, fs::canonicalize};
 use fs_extra::remove_items;
 // use fs_extra::{dir::copy, dir::CopyOptions, remove_items};
 
@@ -34,7 +34,7 @@ use fs_extra::remove_items;
 /// Represent a cargo package folder link, used to checking metacode result
 pub struct PackageLink {
     /// PathBuf of the Cargo.toml file of the package
-    absolute_path : Box<PathBuf>,
+    absolute_path : PathBuf,
 }
 
 impl PackageLink {
@@ -58,7 +58,7 @@ impl PackageLink {
         // Instanciate object
         let result =
             PackageLink {
-                absolute_path : Box::new(var_absolute_path)
+                absolute_path : var_absolute_path
             };
 
         // Checking file integrity
@@ -68,12 +68,21 @@ impl PackageLink {
         result
     }
 
-    fn get_string(&self) -> String {
-        format!("{}", self.absolute_path.to_string_lossy())
+    pub fn get_absolute_cargo_path(&self) -> PathBuf {
+        self.absolute_path.clone()
     }
 
-    fn get_source(&self) -> String {
-        self.get_string().replace("/Cargo.toml", "") + "/src"
+    pub fn get_absolute_root_path(&self) -> PathBuf {
+        let mut result = self.absolute_path.clone();
+        result.pop();
+        result
+    }
+
+    pub fn get_absolute_source_path(&self) -> PathBuf {
+        let mut result = self.absolute_path.clone();
+        result.pop();
+        result.push("src");
+        result
     }
 
     pub fn cargo_custom_command(&self, args : Vec<&str>) -> bool {
@@ -175,7 +184,8 @@ impl PackageLink {
         //! See module_output_checker documentation page for examples
 
         // Get content
-        let items = self.get_source().as_str().get_folder_content();
+        let source_path = self.get_absolute_source_path();
+        let items = source_path.get_folder_content();
         // module_file_manager::check_read_folder_and_return( );
 
         // Remove each entry
@@ -215,7 +225,7 @@ impl PackageLink {
         }
     }
 
-    pub fn load_from(&self, from_path : &str) {
+    pub fn load_from(&self, from_path : PathBuf) {
         //! Copy all subelement of a source folder in a target folder
         //!
         //! from_path (&str) : source folder
@@ -229,7 +239,7 @@ impl PackageLink {
         //!
         //! See module_output_checker documentation page for examples
 
-        from_path.copy_folder(&self.get_source().as_str());
+        from_path.copy_folder(&self.get_absolute_source_path());
 /*
         // Checking 'from_path'
         let items = from_path.get_folder_content();

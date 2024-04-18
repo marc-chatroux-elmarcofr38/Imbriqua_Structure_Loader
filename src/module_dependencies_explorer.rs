@@ -20,12 +20,13 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_dependencies_explorer.md")]
 
 // Package section
-use crate::module_file_manager::FileManager;
+use crate::module_file_manager::{FileManager, PathBuf, Path};
 
 // Dependencies section
 extern crate minidom;
 use std::collections::HashMap;
 use std::io::Write;
+use std::fs::canonicalize;
 use std::fmt;
 use chrono::Local;
 use log::{error, info, trace};
@@ -33,9 +34,8 @@ use minidom::Element;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct FileEnv {
-    pub input_folder : String,
-    output_folder : String,
-    pub output_subfolder : String,
+    input_folder : PathBuf,
+    output_subfolder : PathBuf,
 }
 
 /// Example
@@ -47,23 +47,47 @@ impl FileEnv {
     pub fn new() -> Self {
 
         //Set input folder path and output subfolder path
-        let str_input_folder : String = String::from("metamodel_file/");
-        let str_output_folder : String = String::from("../Output_file/");
+        let path_input_folder : PathBuf = Path::new("metamodel_file/").to_path_buf();
+        let mut path_output_subfolder : PathBuf = Path::new("../Output_file/").to_path_buf();
         let time_string : String = Local::now().format("%Y-%m-%d_%Hh%Mm%S/").to_string();
+        path_output_subfolder.push(time_string);
+
+        // Create folder
+        path_output_subfolder.create_folder();
+
+        // Checking instance
+        path_input_folder.get_folder_content();
+        path_output_subfolder.get_folder_content();
+
+        // Make it absolute
+        let path_input_folder = match canonicalize(&path_input_folder) {
+            Ok(result) => {
+                trace!("Can canonicalize {:?} to {:?}", path_input_folder, result);
+                result
+            },
+            Err(error) => {
+                error!("PANIC_OUT01 - Can't canonicalize {:?} - {}", path_input_folder, error);
+                panic!("PANIC_OUT01 - Can't canonicalize {:?} - {}", path_input_folder, error);
+            },
+        };
+
+        // Make it absolute
+        let path_output_subfolder = match canonicalize(&path_output_subfolder) {
+            Ok(result) => {
+                trace!("Can canonicalize {:?} to {:?}", path_output_subfolder, result);
+                result
+            },
+            Err(error) => {
+                error!("PANIC_OUT01 - Can't canonicalize {:?} - {}", path_output_subfolder, error);
+                panic!("PANIC_OUT01 - Can't canonicalize {:?} - {}", path_output_subfolder, error);
+            },
+        };
 
         // Create instance
         let result = FileEnv {
-            input_folder : str_input_folder.clone(),
-            output_folder : str_output_folder.clone(),
-            output_subfolder : str_output_folder.clone() + time_string.as_str(),
-            // dependencies : Vec::new(),
+            input_folder : path_input_folder,
+            output_subfolder : path_output_subfolder,
         };
-
-        // Checking instance
-        result.output_subfolder.create_folder();
-        result.input_folder.get_folder_content();
-        result.output_folder.get_folder_content();
-        result.output_subfolder.get_folder_content();
 
         // Return result
         result
@@ -75,6 +99,14 @@ impl FileEnv {
         */
 
         self.output_subfolder.delete_folder(true);
+    }
+
+    pub fn get_input_folder(&self) -> PathBuf {
+        self.input_folder.clone()
+    }
+
+    pub fn get_output_subfolder(&self) -> PathBuf {
+        self.output_subfolder.clone()
     }
 }
 
@@ -157,8 +189,8 @@ impl LoadingTracker {
         self.add_empty_package(main_file, package_id, label.clone());
 
         // Generate file path
-        let mut file_path = self.file_env.input_folder.clone();
-        file_path.push_str(main_file);
+        let mut file_path = self.file_env.get_input_folder();
+        file_path.push(main_file);
 
         // Load package element
         let package_element = file_path.get_file_content_as_element();
@@ -329,10 +361,10 @@ impl LoadingTracker {
 
         */
 
-        let mut file_name = self.file_env.output_subfolder.clone();
-        file_name.push_str(str_file_name);
+        let mut file_name = self.file_env.get_output_subfolder();
+        file_name.push(str_file_name);
         let mut writing_file = file_name.write_new_file();
-        let _ =     write!(writing_file, "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {}\n\n", self.file_env.output_subfolder);
+        let _ =     write!(writing_file, "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {:?}\n\n", self.file_env.output_subfolder);
         for (_, package) in &self.loaded_package {
             //writing_file.write_all(&format!("0{:b}", package.get_lowercase_name().into_bytes()));
             let str_element = format!("{:#?}", package.object);

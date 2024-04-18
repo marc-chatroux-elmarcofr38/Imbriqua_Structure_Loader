@@ -20,112 +20,95 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_log.md")]
 
 // Package section
-use std::fs::read_to_string;
-pub use log::{error, warn, info, trace, debug};
+use crate::module_file_manager::{FileManager, Path};
 
 // Dependencies section
-use anyhow::Result;
-use log::LevelFilter;
-use log4rs::init_config;
-use log4rs::Handle;
-use log4rs::append::console::ConsoleAppender;
-use log4rs::append::file::FileAppender;
-use log4rs::encode::pattern::PatternEncoder;
-use log4rs::config::{Appender, RawConfig, Config, Deserializers, Logger, Root};
-use serde_yaml::from_str;
+pub use log::{error, warn, info, trace, debug};
 
-pub fn open_module(config_file : &str) -> Handle {
-    //! Configure logger with config_file, after configure it with a backup configuation
-    //! 
-    //! Try to load a backup configuration ("hard writted" configuration)
-    //! After, try to load "config_file" configuration
+
+/// Configure logger with __config_file__, after configure it with a backup configuation
+///
+/// Initialise the logger with __config_file__
+/// Provide minimal logger during initialise on __config_file__, and after if a error has meet
+pub fn open_logger(config_file : &str) -> log4rs::Handle {
 
     // Itinialisation of global logger with backup configuration
-    let config : Config = match get_config_by_backup() {
+    let config : log4rs::config::Config = match get_config_by_backup() {
         Ok(result) => {result},
         Err(error) => {
             error!("PANIC_LOG01 - Error during the loading on logs modules - {}", error);
             panic!("PANIC_LOG01 - Error during the loading on logs modules")},
-        
+
     };
-    let handle : Handle = match init_config(config) {
+    let handle : log4rs::Handle = match log4rs::init_config(config) {
         Ok(result) => {result},
         Err(error) => {
-            error!("PANIC_LOG01 - Error during the loading on logs modules - {}", error);
+            error!("PANIC_LOG02 - Error during the loading on logs modules - {}", error);
             panic!("PANIC_LOG02 - Error during the loading on logs modules")
         },
     };
 
     // Itinialisation of global logger with "config_file" configuration
-    let config : Config = match get_config_by_file(config_file) {
+    let config : log4rs::config::Config = match get_config_by_file(config_file) {
         Ok(result) => {
             result
         },
         Err(error) => {
             warn!("WARN_LOG01 - Error during default configuration loading \"{}\": {}", config_file, error);
-            info!("Logger init success : use of \"{}\"", "!!! BACKUP CONFIGURATION !!!");
+            info!("Logger init success : use of \"!!! BACKUP CONFIGURATION !!!\"");
             return handle
         },
     };
     handle.set_config(config);
 
+    // Return
     info!("Log handle loaded");
-
-    // Get config
     handle
 }
 
-fn get_config_by_backup() -> Result<Config> {
-    //! Define a backup config (hard-writted)
+#[doc(hidden)]
+/// Define a backup config (hard-writted)
+fn get_config_by_backup() -> anyhow::Result<log4rs::config::Config> {
 
     // Setup of console logging output
-    let stdout : ConsoleAppender = ConsoleAppender::builder()
-        .encoder(Box::new(PatternEncoder::new("! BACKUP_LOGGER ! {M}: {m} {n}")))
+    let stdout : log4rs::append::console::ConsoleAppender = log4rs::append::console::ConsoleAppender::builder()
+        .encoder(Box::new(log4rs::encode::pattern::PatternEncoder::new("! BACKUP_LOGGER ! {M}: {m} {n}")))
         .build();
 
     // Setup of file logging tools
-    let requests : FileAppender = FileAppender::builder()
-        .encoder(Box::new(PatternEncoder::new("{d(%+)(utc)} [{f}:{L}] {h({l})} ! BACKUP_LOGGER ! {M}: {m} {n}")))
+    let requests : log4rs::append::file::FileAppender = log4rs::append::file::FileAppender::builder()
+        .encoder(Box::new(log4rs::encode::pattern::PatternEncoder::new("{d(%+)(utc)} [{f}:{L}] {h({l})} ! BACKUP_LOGGER ! {M}: {m} {n}")))
         .build("imbriqua_structure_loader.log")?;
 
     // Setup of global logger
-    let config : Config = Config::builder()
-        .appender(Appender::builder().build("stdout", Box::new(stdout)))
-        .appender(Appender::builder().build("requests", Box::new(requests)))
-        .logger(Logger::builder().appender("stdout").build("app::stdout", LevelFilter::Trace))
-        .logger(Logger::builder().appender("requests").build("app::requests", LevelFilter::Trace))
-        .build(Root::builder().appender("stdout").appender("requests").build(LevelFilter::Trace))?;
+    let config : log4rs::config::Config = log4rs::config::Config::builder()
+        .appender(log4rs::config::Appender::builder().build("stdout", Box::new(stdout)))
+        .appender(log4rs::config::Appender::builder().build("requests", Box::new(requests)))
+        .logger(log4rs::config::Logger::builder().appender("stdout").build("app::stdout", log::LevelFilter::Trace))
+        .logger(log4rs::config::Logger::builder().appender("requests").build("app::requests", log::LevelFilter::Trace))
+        .build(log4rs::config::Root::builder().appender("stdout").appender("requests").build(log::LevelFilter::Trace))?;
 
     Ok(config)
 }
 
-fn get_config_by_file(config_file : &str) -> Result<Config> {
-    //! Define a config by loading "config_file"
+#[doc(hidden)]
+/// Define a config by loading "config_file"
+fn get_config_by_file(config_file : &str) -> anyhow::Result<log4rs::config::Config> {
 
-    // Loading the file
-    let str_result = match read_to_string(config_file) {
-        Ok(result_object) => {
-            trace!("CheckFile : File is readable \"{}\"", config_file);
-            result_object
-        }
-        Err(err_object) => {
-            error!("ERROR_FILE04 - A file isn't readable - \"{}\" : {}", config_file, err_object);
-            panic!("PANIC_FILE04 - A file isn't readable - \"{}\" : {}", config_file, err_object);
-        }
-    };
-    let default_config_str = str_result.as_str();
+    let default_config_string : String = Path::new(config_file).get_file_content();
+    let default_config_str = default_config_string.as_str();
 
     // Deserialize
-    let config : RawConfig = from_str(default_config_str)?;
-    let (appenders, errors) = config.appenders_lossy(&Deserializers::default());
-    
+    let config : log4rs::config::RawConfig = serde_yaml::from_str(default_config_str)?;
+    let (appenders, errors) = config.appenders_lossy(&log4rs::config::Deserializers::default());
+
     // Error test
     if !errors.is_empty() {
         return Err(anyhow::Error::new(errors));
     }
 
     // Initialise config object
-    let config : Config = Config::builder()
+    let config : log4rs::config::Config = log4rs::config::Config::builder()
         .appenders(appenders)
         .loggers(config.loggers())
         .build(config.root())?;
@@ -133,10 +116,9 @@ fn get_config_by_file(config_file : &str) -> Result<Config> {
     Ok(config)
 }
 
-
 #[cfg(test)]
 mod tests {
-    use crate::module_log::{get_config_by_backup, get_config_by_file};
+    use crate::module_log::{get_config_by_backup, get_config_by_file, open_logger};
 
     #[test]
     fn module_log_01_check_configuration_by_backup() {
@@ -152,5 +134,11 @@ mod tests {
         let result = get_config_by_file("tests/module_log_02_check_configuration_by_file/config_log.yml");
         // Checking Result
         assert!(result.is_ok());
+    }
+
+    #[ignore]
+    #[test]
+    fn module_log_03_check_open_logger() {
+        open_logger("tests/module_log_03_check_open_logger/config_log.yml");
     }
 }

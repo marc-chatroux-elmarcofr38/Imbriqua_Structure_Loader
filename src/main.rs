@@ -26,8 +26,8 @@ pub mod module_output_checker;
 
 fn main() {
 
-    // Initialise global logger
-    let _handle = module_log::open_module("config_log.yml");
+// Initialise global logger
+    let _handle = module_log::open_logger("config_log.yml");
 
     // Set used folders (input folder and output folder)
     let mut loading_env = module_dependencies_explorer::LoadingTracker::new();
@@ -42,12 +42,12 @@ fn main() {
     // Delete output folder if is empty
     // loading_env.close();
 
-    let result_str : String = loading_env.file_env.output_subfolder;
+    let result_path = loading_env.file_env.get_output_subfolder();
 
     let result_package = module_output_checker::PackageLink::from("../Imbriqua_Structure_Result/Cargo.toml");
     result_package.cargo_clean();
     result_package.purge();
-    result_package.load_from(result_str.as_str());
+    result_package.load_from(result_path);
     if !result_package.cargo_full_check() {panic!()}
 }
 
@@ -56,7 +56,7 @@ fn main() {
 fn le_test() {
 
     // Initialise global logger
-    let _handle = module_log::open_module();
+    let _handle = module_log::open_logger();
 
     // Set used folders (input folder and output folder)
     let loading_env = module_dependencies_explorer::LoadingTracker::new();

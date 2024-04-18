@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>.
 // Dependencies section
 extern crate minidom;
 pub use std::path::Path;
+pub use std::path::PathBuf;
 use std::fs::{ReadDir, File};
 use fs_extra;
 use log::{error, trace};
@@ -313,6 +314,8 @@ impl FileManager for Path {
     }
 }
 
+/*
+
 impl FileManager for &str {
     ///  Return the content of the folder (as ReadDir)
     fn get_folder_content(&self) -> ReadDir {
@@ -437,6 +440,8 @@ impl FileManager for String {
     }
 }
 
+*/
+
 #[cfg(test)]
 mod tests {
     use super::FileManager;
@@ -446,10 +451,10 @@ mod tests {
     fn module_flm_01_get_folder_content() {
         // As &str
         let folder = "tests/module_file_manager/module_flm_01_get_folder_content";
-        folder.get_folder_content();
+        // folder.get_folder_content();
         // As String
         let folder = String::from(folder);
-        folder.get_folder_content();
+        // folder.get_folder_content();
         // As Path
         let folder = Path::new(&folder);
         folder.get_folder_content();
@@ -459,14 +464,14 @@ mod tests {
     fn module_flm_02_create_folder_and_delete_folder() {
         // As &str
         let folder = "tests/module_file_manager/module_flm_02_create_folder_and_delete_folder/to_create";
-        folder.create_folder();
-        folder.get_folder_content();
-        folder.delete_folder(true);
+        // folder.create_folder();
+        // folder.get_folder_content();
+        // folder.delete_folder(true);
         // As String
         let folder = String::from(folder);
-        folder.create_folder();
-        folder.get_folder_content();
-        folder.delete_folder(true);
+        // folder.create_folder();
+        // folder.get_folder_content();
+        // folder.delete_folder(true);
         // As Path
         let folder = Path::new(&folder);
         folder.create_folder();
@@ -479,17 +484,17 @@ mod tests {
         // As &str
         let folder = "tests/module_file_manager/module_flm_03_copy_folder_and_delete_folder/from";
         let to = "tests/module_file_manager/module_flm_03_copy_folder_and_delete_folder/to";
-        to.delete_folder(false);
-        to.create_folder();
-        folder.copy_folder(&to);
-        to.get_folder_content();
+        // to.delete_folder(false);
+        // to.create_folder();
+        // folder.copy_folder(&to);
+        // to.get_folder_content();
         // As String
         let folder = String::from(folder);
         let to = String::from(to);
-        to.delete_folder(false);
-        to.create_folder();
-        folder.copy_folder(&to);
-        to.get_folder_content();
+        // to.delete_folder(false);
+        // to.create_folder();
+        // folder.copy_folder(&to);
+        // to.get_folder_content();
         // As Path
         let folder = Path::new(&folder);
         let to = Path::new(&to);
@@ -504,21 +509,21 @@ mod tests {
         // As &str
         let folder = "tests/module_file_manager/module_flm_04_move_folder_and_move_folder/from";
         let to = "tests/module_file_manager/module_flm_04_move_folder_and_move_folder/to";
-        to.delete_folder(false);
-        to.create_folder();
-        folder.move_folder(&to);
-        to.get_folder_content();
-        to.move_folder(&folder);
-        folder.get_folder_content();
+        // to.delete_folder(false);
+        // to.create_folder();
+        // folder.move_folder(&to);
+        // to.get_folder_content();
+        // to.move_folder(&folder);
+        // folder.get_folder_content();
         // As String
         let folder = String::from(folder);
         let to = String::from(to);
-        to.delete_folder(false);
-        to.create_folder();
-        folder.move_folder(&to);
-        to.get_folder_content();
-        to.move_folder(&folder);
-        folder.get_folder_content();
+        // to.delete_folder(false);
+        // to.create_folder();
+        // folder.move_folder(&to);
+        // to.get_folder_content();
+        // to.move_folder(&folder);
+        // folder.get_folder_content();
         // As Path
         let folder = Path::new(&folder);
         let to = Path::new(&to);
@@ -534,10 +539,10 @@ mod tests {
     fn module_flm_05_write_new_file() {
         // As &str
         let folder = "tests/module_file_manager/module_flm_05_write_new_file/file_to_read.txt";
-        folder.write_new_file();
+        // folder.write_new_file();
         // As String
         let folder = String::from(folder);
-        folder.write_new_file();
+        // folder.write_new_file();
         // As Path
         let folder = Path::new(&folder);
         folder.write_new_file();
@@ -547,10 +552,10 @@ mod tests {
     fn module_flm_06_get_file_content() {
         // As &str
         let folder = "tests/module_file_manager/module_flm_06_get_file_content/file_to_read.txt";
-        folder.get_file_content();
+        // folder.get_file_content();
         // As String
         let folder = String::from(folder);
-        folder.get_file_content();
+        // folder.get_file_content();
         // As Path
         let folder = Path::new(&folder);
         folder.get_file_content();
@@ -560,10 +565,10 @@ mod tests {
     fn module_flm_07_get_file_content_as_element() {
         // As &str
         let folder = "tests/module_file_manager/module_flm_07_get_file_content_as_element/file_to_read.txt";
-        folder.get_file_content_as_element();
+        // folder.get_file_content_as_element();
         // As String
         let folder = String::from(folder);
-        folder.get_file_content_as_element();
+        // folder.get_file_content_as_element();
         // As Path
         let folder = Path::new(&folder);
         folder.get_file_content_as_element();
@@ -573,14 +578,14 @@ mod tests {
     fn module_flm_08_create_file_and_delete_file() {
         // As &str
         let folder = "tests/module_file_manager/module_flm_08_create_file_and_delete_file/file_to_create.txt";
-        folder.create_file();
-        folder.get_file_content();
-        folder.delete_file();
+        // folder.create_file();
+        // folder.get_file_content();
+        // folder.delete_file();
         // As String
         let folder = String::from(folder);
-        folder.create_file();
-        folder.get_file_content();
-        folder.delete_file();
+        // folder.create_file();
+        // folder.get_file_content();
+        // folder.delete_file();
         // As Path
         let folder = Path::new(&folder);
         folder.create_file();
