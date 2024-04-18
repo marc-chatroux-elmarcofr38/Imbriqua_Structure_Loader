@@ -131,7 +131,7 @@ mod tests {
     #[test]
     fn module_log_02_check_configuration_by_file() {
         // Checking execution
-        let result = get_config_by_file("tests/module_log_02_check_configuration_by_file/config_log.yml");
+        let result = get_config_by_file("tests/module_log/module_log_02_check_configuration_by_file/config_log.yml");
         // Checking Result
         assert!(result.is_ok());
     }
@@ -139,6 +139,6 @@ mod tests {
     #[ignore]
     #[test]
     fn module_log_03_check_open_logger() {
-        open_logger("tests/module_log_03_check_open_logger/config_log.yml");
+        open_logger("tests/module_log/module_log_03_check_open_logger/config_log.yml");
     }
 }

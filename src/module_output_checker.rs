@@ -188,40 +188,14 @@ impl PackageLink {
         let items = source_path.get_folder_content();
         // module_file_manager::check_read_folder_and_return( );
 
-        // Remove each entry
-        for entry in items {
-            let entry_path = match entry {
-                Ok(result) => {
-                    result.path()
-                },
-                Err(_) => {
-                    warn!("WARN_OUT_01 - Error in ReadDir iterator");
-                    continue;
-                },
-            };
-            let entry_path = entry_path.to_str();
 
-            let entry_path = match entry_path {
-                Some(result) => {
-                    result
-                },
-                None => {
-                    warn!("WARN_OUT_02 - Error in pathBuf::to_str()");
-                    continue;
-                },
-            };
-
-            let mut vec_entry = Vec::new();
-            vec_entry.push(entry_path);
-
-            match remove_items(&vec_entry) {
-                Ok(_) => {
-                    trace!("purge : Removing \"{}\"", entry_path);
-                },
-                Err(error) => {
-                    error!("WARN_OUT03 - Error in removing entry - {} - {}", &entry_path, error);
-                },
-            }
+        match remove_items(&items) {
+            Ok(_) => {
+                trace!("purge : Removing content of {:?}", source_path);
+            },
+            Err(error) => {
+                error!("WARN_OUT03 - Error in removing entry - {:?} - {}", source_path, error);
+            },
         }
     }
 

@@ -28,12 +28,12 @@ fn main() {
 
 Use __pub mod module_log__ in __main.rs__.
 
-This practice allowing to import logs macro (__error!__, __warn!__, __info!__, __debug!__, __trace!__) by using __use crate::module_log::*;__
+This practice allowing you to import logs macro (__error!__, __warn!__, __info!__, __debug!__, __trace!__) by using __use crate::module_log::*;__
 
 
 ```rust
 // main.rs
-pub mod module_log
+pub mod module_log;
 
 fn main () {
     // ...
@@ -44,7 +44,7 @@ fn main () {
 // foo.rs
 use crate::module_log::*;
 
-fn bae () {
+fn bar () {
     // ...
 
     info!("Foo!, Bar!");
