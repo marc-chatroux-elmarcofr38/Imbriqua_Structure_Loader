@@ -146,6 +146,7 @@ impl FileManager for Path {
     fn copy_folder(&self, to : &Self) -> () {
         // Directory checking
         self.check_is_dir();
+        to.create_folder();
         to.check_is_dir();
         // Setting options
         let options = fs_extra::dir::CopyOptions::new();
@@ -167,6 +168,7 @@ impl FileManager for Path {
     fn move_folder(&self, to : &Self) -> () {
         // Directory checking
         self.check_is_dir();
+        to.create_folder();
         to.check_is_dir();
         // Setting options
         let options = fs_extra::dir::CopyOptions::new();
@@ -182,6 +184,8 @@ impl FileManager for Path {
                 panic!("PANIC_FLM05 - The 'folder' can't be moved : {:?} (err : {})", self, error);
             }
         };
+        // Delete empty folder
+        self.delete_folder(true);
     }
 
     /// Delete the folder if it exist
@@ -189,7 +193,7 @@ impl FileManager for Path {
         // Directory checking
         self.check_is_dir();
         // Exit if not empty AND empty constraint
-        if empty_only && (self.get_folder_content().len() == 0) {
+        if empty_only && (self.get_folder_content().len() != 0) {
             trace!("Folder {:?} isn't empty (don't delete)", self);
             return;
         }
@@ -393,39 +397,86 @@ mod tests {
         let folder = Path::new("tests/module_file_manager/module_flm_02_get_folder_content/random_folder_02");
         assert_eq!(folder.get_folder_content().len(), 1);
     }
-/*
-    #[test]
-    fn module_flm_01_get_folder_content() {
-        // As &str
-        let folder = "tests/module_file_manager/module_flm_01_get_folder_content";
-        // folder.get_folder_content();
-        // As String
-        let folder = String::from(folder);
-        // folder.get_folder_content();
-        // As Path
-        let folder = Path::new(&folder);
-        folder.get_folder_content();
-    }
 
     #[test]
-    fn module_flm_02_create_folder_and_delete_folder() {
-        // As &str
-        let folder = "tests/module_file_manager/module_flm_02_create_folder_and_delete_folder/to_create";
-        // folder.create_folder();
-        // folder.get_folder_content();
-        // folder.delete_folder(true);
-        // As String
-        let folder = String::from(folder);
-        // folder.create_folder();
-        // folder.get_folder_content();
-        // folder.delete_folder(true);
-        // As Path
-        let folder = Path::new(&folder);
+    fn module_flm_03_create_folder() {
+        let folder = Path::new("tests/module_file_manager/module_flm_03_create_folder/folder_to_create");
+        // Purging
+        if folder.exists() {folder.delete_folder(false);}
+        assert_eq!(folder.exists(), false);
+        // True test
         folder.create_folder();
-        folder.get_folder_content();
-        folder.delete_folder(true);
     }
 
+    #[test]
+    fn module_flm_04_copy_folder() {
+        let from = Path::new("tests/module_file_manager/module_flm_04_copy_folder/from");
+        let to = Path::new("tests/module_file_manager/module_flm_04_copy_folder/to");
+        // Purging
+        if to.exists() {to.delete_folder(false);}
+        assert_eq!(to.exists(), false);
+        // True test
+        from.copy_folder(to);
+        let to_checking = Path::new("tests/module_file_manager/module_flm_04_copy_folder/to");
+        assert_eq!(to_checking.get_folder_content().len(), 3);
+        let to_checking = Path::new("tests/module_file_manager/module_flm_04_copy_folder/to/random_folder_01");
+        assert_eq!(to_checking.get_folder_content().len(), 2);
+        let to_checking = Path::new("tests/module_file_manager/module_flm_04_copy_folder/to/random_folder_01/random_folder_03");
+        assert_eq!(to_checking.get_folder_content().len(), 1);
+        let to_checking = Path::new("tests/module_file_manager/module_flm_04_copy_folder/to/random_folder_02");
+        assert_eq!(to_checking.get_folder_content().len(), 1);
+    }
+
+    #[test]
+    fn module_flm_05_move_folder() {
+        let from_template = Path::new("tests/module_file_manager/module_flm_05_move_folder/from_template");
+        let from = Path::new("tests/module_file_manager/module_flm_05_move_folder/from");
+        let to = Path::new("tests/module_file_manager/module_flm_05_move_folder/to");
+        // Purging
+        if from.exists() {from.delete_folder(false);}
+        assert_eq!(from.exists(), false);
+        if to.exists() {to.delete_folder(false);}
+        assert_eq!(to.exists(), false);
+        // Preparing
+        from_template.copy_folder(from);
+        let from_checking = Path::new("tests/module_file_manager/module_flm_05_move_folder/from");
+        assert_eq!(from_checking.get_folder_content().len(), 3);
+        let from_checking = Path::new("tests/module_file_manager/module_flm_05_move_folder/from/random_folder_01");
+        assert_eq!(from_checking.get_folder_content().len(), 2);
+        let from_checking = Path::new("tests/module_file_manager/module_flm_05_move_folder/from/random_folder_01/random_folder_03");
+        assert_eq!(from_checking.get_folder_content().len(), 1);
+        let from_checking = Path::new("tests/module_file_manager/module_flm_05_move_folder/from/random_folder_02");
+        assert_eq!(from_checking.get_folder_content().len(), 1);
+        // True test
+        from.move_folder(to);
+        assert_eq!(from.exists(), false);
+        let to_checking = Path::new("tests/module_file_manager/module_flm_05_move_folder/to");
+        assert_eq!(to_checking.get_folder_content().len(), 3);
+        let to_checking = Path::new("tests/module_file_manager/module_flm_05_move_folder/to/random_folder_01");
+        assert_eq!(to_checking.get_folder_content().len(), 2);
+        let to_checking = Path::new("tests/module_file_manager/module_flm_05_move_folder/to/random_folder_01/random_folder_03");
+        assert_eq!(to_checking.get_folder_content().len(), 1);
+        let to_checking = Path::new("tests/module_file_manager/module_flm_05_move_folder/to/random_folder_02");
+        assert_eq!(to_checking.get_folder_content().len(), 1);
+    }
+
+    #[test]
+    fn module_flm_06_delete_folder() {
+        let folder_with_content_to_remove = Path::new("tests/module_file_manager/module_flm_06_delete_folder/empty_folder_to_delete");
+        let from = Path::new("tests/module_file_manager/module_flm_06_delete_folder/from");
+        let folder_with_content_to_not_remove = Path::new("tests/module_file_manager/module_flm_06_delete_folder/not_empty_folder_to_delete");
+        // Preparing
+        if !folder_with_content_to_remove.exists() {from.copy_folder(folder_with_content_to_remove);}
+        assert_eq!(folder_with_content_to_remove.exists(), true);
+        if !folder_with_content_to_not_remove.exists() {from.copy_folder(folder_with_content_to_not_remove);}
+        assert_eq!(folder_with_content_to_not_remove.exists(), true);
+        // True test (empty only)
+        folder_with_content_to_remove.delete_folder(false);
+        assert_eq!(folder_with_content_to_remove.exists(), false);
+        folder_with_content_to_not_remove.delete_folder(true);
+        assert_eq!(folder_with_content_to_not_remove.exists(), true);
+    }
+/*
     #[test]
     fn module_flm_03_copy_folder_and_delete_folder() {
         // As &str
