@@ -4,7 +4,7 @@ appenders:
     stdout:
         kind: console
         encoder:
-            pattern: "! UNIT_TEST ! {M}: {m} {n}"
+            pattern: "! UNIT_TEST ! {h({l})} {M}: {m} {n}"
         filters:
             - kind: threshold
               level: warn
