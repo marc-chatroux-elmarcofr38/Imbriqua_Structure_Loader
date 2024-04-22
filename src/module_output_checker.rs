@@ -39,9 +39,11 @@ pub struct PackageLink {
 
 impl PackageLink {
     pub fn from(str_relative_cargo_path : &str) -> Self {
+        /*
         //! Initialise a cargo package folder link from relative string path
         //!
         //! str_relative_cargo_path (&str) : relative path of the Cargo.toml file to link
+        */
 
         // Make it absolute
         let var_absolute_path = match canonicalize(str_relative_cargo_path) {
@@ -86,6 +88,7 @@ impl PackageLink {
     }
 
     pub fn cargo_custom_command(&self, args : Vec<&str>) -> bool {
+        /*
         //! Running cargo custom command
         //!
         //! args (Vec<&str>) : list of arg to forward to the command
@@ -96,7 +99,8 @@ impl PackageLink {
         //!
         //! # Examples
         //!
-        //! See module_output_checker documentation page for examples
+        //! See module_output_checker documentation page for example
+        */
 
         let mut cargo_1 = Command::new("cargo");
         let _ = cargo_1.args(args)
@@ -110,6 +114,7 @@ impl PackageLink {
     }
 
     pub fn cargo_full_check(&self) -> bool {
+        /*
         //! Running cargo full check (check, test, build, doc)
         //!
         //! # Errors
@@ -119,6 +124,7 @@ impl PackageLink {
         //! # Examples
         //!
         //! See module_output_checker documentation page for examples
+        */
 
         let result_1 = self.cargo_custom_command(vec!["check", "--all-features", "--lib"]);
         let result_2 = self.cargo_custom_command(vec!["test", "--all-features", "--no-run", "--lib"]);
@@ -129,6 +135,7 @@ impl PackageLink {
     }
 
     pub fn cargo_integrity_check(&self) {
+        /*
         //! Running cargo locate-project command, allowing to check existence of Cargo.toml file
         //!
         //! # Errors
@@ -138,6 +145,7 @@ impl PackageLink {
         //! # Examples
         //!
         //! See module_output_checker documentation page for examples
+        */
 
         match &self.cargo_custom_command(vec!["locate-project"]) {
             true => {
@@ -151,6 +159,7 @@ impl PackageLink {
     }
 
     pub fn cargo_clean(&self) {
+        /*
         //! Running cargo clean command, allowing to purge "target" folder
         //!
         //! # Errors
@@ -160,6 +169,7 @@ impl PackageLink {
         //! # Examples
         //!
         //! See module_output_checker documentation page for examples
+        */
 
         match &self.cargo_custom_command(vec!["clean"]) {
             true => {
@@ -173,6 +183,7 @@ impl PackageLink {
     }
 
     pub fn purge (&self) {
+        /*
         //! Removing subelement of a "/src" folder
         //!
         //! # Errors
@@ -182,6 +193,7 @@ impl PackageLink {
         //! # Examples
         //!
         //! See module_output_checker documentation page for examples
+        */
 
         // Get content
         let source_path = self.get_absolute_source_path();
@@ -200,6 +212,7 @@ impl PackageLink {
     }
 
     pub fn load_from(&self, from_path : PathBuf) {
+        /*
         //! Copy all subelement of a source folder in a target folder
         //!
         //! from_path (&str) : source folder
@@ -212,88 +225,15 @@ impl PackageLink {
         //! # Examples
         //!
         //! See module_output_checker documentation page for examples
+        */
 
         from_path.copy_folder(&self.get_absolute_source_path());
-/*
-        // Checking 'from_path'
-        let items = from_path.get_folder_content();
-
-        // Checking 'to_path'
-        let to_path = self.get_source().get_folder_content();
-
-        let options = CopyOptions::new();
-
-        // Copying each entry
-        for entry in items {
-            // ReadDir error
-             let entry = match entry {
-                Ok(result) => {
-                    result
-                },
-                Err(error) => {
-                    error!("PANIC_OUT08 - Error in ReadDir iterator - {}", error);
-                    panic!("PANIC_OUT08 - Error in ReadDir iterator - {}", error);
-                },
-            };
-            let entry_name = entry.file_name();
-
-            // OsString error
-            let entry_name = match entry_name.to_str() {
-                Some(result) => {
-                    result
-                },
-                None => {
-                    error!("PANIC_OUT09 - Error in OsString::to_str() - {:?}", entry_name);
-                    panic!("PANIC_OUT09 - Error in OsString::to_str() - {:?}", entry_name);
-                },
-            };
-
-            // file_type error
-            let entry_type = match entry.file_type() {
-                Ok(result) => {
-                    result
-                },
-                Err(error) => {
-                    error!("PANIC_OUT10 - Error in DirEntry::file_type() - {}", error);
-                    panic!("PANIC_OUT10 - Error in DirEntry::file_type() - {}", error);
-                },
-            };
-
-            // From
-            let mut fr = String::from(from_path);
-            fr.push_str(entry_name);
-            // To
-            let mut go = String::from(to_path);
-            go.push_str(entry_name);
-
-            if entry_type.is_dir() {
-                match copy(&fr, to_path, &options) {
-                    Ok(_) => {
-                        info!("copy : copying folder \"{}\" to \"{}\"", fr, go);
-                    },
-                    Err(error) => {
-                        error!("PANIC_OUT06 - Can't copying \"{}\" folder to \"{}\" - {}", fr, go, error);
-                        panic!("PANIC_OUT06 - Can't copying \"{}\" folder to \"{}\" - {}", fr, go, error);
-                    },
-                }
-            } else {
-                match fs::copy(&fr, &go) {
-                    Ok(_) => {
-                        info!("copy : copying file \"{}\" to \"{}\"", fr, go);
-                    },
-                    Err(error) => {
-                        error!("PANIC_OUT07 - Can't copying \"{}\" file to \"{}\" - {}", fr, go, error);
-                        panic!("PANIC_OUT07 - Can't copying \"{}\" file to \"{}\" - {}", fr, go, error);
-                    },
-                }
-            }
-        };*/
-
     }
 }
 
 #[doc(hidden)]
 fn represent_command_output(command : &mut Command) -> Option<bool> {
+    /*
     //! Printing command result, used by __check_result__ function
     //!
     //! # Errors
@@ -303,6 +243,7 @@ fn represent_command_output(command : &mut Command) -> Option<bool> {
     //! # Examples
     //!
     //! See module_output_checker documentation page for examples
+    */
 
     let command_output= match command.output() {
         Ok(result) => {

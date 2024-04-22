@@ -15,8 +15,8 @@ PURPOSE.See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with Imbriqua Structure.
 If not, see <https://www.gnu.org/licenses/>.
 */
-#![warn(missing_docs)]
 
+#![warn(missing_docs)]
 #![doc = include_str!("../README.MD")]
 
 pub mod module_log;
