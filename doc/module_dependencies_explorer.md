@@ -8,7 +8,7 @@ Short description
 
 ...
 
-## Advenced usecase
+## Advanced usecase
 
 ...
 
@@ -18,4 +18,3 @@ Short description
     * Context : __###.rs/###()__
     * Info : ...
     * Cause : ...
-    

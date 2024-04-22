@@ -84,7 +84,7 @@ fn bar () {
 
 ...
 
-## Advenced usecase
+## Advanced usecase
 
 ...
 

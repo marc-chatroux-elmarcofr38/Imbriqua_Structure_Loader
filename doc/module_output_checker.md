@@ -27,7 +27,7 @@ fn main() {
     fn generate_code ("../Project_B/src/lib.rs") {
         // script part generating file in relative path "../Project_B/src/lib.rs"
     }
-    
+
     module_output_checker::check_result("../Project_B/");
 }
 ```
@@ -67,7 +67,7 @@ PS : Of course, you can have a similar folder tree for executable package check
 ```
 
 
-## Advenced usecase
+## Advanced usecase
 
 In the case of yout making a package __Project_A__ gererating a Rust library file to test, the TODO list is :
 * Create a minimal cargo library package (like Imbriqua_Structure_Result, see file tree)
@@ -87,10 +87,10 @@ fn main() {
         // script part generating file and complex folder
         // in relative path "../Output_file/{time_name}/src"
     }
-    
+
     let output_path = format!("../Output_folder/{}", time_name);
 
-    // cargo clean, 
+    // cargo clean,
     module_output_checker::clean_target_result("../Project_B/");
 
     // copying and checking
@@ -130,7 +130,7 @@ $ cargo doc --manifest-path=".../Project_B/" --no-deps
 │   ├── Cargo.lock
 │   ├── src/
 │   │   ├── lib.rs
-│   │   └── lib_folder/ 
+│   │   └── lib_folder/
 │   │       └── ...
 │   └── ...
 │
@@ -258,4 +258,4 @@ PS : Of course, you can have a similar folder tree for executable package check
     * Info : Can't print output information
     * Cause : see details in logs file to get :
         * the command
-        * error informations of __std::str::from_utf8()__ 
+        * error informations of __std::str::from_utf8()__
