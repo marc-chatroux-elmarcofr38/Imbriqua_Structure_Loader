@@ -95,102 +95,102 @@ fn bar () {
     * Info : The path isn't an existing directory
     * Cause :
         * see details in logs file to get the __Path__
-        * The error come from __Path::is_dir()__ function
+        * The error come from [__Path::is_dir()__](https://doc.rust-lang.org/std/path/struct.Path.html#method.is_dir) function
 
 * PANIC_FLM02 - The 'folder' isn't readable
     * Context : __module_file_manager.rs/FileManager::get_folder_content()__
     * Info : The folder isn't readable
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __fs_extra::dir::get_dir_content2()__ function
+        * The error come from [__fs_extra::dir::get_dir_content2()__](https://docs.rs/fs_extra/latest/fs_extra/dir/fn.get_dir_content2.html) function
 
 * PANIC_FLM03 - The 'folder' can't be created
     * Context : __module_file_manager.rs/FileManager::create_folder()__
     * Info : The folder isn't creatable
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __fs_extra::dir::create_all()__ function
+        * The error come from [__fs_extra::dir::create_all()__](https://docs.rs/fs_extra/latest/fs_extra/dir/fn.create_all.html) function
 
 * PANIC_FLM04 - The 'folder' can't be copied
     * Context : __module_file_manager.rs/FileManager::copy_folder()__
     * Info : The folder isn't copied
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __fs_extra::dir::copy_items()__ function
+        * The error come from [__fs_extra::copy_items()__](https://docs.rs/fs_extra/latest/fs_extra/fn.copy_items.html) function
 
 * PANIC_FLM05 - The 'folder' can't be moved
     * Context : __module_file_manager.rs/FileManager::move_folder()__
     * Info : The folder isn't moved
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __fs_extra::dir::move_items()__ function
+        * The error come from [__fs_extra::move_items()__](https://docs.rs/fs_extra/latest/fs_extra/fn.move_items.html) function
 
 * PANIC_FLM06 - The 'folder' can't be deleted
     * Context : __module_file_manager.rs/FileManager::delete_folder()__
     * Info : The folder isn't deleted
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __fs_extra::dir::remove()__ function
+        * The error come from [__fs_extra::dir::remove()__](https://docs.rs/fs_extra/latest/fs_extra/dir/fn.remove.html) function
 
 * PANIC_FLM07 - The 'folder' can't be purged
     * Context : __module_file_manager.rs/FileManager::purge_folder()__
     * Info : The folder isn't purged
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __fs_extra::dir::remove_items()__ function
+        * The error come from [__fs_extra::dir::remove_items()__](https://docs.rs/fs_extra/latest/fs_extra/fn.remove_items.html) function
 
 * PANIC_FLM08 - The 'file' isn't a file (or don't exist)
     * Context : __module_file_manager.rs/FileManager::check_is_file()__
     * Info : The path isn't an existing file
     * Cause :
         * see details in logs file to get the __Path__
-        * The error come from __Path::is_file()__ function
+        * The error come from [__Path::is_file()__](https://doc.rust-lang.org/std/path/struct.Path.html#method.is_file) function
 
 * PANIC_FLM09 - The 'file' can't be created
     * Context : __module_file_manager.rs/FileManager::write_new_file()__
     * Info : The file already exist, or can't be created
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __std::fs::File::create()__ function, or __Path.exist()__
+        * The error come from [__std::fs::File::create()__](https://doc.rust-lang.org/std/fs/struct.File.html#method.create) function, or [__Path.exist(s)__](https://doc.rust-lang.org/std/path/struct.Path.html#method.exists)
 
 * PANIC_FLM10 - The 'file' isn't readable (as String)
     * Context : __module_file_manager.rs/FileManager::get_file_content()__
     * Info : The file isn't readed
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __fs_extra::file::read_to_string()__ function
+        * The error come from [__fs_extra::file::read_to_string()__](https://docs.rs/fs_extra/latest/fs_extra/file/fn.read_to_string.html) function
 
 * PANIC_FLM11 - The 'file' isn't parsable
     * Context : __module_file_manager.rs/FileManager::get_file_content_as_element()__
     * Info : The file isn't parsed
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __minidom::Element()__ parsing
+        * The error come from [__minidom::Element()__](https://docs.rs/minidom/latest/minidom/element/struct.Element.html) parsing
 
 * PANIC_FLM12 - The 'file' can't be copied
     * Context : __module_file_manager.rs/FileManager::copy_file()__
     * Info : The file isn't copied
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __fs_extra::file::copy()__ function
+        * The error come from [__fs_extra::file::copy()__](https://docs.rs/fs_extra/latest/fs_extra/file/fn.copy.html) function
 
 * PANIC_FLM13 - The 'file' can't be moved
     * Context : __module_file_manager.rs/FileManager::move_file()__
     * Info : The file isn't moved
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __fs_extra::file::move_file()__ function
+        * The error come from [__fs_extra::file::move_file()__](https://docs.rs/fs_extra/latest/fs_extra/file/fn.move_file.html) function
 
 * PANIC_FLM14 - The 'file' can't be deleted
     * Context : __module_file_manager.rs/FileManager::delete_file()__
     * Info : The file isn't deleted
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __fs_extra::file::remove()__ function
+        * The error come from [__fs_extra::file::remove()__](https://docs.rs/fs_extra/latest/fs_extra/file/fn.remove.html) function
 
 * PANIC_FLM15 - Can't canonicalize
     * Context : __module_file_manager.rs/FileManager::canonicalize()__
     * Info : The path isn't canonicalizable
     * Cause :
         * see details in logs file to get the __Path__ and the error
-        * The error come from __std::fs::canonicalize()__ function
+        * The error come from [__std::fs::canonicalize()__](https://doc.rust-lang.org/std/fs/fn.canonicalize.html) function
