@@ -21,30 +21,35 @@ If not, see <https://www.gnu.org/licenses/>.
 
 pub mod module_log;
 pub mod module_dependencies_explorer;
+pub mod module_file_env;
 pub mod module_file_manager;
 pub mod module_output_checker;
 
 fn main() {
 
-// Initialise global logger
-    let _handle = module_log::open_logger("config_log.yml");
+    // Settings
+    let logger_configuration = "config_log.yml";                            // File for configuring logger
+    let input_folder = "metamodel_file/";                                   // Folder where input file are stored
+    let main_output_folder = "../Output_file/";                             // Folder containing output folders and files
+    let main_package_file = "BPMNDI.cmof";                                  // File containing the package to explore
+    let main_package_id = "_0";                                             // Package ID of main file to explore
+    let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml";  // Location of testing environment package Cargo.toml file
 
-    // Set used folders (input folder and output folder)
-    let mut loading_env = module_dependencies_explorer::LoadingTracker::new();
+    // Initialise global logger, file environment and loading environment
+    let _handle = module_log::open_logger(logger_configuration);
+    let file_env = module_file_env::open_env(input_folder, main_output_folder);
+    let mut loading_env = module_dependencies_explorer::LoadingTracker::new(file_env);
 
     // Load ordered packages list
-    loading_env.import_dependencies_file("BPMNDI.cmof", "_0", "root");
-
-    // info!("{}", loading_env);
-
+    loading_env.import_dependencies_file(&main_package_file, main_package_id, "root");
     loading_env.prebuild("lib.rs");
 
     // Delete output folder if is empty
     // loading_env.close();
 
-    let result_path = loading_env.file_env.get_output_subfolder();
+    let result_path = loading_env.file_env.get_output_folder();
 
-    let result_package = module_output_checker::PackageLink::from("../Imbriqua_Structure_Result/Cargo.toml");
+    let result_package = module_output_checker::PackageLink::from(cargo_testing_package);
     result_package.cargo_clean();
     result_package.purge();
     result_package.load_from(result_path);

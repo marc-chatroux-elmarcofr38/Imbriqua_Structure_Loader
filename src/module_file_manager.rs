@@ -71,7 +71,7 @@ pub trait FileManager {
     fn delete_file(&self) -> ();
 
     /// Canonicalize the path if it exist
-    fn canonicalize(&self) -> PathBuf;
+    fn canonicalize_pathbuf(&self) -> PathBuf;
 }
 
 impl FileManager for Path {
@@ -354,7 +354,7 @@ impl FileManager for Path {
     }
 
     /// Canonicalize the path if it exist
-    fn canonicalize(&self) -> PathBuf {
+    fn canonicalize_pathbuf(&self) -> PathBuf {
         // Canonicalize
         match std::fs::canonicalize(self) {
             Ok(result) => {
@@ -637,16 +637,16 @@ mod tests {
     }
 
     #[test]
-    fn module_flm_15_canonicalize() {
+    fn module_flm_15_canonicalize_pathbuf() {
         // Logs
         initialize_log_for_test();
         // Setting
-        let file = Path::new("tests/module_file_manager/module_flm_15_canonicalize/file_to_canonicalize.txt");
-        let folder = Path::new("tests/module_file_manager/module_flm_15_canonicalize/folder_to_canonicalize");
+        let file = Path::new("tests/module_file_manager/module_flm_15_canonicalize_pathbuf/file_to_canonicalize.txt");
+        let folder = Path::new("tests/module_file_manager/module_flm_15_canonicalize_pathbuf/folder_to_canonicalize");
         // Preparing
         // Test
-        let _ = file.canonicalize(); // Just don't panic
-        let _ = folder.canonicalize(); // Just don't panic
+        let _ = file.canonicalize_pathbuf(); // Just don't panic
+        let _ = folder.canonicalize_pathbuf(); // Just don't panic
     }
 
     #[ignore]
