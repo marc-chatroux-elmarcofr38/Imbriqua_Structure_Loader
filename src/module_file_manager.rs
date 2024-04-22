@@ -371,51 +371,71 @@ impl FileManager for Path {
 
 #[cfg(test)]
 mod tests {
+    use std::io::Write;
     use super::*;
+    use crate::module_log::tests::initialize_log_for_test;
 
     #[test]
     fn module_flm_01_check_is_dir() {
+        // Logs
+        initialize_log_for_test();
+        // Setting
         let folder = Path::new("tests/module_file_manager/module_flm_01_check_is_dir/folder_to_check");
+        // Test
         folder.check_is_dir();
     }
 
     #[test]
     #[should_panic(expected = "PANIC_FLM01")]
     fn module_flm_01_check_is_dir_panic_01() {
+        // Logs
+        initialize_log_for_test();
+        // Setting
         let folder = Path::new("tests/module_file_manager/module_flm_01_check_is_dir_panic_01/folder_to_check");
+        // Test
         folder.check_is_dir();
     }
 
     #[test]
     fn module_flm_02_get_folder_content() {
-        let folder = Path::new("tests/module_file_manager/module_flm_02_get_folder_content");
-        assert_eq!(folder.get_folder_content().len(), 3);
-        let folder = Path::new("tests/module_file_manager/module_flm_02_get_folder_content/random_folder_01");
-        assert_eq!(folder.get_folder_content().len(), 2);
-        let folder = Path::new("tests/module_file_manager/module_flm_02_get_folder_content/random_folder_01/random_folder_03");
-        assert_eq!(folder.get_folder_content().len(), 1);
-        let folder = Path::new("tests/module_file_manager/module_flm_02_get_folder_content/random_folder_02");
-        assert_eq!(folder.get_folder_content().len(), 1);
+        // Logs
+        initialize_log_for_test();
+        // Setting
+        let folder_1 = Path::new("tests/module_file_manager/module_flm_02_get_folder_content");
+        let folder_2 = Path::new("tests/module_file_manager/module_flm_02_get_folder_content/random_folder_01");
+        let folder_3 = Path::new("tests/module_file_manager/module_flm_02_get_folder_content/random_folder_01/random_folder_03");
+        let folder_4 = Path::new("tests/module_file_manager/module_flm_02_get_folder_content/random_folder_02");
+        // Test
+        assert_eq!(folder_1.get_folder_content().len(), 3);
+        assert_eq!(folder_2.get_folder_content().len(), 2);
+        assert_eq!(folder_3.get_folder_content().len(), 1);
+        assert_eq!(folder_4.get_folder_content().len(), 1);
     }
 
     #[test]
     fn module_flm_03_create_folder() {
+        // Logs
+        initialize_log_for_test();
+        // Setting
         let folder = Path::new("tests/module_file_manager/module_flm_03_create_folder/folder_to_create");
-        // Purging
+        // Preparing
         if folder.exists() {folder.delete_folder(false);}
         assert_eq!(folder.exists(), false);
-        // True test
+        // Test
         folder.create_folder();
     }
 
     #[test]
     fn module_flm_04_copy_folder() {
+        // Logs
+        initialize_log_for_test();
+        // Setting
         let from = Path::new("tests/module_file_manager/module_flm_04_copy_folder/from");
         let to = Path::new("tests/module_file_manager/module_flm_04_copy_folder/to");
-        // Purging
+        // Preparing
         if to.exists() {to.delete_folder(false);}
         assert_eq!(to.exists(), false);
-        // True test
+        // Test
         from.copy_folder(to);
         let to_checking = Path::new("tests/module_file_manager/module_flm_04_copy_folder/to");
         assert_eq!(to_checking.get_folder_content().len(), 3);
@@ -476,63 +496,47 @@ mod tests {
         folder_with_content_to_not_remove.delete_folder(true);
         assert_eq!(folder_with_content_to_not_remove.exists(), true);
     }
+
+    #[test]
+    fn module_flm_07_purge_folder() {
+        let folder_with_content_to_purge = Path::new("tests/module_file_manager/module_flm_07_purge_folder/not_empty_folder_to_purge");
+        let from = Path::new("tests/module_file_manager/module_flm_07_purge_folder/from");
+        // Preparing
+        if !folder_with_content_to_purge.exists() {from.copy_folder(folder_with_content_to_purge);}
+        assert_eq!(folder_with_content_to_purge.exists(), true);
+        if folder_with_content_to_purge.get_folder_content().len() != 3 {from.copy_folder(folder_with_content_to_purge);}
+        assert_eq!(folder_with_content_to_purge.get_folder_content().len(), 3);
+        // True test (empty only)
+        folder_with_content_to_purge.purge_folder();
+        assert_eq!(folder_with_content_to_purge.exists(), true);
+        assert_eq!(folder_with_content_to_purge.get_folder_content().len(), 0);
+    }
+
+    #[test]
+    fn module_flm_08_check_is_file() {
+        let file = Path::new("tests/module_file_manager/module_flm_08_check_is_file/file_to_check");
+        file.check_is_file();
+    }
+
+    #[test]
+    #[should_panic(expected = "PANIC_FLM08")]
+    fn module_flm_08_check_is_file_panic_01() {
+        let file = Path::new("tests/module_file_manager/module_flm_08_check_is_file_panic_01/file_to_check");
+        file.check_is_file();
+    }
+
+    #[test]
+    fn module_flm_09_write_new_file() {
+        let file = Path::new("tests/module_file_manager/module_flm_09_write_new_file/writing_file.txt");
+        // Preparing
+        if file.exists() {file.delete_file();}
+        assert_eq!(file.exists(), false);
+        // True test
+        let mut writing_file= file.write_new_file();
+        assert!(write!(writing_file, "AAA AAA AAA").is_ok());
+    }
+
 /*
-    #[test]
-    fn module_flm_03_copy_folder_and_delete_folder() {
-        // As &str
-        let folder = "tests/module_file_manager/module_flm_03_copy_folder_and_delete_folder/from";
-        let to = "tests/module_file_manager/module_flm_03_copy_folder_and_delete_folder/to";
-        // to.delete_folder(false);
-        // to.create_folder();
-        // folder.copy_folder(&to);
-        // to.get_folder_content();
-        // As String
-        let folder = String::from(folder);
-        let to = String::from(to);
-        // to.delete_folder(false);
-        // to.create_folder();
-        // folder.copy_folder(&to);
-        // to.get_folder_content();
-        // As Path
-        let folder = Path::new(&folder);
-        let to = Path::new(&to);
-        to.delete_folder(false);
-        to.create_folder();
-        folder.copy_folder(&to);
-        to.get_folder_content();
-    }
-
-    #[test]
-    fn module_flm_04_move_folder_and_move_folder() {
-        // As &str
-        let folder = "tests/module_file_manager/module_flm_04_move_folder_and_move_folder/from";
-        let to = "tests/module_file_manager/module_flm_04_move_folder_and_move_folder/to";
-        // to.delete_folder(false);
-        // to.create_folder();
-        // folder.move_folder(&to);
-        // to.get_folder_content();
-        // to.move_folder(&folder);
-        // folder.get_folder_content();
-        // As String
-        let folder = String::from(folder);
-        let to = String::from(to);
-        // to.delete_folder(false);
-        // to.create_folder();
-        // folder.move_folder(&to);
-        // to.get_folder_content();
-        // to.move_folder(&folder);
-        // folder.get_folder_content();
-        // As Path
-        let folder = Path::new(&folder);
-        let to = Path::new(&to);
-        to.delete_folder(false);
-        to.create_folder();
-        folder.move_folder(&to);
-        to.get_folder_content();
-        to.move_folder(&folder);
-        folder.get_folder_content();
-    }
-
     #[test]
     fn module_flm_05_write_new_file() {
         // As &str

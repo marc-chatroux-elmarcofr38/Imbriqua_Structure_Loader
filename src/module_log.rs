@@ -117,8 +117,17 @@ fn get_config_by_file(config_file : &str) -> anyhow::Result<log4rs::config::Conf
 }
 
 #[cfg(test)]
-mod tests {
-    use crate::module_log::{get_config_by_backup, get_config_by_file, open_logger};
+pub mod tests {
+    use super::*;
+    use std::sync::Once;
+
+    static INIT: Once = Once::new();
+
+    pub fn initialize_log_for_test() {
+        INIT.call_once(|| {
+            open_logger("tests/config_log_for_test.yml");
+        });
+    }
 
     #[test]
     fn module_log_01_check_configuration_by_backup() {
@@ -139,6 +148,6 @@ mod tests {
     #[ignore]
     #[test]
     fn module_log_03_check_open_logger() {
-        open_logger("tests/module_log/module_log_03_check_open_logger/config_log.yml");
+        initialize_log_for_test();
     }
 }

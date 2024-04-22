@@ -51,6 +51,20 @@ fn main() {
     if !result_package.cargo_full_check() {panic!()}
 }
 
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Once;
+    use super::module_log;
+
+    static INIT: Once = Once::new();
+
+    pub fn initialize() {
+        INIT.call_once(|| {
+            module_log::open_logger("config_log.yml");
+        });
+    }
+}
 /*
 #[test]
 fn le_test() {

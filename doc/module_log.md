@@ -135,3 +135,26 @@ root:
     * Info : The file __config_log.yml__ can't be loaded in log4rs configuration
     * Info : A backup logging configuration may be load, logs are in __imbriqua_structure_loader.log__ file
     * Cause : See logs for syntaxe error details, or deserialize error details
+
+# Information for development
+
+During writing of tests function, use the __initialize_log_for_test()__ function. It's a 'one-call' function providing after this first call.
+
+Logs are provided in __tests/tests.log__ file, using the configuration file __tests/config_log_for_test.yml__
+
+```rust
+
+#[cfg(test)]
+mod tests {
+    use crate::module_log::tests::initialize_log_for_test;
+    // Other import...
+
+    #[test]
+    fn my_test () {
+        // Logs setting
+        initialize_log_for_test();
+        // Test, performing logs output (or not of course)
+        // ...
+    }
+}
+```
