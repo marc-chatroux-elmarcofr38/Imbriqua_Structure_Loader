@@ -584,6 +584,71 @@ mod tests {
         assert_eq!(reading_file, "<elem xmlns=\"ns1\" a=\"b\" />".parse().unwrap());
     }
 
+    #[test]
+    fn module_flm_12_copy_file() {
+        // Logs
+        initialize_log_for_test();
+        // Setting
+        let from = Path::new("tests/module_file_manager/module_flm_12_copy_file/from_file.txt");
+        let to = Path::new("tests/module_file_manager/module_flm_12_copy_file/to_file.txt");
+        // Preparing
+        if to.exists() {to.delete_file();}
+        assert_eq!(to.exists(), false);
+        // Test
+        from.copy_file(to);
+        assert_eq!(to.get_file_content(), String::from("AAA AAA AAA"));
+    }
+
+    #[test]
+    fn module_flm_13_move_file() {
+        // Logs
+        initialize_log_for_test();
+        // Setting
+        let from_template = Path::new("tests/module_file_manager/module_flm_13_move_file/from_template_file.txt");
+        let from = Path::new("tests/module_file_manager/module_flm_13_move_file/from_file.txt");
+        let to = Path::new("tests/module_file_manager/module_flm_13_move_file/to_file.txt");
+        // Preparing
+        if from.exists() {from.delete_file();}
+        assert_eq!(from.exists(), false);
+        if to.exists() {to.delete_file();}
+        assert_eq!(to.exists(), false);
+        from_template.copy_file(from);
+        assert_eq!(from.get_file_content(), String::from("AAA AAA AAA"));
+        // Test
+        from.move_file(to);
+        assert_eq!(from.exists(), false);
+        assert_eq!(to.get_file_content(), String::from("AAA AAA AAA"));
+    }
+
+    #[test]
+    fn module_flm_14_delete_file() {
+        // Logs
+        initialize_log_for_test();
+        // Setting
+        let file_template = Path::new("tests/module_file_manager/module_flm_14_delete_file/template_file_to_delete.txt");
+        let file_to_delete = Path::new("tests/module_file_manager/module_flm_14_delete_file/file_to_delete.txt");
+        // Preparing
+        if !file_to_delete.exists() {file_template.copy_file(file_to_delete);}
+        assert_eq!(file_to_delete.exists(), true);
+        assert_eq!(file_to_delete.get_file_content(), String::from("AAA AAA AAA"));
+        // Test
+        file_to_delete.delete_file();
+        assert_eq!(file_to_delete.exists(), false);
+    }
+
+    #[test]
+    fn module_flm_15_canonicalize() {
+        // Logs
+        initialize_log_for_test();
+        // Setting
+        let file = Path::new("tests/module_file_manager/module_flm_15_canonicalize/file_to_canonicalize.txt");
+        let folder = Path::new("tests/module_file_manager/module_flm_15_canonicalize/folder_to_canonicalize");
+        // Preparing
+        // Test
+        let _ = file.canonicalize(); // Just don't panic
+        let _ = folder.canonicalize(); // Just don't panic
+    }
+
     #[ignore]
     fn _test_template() {
         // Logs
@@ -592,47 +657,4 @@ mod tests {
         // Preparing
         // Test
     }
-
-/*
-    #[test]
-    fn module_flm_05_write_new_file() {
-        // As &str
-        let folder = "tests/module_file_manager/module_flm_05_write_new_file/file_to_read.txt";
-        // folder.write_new_file();
-        // As String
-        let folder = String::from(folder);
-        // folder.write_new_file();
-        // As Path
-        let folder = Path::new(&folder);
-        folder.delete_file();
-        folder.write_new_file();
-        folder.get_file_content();
-    }
-
-    #[test]
-    fn module_flm_06_get_file_content() {
-        // As &str
-        let folder = "tests/module_file_manager/module_flm_06_get_file_content/file_to_read.txt";
-        // folder.get_file_content();
-        // As String
-        let folder = String::from(folder);
-        // folder.get_file_content();
-        // As Path
-        let folder = Path::new(&folder);
-        folder.get_file_content();
-    }
-
-    #[test]
-    fn module_flm_07_get_file_content_as_element() {
-        // As &str
-        let folder = "tests/module_file_manager/module_flm_07_get_file_content_as_element/file_to_read.txt";
-        // folder.get_file_content_as_element();
-        // As String
-        let folder = String::from(folder);
-        // folder.get_file_content_as_element();
-        // As Path
-        let folder = Path::new(&folder);
-        folder.get_file_content_as_element();
-    }
-    */
 }
