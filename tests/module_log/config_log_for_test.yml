@@ -21,5 +21,4 @@ appenders:
 root:
     level: trace
     appenders:
-        - stdout
         - requests
