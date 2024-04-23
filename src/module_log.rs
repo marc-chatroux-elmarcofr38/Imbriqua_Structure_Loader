@@ -159,6 +159,11 @@ pub mod tests {
     pub fn initialize_log_for_test() {
         INIT.call_once(|| {
             open_logger("tests/module_log/config_log_for_test.yml");
+            info!("");
+            info!("");
+            info!("NEW SESSION OF TEST");
+            info!("");
+            info!("");
         });
     }
 
