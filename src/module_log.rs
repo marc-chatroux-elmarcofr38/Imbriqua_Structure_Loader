@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_log.md")]
 
 // Package section
-use crate::module_file_manager::{FileManager, Path};
+use crate::module_file_manager::*;
 
 // Dependencies section
 use anyhow::{Error, Result};

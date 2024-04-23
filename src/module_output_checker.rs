@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_output_checker.md")]
 
 // Package section
-use crate::module_file_manager::{FileManager, Path, PathBuf};
+use crate::module_file_manager::*;
 use crate::module_log::*;
 
 // Dependencies section

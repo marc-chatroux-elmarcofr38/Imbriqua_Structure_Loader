@@ -26,10 +26,12 @@ fn main() {
 
 ## Good practice
 
-Use __pub mod module_log__ in __main.rs__.
+Use [`crate::module_log`] in each rust file, replacing `log`, `log4rs`, and `env_logger`, with the following command :
 
-This practice allowing you to import logs macro (__error!__, __warn!__, __info!__, __debug!__, __trace!__) by using __use crate::module_log::*;__
+* __main.rs__ : `pub mod module_log;`
+* random file : `use crate::module_log::*;`
 
+This practice allowing you to import logs macro (`error!()`, `warn!()`, `info!()`, `debug!()`, `trace!()`) in each rust file
 
 ```rust
 // main.rs
@@ -56,7 +58,7 @@ fn bar () {
 
 ## Customization
 
-Edit config_log.yml file configuration with log4rs notation (or use a other file)
+Edit __config_log.yml__ file configuration with log4rs notation (or use a other file)
 
 ## Example __config_log.yml__ file configuration
 
@@ -117,33 +119,32 @@ root:
 # Panic and failure
 
 * PANIC_LOG01 - Error during the loading on logs modules
-    * Context : __module_log.rs/open_loggers()__
+    * Context : [`open_logger`]
     * Info : No logs are provided, so, make panic
     * Cause :
-        * The error come from __get_config_by_backup()__ function
+        * The error come from `get_config_by_backup` function
         * Error come from coding mistake, or libraries changes
 
 * PANIC_LOG02 - Error during the loading on logs modules
-    * Context : __module_log.rs/open_loggers()__
+    * Context : [`open_logger`]
     * Info : No logs are provided, so, make panic
     * Cause :
-        * The error come from __log4rs::init_config()__ function
+        * The error come from `log4rs::init_config` function
         * Logger initialise a second time, or __Config__ mistake
 
 * WARN_LOG01 - Error during default configuration loading
-    * Context : __module_log.rs/open_loggers()__
+    * Context : [`open_logger`]
     * Info : The file __config_log.yml__ can't be loaded in log4rs configuration
     * Info : A backup logging configuration may be load, logs are in __imbriqua_structure_loader.log__ file
     * Cause : See logs for syntaxe error details, or deserialize error details
 
 # Information for development
 
-During writing of tests function, use the __initialize_log_for_test()__ function. It's a 'one-call' function providing after this first call.
+During writing of tests function, use the `tests::initialize_log_for_test` function. It's a 'one-call' function providing after this first call.
 
 Logs are provided in __tests/tests.log__ file, using the configuration file __tests/config_log_for_test.yml__
 
 ```rust
-
 #[cfg(test)]
 mod tests {
     use crate::module_log::tests::initialize_log_for_test;
