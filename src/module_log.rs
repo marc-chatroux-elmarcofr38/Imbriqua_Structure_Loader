@@ -181,18 +181,13 @@ pub mod tests {
         assert!(result.is_ok());
     }
 
-    #[ignore]
     #[test]
     fn module_log_03_check_open_logger() {
         initialize_log_for_test();
-    }
-
-    #[ignore]
-    fn _test_template() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        // Preparing
-        // Test
+        trace!("LOG TEST : TRACE");
+        debug!("LOG TEST : DEBUG");
+        info!("LOG TEST : INFO");
+        warn!("LOG TEST : WARN");
+        error!("LOG TEST : ERROR");
     }
 }
