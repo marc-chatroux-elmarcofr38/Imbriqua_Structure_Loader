@@ -2,7 +2,7 @@ Managing a single input folder and multiple output folder (session-time archivin
 
 # How to use
 
-Provinding 'shortcut' managing of input folder and output folder, using __FileEnv__ structure.
+Provinding 'shortcut' managing of input folder and output folder, using [`FileEnv`] structure.
 
 Output folder is organised during instance creation by creating subfolder named by running time formated name (%Y-%m-%d_%Hh%Mm%S/).
 
