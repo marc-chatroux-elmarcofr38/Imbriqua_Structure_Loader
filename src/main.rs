@@ -19,21 +19,20 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../README.MD")]
 
-pub mod module_log;
 pub mod module_dependencies_explorer;
 pub mod module_file_env;
 pub mod module_file_manager;
+pub mod module_log;
 pub mod module_output_checker;
 
 fn main() {
-
     // Settings
-    let logger_configuration = "config_log.yml";                            // File for configuring logger
-    let input_folder = "metamodel_file/";                                   // Folder where input file are stored
-    let main_output_folder = "../Output_file/";                             // Folder containing output folders and files
-    let main_package_file = "BPMNDI.cmof";                                  // File containing the package to explore
-    let main_package_id = "_0";                                             // Package ID of main file to explore
-    let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml";  // Location of testing environment package Cargo.toml file
+    let logger_configuration = "config_log.yml"; // File for configuring logger
+    let input_folder = "metamodel_file/"; // Folder where input file are stored
+    let main_output_folder = "../Output_file/"; // Folder containing output folders and files
+    let main_package_file = "BPMNDI.cmof"; // File containing the package to explore
+    let main_package_id = "_0"; // Package ID of main file to explore
+    let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
 
     // Initialise global logger, file environment and loading environment
     let _handle = module_log::open_logger(logger_configuration);
@@ -53,9 +52,10 @@ fn main() {
     result_package.cargo_clean();
     result_package.purge();
     result_package.load_from(result_path);
-    if !result_package.cargo_full_check() {panic!()}
+    if !result_package.cargo_full_check() {
+        panic!()
+    }
 }
-
 
 /*
 #[test]
