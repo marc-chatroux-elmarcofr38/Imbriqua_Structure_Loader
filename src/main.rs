@@ -50,7 +50,7 @@ fn main() {
 
     let result_package = module_output_checker::PackageLink::from(cargo_testing_package);
     result_package.cargo_clean();
-    result_package.purge();
+    result_package.purge_source();
     result_package.load_from(result_path);
     if !result_package.cargo_full_check() {
         panic!()

@@ -152,110 +152,37 @@ PS : Of course, you can have a similar folder tree for executable package check
 
 # Panic and failure
 
-* PANIC_OUT01 - PANIC_OUT01 - Can't canonicalize
-    * Context : __module_output_checker.rs/Package_Link::from()__
-    * Info : Can't find provided folder
-    * Cause : see details in logs file to get :
-        * Value of relative folder path
-        * Error of __std::fs::canonicalize()__
-
-* PANIC_OUT02 - PANIC_OUT02 - Can't find cargo.toml
-    * Context : __module_output_checker.rs/Package_Link::from()__
+* PANIC_OUT02 - PANIC_OUT0 - Can't find cargo.toml
+    * Context : __module_output_checker.rs/Package_Link::cargo_integrity_check()__
     * Info : Can't pass check of provided folder
     * Cause : see details in logs file to get :
         * Value of folder path
-        * error informations of __cargo locate-project__
+        * error informations of [__cargo locate-project__](https://doc.rust-lang.org/cargo/commands/cargo-locate-project.html)
 
-
-
-
-
-* PANIC_OUT03 - The 'from' folder don't exist (copying)
-    * Context : __module_output_checker.rs/copy_folder()__
-    * Info : Can't find provided folder
+* PANIC_OUT02 - PANIC_OUT02 - Can't clean
+    * Context : __module_output_checker.rs/Package_Link::cargo_clean()__
+    * Info : Can't clean provided folder
     * Cause : see details in logs file to get :
         * Value of folder path
-        * error informations of __std::path::Path::exist()__
+        * error informations of [__cargo clean__](https://doc.rust-lang.org/cargo/commands/cargo-clean.html)
 
-* PANIC_OUT04 - The 'to' folder don't exist (copying)
-    * Context : __module_output_checker.rs/copy_folder()__
-    * Info : Can't find provided folder
-    * Cause : see details in logs file to get :
-        * Value of folder path
-        * error informations of __std::path::Path::exist()__
-
-* PANIC_OUT05 - The folder isn't readable (copying)
-    * Context : __module_output_checker.rs/copy_folder()__
-    * Info : Can't read provided folder
-    * Cause : see details in logs file to get :
-        * Value of folder path
-        * error informations of __std::path::Path::read_dir()__
-
-* PANIC_OUT06 - Can't copying folder
-    * Context : __module_output_checker.rs/copy_folder()__
-    * Cause : see details in logs file to get :
-        * Value of folder path
-        * error informations of __std::fs_extra::copy()__
-
-* PANIC_OUT07 - Can't copying file
-    * Context : __module_output_checker.rs/copy_folder()__
-    * Cause : see details in logs file to get :
-        * Value of folder path
-        * error informations of __std::fs::copy()__
-
-* PANIC_OUT08 - Error in ReadDir iterator
-    * Context : __module_output_checker.rs/copy_folder()__
-    * Info : Can't copy provided entry
-    * Cause : see details in logs file to get :
-        * error informations of __ReadDir::Iterator__
-
-* PANIC_OUT09 - Error in OsString::to_str()
-    * Context : __module_output_checker.rs/copy_folder()__
-    * Info : Can't copy provided entry
-    * Cause : see details in logs file to get :
-        * Value of entry (debuging syntax)
-        * documentation of ReadDir::Iterator
-
-* PANIC_OUT10 - Error in DirEntry::file_type()
-    * Context : __module_output_checker.rs/copy_folder()__
-    * Info : Can't copy provided entry
-    * Cause : see details in logs file to get :
-        * error informations of __DirEntry::file_type__
-
-* WARN_OUT01 - Error in ReadDir iterator
-    * Context : __module_output_checker.rs/purge_folder()__
-    * Info : Can't remove provided entry
-    * Cause : see details in documentation of ReadDir::Iterator
-
-* WARN_OUT02 - Error in pathBuf::to_str()
-    * Context : __module_output_checker.rs/purge_folder()__
-    * Info : Can't remove provided entry
-    * Cause : see details in documentation of PathBuf::to_str
-
-* WARN_OUT03 - Error in removing entry
-    * Context : __module_output_checker.rs/purge_folder()__
-    * Info : Can't remove provided entry
-    * Cause : see details in logs file to get :
-        * Value of folder path
-        * error informations of __std::fs_extra::remove_items()__
-
-* WARN_OUT04 - Cound't get output
+* WARN_OUT01 - Cound't get output
     * Context : __module_output_checker.rs/represent_command_output()__
     * Info : Can't get output information
     * Cause : see details in logs file to get :
         * the command
-        * error informations of __std::process::Command::output()__
+        * error informations of [__std::process::Command::output()__](https://doc.rust-lang.org/std/process/struct.Command.html#method.output)
 
-* WARN_OUT05 - Couldn't get STDOUT
+* WARN_OUT02 - Couldn't get STDOUT
     * Context : __module_output_checker.rs/represent_command_output()__
     * Info : Can't print output information
     * Cause : see details in logs file to get :
         * the command
-        * error informations of __std::str::from_utf8()__
+        * error informations of [__std::str::from_utf8()__](https://doc.rust-lang.org/std/str/fn.from_utf8.html)
 
-* WARN_OUT06 - Couldn't get STDERR
+* WARN_OUT03 - Couldn't get STDERR
     * Context : __module_output_checker.rs/represent_command_output()__
     * Info : Can't print output information
     * Cause : see details in logs file to get :
         * the command
-        * error informations of __std::str::from_utf8()__
+        * error informations of [__std::str::from_utf8()__](https://doc.rust-lang.org/std/str/fn.from_utf8.html)
