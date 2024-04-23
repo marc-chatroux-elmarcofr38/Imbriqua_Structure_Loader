@@ -39,12 +39,32 @@ fn main() {
     let file_env = module_file_env::open_env(input_folder, main_output_folder);
     let mut loading_env = module_dependencies_explorer::LoadingTracker::new(file_env);
 
+    /*
+
+
+
+
+
+
+
+    */
+
     // Load ordered packages list
     loading_env.import_dependencies_file(&main_package_file, main_package_id, "root");
     loading_env.prebuild("lib.rs");
 
     // Delete output folder if is empty
     loading_env.close();
+
+    /*
+
+
+
+
+
+
+
+    */
 
     // Make testing package link
     let output_path = loading_env.file_env.get_output_folder();
