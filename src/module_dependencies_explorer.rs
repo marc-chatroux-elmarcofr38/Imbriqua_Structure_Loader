@@ -20,30 +20,30 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_dependencies_explorer.md")]
 
 // Package section
-use crate::module_file_manager::{FileManager, PathBuf, Path};
-use crate::module_log::*;
 use crate::module_file_env::*;
+use crate::module_file_manager::{FileManager, Path, PathBuf};
+use crate::module_log::*;
 
 // Dependencies section
 extern crate minidom;
-use std::collections::HashMap;
-use std::io::Write;
-use std::fmt;
 use minidom::Element;
+use std::collections::HashMap;
+use std::fmt;
+use std::io::Write;
 
 #[derive(Clone, PartialEq, Debug)]
 enum LoadingState {
-    Empty,      // No Element
-    Loaded,     // With Element
-    _Finished,   // Element converted
+    Empty,     // No Element
+    Loaded,    // With Element
+    _Finished, // Element converted
 }
 
 #[derive(Clone, PartialEq, Debug)]
 struct LoadingPackage {
-    filename : String,
-    id : String,
-    object : Element,
-    state : LoadingState,
+    filename: String,
+    id: String,
+    object: Element,
+    state: LoadingState,
 }
 
 impl LoadingPackage {
@@ -57,26 +57,30 @@ impl LoadingPackage {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct LoadingTracker {
-    pub file_env : FileEnv,
-    loaded_package : HashMap<String, LoadingPackage>,
-    importing_order : HashMap<String, usize>,
+    pub file_env: FileEnv,
+    loaded_package: HashMap<String, LoadingPackage>,
+    importing_order: HashMap<String, usize>,
 }
 
 impl LoadingTracker {
-    pub fn new(file_env : FileEnv) -> Self {
-
+    pub fn new(file_env: FileEnv) -> Self {
         // Create instance
         let result = LoadingTracker {
-            file_env : file_env,
-            loaded_package : HashMap::new(),
-            importing_order : HashMap::new(),
+            file_env: file_env,
+            loaded_package: HashMap::new(),
+            importing_order: HashMap::new(),
         };
 
         // Return result
         result
     }
 
-    pub fn import_dependencies_file(&mut self, main_file : &str, package_id : &str, parent_label : &str) {
+    pub fn import_dependencies_file(
+        &mut self,
+        main_file: &str,
+        package_id: &str,
+        parent_label: &str,
+    ) {
         /*
             Load minidom element from a gived package, including dependencies
             Save element in loaded_package
@@ -96,12 +100,20 @@ impl LoadingTracker {
         label.push_str(package_id);
 
         // Check if the loading is necessary
-        if self.is_package_already_loaded(label.clone()) && self.loaded_package.get_key_value(&label.clone()).unwrap().1.state == LoadingState::Empty {
+        if self.is_package_already_loaded(label.clone())
+            && self
+                .loaded_package
+                .get_key_value(&label.clone())
+                .unwrap()
+                .1
+                .state
+                == LoadingState::Empty
+        {
             error!("ERROR_FILE07 - Unloaded dependencies : suspicious of circular dependencies ({a} importing {b})", a=label.clone(), b=parent_label);
             panic!("PANIC_FILE07 - Unloaded dependencies : suspicious of circular dependencies ({a} importing {b})", a=label.clone(), b=parent_label);
-        }else if self.is_package_already_loaded(label.clone()) {
+        } else if self.is_package_already_loaded(label.clone()) {
             trace!("Loading \"{}\" : NOPE : already loaded", label.clone());
-            return
+            return;
         } else {
             trace!("Loading \"{}\" : START", label.clone());
         }
@@ -117,31 +129,32 @@ impl LoadingTracker {
         let package_element = file_path.get_file_content_as_element();
         // module_file_manager::get_package_from_path(file_path.as_str(), package_id);
 
-
-
         // Find "package_id" child
         for child in package_element.children() {
             if child.is("Package", "http://schema.omg.org/spec/MOF/2.0/cmof.xml") {
                 if child.attr("xmi:id") == Some(package_id) {
                     let package_element = child.clone();
-                    break
+                    break;
                 }
             }
-        };
-
-
+        }
 
         // Evaluate dependencies, and load it
         self.add_dependencies(package_element.clone(), label.clone());
 
         // Add package element in loaded_package
-        self.add_package(package_element.clone(), main_file, package_id, label.clone());
+        self.add_package(
+            package_element.clone(),
+            main_file,
+            package_id,
+            label.clone(),
+        );
 
         // End logs
         info!("Loading \"{}\" : Finished", label.clone());
     }
 
-    fn add_empty_package(&mut self, file : &str, package : &str, label : String) {
+    fn add_empty_package(&mut self, file: &str, package: &str, label: String) {
         /*
             Save minimal LoadingPackage object in loaded_package
             Set "state" to empty to prevent circular dependencies loading (dependencies has loaded before changing "state")
@@ -157,17 +170,17 @@ impl LoadingTracker {
 
         // Create minimal LoadingPackage
         let package_object = LoadingPackage {
-            filename : String::from(file),
-            id : String::from(package),
-            object : Element::builder("", "").build(),
-            state : LoadingState::Empty,
+            filename: String::from(file),
+            id: String::from(package),
+            object: Element::builder("", "").build(),
+            state: LoadingState::Empty,
         };
 
         // Save object in hashmap attribute
         self.loaded_package.insert(label, package_object);
     }
 
-    fn add_dependencies(&mut self, element : Element, label : String) {
+    fn add_dependencies(&mut self, element: Element, label: String) {
         /*
             Get dependencies of a Element (UML XMI notation)
             And import dependencies
@@ -184,35 +197,38 @@ impl LoadingTracker {
             if child.is("packageImport", "") {
                 // Go to "importedPackage" child
                 let imported_package = match child.get_child("importedPackage", "") {
-                    Some(result_object) => {
-                        result_object
-                    },
+                    Some(result_object) => result_object,
                     None => {
                         error!("ERROR_FILE08 - packageImport element without importedPackage child : package = \"{}\"", label);
                         panic!("PANIC_FILE08 - packageImport element without importedPackage child : package = \"{}\"", label);
-                    },
+                    }
                 };
 
                 // Get "href" attribute
                 let package_to_import = match imported_package.attr("href") {
-                    Some(result_object) => {
-                        result_object
-                    },
+                    Some(result_object) => result_object,
                     None => {
                         error!("ERROR_FILE09 - importedPackage element without href attribute : package = \"{}\"", label);
                         panic!("PANIC_FILE09 - importedPackage element without href attribute : package = \"{}\"", label);
-                    },
+                    }
                 };
 
                 //
                 match package_to_import.find('#') {
                     Some(split_index) => {
-                        trace!("Loading \"{}\" : need to load \"{}\"", label.clone(), package_to_import);
-                        let package_file : String = package_to_import[..split_index].to_string();
+                        trace!(
+                            "Loading \"{}\" : need to load \"{}\"",
+                            label.clone(),
+                            package_to_import
+                        );
+                        let package_file: String = package_to_import[..split_index].to_string();
                         let split_index = split_index + 1;
-                        let package_id : String = package_to_import[split_index..].to_string();
-                        self.import_dependencies_file(package_file.as_str(), package_id.as_str(), label.clone().as_str());
-
+                        let package_id: String = package_to_import[split_index..].to_string();
+                        self.import_dependencies_file(
+                            package_file.as_str(),
+                            package_id.as_str(),
+                            label.clone().as_str(),
+                        );
                     }
                     None => {
                         error!("ERROR_FILE10 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
@@ -220,10 +236,10 @@ impl LoadingTracker {
                     }
                 }
             };
-        };
+        }
     }
 
-    fn add_package(&mut self, element : Element, file : &str, package : &str, label : String) {
+    fn add_package(&mut self, element: Element, file: &str, package: &str, label: String) {
         /*
             Save complete LoadingPackage object in loaded_package
 
@@ -238,23 +254,23 @@ impl LoadingTracker {
 
         // Create full LoadingPackage
         let package_object = LoadingPackage {
-            filename : String::from(file),
-            id : String::from(package),
-            object : element,
-            state : LoadingState::Loaded,
+            filename: String::from(file),
+            id: String::from(package),
+            object: element,
+            state: LoadingState::Loaded,
         };
 
         // Save object in hashmap attribute
         self.loaded_package.insert(label.clone(), package_object);
 
         // Define treatment order
-        self.importing_order.insert(label, self.importing_order.len() + 1);
+        self.importing_order
+            .insert(label, self.importing_order.len() + 1);
     }
 
-    fn is_package_already_loaded(&self, label : String) -> bool {
-
-                                            // Check if the key is already used
-                                            self.loaded_package.contains_key(&label)
+    fn is_package_already_loaded(&self, label: String) -> bool {
+        // Check if the key is already used
+        self.loaded_package.contains_key(&label)
     }
 
     pub fn close(&self) {
@@ -263,8 +279,8 @@ impl LoadingTracker {
 }
 
 impl fmt::Display for LoadingTracker {
-    fn fmt(&self, f : &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut result : String = String::new();
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut result: String = String::new();
         result.push_str("---- LoadingTracker ---");
         result.push_str("\n");
         result.push_str("\n file_env : ");
@@ -277,7 +293,7 @@ impl fmt::Display for LoadingTracker {
 }
 
 impl LoadingTracker {
-    pub fn prebuild(&self, str_file_name : &str) {
+    pub fn prebuild(&self, str_file_name: &str) {
         /*
 
         */
@@ -285,15 +301,37 @@ impl LoadingTracker {
         let mut file_name = self.file_env.get_output_folder();
         file_name.push(str_file_name);
         let mut writing_file = file_name.write_new_file();
-        let _ =     write!(writing_file, "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {:?}\n\n", self.file_env.get_output_folder());
+        let _ = write!(
+            writing_file,
+            "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {:?}\n\n",
+            self.file_env.get_output_folder()
+        );
         for (_, package) in &self.loaded_package {
             //writing_file.write_all(&format!("0{:b}", package.get_lowercase_name().into_bytes()));
             let str_element = format!("{:#?}", package.object);
-            let _ = write!(writing_file, "mod {} {{\n\n/*\n{}\n*/\n\n}}\n\n", package.get_lowercase_name(), str_element);
+            let _ = write!(
+                writing_file,
+                "mod {} {{\n\n/*\n{}\n*/\n\n}}\n\n",
+                package.get_lowercase_name(),
+                str_element
+            );
         }
     }
 
-    fn _check_lowercase () {
+    fn _check_lowercase() {}
+}
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::module_log::tests::initialize_log_for_test;
+
+    #[test]
+    fn module_dep_01_idk() {
+        // Logs
+        initialize_log_for_test();
+        // Setting
+        // Preparing
+        // Test
     }
 }
