@@ -26,7 +26,7 @@ This traits add to __std::fs::Path__ the following function to file :
 
 This traits add to __std::fs::Path__ the following function to all path :
 
-* canonicalize : Canonicalize the path if it exist
+* canonicalize_pathbuf : Canonicalize the path if it exist
 
 ## Example usecase
 
@@ -189,7 +189,7 @@ fn bar () {
         * The error come from [__fs_extra::file::remove()__](https://docs.rs/fs_extra/latest/fs_extra/file/fn.remove.html) function
 
 * PANIC_FLM15 - Can't canonicalize
-    * Context : __module_file_manager.rs/FileManager::canonicalize()__
+    * Context : __module_file_manager.rs/FileManager::canonicalize_pathbuf()__
     * Info : The path isn't canonicalizable
     * Cause :
         * see details in logs file to get the __Path__ and the error

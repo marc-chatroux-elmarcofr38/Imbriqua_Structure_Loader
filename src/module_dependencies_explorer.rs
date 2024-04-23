@@ -28,10 +28,7 @@ use crate::module_file_env::*;
 extern crate minidom;
 use std::collections::HashMap;
 use std::io::Write;
-use std::fs::canonicalize;
 use std::fmt;
-use chrono::Local;
-use log::{error, info, trace};
 use minidom::Element;
 
 #[derive(Clone, PartialEq, Debug)]

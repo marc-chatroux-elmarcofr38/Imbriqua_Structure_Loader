@@ -20,15 +20,11 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_output_checker.md")]
 
 // Package section
-use crate::module_file_manager::{FileManager, PathBuf, Path};
 use crate::module_log::*;
+use crate::module_file_manager::{FileManager, PathBuf, Path};
 
 // Dependencies section
-// use std::fs;
-use std::{process::Command, fs::canonicalize};
-use fs_extra::remove_items;
-// use fs_extra::{dir::copy, dir::CopyOptions, remove_items};
-
+use std::{process::Command};
 
 #[derive(Clone, PartialEq, Debug)]
 /// Represent a cargo package folder link, used to checking metacode result
@@ -46,7 +42,7 @@ impl PackageLink {
         */
 
         // Make it absolute
-        let var_absolute_path = match canonicalize(str_relative_cargo_path) {
+        let var_absolute_path = match Path::new(str_relative_cargo_path).canonicalize_pathbuf() {
             Ok(result) => {
                 info!("Can canonicalize {:?} to {:?}", str_relative_cargo_path, result);
                 result
