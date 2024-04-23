@@ -113,13 +113,13 @@ impl PackageLink {
     ///
     /// See module_output_checker documentation page for examples
     pub fn cargo_full_check(&self) -> bool {
-        // Running 'cargo check --all-features --lib'
-        let res_1 = self.cargo_custom_command(vec!["check", "--all-features", "--lib"]);
-        // Running 'cargo test --all-features --no-run --lib'
-        let res_2 = self.cargo_custom_command(vec!["test", "--all-features", "--no-run", "--lib"]);
-        // Running 'cargo build --all-features --lib'
-        let res_3 = self.cargo_custom_command(vec!["build", "--all-features", "--lib"]);
-        // Running 'cargo check doc --no-deps'
+        // Running 'cargo check --all-features'
+        let res_1 = self.cargo_custom_command(vec!["check", "--all-features"]);
+        // Running 'cargo test --all-features --no-run'
+        let res_2 = self.cargo_custom_command(vec!["test", "--all-features", "--no-run"]);
+        // Running 'cargo build --all-features'
+        let res_3 = self.cargo_custom_command(vec!["build", "--all-features"]);
+        // Running 'cargo doc --no-deps'
         let res_4 = self.cargo_custom_command(vec!["doc", "--no-deps"]);
         // Get succes
         res_1 && res_2 && res_3 && res_4
@@ -250,6 +250,11 @@ pub fn represent_command_output(command: &mut Command) -> Option<bool> {
     Some(command_output.status.success())
 }
 
+/// Shorcut of PackageLink::from()__, creating PackageLink instance for cargo checking
+pub fn open_link(str_relative_cargo_path: &str) -> PackageLink {
+    PackageLink::from(str_relative_cargo_path)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -263,7 +268,7 @@ mod tests {
         let folder = "tests/module_output_checker/module_out_01_from/project_b/Cargo.toml";
         // Preparing
         // Test
-        let _ = PackageLink::from(folder);
+        let _ = open_link(folder);
     }
 
     #[test]
@@ -275,7 +280,7 @@ mod tests {
         let good_result = Path::new("tests/module_output_checker/module_out_02_get_absolute_cargo_path/project_b/Cargo.toml");
         // Preparing
         // Test
-        let package_link = PackageLink::from(folder);
+        let package_link = open_link(folder);
         let result = package_link.get_absolute_cargo_path();
         assert_eq!(result, good_result.canonicalize_pathbuf());
     }
@@ -291,7 +296,7 @@ mod tests {
         );
         // Preparing
         // Test
-        let package_link = PackageLink::from(folder);
+        let package_link = open_link(folder);
         let result = package_link.get_absolute_source_path();
         assert_eq!(result, good_result.canonicalize_pathbuf());
     }
@@ -312,7 +317,7 @@ mod tests {
         }
         assert_eq!(doc.exists(), false);
         // Test
-        let package_link = PackageLink::from(folder);
+        let package_link = open_link(folder);
         let result = package_link.cargo_custom_command(vec!["doc"]);
         assert_eq!(result, true);
         assert_eq!(doc.exists(), true);
@@ -328,7 +333,7 @@ mod tests {
             "tests/module_output_checker/module_out_05_cargo_full_check/project_b/Cargo.toml";
         // Preparing
         // Test
-        let package_link = PackageLink::from(folder);
+        let package_link = open_link(folder);
         let result = package_link.cargo_full_check();
         assert_eq!(result, true);
         package_link.cargo_clean();
@@ -343,7 +348,7 @@ mod tests {
             "tests/module_output_checker/module_out_06_cargo_integrity_check/project_b/Cargo.toml";
         // Preparing
         // Test
-        let package_link = PackageLink::from(folder);
+        let package_link = open_link(folder);
         let result = package_link.cargo_integrity_check();
         assert_eq!(result, true);
     }
@@ -356,7 +361,7 @@ mod tests {
         let folder = "tests/module_output_checker/module_out_07_cargo_clean/project_b/Cargo.toml";
         // Preparing
         // Test
-        let package_link = PackageLink::from(folder);
+        let package_link = open_link(folder);
         let result = package_link.cargo_clean();
         assert_eq!(result, true);
     }
@@ -376,7 +381,7 @@ mod tests {
         }
         assert_eq!(source.get_folder_content().len(), 3);
         // Test
-        let package_link = PackageLink::from(folder);
+        let package_link = open_link(folder);
         package_link.purge_source();
         assert_eq!(source.get_folder_content().len(), 0);
     }
@@ -395,7 +400,7 @@ mod tests {
         }
         assert_eq!(source.get_folder_content().len(), 0);
         // Test
-        let package_link = PackageLink::from(folder);
+        let package_link = open_link(folder);
         package_link.load_from(output.canonicalize_pathbuf());
         assert_eq!(source.get_folder_content().len(), 3);
     }
