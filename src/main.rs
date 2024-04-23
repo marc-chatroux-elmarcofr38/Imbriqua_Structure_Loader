@@ -44,17 +44,17 @@ fn main() {
     loading_env.prebuild("lib.rs");
 
     // Delete output folder if is empty
-    // loading_env.close();
+    loading_env.close();
 
-    let result_path = loading_env.file_env.get_output_folder();
+    // Make testing package link
+    let output_path = loading_env.file_env.get_output_folder();
+    let link = module_output_checker::open_link(cargo_testing_package);
 
-    let result_package = module_output_checker::PackageLink::from(cargo_testing_package);
-    result_package.cargo_clean();
-    result_package.purge_source();
-    result_package.load_from(result_path);
-    if !result_package.cargo_full_check() {
-        panic!()
-    }
+    // Clean, purge, load and test
+    assert_eq!(link.cargo_clean(), true);
+    link.purge_source();
+    link.load_from(output_path);
+    assert_eq!(link.cargo_full_check(), true);
 }
 
 /*
