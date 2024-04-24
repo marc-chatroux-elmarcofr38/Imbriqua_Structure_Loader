@@ -37,37 +37,17 @@ fn main() {
     // Initialise global logger, file environment and loading environment
     let _handle = module_log::open_logger(logger_configuration);
     let file_env = module_file_env::open_env(input_folder, main_output_folder);
-    let mut loading_env = module_dependencies_explorer::LoadingTracker::new(file_env);
-
-    /*
-
-
-
-
-
-
-
-    */
+    let mut loading_env = module_dependencies_explorer::open_loader(file_env);
 
     // Load ordered packages list
-    loading_env.import_dependencies_file(&main_package_file, main_package_id, "root");
-    loading_env.prebuild("lib.rs");
+    loading_env.prepare(&main_package_file, main_package_id, "root");
+    loading_env.make_primar_result("lib.rs");
 
     // Delete output folder if is empty
     loading_env.close();
 
-    /*
-
-
-
-
-
-
-
-    */
-
     // Make testing package link
-    let output_path = loading_env.file_env.get_output_folder();
+    let output_path = loading_env.get_output_folder();
     let link = module_output_checker::open_link(cargo_testing_package);
 
     // Clean, purge, load and test
@@ -76,18 +56,3 @@ fn main() {
     link.load_from(output_path);
     assert_eq!(link.cargo_full_check(), true);
 }
-
-/*
-#[test]
-fn le_test() {
-
-    // Initialise global logger
-    let _handle = module_log::open_logger();
-
-    // Set used folders (input folder and output folder)
-    let loading_env = module_dependencies_explorer::LoadingTracker::new();
-
-    // Delete output folder if is empty
-    loading_env.close();
-}
-*/

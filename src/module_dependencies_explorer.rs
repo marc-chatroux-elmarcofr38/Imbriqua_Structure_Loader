@@ -21,32 +21,41 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Package section
 use crate::module_file_env::*;
-use crate::module_file_manager::{FileManager, Path, PathBuf};
+use crate::module_file_manager::*;
 use crate::module_log::*;
 
 // Dependencies section
 extern crate minidom;
 use minidom::Element;
 use std::collections::HashMap;
-use std::fmt;
 use std::io::Write;
 
 #[derive(Clone, PartialEq, Debug)]
+/// State on package to load
 enum LoadingState {
-    Empty,     // No Element
-    Loaded,    // With Element
-    _Finished, // Element converted
+    /// No Element (name reserved)
+    Empty,
+    /// With Element (imported)
+    Loaded,
+    /// Element used (converted)
+    Finished,
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// Representation of a package
 struct LoadingPackage {
+    /// Source file of the package
     filename: String,
+    /// Source id of the package
     id: String,
+    /// Element object of xml content
     object: Element,
+    /// State of the package
     state: LoadingState,
 }
 
 impl LoadingPackage {
+    /// Lowercase name of the package (no '.', no '#', no uppercase)
     pub fn get_lowercase_name(&self) -> String {
         let str_result = self.filename.as_str().to_ascii_lowercase();
         let str_result = str_result.replace(".", "_");
@@ -56,44 +65,38 @@ impl LoadingPackage {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// Collection to package loaded, with loading function (load, treatment, export, etc.)
 pub struct LoadingTracker {
+    /// FileEnv linked with import (input_folder, and output_folder)
     pub file_env: FileEnv,
+    /// Collection of package to import
     loaded_package: HashMap<String, LoadingPackage>,
+    /// Order of the collection of package
     importing_order: HashMap<String, usize>,
 }
 
+/// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using FileEnv object
+pub fn open_loader(file_env: FileEnv) -> LoadingTracker {
+    LoadingTracker::new(file_env)
+}
+
 impl LoadingTracker {
+    /// Create new instance
     pub fn new(file_env: FileEnv) -> Self {
-        // Create instance
-        let result = LoadingTracker {
+        LoadingTracker {
             file_env: file_env,
             loaded_package: HashMap::new(),
             importing_order: HashMap::new(),
-        };
-
-        // Return result
-        result
+        }
     }
 
-    pub fn import_dependencies_file(
-        &mut self,
-        main_file: &str,
-        package_id: &str,
-        parent_label: &str,
-    ) {
-        /*
-            Load minidom element from a gived package, including dependencies
-            Save element in loaded_package
+    /// Shortcut function of file_env output folder
+    pub fn get_output_folder(&self) -> PathBuf {
+        self.file_env.get_output_folder()
+    }
 
-            Input :
-             - main_file (&str) : file to load in self.input_folder
-             - package_id (&str) : package name wanted in main_file
-             - parent_label (&str) : parent package label, used in logs command
-
-            Error :
-             - none
-        */
-
+    /// Load minidom element from a gived package, including dependencies, and save element in loaded_package
+    pub fn prepare(&mut self, main_file: &str, package_id: &str, parent_label: &str) {
         // Define hashmap key
         let mut label = String::from(main_file);
         label.push_str("#");
@@ -133,7 +136,7 @@ impl LoadingTracker {
         for child in package_element.children() {
             if child.is("Package", "http://schema.omg.org/spec/MOF/2.0/cmof.xml") {
                 if child.attr("xmi:id") == Some(package_id) {
-                    let package_element = child.clone();
+                    let _package_element = child.clone();
                     break;
                 }
             }
@@ -224,7 +227,7 @@ impl LoadingTracker {
                         let package_file: String = package_to_import[..split_index].to_string();
                         let split_index = split_index + 1;
                         let package_id: String = package_to_import[split_index..].to_string();
-                        self.import_dependencies_file(
+                        self.prepare(
                             package_file.as_str(),
                             package_id.as_str(),
                             label.clone().as_str(),
@@ -273,41 +276,22 @@ impl LoadingTracker {
         self.loaded_package.contains_key(&label)
     }
 
-    pub fn close(&self) {
-        self.file_env.delete_if_empty();
-    }
-}
-
-impl fmt::Display for LoadingTracker {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut result: String = String::new();
-        result.push_str("---- LoadingTracker ---");
-        result.push_str("\n");
-        result.push_str("\n file_env : ");
-        result.push_str(format!("{:#?}", &self.file_env).as_str());
-        result.push_str("\n importing_order : ");
-        result.push_str(format!("{:#?}", &self.importing_order).as_str());
-        result.push_str("\n");
-        write!(f, "{}", result.as_str())
-    }
-}
-
-impl LoadingTracker {
-    pub fn prebuild(&self, str_file_name: &str) {
-        /*
-
-        */
-
+    /// Simple exploration of imported package, exporting unusable file
+    pub fn make_primar_result(&mut self, str_file_name: &str) {
+        // Get folder path
         let mut file_name = self.file_env.get_output_folder();
         file_name.push(str_file_name);
+        // Get empty file
         let mut writing_file = file_name.write_new_file();
+        // Write head
         let _ = write!(
             writing_file,
             "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {:?}\n\n",
             self.file_env.get_output_folder()
         );
-        for (_, package) in &self.loaded_package {
-            //writing_file.write_all(&format!("0{:b}", package.get_lowercase_name().into_bytes()));
+        // Write body
+        for (_, package) in &mut self.loaded_package {
+            // Write in a 'mod'
             let str_element = format!("{:#?}", package.object);
             let _ = write!(
                 writing_file,
@@ -315,10 +299,15 @@ impl LoadingTracker {
                 package.get_lowercase_name(),
                 str_element
             );
+            // Change state to 'finished'
+            package.state = LoadingState::Finished;
         }
     }
 
-    fn _check_lowercase() {}
+    /// Ending loading (delete output folder if empty)
+    pub fn close(&self) {
+        self.file_env.delete_if_empty();
+    }
 }
 
 #[cfg(test)]
@@ -327,11 +316,17 @@ mod tests {
     use crate::module_log::tests::initialize_log_for_test;
 
     #[test]
-    fn module_dep_01_idk() {
+    fn module_dep_01_open_loader() {
         // Logs
         initialize_log_for_test();
         // Setting
+        let input_folder = "tests/module_dependencies_explorer/module_dep_01_open_loader/input";
+        let main_output_folder =
+            "tests/module_dependencies_explorer/module_dep_01_open_loader/output";
         // Preparing
+        let file_env = open_env(input_folder, main_output_folder);
         // Test
+        let loading_env = open_loader(file_env);
+        let _ = loading_env.get_output_folder();
     }
 }
