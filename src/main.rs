@@ -40,7 +40,7 @@ fn main() {
     let mut loading_env = module_dependencies_explorer::open_loader(file_env);
 
     // Load ordered packages list
-    loading_env.prepare(&main_package_file, main_package_id, "root");
+    loading_env.prepare(main_package_file, main_package_id, "root");
     loading_env.make_primar_result("lib.rs");
 
     // Delete output folder if is empty
@@ -51,8 +51,8 @@ fn main() {
     let link = module_output_checker::open_link(cargo_testing_package);
 
     // Clean, purge, load and test
-    assert_eq!(link.cargo_clean(), true);
+    assert!(link.cargo_clean());
     link.purge_source();
     link.load_from(output_path);
-    assert_eq!(link.cargo_full_check(), true);
+    assert!(link.cargo_full_check());
 }

@@ -47,13 +47,15 @@ impl FileEnv {
         // Checking instance
         path_input_folder.check_is_dir();
         path_output_folder.check_is_dir();
+        info!(
+            "FileEnvironment setting with {:?} and {:?}",
+            path_input_folder, path_output_folder
+        );
         // Create instance
-        let result = FileEnv {
+        FileEnv {
             input_folder: path_input_folder,
             output_folder: path_output_folder,
-        };
-        // Return result
-        result
+        }
     }
 
     /// Deleting output folder if empty (for cleaning output main folder)

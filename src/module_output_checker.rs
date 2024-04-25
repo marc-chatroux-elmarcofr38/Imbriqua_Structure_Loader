@@ -92,7 +92,7 @@ impl PackageLink {
             .output()
             .expect("process failed to execute");
         // Logging debug and getting succes result
-        let result_1 = represent_command_output(&mut cargo_1).is_some_and(|x| x == true);
+        let result_1 = represent_command_output(&mut cargo_1).is_some_and(|x| x);
         // Logging succes result
         trace!(
             "Running cargo command : {} : {:?}",
@@ -141,7 +141,7 @@ impl PackageLink {
         match res_1 {
             true => {
                 info!("Cargo.toml exist for {:?}", &self.absolute_path);
-                return true;
+                true
             }
             false => {
                 error!(
@@ -169,7 +169,7 @@ impl PackageLink {
         match &self.cargo_custom_command(vec!["clean"]) {
             true => {
                 info!("Cleaning {:?} package", &self.absolute_path);
-                return true;
+                true
             }
             false => {
                 error!("PANIC_OUT02 - Can't clean {:?}", &self.absolute_path);
@@ -315,12 +315,12 @@ mod tests {
         if doc.exists() {
             doc.delete_folder(false);
         }
-        assert_eq!(doc.exists(), false);
+        assert!(!doc.exists());
         // Test
         let package_link = open_link(folder);
         let result = package_link.cargo_custom_command(vec!["doc"]);
-        assert_eq!(result, true);
-        assert_eq!(doc.exists(), true);
+        assert!(result);
+        assert!(doc.exists());
         package_link.cargo_clean();
     }
 
@@ -335,7 +335,7 @@ mod tests {
         // Test
         let package_link = open_link(folder);
         let result = package_link.cargo_full_check();
-        assert_eq!(result, true);
+        assert!(result);
         package_link.cargo_clean();
     }
 
@@ -350,7 +350,7 @@ mod tests {
         // Test
         let package_link = open_link(folder);
         let result = package_link.cargo_integrity_check();
-        assert_eq!(result, true);
+        assert!(result);
     }
 
     #[test]
@@ -363,7 +363,7 @@ mod tests {
         // Test
         let package_link = open_link(folder);
         let result = package_link.cargo_clean();
-        assert_eq!(result, true);
+        assert!(result);
     }
 
     #[test]
@@ -395,7 +395,7 @@ mod tests {
         let output = Path::new("tests/module_output_checker/module_out_09_load_from/output");
         let folder = "tests/module_output_checker/module_out_09_load_from/project_b/Cargo.toml";
         // Preparing
-        if source.get_folder_content().len() != 0 {
+        if !source.get_folder_content().is_empty() {
             source.purge_folder();
         }
         assert_eq!(source.get_folder_content().len(), 0);

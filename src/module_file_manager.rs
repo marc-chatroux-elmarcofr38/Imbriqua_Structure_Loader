@@ -29,28 +29,28 @@ pub use std::path::PathBuf;
 /// Provide shortcut to filesystem function, with error forwarding and panic control
 pub trait FileManager {
     ///  Panic if it's not a directory
-    fn check_is_dir(&self) -> ();
+    fn check_is_dir(&self);
 
     ///  Return the content of the folder (as ReadDir)
     fn get_folder_content(&self) -> Vec<PathBuf>;
 
     /// Create the folder if don't exist
-    fn create_folder(&self) -> ();
+    fn create_folder(&self);
 
     /// Copy each item of a folder to a other
-    fn copy_folder(&self, to: &Self) -> ();
+    fn copy_folder(&self, to: &Self);
 
     /// Move each item of a folder to a other
-    fn move_folder(&self, to: &Self) -> ();
+    fn move_folder(&self, to: &Self);
 
     /// Delete the folder if it exist
-    fn delete_folder(&self, empty_only: bool) -> ();
+    fn delete_folder(&self, empty_only: bool);
 
     /// Remove all content of the folder if it exist
-    fn purge_folder(&self) -> ();
+    fn purge_folder(&self);
 
     ///  Panic if it's not a file
-    fn check_is_file(&self) -> ();
+    fn check_is_file(&self);
 
     /// Check if the file exist, and if it's file, and if it's readable and return it (as File)
     fn write_new_file(&self) -> std::fs::File;
@@ -62,13 +62,13 @@ pub trait FileManager {
     fn get_file_content_as_element(&self) -> minidom::Element;
 
     /// Copy a file to a other location
-    fn copy_file(&self, to: &Self) -> ();
+    fn copy_file(&self, to: &Self);
 
     /// Move a file to a other location
-    fn move_file(&self, to: &Self) -> ();
+    fn move_file(&self, to: &Self);
 
     /// Delete the file if it exist
-    fn delete_file(&self) -> ();
+    fn delete_file(&self);
 
     /// Canonicalize the path if it exist
     fn canonicalize_pathbuf(&self) -> PathBuf;
@@ -76,7 +76,7 @@ pub trait FileManager {
 
 impl FileManager for Path {
     ///  Panic if it's not a directory
-    fn check_is_dir(&self) -> () {
+    fn check_is_dir(&self) {
         // Checking if path is dir (and if exist)
         match self.is_dir() {
             true => {
@@ -134,7 +134,7 @@ impl FileManager for Path {
     }
 
     /// Create the folder if don't exist
-    fn create_folder(&self) -> () {
+    fn create_folder(&self) {
         // Exit if the folder exist
         if self.exists() {
             trace!("Folder {:?} already exist (don't create)", self);
@@ -163,7 +163,7 @@ impl FileManager for Path {
     }
 
     /// Copy each item of a folder to a other
-    fn copy_folder(&self, to: &Self) -> () {
+    fn copy_folder(&self, to: &Self) {
         // Directory checking
         self.check_is_dir();
         to.create_folder();
@@ -191,7 +191,7 @@ impl FileManager for Path {
     }
 
     /// Move each item of a folder to a other
-    fn move_folder(&self, to: &Self) -> () {
+    fn move_folder(&self, to: &Self) {
         // Directory checking
         self.check_is_dir();
         to.create_folder();
@@ -221,11 +221,11 @@ impl FileManager for Path {
     }
 
     /// Delete the folder if it exist
-    fn delete_folder(&self, empty_only: bool) -> () {
+    fn delete_folder(&self, empty_only: bool) {
         // Directory checking
         self.check_is_dir();
         // Exit if not empty AND empty constraint
-        if empty_only && (self.get_folder_content().len() != 0) {
+        if empty_only && !self.get_folder_content().is_empty() {
             trace!("Folder {:?} isn't empty (don't delete)", self);
             return;
         }
@@ -248,7 +248,7 @@ impl FileManager for Path {
     }
 
     /// Remove all content of the folder if it exist
-    fn purge_folder(&self) -> () {
+    fn purge_folder(&self) {
         // Directory checking
         self.check_is_dir();
         // Get content
@@ -272,7 +272,7 @@ impl FileManager for Path {
     }
 
     ///  Panic if it's not a file
-    fn check_is_file(&self) -> () {
+    fn check_is_file(&self) {
         // Checking if path is file (and if exist)
         match self.is_file() {
             true => {
@@ -376,7 +376,7 @@ impl FileManager for Path {
     }
 
     /// Copy a file to a other location
-    fn copy_file(&self, to: &Self) -> () {
+    fn copy_file(&self, to: &Self) {
         // File checking
         self.check_is_file();
         // Configuration
@@ -400,7 +400,7 @@ impl FileManager for Path {
     }
 
     /// Move a file to a other location
-    fn move_file(&self, to: &Self) -> () {
+    fn move_file(&self, to: &Self) {
         // File checking
         self.check_is_file();
         // Configuration
@@ -424,7 +424,7 @@ impl FileManager for Path {
     }
 
     /// Delete the file if it exist
-    fn delete_file(&self) -> () {
+    fn delete_file(&self) {
         // File checking
         self.check_is_file();
         // Delete file
@@ -450,7 +450,7 @@ impl FileManager for Path {
         // Canonicalize
         match std::fs::canonicalize(self) {
             Ok(result) => {
-                info!("Can canonicalize {:?} to {:?}", self, result);
+                trace!("Can canonicalize {:?} to {:?}", self, result);
                 result
             }
             Err(error) => {
@@ -525,7 +525,7 @@ mod tests {
         if folder.exists() {
             folder.delete_folder(false);
         }
-        assert_eq!(folder.exists(), false);
+        assert!(!folder.exists());
         // Test
         folder.create_folder();
     }
@@ -541,7 +541,7 @@ mod tests {
         if to.exists() {
             to.delete_folder(false);
         }
-        assert_eq!(to.exists(), false);
+        assert!(!to.exists());
         // Test
         from.copy_folder(to);
         let to_checking = Path::new("tests/module_file_manager/module_flm_04_copy_folder/to");
@@ -569,11 +569,11 @@ mod tests {
         if from.exists() {
             from.delete_folder(false);
         }
-        assert_eq!(from.exists(), false);
+        assert!(!from.exists());
         if to.exists() {
             to.delete_folder(false);
         }
-        assert_eq!(to.exists(), false);
+        assert!(!to.exists());
         from_template.copy_folder(from);
         let from_checking = Path::new("tests/module_file_manager/module_flm_05_move_folder/from");
         assert_eq!(from_checking.get_folder_content().len(), 3);
@@ -587,7 +587,7 @@ mod tests {
         assert_eq!(from_checking.get_folder_content().len(), 1);
         // Test
         from.move_folder(to);
-        assert_eq!(from.exists(), false);
+        assert!(!from.exists());
         let to_checking = Path::new("tests/module_file_manager/module_flm_05_move_folder/to");
         assert_eq!(to_checking.get_folder_content().len(), 3);
         let to_checking =
@@ -616,16 +616,16 @@ mod tests {
         if !folder_with_content_to_remove.exists() {
             from.copy_folder(folder_with_content_to_remove);
         }
-        assert_eq!(folder_with_content_to_remove.exists(), true);
+        assert!(folder_with_content_to_remove.exists());
         if !folder_with_content_to_not_remove.exists() {
             from.copy_folder(folder_with_content_to_not_remove);
         }
-        assert_eq!(folder_with_content_to_not_remove.exists(), true);
+        assert!(folder_with_content_to_not_remove.exists());
         // Test
         folder_with_content_to_remove.delete_folder(false);
-        assert_eq!(folder_with_content_to_remove.exists(), false);
+        assert!(!folder_with_content_to_remove.exists());
         folder_with_content_to_not_remove.delete_folder(true);
-        assert_eq!(folder_with_content_to_not_remove.exists(), true);
+        assert!(folder_with_content_to_not_remove.exists());
     }
 
     #[test]
@@ -641,14 +641,14 @@ mod tests {
         if !folder_with_content_to_purge.exists() {
             from.copy_folder(folder_with_content_to_purge);
         }
-        assert_eq!(folder_with_content_to_purge.exists(), true);
+        assert!(folder_with_content_to_purge.exists());
         if folder_with_content_to_purge.get_folder_content().len() != 3 {
             from.copy_folder(folder_with_content_to_purge);
         }
         assert_eq!(folder_with_content_to_purge.get_folder_content().len(), 3);
         // Test
         folder_with_content_to_purge.purge_folder();
-        assert_eq!(folder_with_content_to_purge.exists(), true);
+        assert!(folder_with_content_to_purge.exists());
         assert_eq!(folder_with_content_to_purge.get_folder_content().len(), 0);
     }
 
@@ -688,7 +688,7 @@ mod tests {
         if file.exists() {
             file.delete_file();
         }
-        assert_eq!(file.exists(), false);
+        assert!(!file.exists());
         // Test
         let mut writing_file = file.write_new_file();
         assert!(write!(writing_file, "AAA AAA AAA").is_ok());
@@ -735,7 +735,7 @@ mod tests {
         if to.exists() {
             to.delete_file();
         }
-        assert_eq!(to.exists(), false);
+        assert!(!to.exists());
         // Test
         from.copy_file(to);
         assert_eq!(to.get_file_content(), String::from("AAA AAA AAA"));
@@ -754,16 +754,16 @@ mod tests {
         if from.exists() {
             from.delete_file();
         }
-        assert_eq!(from.exists(), false);
+        assert!(!from.exists());
         if to.exists() {
             to.delete_file();
         }
-        assert_eq!(to.exists(), false);
+        assert!(!to.exists());
         from_template.copy_file(from);
         assert_eq!(from.get_file_content(), String::from("AAA AAA AAA"));
         // Test
         from.move_file(to);
-        assert_eq!(from.exists(), false);
+        assert!(!from.exists());
         assert_eq!(to.get_file_content(), String::from("AAA AAA AAA"));
     }
 
@@ -781,14 +781,14 @@ mod tests {
         if !file_to_delete.exists() {
             file_template.copy_file(file_to_delete);
         }
-        assert_eq!(file_to_delete.exists(), true);
+        assert!(file_to_delete.exists());
         assert_eq!(
             file_to_delete.get_file_content(),
             String::from("AAA AAA AAA")
         );
         // Test
         file_to_delete.delete_file();
-        assert_eq!(file_to_delete.exists(), false);
+        assert!(!file_to_delete.exists());
     }
 
     #[test]
