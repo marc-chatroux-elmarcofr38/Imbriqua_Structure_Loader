@@ -15,35 +15,25 @@ Short description
 # Panic and failure
 
 * PANIC_DEP01 - Unloaded dependencies : suspicious of circular dependencies
-    * Context : [`PackageLoader::prepare`]
+    * Context : [`LoadingTracker::prepare`]
     * Info : One of PackageImport return a package with parent link, circular loading issue (A import B, and B import A)
     * Cause : see details in logs file to get :
         * Files names (child and parent)
 
 * PANIC_DEP02 - packageImport element without importedPackage child
-    * Context : [`PackageLoader::add_dependencies`]
-    * Info : Can't pass check of provided folder
+    * Context : [`LoadingTracker::add_dependencies`]
+    * Info : a packageImport Element haven't the needed pattern, not importedPackage child
     * Cause : see details in logs file to get :
-        * Value of folder path
-        * error informations of [__cargo locate-project__](https://doc.rust-lang.org/cargo/commands/cargo-locate-project.html)
+        * File and package targeted
 
 * PANIC_DEP03 - importedPackage element without href attribute
-    * Context : [`PackageLoader::add_dependencies`]
-    * Info : Can't pass check of provided folder
+    * Context : [`LoadingTracker::add_dependencies`]
+    * Info : a importedPackage Element haven't the needed pattern, not href attribute
     * Cause : see details in logs file to get :
-        * Value of folder path
-        * error informations of [__cargo locate-project__](https://doc.rust-lang.org/cargo/commands/cargo-locate-project.html)
+        * File and package targeted
 
 * PANIC_DEP04 - href attribute without '#' separator : package
-    * Context : [`PackageLoader::add_dependencies`]
-    * Info : Can't pass check of provided folder
+    * Context : [`LoadingTracker::add_dependencies`]
+    * Info : a href attribute haven't the needed pattern, no '#' separator
     * Cause : see details in logs file to get :
-        * Value of folder path
-        * error informations of [__cargo locate-project__](https://doc.rust-lang.org/cargo/commands/cargo-locate-project.html)
-
-
-
-* PANIC_###0# - ...
-    * Context : __###.rs/###()__
-    * Info : ...
-    * Cause : ...
+        * File and package targeted
