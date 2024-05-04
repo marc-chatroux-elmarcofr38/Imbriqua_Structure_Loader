@@ -41,7 +41,7 @@ fn main() {
 
     // Load ordered packages list
     loading_env.prepare(main_package_file, main_package_id, "root");
-    loading_env.make_primar_result("lib.rs");
+    loading_env.make_primar_result_2();
 
     // Delete output folder if is empty
     loading_env.close();

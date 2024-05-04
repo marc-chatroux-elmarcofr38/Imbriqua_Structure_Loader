@@ -239,12 +239,19 @@ pub fn represent_command_output(command: &mut Command) -> Option<bool> {
         }
     };
     // Logs
+    let command_str = format!("{:?}", &command);
+    let command_str = command_str.replace("\" \"", " ");
     debug!(
         "\nsucces:\n{}\ncommand:\n{:#?}\nstdout:\n{}\nstderr:\n{}",
         command_output.status.success(),
-        &command,
+        command_str,
         str_stdout,
         str_stderr
+    );
+    info!(
+        "result {} for {}",
+        command_output.status.success(),
+        command_str
     );
     // Boolean result of succes
     Some(command_output.status.success())
