@@ -109,29 +109,27 @@ struct CMOFDataType {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 struct CMOFEnumeration {
-    // id: String,
-    // name: String,
-    // visibility: Option<String>,
-    // #[serde(rename = "isAbstract")]
-    // is_abstract: Option<String>,
-    // #[serde(rename = "superClass")]
-    // super_class: Option<String>,
-    // #[serde(rename = "memberEnd")]
-    // member_end: Option<String>,
-    // #[serde(rename = "ownedAttribute")]
-    // owned_attribute: Option<Vec<EnumOwnedAttribute>>,
-    // #[serde(rename = "ownedEnd")]
-    // owned_end: Option<Vec<EnumOwnedEnd>>,
-    // #[serde(rename = "ownedRule")]
-    // owned_rule: Option<Vec<EnumOwnedRule>>,
-    // #[serde(rename = "ownedLiteral")]
-    // owned_literal: Option<Vec<EnumOwnedLiteral>>,
+    #[serde(rename = "_xmi:id")]
+    xmi_id: String,
+    #[serde(rename = "_name")]
+    name: String,
+    #[serde(rename = "ownedLiteral")]
+    owned_attribute: Option<Vec<EnumOwnedLiteral>>,
 }
 
 // cmof:EnumerationLiteral
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFEnumerationLiteral {}
+struct CMOFEnumerationLiteral {
+    #[serde(rename = "_xmi:id")]
+    xmi_id: String,
+    #[serde(rename = "_name")]
+    name: String,
+    #[serde(rename = "_classifier")]
+    classifier: String,
+    #[serde(rename = "_enumeration")]
+    enumeration: String,
+}
 
 // cmof:OpaqueExpression
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -297,7 +295,15 @@ enum EnumOwnedEnd {
 #[serde(deny_unknown_fields)]
 enum EnumOwnedRule {
     #[serde(rename = "cmof:Constraint")]
-    Property(CMOFConstraint),
+    Constraint(CMOFConstraint),
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[serde(tag = "_xmi:type")]
+#[serde(deny_unknown_fields)]
+enum EnumOwnedLiteral {
+    #[serde(rename = "cmof:EnumerationLiteral")]
+    EnumerationLiteral(CMOFEnumerationLiteral),
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
