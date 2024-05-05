@@ -68,9 +68,9 @@ struct CMOFClass {
     #[serde(rename = "ownedAttribute")]
     owned_attribute: Option<Vec<EnumOwnedAttribute>>,
     // #[serde(rename = "ownedEnd")]
-    // owned_end: Option<Vec<EnumOwnedEnd>>,
-    // #[serde(rename = "ownedRule")]
-    // owned_rule: Option<Vec<EnumOwnedRule>>,
+    owned_end: Option<Vec<EnumOwnedEnd>>,
+    #[serde(rename = "ownedRule")]
+    owned_rule: Option<EnumOwnedRule>,
     // #[serde(rename = "ownedLiteral")]
     // owned_literal: Option<Vec<EnumOwnedLiteral>>,
 }
@@ -214,6 +214,8 @@ struct CMOFProperty {
     is_derived: Option<String>,
     #[serde(rename = "_subsettedProperty")]
     subsetted_property: Option<String>,
+    #[serde(rename = "_owningAssociation")]
+    owning_association: Option<String>,
 
     #[serde(rename = "_isDerivedUnion")]
     is_derived_union: Option<String>,

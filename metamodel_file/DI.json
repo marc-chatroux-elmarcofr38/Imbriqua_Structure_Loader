@@ -207,16 +207,18 @@
 				"_isAbstract": "true"
 			},
 			{
-				"ownedAttribute": {
-					"type": {
-						"_xmi:type": "cmof:DataType",
-						"_href": "DC.cmof#Bounds"
-					},
-					"_xmi:type": "cmof:Property",
-					"_xmi:id": "Shape-bounds",
-					"_name": "bounds",
-					"_visibility": "public"
-				},
+				"ownedAttribute": [
+					{
+						"type": {
+							"_xmi:type": "cmof:DataType",
+							"_href": "DC.cmof#Bounds"
+						},
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Shape-bounds",
+						"_name": "bounds",
+						"_visibility": "public"
+					}
+				],
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "Shape",
 				"_name": "Shape",
@@ -237,19 +239,21 @@
 					"_constrainedElement": "Plane",
 					"_namespace": "Plane"
 				},
-				"ownedAttribute": {
-					"_xmi:type": "cmof:Property",
-					"_xmi:id": "Plane-planeElement",
-					"_name": "planeElement",
-					"_visibility": "public",
-					"_type": "DiagramElement",
-					"_isOrdered": "true",
-					"_upper": "*",
-					"_lower": "0",
-					"_isComposite": "true",
-					"_subsettedProperty": "DiagramElement-ownedElement",
-					"_association": "A_planeElement_plane"
-				},
+				"ownedAttribute": [
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Plane-planeElement",
+						"_name": "planeElement",
+						"_visibility": "public",
+						"_type": "DiagramElement",
+						"_isOrdered": "true",
+						"_upper": "*",
+						"_lower": "0",
+						"_isComposite": "true",
+						"_subsettedProperty": "DiagramElement-ownedElement",
+						"_association": "A_planeElement_plane"
+					}
+				],
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "Plane",
 				"_name": "Plane",
@@ -257,21 +261,23 @@
 				"_superClass": "Node"
 			},
 			{
-				"ownedAttribute": {
-					"_xmi:type": "cmof:Property",
-					"_xmi:id": "LabeledEdge-ownedLabel",
-					"_name": "ownedLabel",
-					"_visibility": "public",
-					"_type": "Label",
-					"_upper": "*",
-					"_lower": "0",
-					"_isReadOnly": "true",
-					"_isDerived": "true",
-					"_isDerivedUnion": "true",
-					"_isComposite": "true",
-					"_subsettedProperty": "DiagramElement-ownedElement",
-					"_association": "A_ownedLabel_owningEdge"
-				},
+				"ownedAttribute": [
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "LabeledEdge-ownedLabel",
+						"_name": "ownedLabel",
+						"_visibility": "public",
+						"_type": "Label",
+						"_upper": "*",
+						"_lower": "0",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_isComposite": "true",
+						"_subsettedProperty": "DiagramElement-ownedElement",
+						"_association": "A_ownedLabel_owningEdge"
+					}
+				],
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "LabeledEdge",
 				"_name": "LabeledEdge",
@@ -279,21 +285,23 @@
 				"_superClass": "Edge"
 			},
 			{
-				"ownedAttribute": {
-					"_xmi:type": "cmof:Property",
-					"_xmi:id": "LabeledShape-ownedLabel",
-					"_name": "ownedLabel",
-					"_visibility": "public",
-					"_type": "Label",
-					"_upper": "*",
-					"_lower": "0",
-					"_isReadOnly": "true",
-					"_isDerived": "true",
-					"_isDerivedUnion": "true",
-					"_isComposite": "true",
-					"_subsettedProperty": "DiagramElement-ownedElement",
-					"_association": "A_ownedLabel_owningShape"
-				},
+				"ownedAttribute": [
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "LabeledShape-ownedLabel",
+						"_name": "ownedLabel",
+						"_visibility": "public",
+						"_type": "Label",
+						"_upper": "*",
+						"_lower": "0",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_isComposite": "true",
+						"_subsettedProperty": "DiagramElement-ownedElement",
+						"_association": "A_ownedLabel_owningShape"
+					}
+				],
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "LabeledShape",
 				"_name": "LabeledShape",
@@ -301,17 +309,19 @@
 				"_superClass": "Shape"
 			},
 			{
-				"ownedAttribute": {
-					"type": {
-						"_xmi:type": "cmof:DataType",
-						"_href": "DC.cmof#Bounds"
-					},
-					"_xmi:type": "cmof:Property",
-					"_xmi:id": "Label-bounds",
-					"_name": "bounds",
-					"_visibility": "public",
-					"_lower": "0"
-				},
+				"ownedAttribute": [
+					{
+						"type": {
+							"_xmi:type": "cmof:DataType",
+							"_href": "DC.cmof#Bounds"
+						},
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Label-bounds",
+						"_name": "bounds",
+						"_visibility": "public",
+						"_lower": "0"
+					}
+				],
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "Label",
 				"_name": "Label",
