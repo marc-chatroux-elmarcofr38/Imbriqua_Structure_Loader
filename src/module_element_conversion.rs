@@ -54,7 +54,7 @@ struct CMOFAssociation {
 
 // cmof:Class
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-// #[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields)]
 struct CMOFClass {
     #[serde(rename = "_xmi:id")]
     xmi_id: String,
@@ -78,10 +78,8 @@ struct CMOFClass {
 
 // cmof:Constraint
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-// #[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields)]
 struct CMOFConstraint {
-    #[serde(rename = "_xmi:type")]
-    xmi_type: String,
     #[serde(rename = "_xmi:id")]
     xmi_id: String,
     #[serde(rename = "_name")]
@@ -110,7 +108,7 @@ struct CMOFDataType {
 
 // cmof:Enumeration
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-// #[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields)]
 struct CMOFEnumeration {
     // id: String,
     // name: String,
@@ -133,12 +131,12 @@ struct CMOFEnumeration {
 
 // cmof:EnumerationLiteral
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-// #[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields)]
 struct CMOFEnumerationLiteral {}
 
 // cmof:OpaqueExpression
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-// #[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields)]
 struct CMOFOpaqueExpression {}
 
 // cmof:Package
@@ -183,7 +181,7 @@ struct CMOFPrimitiveType {
 
 // cmof:Property
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-// #[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields)]
 struct CMOFProperty {
     #[serde(rename = "_xmi:id")]
     xmi_id: String,
@@ -310,16 +308,6 @@ struct ImportedPackage {
     href: String,
 }
 
-// impl_deserialize_for_internally_tagged_enum! {
-//     OwnedMember,
-//     "_xmi:type",
-//     ("cmof:Association"    => Association(Association)),
-//     ("cmof:Class" => Class(Class)),
-//     ("cmof:Enumeration" => Enumeration(Enumeration)),
-//     ("cmof:PrimitiveType" => PrimitiveType(PrimitiveType)),
-//     ("cmof:DataType" => DataType(DataType)),
-// }
-
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 struct Specification {
@@ -343,6 +331,7 @@ struct ComplexType {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 struct OwnedLiteral {}
 
 #[cfg(test)]
