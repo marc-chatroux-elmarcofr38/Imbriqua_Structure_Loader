@@ -1,0 +1,527 @@
+{
+	"cmof:Package": {
+		"packageImport": [
+			{
+				"importedPackage": {
+					"_xmi:type": "cmof:Package",
+					"_href": "DC.cmof#_0"
+				},
+				"_xmi:type": "cmof:PackageImport",
+				"_xmi:id": "_packageImport.0",
+				"_importingNamespace": "_0"
+			}
+		],
+		"ownedMember": [
+			{
+				"ownedAttribute": [
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "DiagramElement-owningDiagram",
+						"_name": "owningDiagram",
+						"_visibility": "public",
+						"_type": "Diagram",
+						"_lower": "0",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_association": "A_rootElement_owningDiagram"
+					},
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "DiagramElement-owningElement",
+						"_name": "owningElement",
+						"_visibility": "public",
+						"_type": "DiagramElement",
+						"_lower": "0",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_association": "A_ownedElement_owningElement"
+					},
+					{
+						"type": {
+							"_xmi:type": "cmof:Class",
+							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Element"
+						},
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "DiagramElement-modelElement",
+						"_name": "modelElement",
+						"_visibility": "public",
+						"_lower": "0",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_association": "A_modelElement_diagramElement"
+					},
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "DiagramElement-style",
+						"_name": "style",
+						"_visibility": "public",
+						"_type": "Style",
+						"_lower": "0",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_association": "A_style_diagramElement"
+					},
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "DiagramElement-ownedElement",
+						"_name": "ownedElement",
+						"_visibility": "public",
+						"_type": "DiagramElement",
+						"_upper": "*",
+						"_lower": "0",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_isComposite": "true",
+						"_association": "A_ownedElement_owningElement"
+					}
+				],
+				"_xmi:type": "cmof:Class",
+				"_xmi:id": "DiagramElement",
+				"_name": "DiagramElement",
+				"_isAbstract": "true"
+			},
+			{
+				"_xmi:type": "cmof:Class",
+				"_xmi:id": "Node",
+				"_name": "Node",
+				"_isAbstract": "true",
+				"_superClass": "DiagramElement"
+			},
+			{
+				"ownedAttribute": [
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Edge-source",
+						"_name": "source",
+						"_visibility": "public",
+						"_type": "DiagramElement",
+						"_lower": "0",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_association": "A_source_sourceEdge"
+					},
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Edge-target",
+						"_name": "target",
+						"_visibility": "public",
+						"_type": "DiagramElement",
+						"_lower": "0",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_association": "A_target_targetEdge"
+					},
+					{
+						"type": {
+							"_xmi:type": "cmof:DataType",
+							"_href": "DC.cmof#Point"
+						},
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Edge-waypoint",
+						"_name": "waypoint",
+						"_visibility": "public",
+						"_isOrdered": "true",
+						"_isUnique": "false",
+						"_upper": "*",
+						"_lower": "2"
+					}
+				],
+				"_xmi:type": "cmof:Class",
+				"_xmi:id": "Edge",
+				"_name": "Edge",
+				"_isAbstract": "true",
+				"_superClass": "DiagramElement"
+			},
+			{
+				"ownedAttribute": [
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Diagram-rootElement",
+						"_name": "rootElement",
+						"_visibility": "public",
+						"_type": "DiagramElement",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_isComposite": "true",
+						"_association": "A_rootElement_owningDiagram"
+					},
+					{
+						"type": {
+							"_xmi:type": "cmof:PrimitiveType",
+							"_href": "DC.cmof#String"
+						},
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Diagram-name",
+						"_name": "name",
+						"_visibility": "public",
+						"_lower": "0"
+					},
+					{
+						"type": {
+							"_xmi:type": "cmof:PrimitiveType",
+							"_href": "DC.cmof#String"
+						},
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Diagram-documentation",
+						"_name": "documentation",
+						"_visibility": "public",
+						"_lower": "0"
+					},
+					{
+						"type": {
+							"_xmi:type": "cmof:PrimitiveType",
+							"_href": "DC.cmof#Real"
+						},
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Diagram-resolution",
+						"_name": "resolution",
+						"_visibility": "public",
+						"_lower": "0"
+					},
+					{
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "Diagram-ownedStyle",
+						"_name": "ownedStyle",
+						"_visibility": "public",
+						"_type": "Style",
+						"_upper": "*",
+						"_lower": "0",
+						"_isReadOnly": "true",
+						"_isDerived": "true",
+						"_isDerivedUnion": "true",
+						"_isComposite": "true",
+						"_association": "A_ownedStyle_owningDiagram"
+					}
+				],
+				"_xmi:type": "cmof:Class",
+				"_xmi:id": "Diagram",
+				"_name": "Diagram",
+				"_isAbstract": "true"
+			},
+			{
+				"ownedAttribute": {
+					"type": {
+						"_xmi:type": "cmof:DataType",
+						"_href": "DC.cmof#Bounds"
+					},
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "Shape-bounds",
+					"_name": "bounds",
+					"_visibility": "public"
+				},
+				"_xmi:type": "cmof:Class",
+				"_xmi:id": "Shape",
+				"_name": "Shape",
+				"_isAbstract": "true",
+				"_superClass": "Node"
+			},
+			{
+				"ownedRule": {
+					"specification": {
+						"language": "OCL",
+						"body": "planeElement->forAll(oclIsKindOf(Shape) or oclIsKindOf(Edge))",
+						"_xmi:type": "cmof:OpaqueExpression",
+						"_xmi:id": "Plane-plane_element_type-_specification"
+					},
+					"_xmi:type": "cmof:Constraint",
+					"_xmi:id": "Plane-plane_element_type",
+					"_name": "plane_element_type",
+					"_constrainedElement": "Plane",
+					"_namespace": "Plane"
+				},
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "Plane-planeElement",
+					"_name": "planeElement",
+					"_visibility": "public",
+					"_type": "DiagramElement",
+					"_isOrdered": "true",
+					"_upper": "*",
+					"_lower": "0",
+					"_isComposite": "true",
+					"_subsettedProperty": "DiagramElement-ownedElement",
+					"_association": "A_planeElement_plane"
+				},
+				"_xmi:type": "cmof:Class",
+				"_xmi:id": "Plane",
+				"_name": "Plane",
+				"_isAbstract": "true",
+				"_superClass": "Node"
+			},
+			{
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "LabeledEdge-ownedLabel",
+					"_name": "ownedLabel",
+					"_visibility": "public",
+					"_type": "Label",
+					"_upper": "*",
+					"_lower": "0",
+					"_isReadOnly": "true",
+					"_isDerived": "true",
+					"_isDerivedUnion": "true",
+					"_isComposite": "true",
+					"_subsettedProperty": "DiagramElement-ownedElement",
+					"_association": "A_ownedLabel_owningEdge"
+				},
+				"_xmi:type": "cmof:Class",
+				"_xmi:id": "LabeledEdge",
+				"_name": "LabeledEdge",
+				"_isAbstract": "true",
+				"_superClass": "Edge"
+			},
+			{
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "LabeledShape-ownedLabel",
+					"_name": "ownedLabel",
+					"_visibility": "public",
+					"_type": "Label",
+					"_upper": "*",
+					"_lower": "0",
+					"_isReadOnly": "true",
+					"_isDerived": "true",
+					"_isDerivedUnion": "true",
+					"_isComposite": "true",
+					"_subsettedProperty": "DiagramElement-ownedElement",
+					"_association": "A_ownedLabel_owningShape"
+				},
+				"_xmi:type": "cmof:Class",
+				"_xmi:id": "LabeledShape",
+				"_name": "LabeledShape",
+				"_isAbstract": "true",
+				"_superClass": "Shape"
+			},
+			{
+				"ownedAttribute": {
+					"type": {
+						"_xmi:type": "cmof:DataType",
+						"_href": "DC.cmof#Bounds"
+					},
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "Label-bounds",
+					"_name": "bounds",
+					"_visibility": "public",
+					"_lower": "0"
+				},
+				"_xmi:type": "cmof:Class",
+				"_xmi:id": "Label",
+				"_name": "Label",
+				"_isAbstract": "true",
+				"_superClass": "Node"
+			},
+			{
+				"_xmi:type": "cmof:Class",
+				"_xmi:id": "Style",
+				"_name": "Style",
+				"_isAbstract": "true"
+			},
+			{
+				"ownedEnd": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "A_target_targetEdge-targetEdge",
+					"_name": "targetEdge",
+					"_visibility": "public",
+					"_type": "Edge",
+					"_upper": "*",
+					"_lower": "0",
+					"_isReadOnly": "true",
+					"_isDerived": "true",
+					"_isDerivedUnion": "true",
+					"_owningAssociation": "A_target_targetEdge",
+					"_association": "A_target_targetEdge"
+				},
+				"_xmi:type": "cmof:Association",
+				"_xmi:id": "A_target_targetEdge",
+				"_name": "A_target_targetEdge",
+				"_visibility": "private",
+				"_memberEnd": "Edge-target A_target_targetEdge-targetEdge"
+			},
+			{
+				"ownedEnd": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "A_source_sourceEdge-sourceEdge",
+					"_name": "sourceEdge",
+					"_visibility": "public",
+					"_type": "Edge",
+					"_upper": "*",
+					"_lower": "0",
+					"_isReadOnly": "true",
+					"_isDerived": "true",
+					"_isDerivedUnion": "true",
+					"_owningAssociation": "A_source_sourceEdge",
+					"_association": "A_source_sourceEdge"
+				},
+				"_xmi:type": "cmof:Association",
+				"_xmi:id": "A_source_sourceEdge",
+				"_name": "A_source_sourceEdge",
+				"_visibility": "private",
+				"_memberEnd": "Edge-source A_source_sourceEdge-sourceEdge"
+			},
+			{
+				"_xmi:type": "cmof:Association",
+				"_xmi:id": "A_ownedElement_owningElement",
+				"_name": "A_ownedElement_owningElement",
+				"_visibility": "private",
+				"_memberEnd": "DiagramElement-ownedElement DiagramElement-owningElement"
+			},
+			{
+				"ownedEnd": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "A_modelElement_diagramElement-diagramElement",
+					"_name": "diagramElement",
+					"_visibility": "public",
+					"_type": "DiagramElement",
+					"_upper": "*",
+					"_lower": "0",
+					"_isReadOnly": "true",
+					"_isDerived": "true",
+					"_isDerivedUnion": "true",
+					"_owningAssociation": "A_modelElement_diagramElement",
+					"_association": "A_modelElement_diagramElement"
+				},
+				"_xmi:type": "cmof:Association",
+				"_xmi:id": "A_modelElement_diagramElement",
+				"_name": "A_modelElement_diagramElement",
+				"_visibility": "private",
+				"_memberEnd": "DiagramElement-modelElement A_modelElement_diagramElement-diagramElement"
+			},
+			{
+				"_xmi:type": "cmof:Association",
+				"_xmi:id": "A_rootElement_owningDiagram",
+				"_name": "A_rootElement_owningDiagram",
+				"_visibility": "private",
+				"_memberEnd": "Diagram-rootElement DiagramElement-owningDiagram"
+			},
+			{
+				"ownedEnd": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "A_ownedLabel_owningEdge-owningEdge",
+					"_name": "owningEdge",
+					"_visibility": "public",
+					"_type": "LabeledEdge",
+					"_lower": "0",
+					"_isReadOnly": "true",
+					"_isDerived": "true",
+					"_isDerivedUnion": "true",
+					"_owningAssociation": "A_ownedLabel_owningEdge",
+					"_subsettedProperty": "DiagramElement-owningElement",
+					"_association": "A_ownedLabel_owningEdge"
+				},
+				"_xmi:type": "cmof:Association",
+				"_xmi:id": "A_ownedLabel_owningEdge",
+				"_name": "A_ownedLabel_owningEdge",
+				"_visibility": "private",
+				"_memberEnd": "LabeledEdge-ownedLabel A_ownedLabel_owningEdge-owningEdge"
+			},
+			{
+				"ownedEnd": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "A_planeElement_plane-plane",
+					"_name": "plane",
+					"_visibility": "public",
+					"_type": "Plane",
+					"_lower": "0",
+					"_owningAssociation": "A_planeElement_plane",
+					"_subsettedProperty": "DiagramElement-owningElement",
+					"_association": "A_planeElement_plane"
+				},
+				"_xmi:type": "cmof:Association",
+				"_xmi:id": "A_planeElement_plane",
+				"_name": "A_planeElement_plane",
+				"_visibility": "private",
+				"_memberEnd": "Plane-planeElement A_planeElement_plane-plane"
+			},
+			{
+				"ownedEnd": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "A_style_diagramElement-diagramElement",
+					"_name": "diagramElement",
+					"_visibility": "public",
+					"_type": "DiagramElement",
+					"_upper": "*",
+					"_lower": "0",
+					"_isReadOnly": "true",
+					"_isDerived": "true",
+					"_isDerivedUnion": "true",
+					"_owningAssociation": "A_style_diagramElement",
+					"_association": "A_style_diagramElement"
+				},
+				"_xmi:type": "cmof:Association",
+				"_xmi:id": "A_style_diagramElement",
+				"_name": "A_style_diagramElement",
+				"_visibility": "private",
+				"_memberEnd": "DiagramElement-style A_style_diagramElement-diagramElement"
+			},
+			{
+				"ownedEnd": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "A_ownedStyle_owningDiagram-owningDiagram",
+					"_name": "owningDiagram",
+					"_visibility": "public",
+					"_type": "Diagram",
+					"_isReadOnly": "true",
+					"_isDerived": "true",
+					"_isDerivedUnion": "true",
+					"_owningAssociation": "A_ownedStyle_owningDiagram",
+					"_association": "A_ownedStyle_owningDiagram"
+				},
+				"_xmi:type": "cmof:Association",
+				"_xmi:id": "A_ownedStyle_owningDiagram",
+				"_name": "A_ownedStyle_owningDiagram",
+				"_visibility": "private",
+				"_memberEnd": "Diagram-ownedStyle A_ownedStyle_owningDiagram-owningDiagram"
+			},
+			{
+				"ownedEnd": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "A_ownedLabel_owningShape-owningShape",
+					"_name": "owningShape",
+					"_visibility": "public",
+					"_type": "LabeledShape",
+					"_lower": "0",
+					"_isReadOnly": "true",
+					"_isDerived": "true",
+					"_isDerivedUnion": "true",
+					"_owningAssociation": "A_ownedLabel_owningShape",
+					"_subsettedProperty": "DiagramElement-owningElement",
+					"_association": "A_ownedLabel_owningShape"
+				},
+				"_xmi:type": "cmof:Association",
+				"_xmi:id": "A_ownedLabel_owningShape",
+				"_name": "A_ownedLabel_owningShape",
+				"_visibility": "private",
+				"_memberEnd": "LabeledShape-ownedLabel A_ownedLabel_owningShape-owningShape"
+			}
+		],
+		"_xmi:id": "_0",
+		"_name": "DI",
+		"_uri": "http://www.omg.org/spec/DD/20100524/DI-XMI"
+	},
+	"cmof:Tag": [
+		{
+			"_xmi:id": "_1",
+			"_name": "org.omg.xmi.nsPrefix",
+			"_value": "di",
+			"_element": "_0"
+		},
+		{
+			"_xmi:id": "_2",
+			"_name": "org.omg.xmi.nsURI",
+			"_value": "http://www.omg.org/spec/DD/20100524/DI-XMI",
+			"_element": "_0"
+		}
+	],
+	"_xmi:version": "2.1",
+	"_xmlns:xmi": "http://schema.omg.org/spec/XMI/2.1",
+	"_xmlns:cmof": "http://schema.omg.org/spec/MOF/2.0/cmof.xml",
+	"_xmlns": ""
+}

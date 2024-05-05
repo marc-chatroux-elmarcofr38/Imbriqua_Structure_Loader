@@ -20,17 +20,23 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../README.MD")]
 
 pub mod module_dependencies_explorer;
+pub mod module_element_conversion;
 pub mod module_file_env;
 pub mod module_file_manager;
 pub mod module_log;
 pub mod module_output_checker;
 
+use std::env;
+
 fn main() {
+    // this method needs to be inside main() method
+    env::set_var("RUST_BACKTRACE", "1");
+
     // Settings
     let logger_configuration = "config_log.yml"; // File for configuring logger
     let input_folder = "metamodel_file/"; // Folder where input file are stored
     let main_output_folder = "../Output_file/"; // Folder containing output folders and files
-    let main_package_file = "BPMNDI.cmof"; // File containing the package to explore
+    let main_package_file = "DC.cmof"; // File containing the package to explore
     let main_package_id = "_0"; // Package ID of main file to explore
     let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
 
