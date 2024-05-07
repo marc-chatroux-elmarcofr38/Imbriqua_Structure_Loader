@@ -70,22 +70,24 @@
 				"_name": "BPMNDiagram"
 			},
 			{
-				"ownedAttribute": {
-					"type": {
-						"_xmi:type": "cmof:Class",
-						"_href": "BPMN20.cmof#BaseElement"
-					},
-					"redefinedProperty": {
+				"ownedAttribute": [
+					{
+						"type": {
+							"_xmi:type": "cmof:Class",
+							"_href": "BPMN20.cmof#BaseElement"
+						},
+						"redefinedProperty": {
+							"_xmi:type": "cmof:Property",
+							"_href": "DI.cmof#DiagramElement-modelElement"
+						},
 						"_xmi:type": "cmof:Property",
-						"_href": "DI.cmof#DiagramElement-modelElement"
-					},
-					"_xmi:type": "cmof:Property",
-					"_xmi:id": "BPMNPlane-bpmnElement",
-					"_name": "bpmnElement",
-					"_visibility": "public",
-					"_lower": "0",
-					"_association": "A_bpmnElement_plane"
-				},
+						"_xmi:id": "BPMNPlane-bpmnElement",
+						"_name": "bpmnElement",
+						"_visibility": "public",
+						"_lower": "0",
+						"_association": "A_bpmnElement_plane"
+					}
+				],
 				"superClass": {
 					"_xmi:type": "cmof:Class",
 					"_href": "DI.cmof#Plane"
@@ -278,19 +280,21 @@
 				"_name": "BPMNEdge"
 			},
 			{
-				"ownedAttribute": {
-					"redefinedProperty": {
+				"ownedAttribute": [
+					{
+						"redefinedProperty": {
+							"_xmi:type": "cmof:Property",
+							"_href": "DI.cmof#DiagramElement-style"
+						},
 						"_xmi:type": "cmof:Property",
-						"_href": "DI.cmof#DiagramElement-style"
-					},
-					"_xmi:type": "cmof:Property",
-					"_xmi:id": "BPMNLabel-labelStyle",
-					"_name": "labelStyle",
-					"_visibility": "public",
-					"_type": "BPMNLabelStyle",
-					"_lower": "0",
-					"_association": "A_labelStyle_label"
-				},
+						"_xmi:id": "BPMNLabel-labelStyle",
+						"_name": "labelStyle",
+						"_visibility": "public",
+						"_type": "BPMNLabelStyle",
+						"_lower": "0",
+						"_association": "A_labelStyle_label"
+					}
+				],
 				"superClass": {
 					"_xmi:type": "cmof:Class",
 					"_href": "DI.cmof#Label"
@@ -300,16 +304,18 @@
 				"_name": "BPMNLabel"
 			},
 			{
-				"ownedAttribute": {
-					"type": {
-						"_xmi:type": "cmof:DataType",
-						"_href": "DC.cmof#Font"
-					},
-					"_xmi:type": "cmof:Property",
-					"_xmi:id": "BPMNLabelStyle-font",
-					"_name": "font",
-					"_visibility": "public"
-				},
+				"ownedAttribute": [
+					{
+						"type": {
+							"_xmi:type": "cmof:DataType",
+							"_href": "DC.cmof#Font"
+						},
+						"_xmi:type": "cmof:Property",
+						"_xmi:id": "BPMNLabelStyle-font",
+						"_name": "font",
+						"_visibility": "public"
+					}
+				],
 				"superClass": {
 					"_xmi:type": "cmof:Class",
 					"_href": "DI.cmof#Style"

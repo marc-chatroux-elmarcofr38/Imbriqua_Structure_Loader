@@ -26,8 +26,6 @@ use crate::module_file_manager::*;
 use crate::module_log::*;
 
 // Dependencies section
-// extern crate minidom;
-use minidom::Element;
 use std::collections::HashMap;
 use std::io::Write;
 
@@ -54,8 +52,8 @@ pub struct LoadingPackage {
     filename: String,
     /// Source id of the package
     id: String,
-    /// Element object of xml content
-    object: Element,
+    /// Json
+    cmof_object: Option<CMOFPackage>,
     /// State of the package
     state: LoadingState,
 }
@@ -66,7 +64,7 @@ impl LoadingPackage {
         LoadingPackage {
             filename,
             id,
-            object: Element::builder("", "").build(),
+            cmof_object: None,
             state: LoadingState::Empty,
         }
     }
@@ -98,22 +96,25 @@ impl LoadingPackage {
     }
 
     /// Provide 'object' access control
-    pub fn get_element(&self) -> &Element {
+    pub fn get_json(&self) -> &CMOFPackage {
         if self.state != LoadingState::Loaded {
             panic!()
         }
-        &self.object
+        if self.cmof_object.is_none() {
+            panic!()
+        }
+        self.cmof_object.as_ref().unwrap()
     }
 
     /// Save Element and change state
-    pub fn make_loaded(&mut self, element: Element) {
-        self.object = element;
+    pub fn make_loaded(&mut self, cmof: CMOFPackage) {
+        self.cmof_object = Some(cmof);
         self.state = LoadingState::Loaded;
     }
 
     /// Delete Element and change state
     pub fn make_finished(&mut self) {
-        self.object = Element::builder("", "").build();
+        self.cmof_object = None;
         self.state = LoadingState::Finished;
     }
 }
@@ -178,12 +179,10 @@ impl LoadingTracker {
         self.loaded_package.contains_key(label)
     }
 
-    ///
+    /// Lock all package
     pub fn make_finished(&mut self) {
         // Write body
-        for key in self.importing_order.keys() {
-            let package = self.loaded_package.get_mut(key).unwrap();
-
+        for package in self.loaded_package.values_mut() {
             // Change state to 'finished'
             package.make_finished();
         }
@@ -220,130 +219,69 @@ impl LoadingTracker {
         // Generate file path
         let mut file_path = self.get_input_folder();
         file_path.push(main_file);
+        let string_content = file_path.get_file_content();
 
-        let main_package_element = file_path.get_file_content_as_element();
+        // Deserialising
+        let cmof_result: FilePackage = serde_json::from_str(&string_content).unwrap();
+        let cmof_package = cmof_result.package;
 
-        // Find "package_id" child
-        for child in main_package_element.children() {
-            // Package only
-            if !child.is("Package", "http://schema.omg.org/spec/MOF/2.0/cmof.xml") {
-                continue;
-            }
-            // With good name
-            if child.attr("xmi:id") != Some(package_id) {
-                continue;
-            }
-
-            // use package_element;
-            let mut package_element = child.clone();
-            package_element.prefixes = main_package_element.prefixes;
-
-            // Evaluate dependencies, and load it
-            self.add_dependencies(&package_element, label.clone());
-
-            // Add package element in loaded_package
-
-            // Save object in hashmap attribute
-            let package_object = self.loaded_package.get_mut(&label).unwrap();
-            package_object.make_loaded(package_element);
-
-            // Define treatment order
-            let max = self.get_order_len();
-            self.importing_order.insert(label.clone(), max + 1);
-
-            // End logsl.
-            info!("Loading \"{}\" : Finished", label);
-
-            break;
+        // Checi ID
+        if cmof_package.xmi_id != package_id {
+            panic!()
         }
+
+        // Evaluate dependencies, and load it
+        self.add_dependencies(&cmof_package, label.clone());
+
+        // Save object in hashmap attribute
+        let package_object = self.loaded_package.get_mut(&label).unwrap();
+        // package_object.make_loaded_element(package_element);
+        package_object.make_loaded(cmof_package);
+
+        // Define treatment order
+        let max = self.get_order_len();
+        self.importing_order.insert(label.clone(), max + 1);
+
+        // End logsl.
+        info!("Loading \"{}\" : Finished", label);
+
+        //     break;
+        // }
     }
 
     /// Import dependencies of a package (indirect recursivity from prepare with add_dependencies)
-    fn add_dependencies(&mut self, element: &Element, label: String) {
-        for child in element.children() {
-            if child.is("packageImport", "") {
-                // Go to "importedPackage" child
-                let imported_package = match child.get_child("importedPackage", "") {
-                    Some(result_object) => result_object,
-                    None => {
-                        error!("ERROR_DEP02 - packageImport element without importedPackage child : package = \"{}\"", label);
-                        panic!("PANIC_DEP02 - packageImport element without importedPackage child : package = \"{}\"", label);
-                    }
-                };
+    fn add_dependencies(&mut self, cmof_package: &CMOFPackage, label: String) {
+        if cmof_package.package_import.is_none() {
+            return;
+        }
 
-                // Get "href" attribute
-                let package_to_import = match imported_package.attr("href") {
-                    Some(result_object) => result_object,
-                    None => {
-                        error!("ERROR_DEP03 - importedPackage element without href attribute : package = \"{}\"", label);
-                        panic!("PANIC_DEP03 - importedPackage element without href attribute : package = \"{}\"", label);
-                    }
-                };
+        for child in cmof_package.package_import.as_ref().unwrap() {
+            // Go to "importedPackage" child
+            let package_to_import = &child.imported_package.href;
 
-                //
-                match package_to_import.find('#') {
-                    Some(split_index) => {
-                        debug!(
-                            "Loading \"{}\" : need to load \"{}\"",
-                            label, package_to_import
-                        );
-                        let package_file: String = package_to_import[..split_index].to_string();
-                        let split_index = split_index + 1;
-                        let package_id: String = package_to_import[split_index..].to_string();
-                        self.prepare(package_file.as_str(), package_id.as_str(), label.as_str());
-                    }
-                    None => {
-                        error!("ERROR_DEP04 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
-                        panic!("PANIC_DEP04 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
-                    }
+            //
+            match package_to_import.find('#') {
+                Some(split_index) => {
+                    debug!(
+                        "Loading \"{}\" : need to load \"{}\"",
+                        label, package_to_import
+                    );
+                    let package_file: String = package_to_import[..split_index].to_string();
+                    let package_file: String = package_file.replace(".cmof", ".json");
+                    let split_index = split_index + 1;
+                    let package_id: String = package_to_import[split_index..].to_string();
+                    self.prepare(package_file.as_str(), package_id.as_str(), label.as_str());
                 }
-            };
+                None => {
+                    error!("ERROR_DEP04 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
+                    panic!("PANIC_DEP04 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
+                }
+            }
         }
     }
 
     /// Simple exploration of imported package, exporting unusable file
-    pub fn make_primar_result(&mut self, str_file_name: &str) {
-        // Get folder path
-        let mut file_name = self.get_output_folder();
-        file_name.push(str_file_name);
-        // Get empty file
-        let mut writing_file = file_name.write_new_file();
-        // Write head
-        let _ = write!(
-            writing_file,
-            "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {:?}\n\n",
-            self.get_output_folder()
-        );
-        // Write body
-        for (label, package) in &mut self.loaded_package {
-            // Logs
-            debug!("Working \"{}\" : START", label);
-            // Write in a 'mod'
-            let element_obj = package.get_element();
-
-            let _ = write!(
-                writing_file,
-                "mod {package_name} {{\n\n/*\n",
-                package_name = package.get_lowercase_name()
-            );
-
-            let _ = element_obj.write_to(&mut writing_file);
-
-            let _ = write!(
-                writing_file,
-                "\n\n{element_as_debug:#?}\n*/\n\n}}\n\n",
-                element_as_debug = element_obj
-            );
-
-            // Change state to 'finished'
-            package.make_finished();
-
-            // Logs
-            info!("Working \"{}\" : Finished", label);
-        }
-    }
-    /// Simple exploration of imported package, exporting unusable file
-    pub fn make_primar_result_2(&mut self) {
+    pub fn make_primar_result(&mut self) {
         // lib.rs
         self.make_lib_file_from_package();
         // mod_x.rs
@@ -389,47 +327,23 @@ impl LoadingTracker {
             debug!("Working \"{}\" : START", label);
 
             // Write in a 'mod'
-            let element_obj = package.get_element();
-            let string = String::from(element_obj);
             let _ = writeln!(writing_package_file, "//! {}", package.get_lowercase_name());
             let _ = writeln!(writing_package_file, "//! ");
 
-            // Put XML in Doc
-            let _ = writeln!(writing_package_file, "//! ```xml");
-            for line in string.lines() {
-                let _ = writeln!(writing_package_file, "//! {}", line);
-            }
-            let _ = writeln!(writing_package_file, "//! ```");
-
-            // Get JSON String
-            let mut file_path = self.file_env.get_input_folder();
-            let file_name = package.filename.clone();
-            let file_name = file_name.replace(".cmof", ".json");
-            file_path.push(&file_name);
-            let string_content = file_path.get_file_content();
-
             // Deserialising
-            let result_json: FilePackage = serde_json::from_str(&string_content).unwrap();
-            let result_json = result_json.packages;
-            let string = format!("{:#?}", result_json);
+            let package_string = format!("{:#?}", package);
 
             // Put JSON in Doc
             let _ = writeln!(writing_package_file, "//! ```json");
-            for line in string.lines() {
+            for line in package_string.lines() {
                 let _ = writeln!(writing_package_file, "//! {}", line);
             }
             let _ = writeln!(writing_package_file, "//! ```");
 
             let _ = write!(
                 writing_package_file,
-                "mod {package_name} {{\n\n/*\n",
+                "mod {package_name} {{\n\n}}\n",
                 package_name = package.get_lowercase_name()
-            );
-
-            let _ = write!(
-                writing_package_file,
-                "\n\n{element_as_debug:#?}\n*/\n\n}}\n\n",
-                element_as_debug = element_obj
             );
 
             // Logs

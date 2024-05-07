@@ -1,1 +1,0 @@
-<elem xmlns="ns1" a="b" />

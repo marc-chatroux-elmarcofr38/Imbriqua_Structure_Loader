@@ -24,7 +24,7 @@ use crate::module_log::*;
 
 // Dependencies section
 // use minidom::Element;
-pub use quick_xml::de::from_str;
+// pub use quick_xml::de::from_str;
 // use quick_xml::impl_deserialize_for_internally_tagged_enum;
 use serde::{Deserialize, Serialize};
 pub use serde_json;
@@ -36,203 +36,202 @@ pub use serde_json;
 // ####################################################################################################
 
 // cmof:Association
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFAssociation {
+pub struct CMOFAssociation {
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "_visibility")]
-    visibility: String,
+    pub visibility: String,
     #[serde(rename = "_memberEnd")]
-    member_end: Option<String>,
+    pub member_end: Option<String>,
     #[serde(rename = "ownedEnd")]
-    owned_end: Option<EnumOwnedEnd>,
+    pub owned_end: Option<EnumOwnedEnd>,
 }
 
 // cmof:Class
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFClass {
+pub struct CMOFClass {
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "_isAbstract")]
-    is_abstract: Option<String>,
+    pub is_abstract: Option<String>,
     #[serde(rename = "_superClass")]
-    super_class: Option<String>,
-    // #[serde(rename = "memberEnd")]
-    // member_end: Option<String>,
+    pub super_class: Option<String>,
     #[serde(rename = "ownedAttribute")]
-    owned_attribute: Option<Vec<EnumOwnedAttribute>>,
-    // #[serde(rename = "ownedEnd")]
-    owned_end: Option<Vec<EnumOwnedEnd>>,
+    pub owned_attribute: Option<Vec<EnumOwnedAttribute>>,
     #[serde(rename = "ownedRule")]
-    owned_rule: Option<EnumOwnedRule>,
-    // #[serde(rename = "ownedLiteral")]
-    // owned_literal: Option<Vec<EnumOwnedLiteral>>,
+    pub owned_rule: Option<EnumOwnedRule>,
+    #[serde(rename = "superClass")]
+    pub super_class_link: Option<EnumSuperClass>,
 }
 
 // cmof:Constraint
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFConstraint {
+pub struct CMOFConstraint {
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "_constrainedElement")]
-    constrained_element: String,
+    pub constrained_element: String,
     #[serde(rename = "_namespace")]
-    namespace: String,
+    pub namespace: String,
     #[serde(rename = "specification")]
-    specification: Specification,
+    pub specification: Specification,
 }
 
 // cmof:DataType
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFDataType {
+pub struct CMOFDataType {
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "ownedAttribute")]
-    owned_attribute: Option<Vec<EnumOwnedAttribute>>,
+    pub owned_attribute: Option<Vec<EnumOwnedAttribute>>,
     #[serde(rename = "ownedRule")]
-    owned_rule: Option<EnumOwnedRule>,
+    pub owned_rule: Option<EnumOwnedRule>,
 }
 
 // cmof:Enumeration
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFEnumeration {
+pub struct CMOFEnumeration {
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "ownedLiteral")]
-    owned_attribute: Option<Vec<EnumOwnedLiteral>>,
+    pub owned_attribute: Option<Vec<EnumOwnedLiteral>>,
 }
 
 // cmof:EnumerationLiteral
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFEnumerationLiteral {
+pub struct CMOFEnumerationLiteral {
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "_classifier")]
-    classifier: String,
+    pub classifier: String,
     #[serde(rename = "_enumeration")]
-    enumeration: String,
+    pub enumeration: String,
 }
 
 // cmof:OpaqueExpression
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFOpaqueExpression {}
+pub struct CMOFOpaqueExpression {}
 
 // cmof:Package
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct CMOFPackage {
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "_uri")]
-    uri: String,
+    pub uri: String,
     #[serde(rename = "packageImport")]
-    package_import: Option<Vec<CMOFPackageImport>>,
+    pub package_import: Option<Vec<CMOFPackageImport>>,
     #[serde(rename = "ownedMember")]
-    owned_member: Option<Vec<EnumOwnedMember>>,
+    pub owned_member: Option<Vec<EnumOwnedMember>>,
 }
 
 // cmof:PackageImport
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFPackageImport {
+pub struct CMOFPackageImport {
     #[serde(rename = "_xmi:type")]
-    xmi_type: String,
+    pub xmi_type: String,
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_importingNamespace")]
-    importing_namespace: String,
+    pub importing_namespace: String,
     #[serde(rename = "importedPackage")]
-    imported_package: ImportedPackage,
+    pub imported_package: ImportedPackage,
 }
 
 // cmof:PrimitiveType
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFPrimitiveType {
+pub struct CMOFPrimitiveType {
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
 }
 
 // cmof:Property
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFProperty {
+pub struct CMOFProperty {
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "_visibility")]
-    visibility: Option<String>,
+    pub visibility: Option<String>,
     #[serde(rename = "_type")]
-    r#type: Option<String>,
+    pub r#type: Option<String>,
     #[serde(rename = "type")]
-    complex_type: Option<ComplexType>,
+    pub complex_type: Option<ComplexType>,
     #[serde(rename = "_datatype")]
-    datatype: Option<String>,
+    pub datatype: Option<String>,
     #[serde(rename = "_lower")]
-    lower: Option<String>,
+    pub lower: Option<String>,
     #[serde(rename = "_upper")]
-    upper: Option<String>,
+    pub upper: Option<String>,
     #[serde(rename = "_default")]
-    default: Option<String>,
+    pub default: Option<String>,
     #[serde(rename = "_isReadOnly")]
-    is_read_only: Option<String>,
+    pub is_read_only: Option<String>,
     #[serde(rename = "_isComposite")]
-    is_composite: Option<String>,
+    pub is_composite: Option<String>,
     #[serde(rename = "_isUnique")]
-    is_unique: Option<String>,
+    pub is_unique: Option<String>,
     #[serde(rename = "_isOrdered")]
-    is_ordered: Option<String>,
+    pub is_ordered: Option<String>,
     #[serde(rename = "_isAbstract")]
-    is_abstract: Option<String>,
+    pub is_abstract: Option<String>,
     #[serde(rename = "_isDerived")]
-    is_derived: Option<String>,
+    pub is_derived: Option<String>,
     #[serde(rename = "_subsettedProperty")]
-    subsetted_property: Option<String>,
+    pub subsetted_property: Option<String>,
     #[serde(rename = "_owningAssociation")]
-    owning_association: Option<String>,
-
+    pub owning_association: Option<String>,
     #[serde(rename = "_isDerivedUnion")]
-    is_derived_union: Option<String>,
+    pub is_derived_union: Option<String>,
     #[serde(rename = "_association")]
-    association: Option<String>,
+    pub association: Option<String>,
+    #[serde(rename = "redefinedProperty")]
+    pub redefined_property_link: Option<EnumRedefinedProperty>,
+    #[serde(rename = "subsettedProperty")]
+    pub subsetted_property_link: Option<EnumSubsettedProperty>,
 }
 
 // cmof:Tag
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
-struct CMOFTag {
+pub struct CMOFTag {
     #[serde(rename = "_xmi:id")]
-    xmi_id: String,
+    pub xmi_id: String,
     #[serde(rename = "_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "_value")]
-    value: String,
+    pub value: String,
     #[serde(rename = "_element")]
-    element: String,
+    pub element: String,
 }
 
 // ####################################################################################################
@@ -241,11 +240,11 @@ struct CMOFTag {
 //
 // ####################################################################################################
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct FilePackage {
     #[serde(rename = "cmof:Package")]
-    pub packages: CMOFPackage,
+    pub package: CMOFPackage,
     #[serde(rename = "cmof:Tag")]
     tags: Vec<CMOFTag>,
     #[serde(rename = "_xmi:version")]
@@ -258,7 +257,7 @@ pub struct FilePackage {
     ns: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 enum EnumOwnedMember {
@@ -274,7 +273,7 @@ enum EnumOwnedMember {
     DataType(CMOFDataType),
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 enum EnumOwnedAttribute {
@@ -282,7 +281,7 @@ enum EnumOwnedAttribute {
     Property(CMOFProperty),
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 enum EnumOwnedEnd {
@@ -290,7 +289,7 @@ enum EnumOwnedEnd {
     Property(CMOFProperty),
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 enum EnumOwnedRule {
@@ -298,7 +297,7 @@ enum EnumOwnedRule {
     Constraint(CMOFConstraint),
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 enum EnumOwnedLiteral {
@@ -306,16 +305,61 @@ enum EnumOwnedLiteral {
     EnumerationLiteral(CMOFEnumerationLiteral),
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
-struct ImportedPackage {
-    #[serde(rename = "_xmi:type")]
-    r#type: String,
+enum EnumRedefinedProperty {
+    #[serde(rename = "cmof:Property")]
+    Property(RedefinedProperty),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+struct RedefinedProperty {
     #[serde(rename = "_href")]
     href: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(tag = "_xmi:type")]
+#[serde(deny_unknown_fields)]
+enum EnumSubsettedProperty {
+    #[serde(rename = "cmof:Property")]
+    Property(SubsettedProperty),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+struct SubsettedProperty {
+    #[serde(rename = "_href")]
+    href: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(tag = "_xmi:type")]
+#[serde(deny_unknown_fields)]
+enum EnumSuperClass {
+    #[serde(rename = "cmof:Class")]
+    Class(SuperClass),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+struct SuperClass {
+    #[serde(rename = "_href")]
+    href: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ImportedPackage {
+    #[serde(rename = "_xmi:type")]
+    pub r#type: String,
+    #[serde(rename = "_href")]
+    pub href: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 struct Specification {
     #[serde(rename = "_xmi:type")]
@@ -328,7 +372,7 @@ struct Specification {
     body: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 struct ComplexType {
     #[serde(rename = "_xmi:type")]
@@ -337,7 +381,7 @@ struct ComplexType {
     href: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 struct OwnedLiteral {}
 

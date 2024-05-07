@@ -58,9 +58,6 @@ pub trait FileManager {
     /// Check if the file exist, and if it's file, and if it's readable and return this content (as String)
     fn get_file_content(&self) -> String;
 
-    /// Check if the file exist, and if it's file, and if it's readable and return this content (as Element)
-    fn get_file_content_as_element(&self) -> minidom::Element;
-
     /// Copy a file to a other location
     fn copy_file(&self, to: &Self);
 
@@ -346,33 +343,6 @@ impl FileManager for Path {
                 );
             }
         }
-    }
-
-    /// Check if the file exist, and if it's file, and if it's readable and return this content (as Element)
-    fn get_file_content_as_element(&self) -> minidom::Element {
-        // File checking
-        self.check_is_file();
-        // Get the content
-        let content = self.get_file_content();
-        // Parsing file content to Element object class
-        let element_file: minidom::Element = match content.parse() {
-            Ok(result_object) => {
-                trace!("Parsing Element : {:?}", self);
-                result_object
-            }
-            Err(error) => {
-                error!(
-                    "PANIC_FLM11 - The 'file' isn't parsable : {:?} (err : {})",
-                    self, error
-                );
-                panic!(
-                    "PANIC_FLM11 - The 'file' isn't parsable : {:?} (err : {})",
-                    self, error
-                );
-            }
-        };
-        // Return result
-        element_file
     }
 
     /// Copy a file to a other location
@@ -705,23 +675,6 @@ mod tests {
         // Test
         let reading_file = file.get_file_content();
         assert_eq!(reading_file, String::from("AAA AAA AAA"));
-    }
-
-    #[test]
-    fn module_flm_11_get_file_content_as_element() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let file = Path::new(
-            "tests/module_file_manager/module_flm_11_get_file_content_as_element/file_to_read.txt",
-        );
-        // Preparing
-        // Test
-        let reading_file = file.get_file_content_as_element();
-        assert_eq!(
-            reading_file,
-            "<elem xmlns=\"ns1\" a=\"b\" />".parse().unwrap()
-        );
     }
 
     #[test]
