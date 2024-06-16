@@ -23,6 +23,9 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::module_log::*;
 
 // Dependencies section
+pub use convert_case::{Case, Casing};
+pub use std::fs::File;
+pub use std::io::Write;
 pub use std::path::Path;
 pub use std::path::PathBuf;
 
@@ -53,7 +56,7 @@ pub trait FileManager {
     fn check_is_file(&self);
 
     /// Check if the file exist, and if it's file, and if it's readable and return it (as File)
-    fn write_new_file(&self) -> std::fs::File;
+    fn write_new_file(&self) -> File;
 
     /// Check if the file exist, and if it's file, and if it's readable and return this content (as String)
     fn get_file_content(&self) -> String;
@@ -428,6 +431,28 @@ impl FileManager for Path {
                 panic!("PANIC_FLM15 - Can't canonicalize {:?} - {}", self, error);
             }
         }
+    }
+}
+
+/// Adding same string as prefix of each row
+pub trait AddStringPrefix {
+    /// Add prefix to each row of the input
+    fn prefix(&self, prefix: &str) -> String {
+        String::from(prefix)
+    }
+}
+
+impl AddStringPrefix for String {
+    fn prefix(&self, prefix: &str) -> String {
+        let mut result = String::new();
+
+        for line in self.lines() {
+            result.push_str(prefix);
+            result.push_str(line);
+            result.push('\n');
+        }
+
+        result
     }
 }
 

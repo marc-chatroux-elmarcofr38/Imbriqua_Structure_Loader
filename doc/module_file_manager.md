@@ -18,7 +18,6 @@ This traits add to __std::fs::Path__ the following function to file :
 
 * [`FileManager::write_new_file`] : Check if the file exist, and if it's file, and if it's readable and return it (as File)
 * [`FileManager::get_file_content`] : Check if the file exist, and if it's file, and if it's readable and return this content (as String)
-* [`FileManager::get_file_content_as_element`] : Check if the file exist, and if it's file, and if it's readable and return this content (as Element)
 * [`FileManager::copy_file`] : Copy a file to a other location
 * [`FileManager::move_file`] : Move a file to a other location
 * [`FileManager::delete_file`] : Delete the file if it exist
@@ -132,13 +131,6 @@ fn bar () {
     * Cause :
         * see details in logs file to get the __Path__ and the error
         * The error come from [__fs_extra::file::read_to_string()__](https://docs.rs/fs_extra/latest/fs_extra/file/fn.read_to_string.html) function
-
-* PANIC_FLM11 - The 'file' isn't parsable
-    * Context : [`FileManager::get_file_content_as_element`]
-    * Info : The file isn't parsed
-    * Cause :
-        * see details in logs file to get the __Path__ and the error
-        * The error come from [__minidom::Element()__](https://docs.rs/minidom/latest/minidom/element/struct.Element.html) parsing
 
 * PANIC_FLM12 - The 'file' can't be copied
     * Context : [`FileManager::copy_file`]

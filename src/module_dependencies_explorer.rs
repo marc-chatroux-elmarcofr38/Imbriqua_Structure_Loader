@@ -20,14 +20,14 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_dependencies_explorer.md")]
 
 // Package section
-use crate::module_element_conversion::*;
+use crate::module_cmof_conversion::*;
 use crate::module_file_env::*;
 use crate::module_file_manager::*;
 use crate::module_log::*;
+use crate::module_rust_struct_exporter::*;
 
 // Dependencies section
 use std::collections::HashMap;
-use std::io::Write;
 
 /// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using FileEnv object
 pub fn open_loader(file_env: FileEnv) -> LoadingTracker {
@@ -77,9 +77,10 @@ impl LoadingPackage {
             .to_str()
             .unwrap()
             .to_ascii_lowercase();
-        let str_result = str_result.replace('.', "_");
-        let str_result = str_result.replace('#', "_");
-        str_result + self.id.as_str().to_ascii_lowercase().as_str()
+        // let str_result = str_result.replace('.', "_");
+        // let str_result = str_result.replace('#', "_");
+        // str_result + self.id.as_str().to_ascii_lowercase().as_str()
+        str_result.to_case(Case::Snake)
     }
 
     /// State of package
@@ -251,11 +252,7 @@ impl LoadingTracker {
 
     /// Import dependencies of a package (indirect recursivity from prepare with add_dependencies)
     fn add_dependencies(&mut self, cmof_package: &CMOFPackage, label: String) {
-        if cmof_package.package_import.is_none() {
-            return;
-        }
-
-        for child in cmof_package.package_import.as_ref().unwrap() {
+        for child in cmof_package.package_import.iter() {
             // Go to "importedPackage" child
             let package_to_import = &child.imported_package.href;
 
@@ -326,29 +323,25 @@ impl LoadingTracker {
             // Logs
             debug!("Working \"{}\" : START", label);
 
-            // Write in a 'mod'
-            let _ = writeln!(writing_package_file, "//! {}", package.get_lowercase_name());
-            let _ = writeln!(writing_package_file, "//! ");
+            // Write Doc head
+            LoadingTracker::write_mod_head(package, &mut writing_package_file);
 
-            // Deserialising
-            let package_string = format!("{:#?}", package);
-
-            // Put JSON in Doc
-            let _ = writeln!(writing_package_file, "//! ```json");
-            for line in package_string.lines() {
-                let _ = writeln!(writing_package_file, "//! {}", line);
-            }
-            let _ = writeln!(writing_package_file, "//! ```");
-
-            let _ = write!(
-                writing_package_file,
-                "mod {package_name} {{\n\n}}\n",
-                package_name = package.get_lowercase_name()
-            );
+            // Matching member
+            package
+                .get_json()
+                .wrt_struct_level(&mut writing_package_file);
 
             // Logs
             info!("Working \"{}\" : Finished", label);
         }
+    }
+
+    fn write_mod_head(package: &LoadingPackage, writing_file: &mut File) {
+        // Doc title
+        let _ = writeln!(writing_file, "//! {}", package.get_lowercase_name());
+
+        // Import
+        package.get_json().wrt_use_level(writing_file);
     }
 }
 

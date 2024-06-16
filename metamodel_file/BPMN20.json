@@ -1,5 +1,16 @@
 {
 	"cmof:Package": {
+		"packageImport": [
+			{
+				"importedPackage": {
+					"_xmi:type": "cmof:Package",
+					"_href": "DC.cmof#_0"
+				},
+				"_xmi:type": "cmof:PackageImport",
+				"_xmi:id": "_packageImport.1",
+				"_importingNamespace": "_0"
+			}
+		],
 		"ownedMember": [
 			{
 				"ownedEnd": {
@@ -57,7 +68,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Interface-name",
@@ -94,7 +105,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Operation-name",
@@ -258,18 +269,16 @@
 				"_superClass": "BaseElement"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "GlobalTask-resources",
-						"_name": "resources",
-						"_type": "ResourceRole",
-						"_upper": "*",
-						"_lower": "0",
-						"_isComposite": "true",
-						"_association": "A_resources_globalTask"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "GlobalTask-resources",
+					"_name": "resources",
+					"_type": "ResourceRole",
+					"_upper": "*",
+					"_lower": "0",
+					"_isComposite": "true",
+					"_association": "A_resources_globalTask"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "GlobalTask",
 				"_name": "GlobalTask",
@@ -298,7 +307,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Process-isClosed",
@@ -352,7 +361,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Process-isExecutable",
@@ -457,7 +466,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "LaneSet-name",
@@ -476,7 +485,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Lane-name",
@@ -664,7 +673,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "UserTask-implementation",
@@ -715,7 +724,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "GlobalUserTask-implementation",
@@ -770,15 +779,13 @@
 				"_memberEnd": "ComplexGateway-activationCondition A_activationCondition_complexGateway-complexGateway"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "Gateway-gatewayDirection",
-						"_name": "gatewayDirection",
-						"_type": "GatewayDirection",
-						"_default": "unspecified"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "Gateway-gatewayDirection",
+					"_name": "gatewayDirection",
+					"_type": "GatewayDirection",
+					"_default": "unspecified"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "Gateway",
 				"_name": "Gateway",
@@ -859,7 +866,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "EventBasedGateway-instantiate",
@@ -904,32 +911,28 @@
 				"_superClass": "Gateway"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "ExclusiveGateway-default",
-						"_name": "default",
-						"_type": "SequenceFlow",
-						"_lower": "0",
-						"_association": "A_default_exclusiveGateway"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "ExclusiveGateway-default",
+					"_name": "default",
+					"_type": "SequenceFlow",
+					"_lower": "0",
+					"_association": "A_default_exclusiveGateway"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "ExclusiveGateway",
 				"_name": "ExclusiveGateway",
 				"_superClass": "Gateway"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "InclusiveGateway-default",
-						"_name": "default",
-						"_type": "SequenceFlow",
-						"_lower": "0",
-						"_association": "A_default_inclusiveGateway"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "InclusiveGateway-default",
+					"_name": "default",
+					"_type": "SequenceFlow",
+					"_lower": "0",
+					"_association": "A_default_inclusiveGateway"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "InclusiveGateway",
 				"_name": "InclusiveGateway",
@@ -991,7 +994,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Relationship-type",
@@ -1068,7 +1071,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "BaseElement-id",
@@ -1114,7 +1117,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Extension-mustUnderstand",
@@ -1139,7 +1142,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ExtensionDefinition-name",
@@ -1165,7 +1168,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ExtensionAttributeDefinition-name",
@@ -1174,7 +1177,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ExtensionAttributeDefinition-type",
@@ -1183,7 +1186,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ExtensionAttributeDefinition-isReference",
@@ -1350,7 +1353,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Documentation-text",
@@ -1359,7 +1362,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Documentation-textFormat",
@@ -1455,19 +1458,17 @@
 				"_memberEnd": "CatchEvent-dataOutputAssociation A_dataOutputAssociation_catchEvent-catchEvent"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "Event-properties",
-						"_name": "properties",
-						"_visibility": "public",
-						"_type": "Property",
-						"_upper": "*",
-						"_lower": "0",
-						"_isComposite": "true",
-						"_association": "A_properties_event"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "Event-properties",
+					"_name": "properties",
+					"_visibility": "public",
+					"_type": "Property",
+					"_upper": "*",
+					"_lower": "0",
+					"_isComposite": "true",
+					"_association": "A_properties_event"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "Event",
 				"_name": "Event",
@@ -1593,18 +1594,16 @@
 				"_superClass": "ThrowEvent"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"type": {
-							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
-						},
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "StartEvent-isInterrupting",
-						"_name": "isInterrupting",
-						"_default": "true"
-					}
-				],
+				"ownedAttribute": {
+					"type": {
+						"_xmi:type": "cmof:PrimitiveType",
+						"_href": "DC.cmof#Boolean"
+					},
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "StartEvent-isInterrupting",
+					"_name": "isInterrupting",
+					"_default": "true"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "StartEvent",
 				"_name": "StartEvent",
@@ -1672,7 +1671,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "CatchEvent-parallelMultiple",
@@ -1738,7 +1737,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "BoundaryEvent-cancelActivity",
@@ -1806,16 +1805,14 @@
 				"_superClass": "EventDefinition"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "ErrorEventDefinition-errorRef",
-						"_name": "errorRef",
-						"_type": "Error",
-						"_lower": "0",
-						"_association": "A_errorRef_errorEventDefinition"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "ErrorEventDefinition-errorRef",
+					"_name": "errorRef",
+					"_type": "Error",
+					"_lower": "0",
+					"_association": "A_errorRef_errorEventDefinition"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "ErrorEventDefinition",
 				"_name": "ErrorEventDefinition",
@@ -1845,16 +1842,14 @@
 				"_memberEnd": "ErrorEventDefinition-errorRef A_errorRef_errorEventDefinition-errorEventDefinition"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "EscalationEventDefinition-escalationRef",
-						"_name": "escalationRef",
-						"_type": "Escalation",
-						"_lower": "0",
-						"_association": "A_escalationRef_escalationEventDefinition"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "EscalationEventDefinition-escalationRef",
+					"_name": "escalationRef",
+					"_type": "Escalation",
+					"_lower": "0",
+					"_association": "A_escalationRef_escalationEventDefinition"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "EscalationEventDefinition",
 				"_name": "EscalationEventDefinition",
@@ -1873,7 +1868,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Escalation-name",
@@ -1883,7 +1878,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Escalation-escalationCode",
@@ -1917,7 +1912,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "CompensateEventDefinition-waitForCompletion",
@@ -1978,7 +1973,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "LinkEventDefinition-name",
@@ -2034,32 +2029,28 @@
 				"_superClass": "EventDefinition"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "ConditionalEventDefinition-condition",
-						"_name": "condition",
-						"_type": "Expression",
-						"_isComposite": "true",
-						"_association": "A_condition_conditionalEventDefinition"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "ConditionalEventDefinition-condition",
+					"_name": "condition",
+					"_type": "Expression",
+					"_isComposite": "true",
+					"_association": "A_condition_conditionalEventDefinition"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "ConditionalEventDefinition",
 				"_name": "ConditionalEventDefinition",
 				"_superClass": "EventDefinition"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "SignalEventDefinition-signalRef",
-						"_name": "signalRef",
-						"_type": "Signal",
-						"_lower": "0",
-						"_association": "A_signalRef_signalEventDefinition"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "SignalEventDefinition-signalRef",
+					"_name": "signalRef",
+					"_type": "Signal",
+					"_lower": "0",
+					"_association": "A_signalRef_signalEventDefinition"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "SignalEventDefinition",
 				"_name": "SignalEventDefinition",
@@ -2078,7 +2069,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Signal-name",
@@ -2299,17 +2290,15 @@
 				"_memberEnd": "ItemAwareElement-dataState A_dataState_itemAwareElement-itemAwareElement"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"type": {
-							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
-						},
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "DataState-name",
-						"_name": "name"
-					}
-				],
+				"ownedAttribute": {
+					"type": {
+						"_xmi:type": "cmof:PrimitiveType",
+						"_href": "DC.cmof#String"
+					},
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "DataState-name",
+					"_name": "name"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "DataState",
 				"_name": "DataState",
@@ -2455,7 +2444,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "DataInput-name",
@@ -2465,7 +2454,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "DataInput-isCollection",
@@ -2512,7 +2501,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "DataOutput-name",
@@ -2522,7 +2511,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "DataOutput-isCollection",
@@ -2569,7 +2558,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "InputSet-name",
@@ -2631,7 +2620,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "OutputSet-name",
@@ -2685,17 +2674,15 @@
 				"_memberEnd": "OutputSet-dataOutputRefs DataOutput-outputSetRefs"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"type": {
-							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
-						},
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "Property-name",
-						"_name": "name"
-					}
-				],
+				"ownedAttribute": {
+					"type": {
+						"_xmi:type": "cmof:PrimitiveType",
+						"_href": "DC.cmof#String"
+					},
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "Property-name",
+					"_name": "name"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "Property",
 				"_name": "Property",
@@ -2820,18 +2807,16 @@
 				"_memberEnd": "InputOutputSpecification-dataOutputs A_dataOutputs_inputOutputSpecification-inputOutputSpecification"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"type": {
-							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
-						},
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "DataObject-isCollection",
-						"_name": "isCollection",
-						"_default": "false"
-					}
-				],
+				"ownedAttribute": {
+					"type": {
+						"_xmi:type": "cmof:PrimitiveType",
+						"_href": "DC.cmof#Boolean"
+					},
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "DataObject-isCollection",
+					"_name": "isCollection",
+					"_default": "false"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "DataObject",
 				"_name": "DataObject",
@@ -2980,7 +2965,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "DataStore-name",
@@ -2989,7 +2974,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Integer"
+							"_href": "DC.cmof#Integer"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "DataStore-capacity",
@@ -2998,7 +2983,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "DataStore-isUnlimited",
@@ -3012,16 +2997,14 @@
 				"_superClass": "RootElement ItemAwareElement"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "DataStoreReference-dataStoreRef",
-						"_name": "dataStoreRef",
-						"_type": "DataStore",
-						"_lower": "0",
-						"_association": "A_dataStoreRef_dataStoreReference"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "DataStoreReference-dataStoreRef",
+					"_name": "dataStoreRef",
+					"_type": "DataStore",
+					"_lower": "0",
+					"_association": "A_dataStoreRef_dataStoreReference"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "DataStoreReference",
 				"_name": "DataStoreReference",
@@ -3096,16 +3079,14 @@
 				"_memberEnd": "Assignment-to A_to_assignment-assignment"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "DataObjectReference-dataObjectRef",
-						"_name": "dataObjectRef",
-						"_visibility": "public",
-						"_type": "DataObject",
-						"_association": "A_dataObjectRef_dataObject"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "DataObjectReference-dataObjectRef",
+					"_name": "dataObjectRef",
+					"_visibility": "public",
+					"_type": "DataObject",
+					"_association": "A_dataObjectRef_dataObject"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "DataObjectReference",
 				"_name": "DataObjectReference",
@@ -3150,7 +3131,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ConversationLink-name",
@@ -3288,19 +3269,17 @@
 				"_superClass": "ConversationNode"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "SubConversation-conversationNodes",
-						"_name": "conversationNodes",
-						"_visibility": "public",
-						"_type": "ConversationNode",
-						"_upper": "*",
-						"_lower": "0",
-						"_isComposite": "true",
-						"_association": "A_conversationNodes_subConversation"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "SubConversation-conversationNodes",
+					"_name": "conversationNodes",
+					"_visibility": "public",
+					"_type": "ConversationNode",
+					"_upper": "*",
+					"_lower": "0",
+					"_isComposite": "true",
+					"_association": "A_conversationNodes_subConversation"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "SubConversation",
 				"_name": "SubConversation",
@@ -3311,7 +3290,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ConversationNode-name",
@@ -3464,7 +3443,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "PartnerEntity-name",
@@ -3490,7 +3469,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "PartnerRole-name",
@@ -3542,7 +3521,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "CorrelationProperty-name",
@@ -3680,7 +3659,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Error-name",
@@ -3690,7 +3669,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Error-errorCode",
@@ -3734,7 +3713,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "CorrelationKey-name",
@@ -3758,7 +3737,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "FormalExpression-language",
@@ -3791,7 +3770,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Message-name",
@@ -3832,7 +3811,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ItemDefinition-isCollection",
@@ -3874,7 +3853,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "FlowElement-name",
@@ -3919,7 +3898,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "SequenceFlow-isImmediate",
@@ -4005,7 +3984,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "CallableElement-name",
@@ -4214,7 +4193,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Resource-name",
@@ -4241,7 +4220,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ResourceParameter-name",
@@ -4250,7 +4229,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ResourceParameter-isRequired",
@@ -4469,7 +4448,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "MessageFlow-name",
@@ -4560,7 +4539,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Participant-name",
@@ -4634,7 +4613,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Integer"
+							"_href": "DC.cmof#Integer"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ParticipantMultiplicity-minimum",
@@ -4644,7 +4623,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Integer"
+							"_href": "DC.cmof#Integer"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ParticipantMultiplicity-maximum",
@@ -4709,7 +4688,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Collaboration-name",
@@ -4718,7 +4697,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Collaboration-isClosed",
@@ -5236,35 +5215,31 @@
 				"_superClass": "ChoreographyActivity"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "SubChoreography-artifacts",
-						"_name": "artifacts",
-						"_visibility": "public",
-						"_type": "Artifact",
-						"_upper": "*",
-						"_lower": "0",
-						"_isComposite": "true",
-						"_association": "A_artifacts_subChoreography"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "SubChoreography-artifacts",
+					"_name": "artifacts",
+					"_visibility": "public",
+					"_type": "Artifact",
+					"_upper": "*",
+					"_lower": "0",
+					"_isComposite": "true",
+					"_association": "A_artifacts_subChoreography"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "SubChoreography",
 				"_name": "SubChoreography",
 				"_superClass": "ChoreographyActivity FlowElementsContainer"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "ChoreographyTask-messageFlowRef",
-						"_name": "messageFlowRef",
-						"_type": "MessageFlow",
-						"_upper": "2",
-						"_association": "A_messageFlowRef_choreographyTask"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "ChoreographyTask-messageFlowRef",
+					"_name": "messageFlowRef",
+					"_type": "MessageFlow",
+					"_upper": "2",
+					"_association": "A_messageFlowRef_choreographyTask"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "ChoreographyTask",
 				"_name": "ChoreographyTask",
@@ -5431,15 +5406,13 @@
 				"_superClass": "FlowElementsContainer Collaboration"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "GlobalChoreographyTask-initiatingParticipantRef",
-						"_name": "initiatingParticipantRef",
-						"_type": "Participant",
-						"_association": "A_initiatingParticipantRef_globalChoreographyTask"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "GlobalChoreographyTask-initiatingParticipantRef",
+					"_name": "initiatingParticipantRef",
+					"_type": "Participant",
+					"_association": "A_initiatingParticipantRef_globalChoreographyTask"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "GlobalChoreographyTask",
 				"_name": "GlobalChoreographyTask",
@@ -5484,7 +5457,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "TextAnnotation-text",
@@ -5493,7 +5466,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "TextAnnotation-textFormat",
@@ -5508,16 +5481,14 @@
 				"_superClass": "Artifact"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "Group-categoryValueRef",
-						"_name": "categoryValueRef",
-						"_type": "CategoryValue",
-						"_lower": "0",
-						"_association": "A_categoryValueRef_categoryValueRef"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "Group-categoryValueRef",
+					"_name": "categoryValueRef",
+					"_type": "CategoryValue",
+					"_lower": "0",
+					"_association": "A_categoryValueRef_categoryValueRef"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "Group",
 				"_name": "Group",
@@ -5566,7 +5537,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Category-name",
@@ -5646,7 +5617,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "CategoryValue-value",
@@ -5849,7 +5820,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Activity-isForCompensation",
@@ -5934,7 +5905,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Integer"
+							"_href": "DC.cmof#Integer"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Activity-startQuantity",
@@ -5944,7 +5915,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Integer"
+							"_href": "DC.cmof#Integer"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Activity-completionQuantity",
@@ -6109,7 +6080,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ServiceTask-implementation",
@@ -6134,7 +6105,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "SubProcess-triggeredByEvent",
@@ -6239,7 +6210,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "MultiInstanceLoopCharacteristics-isSequential",
@@ -6342,7 +6313,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "StandardLoopCharacteristics-testBefore",
@@ -6374,16 +6345,14 @@
 				"_superClass": "LoopCharacteristics"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "CallActivity-calledElementRef",
-						"_name": "calledElementRef",
-						"_type": "CallableElement",
-						"_lower": "0",
-						"_association": "A_calledElementRef_callActivity"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "CallActivity-calledElementRef",
+					"_name": "calledElementRef",
+					"_type": "CallableElement",
+					"_lower": "0",
+					"_association": "A_calledElementRef_callActivity"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "CallActivity",
 				"_name": "CallActivity",
@@ -6400,7 +6369,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "SendTask-implementation",
@@ -6433,7 +6402,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ReceiveTask-implementation",
@@ -6442,7 +6411,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ReceiveTask-instantiate",
@@ -6476,7 +6445,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ScriptTask-scriptFormat",
@@ -6486,7 +6455,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ScriptTask-script",
@@ -6499,18 +6468,16 @@
 				"_superClass": "Task"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"type": {
-							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
-						},
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "BusinessRuleTask-implementation",
-						"_name": "implementation",
-						"_visibility": "public"
-					}
-				],
+				"ownedAttribute": {
+					"type": {
+						"_xmi:type": "cmof:PrimitiveType",
+						"_href": "DC.cmof#String"
+					},
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "BusinessRuleTask-implementation",
+					"_name": "implementation",
+					"_visibility": "public"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "BusinessRuleTask",
 				"_name": "BusinessRuleTask",
@@ -6535,7 +6502,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Boolean"
+							"_href": "DC.cmof#Boolean"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "AdHocSubProcess-cancelRemainingInstances",
@@ -6574,7 +6541,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Transaction-protocol",
@@ -6584,7 +6551,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Transaction-method",
@@ -6601,7 +6568,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "GlobalScriptTask-scriptLanguage",
@@ -6610,7 +6577,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "GlobalScriptTask-script",
@@ -6623,18 +6590,16 @@
 				"_superClass": "GlobalTask"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"type": {
-							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
-						},
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "GlobalBusinessRuleTask-implementation",
-						"_name": "implementation",
-						"_visibility": "public"
-					}
-				],
+				"ownedAttribute": {
+					"type": {
+						"_xmi:type": "cmof:PrimitiveType",
+						"_href": "DC.cmof#String"
+					},
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "GlobalBusinessRuleTask-implementation",
+					"_name": "implementation",
+					"_visibility": "public"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "GlobalBusinessRuleTask",
 				"_name": "GlobalBusinessRuleTask",
@@ -6712,7 +6677,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ResourceRole-name",
@@ -6748,16 +6713,14 @@
 				"_name": "ResourceParameterBinding"
 			},
 			{
-				"ownedAttribute": [
-					{
-						"_xmi:type": "cmof:Property",
-						"_xmi:id": "ResourceAssignmentExpression-expression",
-						"_name": "expression",
-						"_type": "Expression",
-						"_isComposite": "true",
-						"_association": "A_expression_resourceAssignmentExpression"
-					}
-				],
+				"ownedAttribute": {
+					"_xmi:type": "cmof:Property",
+					"_xmi:id": "ResourceAssignmentExpression-expression",
+					"_name": "expression",
+					"_type": "Expression",
+					"_isComposite": "true",
+					"_association": "A_expression_resourceAssignmentExpression"
+				},
 				"_xmi:type": "cmof:Class",
 				"_xmi:id": "ResourceAssignmentExpression",
 				"_name": "ResourceAssignmentExpression"
@@ -6965,7 +6928,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Import-importType",
@@ -6975,7 +6938,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Import-location",
@@ -6985,7 +6948,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Import-namespace",
@@ -7002,7 +6965,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Definitions-name",
@@ -7012,7 +6975,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Definitions-targetNamespace",
@@ -7022,7 +6985,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Definitions-expressionLanguage",
@@ -7033,7 +6996,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Definitions-typeLanguage",
@@ -7102,7 +7065,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Definitions-exporter",
@@ -7112,7 +7075,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:PrimitiveType",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#String"
+							"_href": "DC.cmof#String"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Definitions-exporterVersion",
