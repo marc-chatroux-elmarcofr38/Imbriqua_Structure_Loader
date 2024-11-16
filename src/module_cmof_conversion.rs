@@ -249,6 +249,8 @@ impl WritingSruct for CMOFDataType {
         );
 
         // Start of Struct
+        let _ = writeln!(writer, "#[derive(Derivative)]");
+        let _ = writeln!(writer, "#[derivative(Debug, Default)]");
         let _ = writeln!(writer, "pub struct {} {{", self.name);
 
         // OwnedAttribute
@@ -579,6 +581,30 @@ impl WritingSruct for CMOFProperty {
         // type
         let name = self.name.to_case(Case::Snake);
 
+        // Derivative line
+        if self.default.is_some() {
+            match self.get_type().as_str() {
+                "Real" => {
+                    let mut value = self.default.as_ref().unwrap().clone();
+                    value.push_str(if !value.contains('.') { ".0" } else { "" });
+
+                    let _ = writeln!(
+                        writer,
+                        "    #[derivative(Default(value = \"{default_value}\"))]",
+                        default_value = value
+                    );
+                }
+                _ => {
+                    let _ = writeln!(
+                        writer,
+                        "    #[derivative(Default(value = \"{default_value}\"))]",
+                        default_value = self.default.as_ref().unwrap()
+                    );
+                }
+            }
+        }
+
+        // main line
         let _ = writeln!(
             writer,
             "    {a} {name} : {b}{c}{content}{d}{e},",

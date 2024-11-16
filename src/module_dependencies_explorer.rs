@@ -244,7 +244,7 @@ impl LoadingTracker {
         self.importing_order.insert(label.clone(), max + 1);
 
         // End logsl.
-        info!("Loading \"{}\" : Finished", label);
+        info!("Preparing \"{}\" : Finished", label);
 
         //     break;
         // }
@@ -303,11 +303,11 @@ impl LoadingTracker {
         // Write body
         for (label, package) in &self.loaded_package {
             // Logs
-            debug!("Working \"lib.rs\" from \"{}\" : START", label);
+            debug!("Generating \"lib.rs\" from \"{}\" : START", label);
             // Add mod import in main
             let _ = writeln!(writing_file, "pub mod {};", package.get_lowercase_name());
             // Logs
-            info!("Working \"lib.rs\" from \"{}\" : Finished", label);
+            info!("Generating \"lib.rs\" from \"{}\" : Finished", label);
         }
     }
 
@@ -317,11 +317,12 @@ impl LoadingTracker {
         for (label, package) in &self.loaded_package {
             // Package output file
             let mut package_output_name = self.get_output_folder();
-            package_output_name.push(package.get_lowercase_name() + ".rs");
+            let output_path = package.get_lowercase_name() + ".rs";
+            package_output_name.push(&output_path);
             let mut writing_package_file = package_output_name.write_new_file();
 
             // Logs
-            debug!("Working \"{}\" : START", label);
+            debug!("Generating \"{}\" from \"{}\" : START", &output_path, label);
 
             // Write Doc head
             LoadingTracker::write_mod_head(package, &mut writing_package_file);
@@ -332,13 +333,17 @@ impl LoadingTracker {
                 .wrt_struct_level(&mut writing_package_file);
 
             // Logs
-            info!("Working \"{}\" : Finished", label);
+            info!(
+                "Generating \"{}\" from \"{}\" : Finished",
+                &output_path, label
+            );
         }
     }
 
     fn write_mod_head(package: &LoadingPackage, writing_file: &mut File) {
         // Doc title
         let _ = writeln!(writing_file, "//! {}", package.get_lowercase_name());
+        let _ = writeln!(writing_file, "use derivative::Derivative;");
 
         // Import
         package.get_json().wrt_use_level(writing_file);

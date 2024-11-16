@@ -48,8 +48,12 @@ impl FileEnv {
         path_input_folder.check_is_dir();
         path_output_folder.check_is_dir();
         info!(
-            "FileEnvironment setting with {:?} and {:?}",
-            path_input_folder, path_output_folder
+            "FileEnvironment setting with {:?} input folder",
+            path_input_folder
+        );
+        info!(
+            "FileEnvironment setting with {:?} output folder",
+            path_output_folder
         );
         // Create instance
         FileEnv {
