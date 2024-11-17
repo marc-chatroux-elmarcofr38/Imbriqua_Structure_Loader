@@ -249,15 +249,22 @@ pub struct CMOFConstraint {
     pub specification: Specification,
 }
 
-impl WritingSruct for CMOFConstraint {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingValidation for CMOFConstraint {
+    fn wrt_sub_validation(&self, writer: &mut File) {
         let _ = writeln!(
             writer,
-            "        // Rule :  {} - {:?}",
+            "    // Rule :  {} - {:?}",
             self.name, self.specification
         );
 
         if self.specification.language == String::from("OCL") {
+            // fn creation
+            let _ = writeln!(
+                writer,
+                "    pub fn {}(&self) -> Result<(), String> {{",
+                self.name
+            );
+            // content
             let function_key = self.specification.body.as_str();
             if OCL_CONSTRANT_FUNCTION.contains_key(function_key) {
                 let _ = writeln!(
@@ -266,6 +273,28 @@ impl WritingSruct for CMOFConstraint {
                     OCL_CONSTRANT_FUNCTION.get(function_key).unwrap()
                 );
             }
+            // end and fn close
+            let _ = writeln!(writer, "        return Ok(());");
+            let _ = writeln!(writer, "    }}");
+            let _ = writeln!(writer, "");
+        } else {
+            let _ = writeln!(
+                writer,
+                "// Unknow constraint language : {}",
+                self.specification.language
+            );
+        }
+    }
+
+    fn wrt_main_validation(&self, writer: &mut File) {
+        let _ = writeln!(
+            writer,
+            "        // Rule :  {} - {:?}",
+            self.name, self.specification
+        );
+
+        if self.specification.language == String::from("OCL") {
+            let _ = writeln!(writer, "        self.{}()?;", self.name);
         } else {
             let _ = writeln!(
                 writer,
@@ -333,15 +362,23 @@ impl WritingSruct for CMOFDataType {
 
         // ownedRule
         if self.owned_rule.len() > 0 {
-            let _ = writeln!(writer, "impl FontBuilder {{");
-            let _ = writeln!(writer, "    fn validate(&self) -> Result<(), String> {{");
+            // Start
+            let _ = writeln!(writer, "impl {}Builder {{", self.name);
 
+            // Sub function
             for content in self.owned_rule.iter() {
-                content.wrt_struct_level(writer);
+                content.wrt_sub_validation(writer);
             }
 
+            // Validation
+            let _ = writeln!(writer, "    fn validate(&self) -> Result<(), String> {{");
+            for content in self.owned_rule.iter() {
+                content.wrt_main_validation(writer);
+            }
             let _ = writeln!(writer, "");
             let _ = writeln!(writer, "        return Ok(());");
+
+            // End
             let _ = writeln!(writer, "    }}");
             let _ = writeln!(writer, "}}");
         }
@@ -839,11 +876,19 @@ pub enum EnumOwnedRule {
     Constraint(CMOFConstraint),
 }
 
-impl WritingSruct for EnumOwnedRule {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingValidation for EnumOwnedRule {
+    fn wrt_sub_validation(&self, writer: &mut File) {
         match self {
             EnumOwnedRule::Constraint(content) => {
-                content.wrt_struct_level(writer);
+                content.wrt_sub_validation(writer);
+            }
+        }
+    }
+
+    fn wrt_main_validation(&self, writer: &mut File) {
+        match self {
+            EnumOwnedRule::Constraint(content) => {
+                content.wrt_main_validation(writer);
             }
         }
     }

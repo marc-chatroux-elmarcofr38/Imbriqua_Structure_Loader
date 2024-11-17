@@ -32,9 +32,18 @@ pub trait WritingSruct: Debug {
         let _ = writeln!(writer);
         let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
     }
+}
 
-    /// Implement writing before target struct instance as Rust struct format
-    fn wrt_struct_function_level(&self, writer: &mut File) {
+/// Implement writing of target struct validationfunction as Rust format
+pub trait WritingValidation: Debug {
+    /// Implement writing of target struct instance as Rust struct format
+    fn wrt_sub_validation(&self, writer: &mut File) {
+        let _ = writeln!(writer);
+        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
+    }
+
+    /// Implement writing of target struct instance as Rust struct format
+    fn wrt_main_validation(&self, writer: &mut File) {
         let _ = writeln!(writer);
         let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
     }
