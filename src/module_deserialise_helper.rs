@@ -51,24 +51,20 @@ where
 }
 
 /// Deserialising to __UnlimitedNatural__, from string ("*" or integer)
-pub fn deser_unlimited_natural<'de, D>(deserializer: D) -> Result<UnlimitedNatural<isize>, D::Error>
+pub fn deser_unlimited_natural<'de, D>(deserializer: D) -> Result<UnlimitedNatural<usize>, D::Error>
 where
     D: Deserializer<'de>,
 {
     Ok(match serde::de::Deserialize::deserialize(deserializer)? {
         // String, True if "yes"
         Value::String(s) => {
-            let result = s.parse::<isize>();
+            let result = s.parse::<usize>();
             if s == "*" {
                 UnlimitedNatural::Infinity
-            } else if s == "-*" {
-                UnlimitedNatural::NegativeInfinity
             } else if let Ok(result) = result {
                 UnlimitedNatural::Finite(result)
             } else {
-                return Err(de::Error::custom(
-                    "Unknow string : Integer, \"*\" or \"-*\"",
-                ));
+                return Err(de::Error::custom("Unknow string : Integer or \"*\""));
             }
         }
         // others
@@ -179,7 +175,7 @@ pub fn default_lower() -> isize {
 }
 
 /// Empty String, as default value for serde_default
-pub fn default_upper() -> UnlimitedNatural<isize> {
+pub fn default_upper() -> UnlimitedNatural<usize> {
     infinitable::Finite(1)
 }
 

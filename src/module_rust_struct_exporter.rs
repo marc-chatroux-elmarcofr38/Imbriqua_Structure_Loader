@@ -23,12 +23,18 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::module_file_manager::*;
 
 // Dependencies section
-use std::fmt::Debug;
+use std::{collections::HashMap, fmt::Debug};
 
 /// Implement writing of target struct instance as Rust struct format
 pub trait WritingSruct: Debug {
     /// Implement writing of target struct instance as Rust struct format
     fn wrt_struct_level(&self, writer: &mut File) {
+        let _ = writeln!(writer);
+        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
+    }
+
+    /// Implement writing before target struct instance as Rust struct format
+    fn wrt_struct_function_level(&self, writer: &mut File) {
         let _ = writeln!(writer);
         let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
     }

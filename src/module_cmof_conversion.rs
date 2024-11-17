@@ -189,6 +189,44 @@ impl WritingSruct for CMOFClass {
     }
 }
 
+/*
+UML Table 21.2 detail :
+    - Integer : An instance of Integer is a value in the (infinite) set of integers (…-2, -1, 0, 1, 2…)
+    - Boolean : An instance of Boolean is one of the predefined values true and false
+    - String : An instance of String defines a sequence of characters. Character sets may include non-Roman
+        alphabets. The semantics of the string itself depends on its purpose; it can be a comment,
+        computational language expression, OCL expression, etc.
+    - UnlimitedNatural : An instance of UnlimitedNatural is a value in the (infinite) set of natural numbers (0, 1, 2…) plus
+        unlimited. The value of unlimited is shown using an asterisk (‘*’). UnlimitedNatural values are
+        typically used to denote the upper bound of a range, such as a multiplicity; unlimited is used
+        whenever the range is specified to have no upper bound
+    - Real : An instance of Real is a value in the (infinite) set of real numbers. Typically an implementation
+        will internally represent Real numbers using a floating point standard such as ISO/IEC/IEEE
+        60559:2011 (whose content is identical to the predecessor IEEE 754 standard)
+*/
+
+lazy_static! {
+    static ref OCL_CONSTRANT_FUNCTION: HashMap<&'static str, &'static str> = {
+        let mut m = HashMap::new();
+        m.insert(
+            "planeElement->forAll(oclIsKindOf(Shape) or oclIsKindOf(Edge))",
+            "",
+        );
+        m.insert(
+            "size >=  0",
+            "        let input = self.size;
+        if input.is_some() {
+            if input.unwrap().is_some() {
+                if !(input.unwrap().unwrap() >= 0.0) {
+                    return Err(\"size less that 0\".to_string());
+                };
+            }
+        }",
+        );
+        m
+    };
+}
+
 // cmof:Constraint
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
@@ -215,9 +253,26 @@ impl WritingSruct for CMOFConstraint {
     fn wrt_struct_level(&self, writer: &mut File) {
         let _ = writeln!(
             writer,
-            "    // Rule :  {} - {:?}",
+            "        // Rule :  {} - {:?}",
             self.name, self.specification
         );
+
+        if self.specification.language == String::from("OCL") {
+            let function_key = self.specification.body.as_str();
+            if OCL_CONSTRANT_FUNCTION.contains_key(function_key) {
+                let _ = writeln!(
+                    writer,
+                    "{}",
+                    OCL_CONSTRANT_FUNCTION.get(function_key).unwrap()
+                );
+            }
+        } else {
+            let _ = writeln!(
+                writer,
+                "// Unknow constraint language : {}",
+                self.specification.language
+            );
+        }
     }
 }
 
@@ -256,6 +311,15 @@ impl WritingSruct for CMOFDataType {
 
         // Start of Struct
         let _ = writeln!(writer, "#[derive(Builder, Debug)]");
+
+        // Add validation if have constraint
+        if self.owned_rule.len() > 0 {
+            let _ = writeln!(
+                writer,
+                "#[builder(build_fn(validate = \"Self::validate\"))]"
+            );
+        }
+
         let _ = writeln!(writer, "pub struct {} {{", self.name);
 
         // OwnedAttribute
@@ -263,13 +327,24 @@ impl WritingSruct for CMOFDataType {
             content.wrt_struct_level(writer);
         }
 
-        // ownedRule
-        for content in self.owned_rule.iter() {
-            content.wrt_struct_level(writer);
-        }
-
         // End of struct
         let _ = writeln!(writer, "}}");
+        let _ = writeln!(writer, "");
+
+        // ownedRule
+        if self.owned_rule.len() > 0 {
+            let _ = writeln!(writer, "impl FontBuilder {{");
+            let _ = writeln!(writer, "    fn validate(&self) -> Result<(), String> {{");
+
+            for content in self.owned_rule.iter() {
+                content.wrt_struct_level(writer);
+            }
+
+            let _ = writeln!(writer, "");
+            let _ = writeln!(writer, "        return Ok(());");
+            let _ = writeln!(writer, "    }}");
+            let _ = writeln!(writer, "}}");
+        }
     }
 }
 
@@ -439,10 +514,11 @@ pub struct CMOFPrimitiveType {
 lazy_static! {
     static ref PRIMITIVE_TYPE_LINK: HashMap<&'static str, &'static str> = {
         let mut m = HashMap::new();
-        m.insert("Boolean", "std::primitive::bool");
         m.insert("Integer", "std::primitive::u64");
-        m.insert("Real", "std::primitive::f64");
+        m.insert("Boolean", "std::primitive::bool");
         m.insert("String", "std::string::String");
+        m.insert("UnlimitedNatural", "UnlimitedNatural<usize>");
+        m.insert("Real", "std::primitive::f64");
         m
     };
 }
@@ -500,7 +576,7 @@ pub struct CMOFProperty {
     #[serde(rename = "_upper")]
     #[serde(deserialize_with = "deser_unlimited_natural")]
     #[serde(default = "default_upper")]
-    pub upper: UnlimitedNatural<isize>,
+    pub upper: UnlimitedNatural<usize>,
     /// Optional default attribute
     #[serde(rename = "_default")]
     pub default: Option<String>,
@@ -587,37 +663,42 @@ impl WritingSruct for CMOFProperty {
         let name = self.name.to_case(Case::Snake);
 
         // Macro line
-        let _ = write!(
-            writer,
-            "    #[builder(setter(into{option_setter})",
-            option_setter = if self.is_option() {
-                ", strip_option"
-            } else {
-                ""
-            }
-        );
+        let mut macro_line = String::new();
+        // start of macro
+        macro_line.push_str("    #[builder(");
+        // setter section
+        macro_line.push_str("setter(into");
+        macro_line.push_str(if self.is_option() {
+            ", strip_option"
+        } else {
+            ""
+        });
+        macro_line.push_str(")");
+
+        if self.is_option() {
+            macro_line.push_str(", default");
+        }
+
         if self.default.is_some() {
             match self.get_type().as_str() {
                 "Real" => {
                     let mut value = self.default.as_ref().unwrap().clone();
                     value.push_str(if !value.contains('.') { ".0" } else { "" });
-
-                    let _ = write!(
-                        writer,
-                        ", default = \"{default_value}\"",
-                        default_value = value
-                    );
+                    macro_line.push_str(", default = \"");
+                    macro_line.push_str(value.as_str());
+                    macro_line.push_str("\"")
                 }
                 _ => {
-                    let _ = write!(
-                        writer,
-                        ", default = \"{default_value}\"",
-                        default_value = self.default.as_ref().unwrap()
-                    );
+                    macro_line.push_str(", default = \"");
+                    macro_line.push_str(self.default.as_ref().unwrap());
+                    macro_line.push_str("\"");
                 }
             }
         }
-        let _ = writeln!(writer, ")]");
+        // end of macro
+        macro_line.push_str(")]");
+
+        let _ = writeln!(writer, "{}", macro_line);
 
         // main line
         let _ = writeln!(
