@@ -212,7 +212,13 @@ pub struct CMOFConstraint {
 }
 
 impl WritingSruct for CMOFConstraint {
-    fn wrt_struct_level(&self, _writer: &mut File) {}
+    fn wrt_struct_level(&self, writer: &mut File) {
+        let _ = writeln!(
+            writer,
+            "    // Rule :  {} - {:?}",
+            self.name, self.specification
+        );
+    }
 }
 
 // cmof:DataType
@@ -249,8 +255,7 @@ impl WritingSruct for CMOFDataType {
         );
 
         // Start of Struct
-        let _ = writeln!(writer, "#[derive(Derivative)]");
-        let _ = writeln!(writer, "#[derivative(Debug, Default)]");
+        let _ = writeln!(writer, "#[derive(Builder, Debug)]");
         let _ = writeln!(writer, "pub struct {} {{", self.name);
 
         // OwnedAttribute
@@ -581,33 +586,43 @@ impl WritingSruct for CMOFProperty {
         // type
         let name = self.name.to_case(Case::Snake);
 
-        // Derivative line
+        // Macro line
+        let _ = write!(
+            writer,
+            "    #[builder(setter(into{option_setter})",
+            option_setter = if self.is_option() {
+                ", strip_option"
+            } else {
+                ""
+            }
+        );
         if self.default.is_some() {
             match self.get_type().as_str() {
                 "Real" => {
                     let mut value = self.default.as_ref().unwrap().clone();
                     value.push_str(if !value.contains('.') { ".0" } else { "" });
 
-                    let _ = writeln!(
+                    let _ = write!(
                         writer,
-                        "    #[derivative(Default(value = \"{default_value}\"))]",
+                        ", default = \"{default_value}\"",
                         default_value = value
                     );
                 }
                 _ => {
-                    let _ = writeln!(
+                    let _ = write!(
                         writer,
-                        "    #[derivative(Default(value = \"{default_value}\"))]",
+                        ", default = \"{default_value}\"",
                         default_value = self.default.as_ref().unwrap()
                     );
                 }
             }
         }
+        let _ = writeln!(writer, ")]");
 
         // main line
         let _ = writeln!(
             writer,
-            "    {a} {name} : {b}{c}{content}{d}{e},",
+            "    {a} {name}: {b}{c}{content}{d}{e},",
             name = name,
             content = self.get_type(),
             a = if self.is_public() { "pub" } else { "" },

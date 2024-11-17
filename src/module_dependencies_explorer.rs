@@ -343,7 +343,7 @@ impl LoadingTracker {
     fn write_mod_head(package: &LoadingPackage, writing_file: &mut File) {
         // Doc title
         let _ = writeln!(writing_file, "//! {}", package.get_lowercase_name());
-        let _ = writeln!(writing_file, "use derivative::Derivative;");
+        let _ = writeln!(writing_file, "use derive_builder::Builder;");
 
         // Import
         package.get_json().wrt_use_level(writing_file);
