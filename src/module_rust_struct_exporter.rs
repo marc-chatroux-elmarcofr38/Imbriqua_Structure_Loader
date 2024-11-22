@@ -37,7 +37,7 @@ pub trait WritingSruct: Debug {
 /// Implement writing of target struct validationfunction as Rust format
 pub trait WritingValidation: Debug {
     /// Implement writing of target struct instance as Rust struct format
-    fn wrt_sub_validation(&self, writer: &mut File) {
+    fn wrt_sub_validation(&self, writer: &mut File, lifetime: String) {
         let _ = writeln!(writer);
         let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
     }

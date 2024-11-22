@@ -36,7 +36,7 @@ fn main() {
     let logger_configuration = "config_log.yml"; // File for configuring logger
     let input_folder = "metamodel_file/"; // Folder where input file can be find
     let main_output_folder = "../Output_file/"; // Folder dedicased to store output folders and files
-    let main_package_file = "BPMNDI.json"; // File of the main package to explore
+    let main_package_file = "DI.json"; // File of the main package to explore
     let main_package_id = "_0"; // Package ID of main file to explore
     let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
 

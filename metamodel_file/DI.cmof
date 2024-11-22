@@ -24,7 +24,7 @@
     <ownedMember xmi:type="cmof:Class" xmi:id="Diagram" name="Diagram" isAbstract="true">
       <ownedAttribute xmi:type="cmof:Property" xmi:id="Diagram-rootElement" name="rootElement" visibility="public" type="DiagramElement" isReadOnly="true" isDerived="true" isDerivedUnion="true" isComposite="true" association="A_rootElement_owningDiagram"/>
       <ownedAttribute xmi:type="cmof:Property" xmi:id="Diagram-name" name="name" visibility="public" lower="0">
-        <type xmi:type="cmof:PrimitiveType" href="DC.cmof#String"/>
+        <type xmi:type="cmof:PrimitiveType" href="DC.cmof#  "/>
       </ownedAttribute>
       <ownedAttribute xmi:type="cmof:Property" xmi:id="Diagram-documentation" name="documentation" visibility="public" lower="0">
         <type xmi:type="cmof:PrimitiveType" href="DC.cmof#String"/>

@@ -72,7 +72,7 @@ where
     })
 }
 
-/// Deserialising to __boolean__, from boolean, 'yes' string, number !=0 and Null
+/// Deserialising to __boolean__, from boolean, 'yes' string, 'true' string, number !=0 and Null
 pub fn deser_boolean<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
     D: Deserializer<'de>,
@@ -80,14 +80,30 @@ where
     Ok(match serde::de::Deserialize::deserialize(deserializer)? {
         // Boolean as boolean
         Value::Bool(b) => b,
-        // String, True if "yes"
-        Value::String(s) => s == "yes",
+        // String, True if "yes" or "true"
+        Value::String(s) => (s == "yes") || (s == "true"),
         // Number, True if not zero
         Value::Number(num) => num.as_i64().ok_or(de::Error::custom("Invalid number"))? != 0,
         // Null, always False
         Value::Null => false,
         // others
         _ => return Err(de::Error::custom("Wrong type, expected boolean")),
+    })
+}
+
+/// Deserialising to __String__, from name (prevent suspicious name)
+pub fn deser_name<'de, D>(deserializer: D) -> Result<String, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(match serde::de::Deserialize::deserialize(deserializer)? {
+        // String, True if "yes" or "true"
+        Value::String(s) => match s.as_str() {
+            "type" => "r#type".to_string(),
+            _ => s,
+        },
+        // others
+        _ => return Err(de::Error::custom("Wrong type, expected string")),
     })
 }
 

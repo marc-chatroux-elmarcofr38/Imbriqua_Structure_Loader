@@ -30,10 +30,33 @@ use lazy_static::lazy_static;
 use serde::Deserialize;
 pub use serde_json;
 use std::collections::HashMap;
+use std::result;
 
 // ####################################################################################################
 //
+// ############################################ TOOLS #################################################
+//
 // ####################################################################################################
+
+fn is_lifetime_dpt(input: &str) -> bool {
+    match input {
+        "Boolean" => false,
+        "Integer" => false,
+        "Real" => false,
+        "String" => false,
+        "i8" => false,
+        "u8" => false,
+        "dc::Boolean" => false,
+        "dc::Integer" => false,
+        "dc::Real" => false,
+        "dc::String" => false,
+        _ => true,
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################### ASSOCIATION ################################################
 //
 // ####################################################################################################
 
@@ -73,6 +96,12 @@ impl WritingSruct for CMOFAssociation {
         let _ = writeln!(writer, "// struct_level : {}", self.name);
     }
 }
+
+// ####################################################################################################
+//
+// ########################################## CLASS ###################################################
+//
+// ####################################################################################################
 
 // cmof:Class
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -118,9 +147,49 @@ pub struct CMOFClass {
     pub owned_rule: Vec<EnumOwnedRule>,
 }
 
-impl WritingSruct for CMOFClass {
-    fn wrt_struct_level(&self, writer: &mut File) {
-        // Doc
+impl CMOFClass {
+    /// Check if an attribute need lifetime
+    fn is_attribute_lifetime_dpt(&self) -> bool {
+        for content in self.owned_attribute.iter() {
+            if content.is_lifetime_dpt() {
+                return true;
+            }
+        }
+        return false;
+    }
+    /// Check if this super class need lifetime
+    fn is_super_class_lifetime_dpt(&self) -> bool {
+        if self.super_class.is_some() {
+            let contents = self.super_class.as_ref().unwrap();
+            for content in contents.split(' ') {
+                let a = "heritage_".to_string() + content.to_case(Case::Snake).as_str();
+                let b = content;
+                if is_lifetime_dpt(b) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /// Check if this super class link need lifetime
+    fn is_super_class_link_lifetime_dpt(&self) -> bool {
+        if self.super_class_link.is_some() {
+            if self.super_class_link.as_ref().unwrap().is_lifetime_dpt() {
+                return true;
+            }
+        }
+        return false;
+    }
+    /// Check if this class need lifetime
+    pub fn is_lifetime_dpt(&self) -> bool {
+        let bool_1 = self.is_attribute_lifetime_dpt();
+        let bool_2 = self.is_super_class_lifetime_dpt();
+        let bool_3 = self.is_super_class_link_lifetime_dpt();
+        // return bool_1 || bool_2 || bool_3;
+        return true;
+    }
+    /// Write raw struct file as doc
+    pub fn wrt_doc(&self, writer: &mut File) {
         let _ = writeln!(writer);
         let _ = writeln!(
             writer,
@@ -131,79 +200,137 @@ impl WritingSruct for CMOFClass {
         let _ = writeln!(writer, "/// ```json");
         let _ = write!(writer, "{}", format!("{:#?}", self).prefix("/// "));
         let _ = writeln!(writer, "/// ```");
-
-        // Start of Struct
-        let _ = writeln!(writer, "pub struct {} {{", self.name);
-
-        // superClass
-        let _ = write!(
+        let _ = writeln!(writer, "");
+    }
+    /// Write struct macro
+    pub fn wrt_struct_macro(&self, writer: &mut File) {
+        let _ = writeln!(writer, "#[derive(Builder, Debug, Clone)]");
+        // Add validation if have constraint
+        if self.owned_rule.len() > 0 {
+            let _ = writeln!(
+                writer,
+                "#[builder(build_fn(validate = \"Self::validate\"))]"
+            );
+        }
+    }
+    /// Write struct start part
+    pub fn wrt_struct_start(&self, writer: &mut File) {
+        let _ = writeln!(
             writer,
-            "{}",
-            format!("super_class : {:#?}", self.super_class).prefix("    // RAW | ")
+            "pub struct {a}{b} {{",
+            a = self.name,
+            b = if self.is_lifetime_dpt() { "<'a>" } else { "" }
         );
-        let _ = write!(
-            writer,
-            "{}",
-            format!("super_class_link : {:#?}", self.super_class_link).prefix("    // RAW | ")
-        );
+    }
+    /// Write struct end part
+    pub fn wrt_struct_end(&self, writer: &mut File) {
+        let _ = writeln!(writer, "}}");
+        let _ = writeln!(writer, "");
+    }
+    /// Write struct heritage part
+    pub fn wrt_struct_heritage(&self, writer: &mut File) {
         if self.super_class.is_some() {
             let contents = self.super_class.as_ref().unwrap();
             for content in contents.split(' ') {
-                let _ = writeln!(
-                    writer,
-                    "    pub heritage_{} : {},",
-                    content.to_case(Case::Snake),
-                    content
-                );
+                let a = "heritage_".to_string() + content.to_case(Case::Snake).as_str();
+                let b = content;
+                let _ = writeln!(writer, "    pub {a} : {b}, //super_class");
             }
         } else if self.super_class_link.is_some() {
             match self.super_class_link.as_ref().unwrap() {
-                EnumSuperClass::Class(content) => {
-                    let content = &content.href;
-
-                    //
-                    match content.find('#') {
-                        Some(split_index) => {
-                            let package_file: String = content[..split_index].to_string();
-                            let package_file: String = package_file.replace(".cmof", "");
-                            let split_index = split_index + 1;
-                            let package_class: String = content[split_index..].to_string();
-                            let _ = writeln!(
-                                writer,
-                                "    pub heritage_{} : {}::{},",
-                                package_class.to_case(Case::Snake),
-                                package_file.to_case(Case::Snake),
-                                package_class
-                            );
-                        }
-                        None => {
-                            panic!("href without '#' : {}", content)
-                        }
+                EnumSuperClass::Class(content) => match content.href.find('#') {
+                    Some(split_index) => {
+                        let result = content.cut_split();
+                        let _ = writeln!(
+                            writer,
+                            "    pub heritage_{a} :{b} {c}::{d}{e}, //super_class_link",
+                            a = result.0,
+                            b = "",
+                            c = result.1,
+                            d = result.2,
+                            e = ""
+                        );
                     }
-                }
+                    None => {
+                        panic!("href without '#' : {}", content.href)
+                    }
+                },
             }
         }
-
-        // End of struct
+    }
+    /// Write validation start part
+    pub fn wrt_validation_start(&self, writer: &mut File) {
+        // Start
+        let _ = writeln!(
+            writer,
+            "impl{b} {a}Builder{b} {{",
+            a = self.name,
+            b = if self.is_lifetime_dpt() { "<'a>" } else { "" }
+        );
+    }
+    /// Write validation end part
+    pub fn wrt_validation_load_function(&self, writer: &mut File) {
+        for content in self.owned_rule.iter() {
+            content.wrt_sub_validation(
+                writer,
+                if self.is_lifetime_dpt() {
+                    "<'a>".to_string()
+                } else {
+                    "".to_string()
+                },
+            );
+        }
+    }
+    /// Write validation end part
+    pub fn wrt_validation_build(&self, writer: &mut File) {
+        let _ = writeln!(writer, "    fn validatea(self) -> Result<(), String> {{");
+        for content in self.owned_rule.iter() {
+            content.wrt_main_validation(writer);
+        }
+        let _ = writeln!(writer, "");
+        let _ = writeln!(writer, "        return Ok(());");
+    }
+    /// Write validation end part
+    pub fn wrt_validation_end(&self, writer: &mut File) {
+        let _ = writeln!(writer, "    }}");
         let _ = writeln!(writer, "}}");
     }
 }
 
-/*
-UML Table 21.2 detail :
-    - Integer : An instance of Integer is a value in the (infinite) set of integers (…-2, -1, 0, 1, 2…)
-    - Boolean : An instance of Boolean is one of the predefined values true and false
-    - String : An instance of String defines a sequence of characters. Character sets may include non-Roman
-        alphabets. The semantics of the string itself depends on its purpose; it can be a comment,
-        computational language expression, OCL expression, etc.
-    - UnlimitedNatural : An instance of UnlimitedNatural is a value in the (infinite) set of natural numbers (0, 1, 2…) plus
-        unlimited. The value of unlimited is shown using an asterisk (‘*’). UnlimitedNatural values are
-        typically used to denote the upper bound of a range, such as a multiplicity; unlimited is used
-        whenever the range is specified to have no upper bound
-    - Real : An instance of Real is a value in the (infinite) set of real numbers. Typically an implementation
-        will internally represent Real numbers using a floating point standard such as ISO/IEC/IEEE
-        60559:2011 (whose content is identical to the predecessor IEEE 754 standard)
-*/
+impl WritingSruct for CMOFClass {
+    fn wrt_struct_level(&self, writer: &mut File) {
+        // Doc
+        self.wrt_doc(writer);
+        // Start of Struct
+        self.wrt_struct_macro(writer);
+        // Start of Struct
+        self.wrt_struct_start(writer);
+        // OwnedAttribute
+        for content in self.owned_attribute.iter() {
+            content.wrt_struct_level(writer);
+        }
+        // End of Struct
+        self.wrt_struct_end(writer);
+
+        // Rule validation
+        if self.owned_rule.len() > 0 {
+            // Start
+            self.wrt_validation_start(writer);
+            // Load each necessary function
+            self.wrt_validation_load_function(writer);
+            // Make validation function (using necessary function)
+            self.wrt_validation_build(writer);
+            // End
+            self.wrt_validation_end(writer);
+        }
+    }
+}
+
+// ####################################################################################################
+//
+// ######################################## CONSTRAINT ################################################
+//
+// ####################################################################################################
 
 lazy_static! {
     static ref OCL_CONSTRANT_FUNCTION: HashMap<&'static str, &'static str> = {
@@ -250,7 +377,7 @@ pub struct CMOFConstraint {
 }
 
 impl WritingValidation for CMOFConstraint {
-    fn wrt_sub_validation(&self, writer: &mut File) {
+    fn wrt_sub_validation(&self, writer: &mut File, lifetime: String) {
         let _ = writeln!(
             writer,
             "    // Rule :  {} - {:?}",
@@ -261,8 +388,9 @@ impl WritingValidation for CMOFConstraint {
             // fn creation
             let _ = writeln!(
                 writer,
-                "    pub fn {}(&self) -> Result<(), String> {{",
-                self.name
+                "    pub fn {a}({b}self) -> Result<(), String> {{",
+                a = self.name,
+                b = lifetime
             );
             // content
             let function_key = self.specification.body.as_str();
@@ -339,7 +467,7 @@ impl WritingSruct for CMOFDataType {
         );
 
         // Start of Struct
-        let _ = writeln!(writer, "#[derive(Builder, Debug)]");
+        let _ = writeln!(writer, "#[derive(Builder, Debug, Clone)]");
 
         // Add validation if have constraint
         if self.owned_rule.len() > 0 {
@@ -367,7 +495,7 @@ impl WritingSruct for CMOFDataType {
 
             // Sub function
             for content in self.owned_rule.iter() {
-                content.wrt_sub_validation(writer);
+                content.wrt_sub_validation(writer, "".to_string());
             }
 
             // Validation
@@ -414,6 +542,7 @@ impl WritingSruct for CMOFEnumeration {
         );
 
         // Enum
+        let _ = writeln!(writer, "#[derive(Debug, Clone)]");
         let _ = writeln!(
             writer,
             "pub enum {} {{",
@@ -590,6 +719,7 @@ pub struct CMOFProperty {
     pub xmi_id: String,
     /// name attribute
     #[serde(rename = "_name")]
+    #[serde(deserialize_with = "deser_name")]
     pub name: String,
     /// visibility attribute
     #[serde(rename = "_visibility")]
@@ -679,18 +809,22 @@ impl CMOFProperty {
     }
 
     fn is_option(&self) -> bool {
-        self.lower < 1 && !self.is_vec()
+        self.lower == 0
     }
 
     fn get_type(&self) -> String {
         if self.simple_type.is_some() {
-            let content = self.simple_type.as_ref().unwrap();
-            content.clone()
+            let property_type = self.simple_type.as_ref().unwrap();
+            property_type.clone()
         } else if self.complex_type.is_some() {
             self.complex_type.as_ref().unwrap().get_type_name()
         } else {
             String::from("None")
         }
+    }
+
+    fn is_lifetime_dpt(&self) -> bool {
+        is_lifetime_dpt(self.get_type().as_str())
     }
 }
 
@@ -712,25 +846,54 @@ impl WritingSruct for CMOFProperty {
         });
         macro_line.push_str(")");
 
-        if self.is_option() {
+        if self.is_option() && self.default.is_none() {
             macro_line.push_str(", default");
         }
 
         if self.default.is_some() {
+            macro_line.push_str(", default = \"");
+            if self.is_option() {
+                macro_line.push_str("Some(");
+            }
             match self.get_type().as_str() {
+                "Boolean" => macro_line.push_str(self.default.as_ref().unwrap()),
+                "Integer" => macro_line.push_str(self.default.as_ref().unwrap()),
                 "Real" => {
                     let mut value = self.default.as_ref().unwrap().clone();
                     value.push_str(if !value.contains('.') { ".0" } else { "" });
-                    macro_line.push_str(", default = \"");
                     macro_line.push_str(value.as_str());
-                    macro_line.push_str("\"")
+                }
+                "String" => {
+                    let content = String::from("String::from(\\\"")
+                        + self.default.as_ref().unwrap().as_str()
+                        + "\\\")";
+                    macro_line.push_str(content.as_str());
+                }
+                "dc::Boolean" => macro_line.push_str(self.default.as_ref().unwrap()),
+                "dc::Integer" => macro_line.push_str(self.default.as_ref().unwrap()),
+                "dc::Real" => macro_line.push_str(self.default.as_ref().unwrap()),
+                "dc::String" => {
+                    let content = String::from("String::from(\\\"")
+                        + self.default.as_ref().unwrap().as_str()
+                        + "\\\")";
+                    macro_line.push_str(content.as_str());
                 }
                 _ => {
-                    macro_line.push_str(", default = \"");
-                    macro_line.push_str(self.default.as_ref().unwrap());
-                    macro_line.push_str("\"");
+                    let content = self.get_type()
+                        + "::"
+                        + self
+                            .default
+                            .as_ref()
+                            .unwrap()
+                            .to_case(Case::UpperCamel)
+                            .as_str();
+                    macro_line.push_str(content.as_str());
                 }
             }
+            if self.is_option() {
+                macro_line.push_str(")");
+            }
+            macro_line.push_str("\"")
         }
         // end of macro
         macro_line.push_str(")]");
@@ -740,14 +903,16 @@ impl WritingSruct for CMOFProperty {
         // main line
         let _ = writeln!(
             writer,
-            "    {a} {name}: {b}{c}{content}{d}{e},",
+            "    {a} {name}: {b}{c}{d}{content}{e}{f}{g},",
             name = name,
             content = self.get_type(),
             a = if self.is_public() { "pub" } else { "" },
             b = if self.is_option() { "Option<" } else { "" },
             c = if self.is_vec() { "Vec<" } else { "" },
-            d = if self.is_vec() { ">" } else { "" },
-            e = if self.is_option() { ">" } else { "" }
+            d = if self.is_lifetime_dpt() { "&'a " } else { "" },
+            e = if self.is_lifetime_dpt() { "<'a>" } else { "" },
+            f = if self.is_vec() { ">" } else { "" },
+            g = if self.is_option() { ">" } else { "" }
         );
     }
 }
@@ -840,6 +1005,16 @@ pub enum EnumOwnedAttribute {
     Property(CMOFProperty),
 }
 
+impl EnumOwnedAttribute {
+    pub fn is_lifetime_dpt(&self) -> bool {
+        match self {
+            EnumOwnedAttribute::Property(content) => {
+                return content.is_lifetime_dpt();
+            }
+        }
+    }
+}
+
 impl WritingSruct for EnumOwnedAttribute {
     fn wrt_struct_level(&self, writer: &mut File) {
         match self {
@@ -877,10 +1052,10 @@ pub enum EnumOwnedRule {
 }
 
 impl WritingValidation for EnumOwnedRule {
-    fn wrt_sub_validation(&self, writer: &mut File) {
+    fn wrt_sub_validation(&self, writer: &mut File, lifetime: String) {
         match self {
             EnumOwnedRule::Constraint(content) => {
-                content.wrt_sub_validation(writer);
+                content.wrt_sub_validation(writer, lifetime);
             }
         }
     }
@@ -990,11 +1165,45 @@ pub enum EnumSuperClass {
     Class(SuperClass),
 }
 
+impl EnumSuperClass {
+    pub fn is_lifetime_dpt(&self) -> bool {
+        match self {
+            EnumSuperClass::Class(content) => {
+                return content.is_lifetime_dpt();
+            }
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct SuperClass {
     #[serde(rename = "_href")]
     pub href: String,
+}
+
+impl SuperClass {
+    pub fn cut_split(&self) -> (String, String, String) {
+        let content = self.href.clone();
+        let split_index = content.find('#').unwrap();
+        let package_file: String = content[..split_index].to_string();
+        let package_file: String = package_file.replace(".cmof", "");
+        let split_index = split_index + 1;
+        let package_class: String = content[split_index..].to_string();
+
+        let a = package_class.to_case(Case::Snake);
+        let b = package_file.to_case(Case::Snake);
+        let c = package_class;
+
+        let result = (a, b, c);
+        return result;
+    }
+
+    pub fn is_lifetime_dpt(&self) -> bool {
+        let (_, content_1, content_2) = self.cut_split();
+        let name = content_1 + "::" + content_2.as_str();
+        return is_lifetime_dpt(name.as_str());
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -1044,7 +1253,26 @@ pub struct ComplexType {
 
 impl ComplexType {
     fn get_type_name(&self) -> String {
-        String::from("None")
+        match self.xmi_type.as_str() {
+            "cmof:PrimitiveType" => {
+                let content = self.href.clone();
+                match content.find('#') {
+                    Some(split_index) => {
+                        let package_file: String = content[..split_index].to_string();
+                        let package_file: String = package_file.replace(".cmof", "");
+                        let package_file: String = package_file.to_ascii_lowercase();
+                        let split_index = split_index + 1;
+                        let package_class: String = content[split_index..].to_string();
+                        String::from(package_file + "::" + package_class.as_str())
+                    }
+                    None => {
+                        panic!("href without '#' : {}", content)
+                    }
+                }
+            }
+            "cmof:Class" => String::from("i8"),
+            _ => String::from("u8"),
+        }
     }
 }
 
