@@ -19,14 +19,15 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../README.MD")]
 
-pub mod module_cmof_conversion;
+pub mod module_cmof_structure;
 pub mod module_dependencies_explorer;
 pub mod module_deserialise_helper;
 pub mod module_file_env;
 pub mod module_file_manager;
 pub mod module_log;
 pub mod module_output_checker;
-pub mod module_rust_struct_exporter;
+pub mod module_write_lib;
+pub mod module_write_mod;
 
 fn main() {
     // // this method needs to be inside main() method
@@ -36,7 +37,7 @@ fn main() {
     let logger_configuration = "config_log.yml"; // File for configuring logger
     let input_folder = "metamodel_file/"; // Folder where input file can be find
     let main_output_folder = "../Output_file/"; // Folder dedicased to store output folders and files
-    let main_package_file = "DI.json"; // File of the main package to explore
+    let main_package_file = "BPMNDI.json"; // File of the main package to explore
     let main_package_id = "_0"; // Package ID of main file to explore
     let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
 
@@ -47,9 +48,13 @@ fn main() {
 
     // Load ordered packages list
     loading_env.prepare(main_package_file, main_package_id, "root");
-    loading_env.make_primar_result();
-
-    // Delete output folder if is empty
+    // Generate list of class who don't necessite dependencies
+    loading_env.build_pre_calculation();
+    // Makin lib.rs file
+    loading_env.make_lib_file_from_package();
+    // Makin all mod_x.rs file
+    loading_env.make_mod_file_from_package();
+    // Cleaning
     loading_env.close();
 
     // Make testing package link

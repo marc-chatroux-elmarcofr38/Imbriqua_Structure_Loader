@@ -17,25 +17,40 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/module_deserialise_helper.md")]
+//! Providing default value and custom function for deserialisation
 
 // Package section
-use crate::module_cmof_conversion::*;
+use crate::module_cmof_structure::*;
 use crate::module_log::*;
 
 // Dependencies section
 pub use infinitable::Infinitable as UnlimitedNatural;
-use serde::{de, de::MapAccess, Deserialize, Deserializer};
+use lazy_static::lazy_static;
+use serde::de;
 use serde_json::Value;
+use std::collections::HashMap;
 use std::fmt;
 use std::marker::PhantomData;
+
+lazy_static! {
+    /// List of primitive type correlation
+    pub static ref PRIMITIVE_TYPE_LINK: HashMap<&'static str, &'static str> = {
+        let mut m = HashMap::new();
+        m.insert("Integer", "std::primitive::u64");
+        m.insert("Boolean", "std::primitive::bool");
+        m.insert("String", "std::string::String");
+        m.insert("UnlimitedNatural", "UnlimitedNatural<usize>");
+        m.insert("Real", "std::primitive::f64");
+        m
+    };
+}
 
 /// Deserialising to __isize__, from string (integer)
 pub fn deser_integer<'de, D>(deserializer: D) -> Result<isize, D::Error>
 where
-    D: Deserializer<'de>,
+    D: de::Deserializer<'de>,
 {
-    Ok(match serde::de::Deserialize::deserialize(deserializer)? {
+    Ok(match de::Deserialize::deserialize(deserializer)? {
         // String, True if "yes"
         Value::String(s) => {
             let result = s.parse::<isize>();
@@ -53,9 +68,9 @@ where
 /// Deserialising to __UnlimitedNatural__, from string ("*" or integer)
 pub fn deser_unlimited_natural<'de, D>(deserializer: D) -> Result<UnlimitedNatural<usize>, D::Error>
 where
-    D: Deserializer<'de>,
+    D: de::Deserializer<'de>,
 {
-    Ok(match serde::de::Deserialize::deserialize(deserializer)? {
+    Ok(match de::Deserialize::deserialize(deserializer)? {
         // String, True if "yes"
         Value::String(s) => {
             let result = s.parse::<usize>();
@@ -75,9 +90,9 @@ where
 /// Deserialising to __boolean__, from boolean, 'yes' string, 'true' string, number !=0 and Null
 pub fn deser_boolean<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
-    D: Deserializer<'de>,
+    D: de::Deserializer<'de>,
 {
-    Ok(match serde::de::Deserialize::deserialize(deserializer)? {
+    Ok(match de::Deserialize::deserialize(deserializer)? {
         // Boolean as boolean
         Value::Bool(b) => b,
         // String, True if "yes" or "true"
@@ -94,9 +109,9 @@ where
 /// Deserialising to __String__, from name (prevent suspicious name)
 pub fn deser_name<'de, D>(deserializer: D) -> Result<String, D::Error>
 where
-    D: Deserializer<'de>,
+    D: de::Deserializer<'de>,
 {
-    Ok(match serde::de::Deserialize::deserialize(deserializer)? {
+    Ok(match de::Deserialize::deserialize(deserializer)? {
         // String, True if "yes" or "true"
         Value::String(s) => match s.as_str() {
             "type" => "r#type".to_string(),
@@ -111,12 +126,12 @@ where
 /// Not 'Option' tolerant, use 'default' for this
 pub fn deser_vec<'de: 'te, 'te: 'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
 where
-    D: Deserializer<'de>,
-    T: Deserialize<'te>,
+    D: de::Deserializer<'de>,
+    T: de::Deserialize<'te>,
 {
     struct OneOrVec<T>(PhantomData<Vec<T>>);
 
-    impl<'de: 'te, 'te: 'de, T: Deserialize<'te>> de::Visitor<'de> for OneOrVec<T> {
+    impl<'de: 'te, 'te: 'de, T: de::Deserialize<'te>> de::Visitor<'de> for OneOrVec<T> {
         type Value = Vec<T>;
 
         // Requested type description, returned in error case
@@ -132,9 +147,9 @@ where
         // Result for Object
         fn visit_map<E>(self, map: E) -> Result<Self::Value, E::Error>
         where
-            E: MapAccess<'de>,
+            E: de::MapAccess<'de>,
         {
-            Ok(vec![Deserialize::deserialize(
+            Ok(vec![de::Deserialize::deserialize(
                 de::value::MapAccessDeserializer::new(map),
             )?])
         }
@@ -144,7 +159,7 @@ where
         where
             S: de::SeqAccess<'de>,
         {
-            Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))
+            de::Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))
         }
     }
 
@@ -154,9 +169,9 @@ where
 /// Deserialising 2-String Vec, from String, require a 1-whitespace String
 pub fn deser_split_2_space<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
 where
-    D: Deserializer<'de>,
+    D: de::Deserializer<'de>,
 {
-    Ok(match serde::de::Deserialize::deserialize(deserializer)? {
+    Ok(match de::Deserialize::deserialize(deserializer)? {
         Value::String(s) => {
             let content: Vec<&str> = s.split_whitespace().collect();
 

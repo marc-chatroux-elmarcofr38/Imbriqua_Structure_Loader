@@ -20,14 +20,15 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_dependencies_explorer.md")]
 
 // Package section
-use crate::module_cmof_conversion::*;
+use crate::module_cmof_structure::*;
 use crate::module_file_env::*;
 use crate::module_file_manager::*;
 use crate::module_log::*;
-use crate::module_rust_struct_exporter::*;
+use crate::module_write_lib::*;
+use crate::module_write_mod::*;
 
 // Dependencies section
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 /// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using FileEnv object
 pub fn open_loader(file_env: FileEnv) -> LoadingTracker {
@@ -121,6 +122,20 @@ impl LoadingPackage {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+// Make Pre Calculing Objects
+struct LoadingPreCalculation {
+    class_classification: HashMap<String, ClassClassification>,
+}
+impl LoadingPreCalculation {
+    /// Create new instance
+    pub fn new() -> Self {
+        LoadingPreCalculation {
+            class_classification: HashMap::new(),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Debug)]
 /// Collection to package loaded, with loading function (load, treatment, export, etc.)
 pub struct LoadingTracker {
     /// FileEnv linked with import (input_folder, and output_folder)
@@ -128,7 +143,9 @@ pub struct LoadingTracker {
     /// Collection of package to import
     pub loaded_package: HashMap<String, LoadingPackage>,
     /// Order of the collection of package
-    pub importing_order: HashMap<String, usize>,
+    pub importing_order: BTreeMap<usize, String>,
+    /// builing pre calculation result
+    pub pre_calculation: LoadingPreCalculation,
 }
 
 // Basics
@@ -138,7 +155,8 @@ impl LoadingTracker {
         LoadingTracker {
             file_env,
             loaded_package: HashMap::new(),
-            importing_order: HashMap::new(),
+            importing_order: BTreeMap::new(),
+            pre_calculation: LoadingPreCalculation::new(),
         }
     }
 
@@ -180,23 +198,32 @@ impl LoadingTracker {
         self.loaded_package.contains_key(label)
     }
 
-    /// Lock all package
-    pub fn make_finished(&mut self) {
-        // Write body
+    /// Cleaning end process
+    pub fn close(&mut self) {
+        // Lock all package
         for package in self.loaded_package.values_mut() {
             // Change state to 'finished'
             package.make_finished();
         }
-    }
-
-    /// Ending loading (delete output folder if empty)
-    pub fn close(&self) {
+        // Ending loading (delete output folder if empty)
         self.file_env.delete_if_empty();
     }
 }
 
 // Algorithm
 impl LoadingTracker {
+    ///
+    pub fn get_package_in_order(&self) -> HashMap<&usize, (&String, &LoadingPackage)> {
+        let mut result: HashMap<&usize, (&String, &LoadingPackage)> = HashMap::new();
+        debug!("{:?}", self.importing_order);
+        for (key, value) in &self.importing_order {
+            if self.loaded_package.get(value).is_some() {
+                result.insert(&key, (&value, self.loaded_package.get(value).unwrap()));
+            }
+        }
+        result
+    }
+
     /// Load minidom element from a gived package, including dependencies, and save element in loaded_package
     pub fn prepare(&mut self, main_file: &str, package_id: &str, parent_label: &str) {
         // Make empty package
@@ -241,7 +268,7 @@ impl LoadingTracker {
 
         // Define treatment order
         let max = self.get_order_len();
-        self.importing_order.insert(label.clone(), max + 1);
+        self.importing_order.insert(max + 1, label.clone());
 
         // End logsl.
         info!("Preparing \"{}\" : Finished", label);
@@ -254,65 +281,83 @@ impl LoadingTracker {
     fn add_dependencies(&mut self, cmof_package: &CMOFPackage, label: String) {
         for child in cmof_package.package_import.iter() {
             // Go to "importedPackage" child
-            let package_to_import = &child.imported_package.href;
+            match child {
+                EnumPackageImport::PackageImport(content) => {
+                    match &content.imported_package {
+                        EnumImportedPackage::ImportedPackage(content_2) => {
+                            let package_to_import = content_2.href.clone();
 
-            //
-            match package_to_import.find('#') {
-                Some(split_index) => {
-                    debug!(
-                        "Loading \"{}\" : need to load \"{}\"",
-                        label, package_to_import
-                    );
-                    let package_file: String = package_to_import[..split_index].to_string();
-                    let package_file: String = package_file.replace(".cmof", ".json");
-                    let split_index = split_index + 1;
-                    let package_id: String = package_to_import[split_index..].to_string();
-                    self.prepare(package_file.as_str(), package_id.as_str(), label.as_str());
+                            //
+                            match package_to_import.find('#') {
+                                Some(split_index) => {
+                                    debug!(
+                                        "Loading \"{}\" : need to load \"{}\"",
+                                        label, package_to_import
+                                    );
+                                    let package_file: String =
+                                        package_to_import[..split_index].to_string();
+                                    let package_file: String =
+                                        package_file.replace(".cmof", ".json");
+                                    let split_index = split_index + 1;
+                                    let package_id: String =
+                                        package_to_import[split_index..].to_string();
+                                    self.prepare(
+                                        package_file.as_str(),
+                                        package_id.as_str(),
+                                        label.as_str(),
+                                    );
+                                }
+                                None => {
+                                    error!("ERROR_DEP04 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
+                                    panic!("PANIC_DEP04 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
+                                }
+                            }
+                        }
+                        _ => {}
+                    }
                 }
-                None => {
-                    error!("ERROR_DEP04 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
-                    panic!("PANIC_DEP04 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
-                }
+                _ => {}
             }
         }
     }
 
-    /// Simple exploration of imported package, exporting unusable file
-    pub fn make_primar_result(&mut self) {
-        // lib.rs
-        self.make_lib_file_from_package();
-        // mod_x.rs
-        self.make_mod_file_from_package();
-        // Editing LoadingTracker
-        self.make_finished();
-    }
-
-    /// Make lib.rs from scratch and package
-    fn make_lib_file_from_package(&mut self) {
-        // Get folder path
-        let mut file_name = self.get_output_folder();
-        file_name.push("lib.rs");
-        // Get empty file
-        let mut writing_file = file_name.write_new_file();
-        // Write head
-        let _ = write!(
-            writing_file,
-            "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {:?}\n\n",
-            self.get_output_folder()
-        );
-        // Write body
+    /// Build all pre calculing information
+    pub fn build_pre_calculation(&mut self) {
+        // Alone classes
         for (label, package) in &self.loaded_package {
-            // Logs
-            debug!("Generating \"lib.rs\" from \"{}\" : START", label);
-            // Add mod import in main
-            let _ = writeln!(writing_file, "pub mod {};", package.get_lowercase_name());
-            // Logs
-            info!("Generating \"lib.rs\" from \"{}\" : Finished", label);
+            for owned_member in package.clone().cmof_object.unwrap().owned_member {
+                match owned_member {
+                    EnumOwnedMember::Class(content) => {
+                        let mut is_alone = true;
+                        for owned_attribute in content.owned_attribute {
+                            match owned_attribute {
+                                EnumOwnedAttribute::Property(content_2) => {
+                                    if !is_simple_dpt(content_2.name.as_str()) {
+                                        is_alone = false;
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                        if is_alone {
+                            self.pre_calculation
+                                .class_classification
+                                .insert(content.name, ClassClassification::Simple);
+                        }
+                    }
+                    _ => {}
+                }
+            }
         }
+        debug!(
+            "Simple Class {:?}",
+            self.pre_calculation.class_classification
+        );
+        // build_class_classification();
     }
 
     ///
-    fn make_mod_file_from_package(&mut self) {
+    pub fn make_mod_file_from_package(&mut self) {
         // Write body
         for (label, package) in &self.loaded_package {
             // Package output file
@@ -325,7 +370,7 @@ impl LoadingTracker {
             debug!("Generating \"{}\" from \"{}\" : START", &output_path, label);
 
             // Write Doc head
-            LoadingTracker::write_mod_head(package, &mut writing_package_file);
+            package.get_json().wrt_mod_head(&mut writing_package_file);
 
             // Matching member
             package
@@ -338,15 +383,6 @@ impl LoadingTracker {
                 &output_path, label
             );
         }
-    }
-
-    fn write_mod_head(package: &LoadingPackage, writing_file: &mut File) {
-        // Doc title
-        let _ = writeln!(writing_file, "//! {}", package.get_lowercase_name());
-        let _ = writeln!(writing_file, "use derive_builder::Builder;");
-
-        // Import
-        package.get_json().wrt_use_level(writing_file);
     }
 }
 

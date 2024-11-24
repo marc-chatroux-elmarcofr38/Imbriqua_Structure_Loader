@@ -1,4 +1,4 @@
-Providing default value and custom function for deserialisation
+Minimalist CMOF model structure
 
 # How to use
 
