@@ -16,20 +16,64 @@ You should have received a copy of the GNU General Public License along with Imb
 If not, see <https://www.gnu.org/licenses/>.
 */
 
+#![warn(dead_code)]
 #![warn(missing_docs)]
 #![doc = include_str!("../doc/module_write_lib.md")]
 
 // Package section
-use crate::module_dependencies_explorer::LoadingPackage;
-use crate::module_dependencies_explorer::LoadingTracker;
+use crate::module_dependencies_explorer::*;
 use crate::module_file_manager::*;
 use crate::module_log::*;
 
 // Dependencies section
 use std::fmt::Debug;
 
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl LoadingTracker {
+    /// Get output file
+    fn get_output_lib_file(&self) -> (String, File) {
+        // Calculate folder path
+        let mut file_name = self.get_output_folder();
+        let filename = "lib.rs";
+        file_name.push(filename);
+        // Create empty file
+        let writer = file_name.write_new_file();
+        (filename.to_string(), writer)
+    }
+    /// Make lib.rs from scratch and package
+    pub fn write_lib(&mut self) {
+        let (filename, mut writing_file) = self.get_output_lib_file();
+        // Write head
+        let _ = write!(
+            writing_file,
+            "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {:?}\n\n",
+            self.get_output_folder()
+        );
+        // Write body
+        for (_, (label, package)) in self.get_package_in_order() {
+            // Logs
+            debug!("Generating \"{filename}\" from \"{label}\" : START");
+            // Write lib head
+            package.wrt_lib_level(&mut writing_file);
+            // Logs
+            info!("Generating \"{filename}\" from \"{label}\" : Finished");
+        }
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
 /// Implement writing of target lib loading element as Rust
-pub trait WritingLib: Debug {
+pub trait WritingLibHead: Debug {
     /// Implement writing of target lib loading element as Rust
     fn wrt_lib_level(&self, writer: &mut File) {
         let _ = writeln!(writer);
@@ -37,7 +81,7 @@ pub trait WritingLib: Debug {
     }
 }
 
-impl WritingLib for LoadingPackage {
+impl WritingLibHead for LoadingPackage {
     fn wrt_lib_level(&self, writer: &mut File) {
         // Module pachage uri
         let _ = writeln!(
@@ -49,38 +93,5 @@ impl WritingLib for LoadingPackage {
         );
         // Add mod import in main
         let _ = writeln!(writer, "pub mod {};", &self.get_lowercase_name());
-    }
-}
-
-impl LoadingTracker {
-    /// Get output file
-    fn get_output_file(&self) -> File {
-        // Calculate folder path
-        let mut file_name = self.get_output_folder();
-        file_name.push("lib.rs");
-        // Create empty file
-        let mut writer = file_name.write_new_file();
-        writer
-    }
-    ///
-    fn trs(&self) {}
-    /// Make lib.rs from scratch and package
-    pub fn make_lib_file_from_package(&mut self) {
-        let mut writing_file = self.get_output_file();
-        // Write head
-        let _ = write!(
-            writing_file,
-            "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {:?}\n\n",
-            self.get_output_folder()
-        );
-        // Write body
-        for (key, (label, package)) in self.get_package_in_order() {
-            // Logs
-            debug!("Generating \"lib.rs\" from \"{}\" : START", label);
-            //
-            package.wrt_lib_level(&mut writing_file);
-            // Logs
-            info!("Generating \"lib.rs\" from \"{}\" : Finished", label);
-        }
     }
 }

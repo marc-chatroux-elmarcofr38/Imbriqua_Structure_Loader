@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with Imb
 If not, see <https://www.gnu.org/licenses/>.
 */
 
+#![warn(dead_code)]
 #![warn(missing_docs)]
 #![doc = include_str!("../doc/module_dependencies_explorer.md")]
 
@@ -24,8 +25,6 @@ use crate::module_cmof_structure::*;
 use crate::module_file_env::*;
 use crate::module_file_manager::*;
 use crate::module_log::*;
-use crate::module_write_lib::*;
-use crate::module_write_mod::*;
 
 // Dependencies section
 use std::collections::{BTreeMap, HashMap};
@@ -122,9 +121,10 @@ impl LoadingPackage {
 }
 
 #[derive(Clone, PartialEq, Debug)]
-// Make Pre Calculing Objects
-struct LoadingPreCalculation {
-    class_classification: HashMap<String, ClassClassification>,
+/// List on values necessery for loading but requiring full read of input file for evaluate
+pub struct LoadingPreCalculation {
+    /// Lassifing Class in function of lifetime se style
+    pub class_classification: HashMap<String, ClassClassification>,
 }
 impl LoadingPreCalculation {
     /// Create new instance
@@ -141,7 +141,7 @@ pub struct LoadingTracker {
     /// FileEnv linked with import (input_folder, and output_folder)
     file_env: FileEnv,
     /// Collection of package to import
-    pub loaded_package: HashMap<String, LoadingPackage>,
+    loaded_package: HashMap<String, LoadingPackage>,
     /// Order of the collection of package
     pub importing_order: BTreeMap<usize, String>,
     /// builing pre calculation result
@@ -215,7 +215,7 @@ impl LoadingTracker {
     ///
     pub fn get_package_in_order(&self) -> HashMap<&usize, (&String, &LoadingPackage)> {
         let mut result: HashMap<&usize, (&String, &LoadingPackage)> = HashMap::new();
-        debug!("{:?}", self.importing_order);
+        debug!("{:?}", &self.importing_order);
         for (key, value) in &self.importing_order {
             if self.loaded_package.get(value).is_some() {
                 result.insert(&key, (&value, self.loaded_package.get(value).unwrap()));
@@ -313,75 +313,9 @@ impl LoadingTracker {
                                 }
                             }
                         }
-                        _ => {}
                     }
                 }
-                _ => {}
             }
-        }
-    }
-
-    /// Build all pre calculing information
-    pub fn build_pre_calculation(&mut self) {
-        // Alone classes
-        for (label, package) in &self.loaded_package {
-            for owned_member in package.clone().cmof_object.unwrap().owned_member {
-                match owned_member {
-                    EnumOwnedMember::Class(content) => {
-                        let mut is_alone = true;
-                        for owned_attribute in content.owned_attribute {
-                            match owned_attribute {
-                                EnumOwnedAttribute::Property(content_2) => {
-                                    if !is_simple_dpt(content_2.name.as_str()) {
-                                        is_alone = false;
-                                    }
-                                }
-                                _ => {}
-                            }
-                        }
-                        if is_alone {
-                            self.pre_calculation
-                                .class_classification
-                                .insert(content.name, ClassClassification::Simple);
-                        }
-                    }
-                    _ => {}
-                }
-            }
-        }
-        debug!(
-            "Simple Class {:?}",
-            self.pre_calculation.class_classification
-        );
-        // build_class_classification();
-    }
-
-    ///
-    pub fn make_mod_file_from_package(&mut self) {
-        // Write body
-        for (label, package) in &self.loaded_package {
-            // Package output file
-            let mut package_output_name = self.get_output_folder();
-            let output_path = package.get_lowercase_name() + ".rs";
-            package_output_name.push(&output_path);
-            let mut writing_package_file = package_output_name.write_new_file();
-
-            // Logs
-            debug!("Generating \"{}\" from \"{}\" : START", &output_path, label);
-
-            // Write Doc head
-            package.get_json().wrt_mod_head(&mut writing_package_file);
-
-            // Matching member
-            package
-                .get_json()
-                .wrt_struct_level(&mut writing_package_file);
-
-            // Logs
-            info!(
-                "Generating \"{}\" from \"{}\" : Finished",
-                &output_path, label
-            );
         }
     }
 }
@@ -405,4 +339,32 @@ mod tests {
         let loading_env = open_loader(file_env);
         let _ = loading_env.get_output_folder();
     }
+}
+
+/// Bullshit function : define if a type (represent as string.....) involve to set a structure using reference ("&")
+pub fn is_lifetime_dpt(input: &str) -> bool {
+    match input {
+        "Boolean" => false,
+        "Integer" => false,
+        "Real" => false,
+        "String" => false,
+        "i8" => false,
+        "u8" => false,
+        "dc::Boolean" => false,
+        "dc::Integer" => false,
+        "dc::Real" => false,
+        "dc::String" => false,
+        _ => true,
+    }
+}
+
+#[derive(Clone, PartialEq, Debug)]
+/// State on package to load
+pub enum ClassClassification {
+    /// Primal : depend of nothing
+    Primal,
+    /// Simple : don't need lifetime for utilization, but need reference
+    Simple,
+    /// Complex : need lifetime for utilization
+    Complex,
 }

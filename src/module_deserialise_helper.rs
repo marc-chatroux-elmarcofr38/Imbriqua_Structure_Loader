@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with Imb
 If not, see <https://www.gnu.org/licenses/>.
 */
 
+#![warn(dead_code)]
 #![warn(missing_docs)]
 //! Providing default value and custom function for deserialisation
 

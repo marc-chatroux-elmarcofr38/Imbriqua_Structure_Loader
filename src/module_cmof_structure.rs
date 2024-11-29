@@ -16,9 +16,11 @@ You should have received a copy of the GNU General Public License along with Imb
 If not, see <https://www.gnu.org/licenses/>.
 */
 
+#![warn(dead_code)]
 #![warn(missing_docs)]
 //! Minimalist CMOF model structure
 
+use crate::module_deserialise_helper;
 // Package section
 use crate::module_deserialise_helper::*;
 use crate::module_file_manager::*;
@@ -26,6 +28,9 @@ use crate::module_log::*;
 
 // Dependencies section
 use serde::Deserialize;
+
+// Re-export
+pub use module_deserialise_helper::PRIMITIVE_TYPE_LINK;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]

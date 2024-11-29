@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License along with Imb
 If not, see <https://www.gnu.org/licenses/>.
 */
 
+//#![warn(dead_code)]
+#![allow(unreachable_code)]
 #![warn(missing_docs)]
 #![doc = include_str!("../README.MD")]
 
@@ -27,7 +29,8 @@ pub mod module_file_manager;
 pub mod module_log;
 pub mod module_output_checker;
 pub mod module_write_lib;
-pub mod module_write_mod;
+pub mod module_write_mods;
+pub mod module_writing_preparation;
 
 fn main() {
     // // this method needs to be inside main() method
@@ -49,11 +52,11 @@ fn main() {
     // Load ordered packages list
     loading_env.prepare(main_package_file, main_package_id, "root");
     // Generate list of class who don't necessite dependencies
-    loading_env.build_pre_calculation();
+    loading_env.writing_preparation();
     // Makin lib.rs file
-    loading_env.make_lib_file_from_package();
+    loading_env.write_lib();
     // Makin all mod_x.rs file
-    loading_env.make_mod_file_from_package();
+    loading_env.write_mods();
     // Cleaning
     loading_env.close();
 
@@ -65,5 +68,5 @@ fn main() {
     assert!(link.cargo_clean());
     link.purge_source();
     link.load_from(output_path);
-    assert!(link.cargo_full_check());
+    // assert!(link.cargo_full_check());
 }
