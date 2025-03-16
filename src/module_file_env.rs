@@ -38,16 +38,18 @@ pub struct FileEnv {
 
 impl FileEnv {
     fn new(input_folder: &str, main_output_folder: &str) -> Self {
+        // Create output folder (prevention)
+        Path::new(main_output_folder).create_folder();
+        // Checking instance
+        Path::new(input_folder).check_is_dir();
+        Path::new(main_output_folder).check_is_dir();
         //Set input folder path and output folder path
         let path_input_folder: PathBuf = Path::new(input_folder).canonicalize_pathbuf();
         let mut path_output_folder: PathBuf = Path::new(main_output_folder).canonicalize_pathbuf();
         let time_string: String = Local::now().format("%Y-%m-%d_%Hh%Mm%S/").to_string();
         path_output_folder.push(time_string);
-        // Create folder
+        // Create output subfolder
         path_output_folder.create_folder();
-        // Checking instance
-        path_input_folder.check_is_dir();
-        path_output_folder.check_is_dir();
         info!(
             "FileEnvironment setting with {:?} input folder",
             path_input_folder

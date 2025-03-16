@@ -16,7 +16,7 @@ appenders:
             pattern: "{d(%+)(utc)} [{f}:{L}] {h({l})} {M}: {m} {n}"
         filters:
             - kind: threshold
-              level: debug
+              level: trace
 
 root:
     level: trace
