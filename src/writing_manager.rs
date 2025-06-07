@@ -58,7 +58,7 @@ impl LoadingTracker {
     }
 
     /// Get mod file for the package --> ex : src/dc/mod.rs
-    pub fn get_output_package_mod_file(&self, package: &LoadingPackage) -> (String, File) {
+    pub fn get_output_mod_file(&self, package: &LoadingPackage) -> (String, File) {
         // Calculate folder path
         let mut file_name = self.get_output_folder();
         let filename = package.get_lowercase_name() + "/mod.rs";
@@ -69,10 +69,10 @@ impl LoadingTracker {
     }
 
     /// Get output file of a object of a package --> ex : src/dc/font.rs
-    pub fn get_output_object_file(&self, package: &LoadingPackage, object: &str) -> (String, File) {
+    pub fn get_output_mod_object(package_folder: &PathBuf, object_name: &str) -> (String, File) {
         // Calculate folder path
-        let mut file_name = self.get_output_folder();
-        let filename = package.get_lowercase_name() + "/" + object + ".rs";
+        let mut file_name = package_folder.clone();
+        let filename = String::from(object_name) + ".rs";
         file_name.push(&filename);
         // Create empty file
         let writer = file_name.write_new_file();

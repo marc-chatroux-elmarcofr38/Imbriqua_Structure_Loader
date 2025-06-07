@@ -27,9 +27,7 @@ use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer::*;
 
 // Dependencies section
-use lazy_static::lazy_static;
 pub use serde_json;
-use std::collections::HashMap;
 use std::fmt::Debug;
 
 // ####################################################################################################
@@ -43,14 +41,18 @@ impl LoadingTracker {
     pub fn write_mod_file(&mut self) {
         for (label, package) in self.get_package_in_order() {
             // Logs
-            debug!("Generating mod.rs for \"{label}\" : START");
+            debug!("Generating \"mod.rs\" for \"{label}\" : START");
             // Create folder and lib file
-            let folder = self.get_output_mod_folder(package);
-            let (_, mut writing_mod_file) = self.get_output_package_mod_file(package);
+            let _ = self.get_output_mod_folder(package);
+            let (_, mut writing_mod_file) = self.get_output_mod_file(package);
             // Write mod head
             package.get_json().wrt_mod_head(&mut writing_mod_file);
+            // Write mod object call
+            package
+                .get_json()
+                .wrt_mod_object_call(&mut writing_mod_file);
             // Logs
-            info!("Generating mod.rs for \"{label}\" : Finished");
+            info!("Generating \"mod.rs\" for \"{label}\" : Finished");
         }
     }
 }
@@ -71,6 +73,16 @@ pub trait WritingModHead: Debug {
     }
 }
 
+/// Implement writing of target mod loading head element as Rust
+pub trait WritingModObjectCall: Debug {
+    /// Implement writing of target struct instance as Rust struct format
+    /// Writing section : struct element (macro for struct and struct)
+    fn wrt_mod_object_call(&self, writer: &mut File) {
+        let _ = writeln!(writer);
+        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
+    }
+}
+
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -81,6 +93,7 @@ impl WritingModHead for CMOFPackage {
     fn wrt_mod_head(&self, writer: &mut File) {
         // Doc title
         let _ = writeln!(writer, "//! {}", self.get_lowercase_name());
+        let _ = writeln!(writer, "");
         let _ = writeln!(writer, "use derive_builder::Builder;");
 
         // Import
@@ -103,6 +116,52 @@ impl WritingModHead for CMOFPackageImport {
                 let content = content.replace(".cmof#_0", "");
                 let content = content.to_case(Case::Snake);
                 let _ = writeln!(writer, "use crate::{};", content);
+            }
+        }
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl WritingModObjectCall for CMOFPackage {
+    fn wrt_mod_object_call(&self, writer: &mut File) {
+        for class in self.owned_member.iter() {
+            class.wrt_mod_object_call(writer)
+        }
+    }
+}
+
+impl WritingModObjectCall for EnumOwnedMember {
+    fn wrt_mod_object_call(&self, writer: &mut File) {
+        match self {
+            EnumOwnedMember::Association(content) => {
+                let _ = writeln!(writer, "");
+                let _ = writeln!(writer, "/// Association : {}", content.name);
+                let _ = writeln!(writer, "pub mod {};", content.name);
+            }
+            EnumOwnedMember::Class(content) => {
+                let _ = writeln!(writer, "");
+                let _ = writeln!(writer, "/// Class : {}", content.name);
+                let _ = writeln!(writer, "pub mod {};", content.name);
+            }
+            EnumOwnedMember::DataType(content) => {
+                let _ = writeln!(writer, "");
+                let _ = writeln!(writer, "/// DataType : {}", content.name);
+                let _ = writeln!(writer, "pub mod {};", content.name);
+            }
+            EnumOwnedMember::Enumeration(content) => {
+                let _ = writeln!(writer, "");
+                let _ = writeln!(writer, "/// Enumeration : {}", content.name);
+                let _ = writeln!(writer, "pub mod {};", content.name);
+            }
+            EnumOwnedMember::PrimitiveType(content) => {
+                let _ = writeln!(writer, "");
+                let _ = writeln!(writer, "/// PrimitiveType : {}", content.name);
+                let _ = writeln!(writer, "pub mod {};", content.name);
             }
         }
     }

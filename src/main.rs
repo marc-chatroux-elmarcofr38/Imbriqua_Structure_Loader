@@ -62,7 +62,7 @@ fn main() {
     // Makin all mod_x.rs file
     loading_env.write_mod_file();
     // Makin all mod_x.rs file
-    // loading_env.write_mod_object();
+    loading_env.write_mod_object();
 
     // Cleaning
     loading_env.close();

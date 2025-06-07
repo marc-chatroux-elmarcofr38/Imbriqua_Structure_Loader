@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
+use crate::loader_dependencies_explorer;
 use crate::loader_dependencies_explorer::*;
 
 // Dependencies section
@@ -45,10 +46,9 @@ impl LoadingTracker {
             // Logs
             debug!("Generating \"{label}\" : START");
             // Create folder and lib file
-            let folder = self.get_output_mod_folder(package);
-            let (_, mut writing_mod_file) = self.get_output_package_mod_file(package);
+            let folder: PathBuf = self.get_output_mod_folder(package);
             // Write mod structs
-            package.get_json().wrt_struct_level(&mut writing_mod_file);
+            package.get_json().wrt_mod_object(&folder);
             // Logs
             info!("Generating \"{label}\" : Finished");
         }
@@ -71,10 +71,10 @@ pub trait WritingModTrait: Debug {
 }
 
 /// Implement writing of target mod loading head element as Rust
-pub trait WritingModStruct: Debug {
+pub trait WritingModObject: Debug {
     /// Implement writing of target struct instance as Rust struct format
     /// Writing section : struct element (macro for struct and struct)
-    fn wrt_struct_level(&self, writer: &mut File) {
+    fn wrt_mod_object(&self, writer: &mut File) {
         let _ = writeln!(writer);
         let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
     }
@@ -102,31 +102,56 @@ pub trait WritingModValidation: Debug {
 //
 // ####################################################################################################
 
-impl WritingModStruct for CMOFPackage {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl CMOFPackage {
+    fn wrt_mod_object(&self, folder: &PathBuf) {
         for class in self.owned_member.iter() {
-            class.wrt_struct_level(writer)
+            class.wrt_mod_object(&folder)
         }
     }
 }
 
-impl WritingModStruct for EnumOwnedMember {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl EnumOwnedMember {
+    fn wrt_mod_object(&self, folder: &PathBuf) {
         match self {
             EnumOwnedMember::Association(content) => {
-                content.wrt_struct_level(writer);
+                let (_, mut writing_mod_file) =
+                    loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                        &folder,
+                        content.name.to_case(Case::UpperCamel).as_str(),
+                    );
+                content.wrt_mod_object(&mut writing_mod_file);
             }
             EnumOwnedMember::Class(content) => {
-                content.wrt_struct_level(writer);
+                let (_, mut writing_mod_file) =
+                    loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                        &folder,
+                        content.name.to_case(Case::UpperCamel).as_str(),
+                    );
+                content.wrt_mod_object(&mut writing_mod_file);
             }
             EnumOwnedMember::DataType(content) => {
-                content.wrt_struct_level(writer);
+                let (_, mut writing_mod_file) =
+                    loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                        &folder,
+                        content.name.to_case(Case::UpperCamel).as_str(),
+                    );
+                content.wrt_mod_object(&mut writing_mod_file);
             }
             EnumOwnedMember::Enumeration(content) => {
-                content.wrt_struct_level(writer);
+                let (_, mut writing_mod_file) =
+                    loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                        &folder,
+                        content.name.to_case(Case::UpperCamel).as_str(),
+                    );
+                content.wrt_mod_object(&mut writing_mod_file);
             }
             EnumOwnedMember::PrimitiveType(content) => {
-                content.wrt_struct_level(writer);
+                let (_, mut writing_mod_file) =
+                    loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                        &folder,
+                        content.name.to_case(Case::UpperCamel).as_str(),
+                    );
+                content.wrt_mod_object(&mut writing_mod_file);
             }
         }
     }
@@ -138,8 +163,8 @@ impl WritingModStruct for EnumOwnedMember {
 //
 // ####################################################################################################
 
-impl WritingModStruct for CMOFAssociation {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for CMOFAssociation {
+    fn wrt_mod_object(&self, writer: &mut File) {
         let _ = writeln!(writer);
         let _ = writeln!(writer, "// struct_level : {}", self.name);
     }
@@ -151,8 +176,8 @@ impl WritingModStruct for CMOFAssociation {
 //
 // ####################################################################################################
 
-impl WritingModStruct for CMOFClass {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for CMOFClass {
+    fn wrt_mod_object(&self, writer: &mut File) {
         // Doc
         self.wrt_doc(writer);
         // Start of Struct
@@ -161,7 +186,7 @@ impl WritingModStruct for CMOFClass {
         self.wrt_struct_start(writer);
         // OwnedAttribute
         for content in self.owned_attribute.iter() {
-            content.wrt_struct_level(writer);
+            content.wrt_mod_object(writer);
         }
         // End of Struct
         self.wrt_struct_end(writer);
@@ -186,8 +211,8 @@ impl WritingModStruct for CMOFClass {
 //
 // ####################################################################################################
 
-impl WritingModStruct for CMOFDataType {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for CMOFDataType {
+    fn wrt_mod_object(&self, writer: &mut File) {
         // Doc
         let _ = writeln!(writer);
         let _ = writeln!(
@@ -211,7 +236,7 @@ impl WritingModStruct for CMOFDataType {
 
         // OwnedAttribute
         for content in self.owned_attribute.iter() {
-            content.wrt_struct_level(writer);
+            content.wrt_mod_object(writer);
         }
 
         // End of struct
@@ -249,8 +274,8 @@ impl WritingModStruct for CMOFDataType {
 //
 // ####################################################################################################
 
-impl WritingModStruct for CMOFEnumeration {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for CMOFEnumeration {
+    fn wrt_mod_object(&self, writer: &mut File) {
         // Doc
         let _ = writeln!(writer);
         let _ = writeln!(
@@ -267,24 +292,24 @@ impl WritingModStruct for CMOFEnumeration {
             self.name.to_case(Case::UpperCamel)
         );
         for content in self.owned_attribute.iter() {
-            content.wrt_struct_level(writer);
+            content.wrt_mod_object(writer);
         }
         let _ = writeln!(writer, "}}");
     }
 }
 
-impl WritingModStruct for EnumOwnedLiteral {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for EnumOwnedLiteral {
+    fn wrt_mod_object(&self, writer: &mut File) {
         match self {
             EnumOwnedLiteral::EnumerationLiteral(content) => {
-                content.wrt_struct_level(writer);
+                content.wrt_mod_object(writer);
             }
         }
     }
 }
 
-impl WritingModStruct for CMOFEnumerationLiteral {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for CMOFEnumerationLiteral {
+    fn wrt_mod_object(&self, writer: &mut File) {
         let _ = writeln!(
             writer,
             "    /// '{}' from (id : '{}', name : '{}')",
@@ -302,8 +327,8 @@ impl WritingModStruct for CMOFEnumerationLiteral {
 //
 // ####################################################################################################
 
-impl WritingModStruct for CMOFPrimitiveType {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for CMOFPrimitiveType {
+    fn wrt_mod_object(&self, writer: &mut File) {
         // Doc
         let _ = writeln!(writer);
         let _ = writeln!(
@@ -328,48 +353,48 @@ impl WritingModStruct for CMOFPrimitiveType {
 //
 // ####################################################################################################
 
-impl WritingModStruct for EnumOwnedAttribute {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for EnumOwnedAttribute {
+    fn wrt_mod_object(&self, writer: &mut File) {
         match self {
             EnumOwnedAttribute::Property(content) => {
-                content.wrt_struct_level(writer);
+                content.wrt_mod_object(writer);
             }
         }
     }
 }
 
-impl WritingModStruct for EnumOwnedEnd {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for EnumOwnedEnd {
+    fn wrt_mod_object(&self, writer: &mut File) {
         match self {
             EnumOwnedEnd::Property(content) => {
-                content.wrt_struct_level(writer);
+                content.wrt_mod_object(writer);
             }
         }
     }
 }
 
-impl WritingModStruct for EnumRedefinedProperty {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for EnumRedefinedProperty {
+    fn wrt_mod_object(&self, writer: &mut File) {
         match self {
             EnumRedefinedProperty::Property(content) => {
-                content.wrt_struct_level(writer);
+                content.wrt_mod_object(writer);
             }
         }
     }
 }
 
-impl WritingModStruct for EnumSubsettedProperty {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for EnumSubsettedProperty {
+    fn wrt_mod_object(&self, writer: &mut File) {
         match self {
             EnumSubsettedProperty::Property(content) => {
-                content.wrt_struct_level(writer);
+                content.wrt_mod_object(writer);
             }
         }
     }
 }
 
-impl WritingModStruct for RedefinedProperty {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for RedefinedProperty {
+    fn wrt_mod_object(&self, writer: &mut File) {
         let _ = writeln!(
             writer,
             "// struct_level : {} (RedefinedProperty)",
@@ -378,8 +403,8 @@ impl WritingModStruct for RedefinedProperty {
     }
 }
 
-impl WritingModStruct for SubsettedProperty {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for SubsettedProperty {
+    fn wrt_mod_object(&self, writer: &mut File) {
         let _ = writeln!(
             writer,
             "// struct_level : {} (SubsettedProperty)",
@@ -388,8 +413,8 @@ impl WritingModStruct for SubsettedProperty {
     }
 }
 
-impl WritingModStruct for CMOFProperty {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for CMOFProperty {
+    fn wrt_mod_object(&self, writer: &mut File) {
         // type
         let name = self.name.to_case(Case::Snake);
 
@@ -477,8 +502,8 @@ impl WritingModStruct for CMOFProperty {
     }
 }
 
-impl WritingModStruct for EnumType {
-    fn wrt_struct_level(&self, writer: &mut File) {
+impl WritingModObject for EnumType {
+    fn wrt_mod_object(&self, writer: &mut File) {
         match self {
             EnumType::ClassLink(content) => {
                 let _ = writeln!(
