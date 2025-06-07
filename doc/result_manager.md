@@ -1,10 +1,23 @@
-Managing a single input folder and multiple output folder (session-time archiving)
+Managing session-time archiving for output folder, including an input folder and a result folder
 
 # How to use
 
-Provinding 'shortcut' managing of input folder and output folder, using [`FileEnv`] structure.
+Provinding 'shortcut' managing of input folder, output folder history and result folder, using __ResultEnv__ structure.
 
 Output folder is organised during instance creation by creating subfolder named by running time formated name (%Y-%m-%d_%Hh%Mm%S/).
+
+Object :
+ - __ResultEnv__
+    - input_folder (__PathBuf__) : not used in feature, but se as shortcut
+    - output_folder (__PathBuf__) : new output instance as each ResultEnv instance
+    - result_folder (__PathBuf__) : used to export the last output if needed
+
+Tools :
+ - __ResultEnv.get_input_folder__ : get the input folder
+ - __ResultEnv.get_output_folder__ : get the current output folder
+ - __ResultEnv.get_result_folder__ : get the result folder
+ - __ResultEnv.delete_if_empty__ : delete current output folder (for cleaning), if empty
+ - __ResultEnv.export_result__ : copy current output folder to result folder
 
 ## Minimal usecase
 
@@ -14,14 +27,20 @@ Minimal project : make statistic of data samples
 mod module_file_env;
 
 fn main() {
-    let file_env = module_file_env::open_env("input_folder/", "main_output_folder/");
+    let file_env = module_file_env::open_env("input_folder/", "main_output_folder/", "result_folder");
 
-    // Create statistic from files
-    let mut statistic = StatisticResult::neew();
+    // Create statistic from files (example)
+    let mut statistic = StatisticResult::new();
     statistic.load_from_folder(file_env.get_input_folder());
 
     // Save statistic in sub_folder (ex : main_output_folder/2024-04-18_01h47m31/)
-    statistic.save_in_folder(file_env.get_output_folder());
+    if StatisticResult.is_success() {
+        statistic.save_in_folder(file_env.get_output_folder());
+        file_env.export_result();
+    } else {
+        file_env.delete_if_empty();
+    }
+    
 }
 
 /// Statistic content
@@ -71,14 +90,18 @@ impl StatisticResult {
 ├── main_output_folder/
 │   ├── 2024-04-18_01h47m31/
 │   │   ├── statistic.csv
-│   │   └── history_1.log
+│   │   └── log_2024-04-18_01h47m31.log
 │   ├── 2024-04-19_01h34m01/
 │   │   ├── statistic.csv
-│   │   └── history_1.log
+│   │   └── log_2024-04-19_01h34m01.log
 │   ├── 2024-04-22_17h19m23/
 │   │   ├── statistic.csv
-│   │   └── history_1.log
+│   │   └── log_2024-04-22_17h19m23.log
 │   └── ...
+│
+├── result_folder/
+│   ├── statistic.csv
+│   └── log_2024-04-22_17h19m23.log
 │
 └── ...
 ```

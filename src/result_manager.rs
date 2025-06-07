@@ -29,7 +29,7 @@ use chrono::Local;
 
 /// Provide management of a input folder and a output folder (created with time name)
 #[derive(Clone, PartialEq, Debug)]
-pub struct FileEnv {
+pub struct ResultEnv {
     /// Input folder, obtainable with __get_input_folder()__
     input_folder: PathBuf,
     /// Output folder (child of parent_output_folder, named with time-formatting), obtainable with __get_output_folder()__
@@ -38,7 +38,7 @@ pub struct FileEnv {
     result_folder: PathBuf,
 }
 
-impl FileEnv {
+impl ResultEnv {
     fn new(input_folder: &str, parent_output_folder: &str, result_folder: &str) -> Self {
         // Create output folder (prevention)
         Path::new(parent_output_folder).create_folder();
@@ -62,29 +62,24 @@ impl FileEnv {
 
         // Logs
         info!(
-            "FileEnvironment setting with {:?} input folder",
+            "ResultEnvironment setting with {:?} input folder",
             path_input_folder
         );
         info!(
-            "FileEnvironment setting with {:?} output folder",
+            "ResultEnvironment setting with {:?} output folder",
             path_output_folder
         );
         info!(
-            "FileEnvironment setting with {:?} result folder",
+            "ResultEnvironment setting with {:?} result folder",
             path_result_folder
         );
 
         // Create instance
-        FileEnv {
+        ResultEnv {
             input_folder: path_input_folder,
             output_folder: path_output_folder,
             result_folder: path_result_folder,
         }
-    }
-
-    /// Deleting output folder if empty (for cleaning output main folder)
-    pub fn delete_if_empty(&self) {
-        self.output_folder.delete_folder(true);
     }
 
     /// Read input folder Path as PathBuf
@@ -102,6 +97,11 @@ impl FileEnv {
         self.result_folder.clone()
     }
 
+    /// Deleting output folder if empty (for cleaning output main folder)
+    pub fn delete_if_empty(&self) {
+        self.output_folder.delete_folder(true);
+    }
+
     /// Copy output to result
     pub fn export_result(&self) {
         // Purge folder
@@ -111,9 +111,9 @@ impl FileEnv {
     }
 }
 
-/// Shorcut of __FileEnv::new()__, creating FileEnv instance and creating output folder with time name
-pub fn open_env(input_folder: &str, main_output_folder: &str, result_folder: &str) -> FileEnv {
-    FileEnv::new(input_folder, main_output_folder, result_folder)
+/// Shorcut of __ResultEnv::new()__, creating ResultEnv instance and creating output folder with time name
+pub fn open_env(input_folder: &str, main_output_folder: &str, result_folder: &str) -> ResultEnv {
+    ResultEnv::new(input_folder, main_output_folder, result_folder)
 }
 
 #[cfg(test)]
