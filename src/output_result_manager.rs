@@ -203,5 +203,8 @@ mod tests {
         assert!(!path_test_1.exists());
         assert!(!path_test_2.exists());
         assert!(!path_test_3.exists());
+        // Ending
+        Path::new(main_output_path).purge_folder();
+        Path::new(result_path).purge_folder();
     }
 }

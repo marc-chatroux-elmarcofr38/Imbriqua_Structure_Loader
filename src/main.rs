@@ -52,15 +52,16 @@ fn main() {
     let _handle = custom_log_tools::open_logger(logger_configuration);
     let file_env = output_result_manager::open_env(input_folder, main_output_folder, result_folder);
     let mut loading_env = loader_dependencies_explorer::open_loader(file_env);
-
     // Load ordered packages list
     loading_env.prepare(main_package_file, main_package_id, "root");
+
     // Generate list of class who don't necessite dependencies
     loading_env.writing_preparation();
     // Makin lib.rs file
     loading_env.write_lib();
     // Makin all mod_x.rs file
     loading_env.write_mods();
+
     // Cleaning
     loading_env.close();
     // Export the result
