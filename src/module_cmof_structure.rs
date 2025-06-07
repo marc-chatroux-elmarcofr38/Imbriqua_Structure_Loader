@@ -20,17 +20,17 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 //! Minimalist CMOF model structure
 
-use crate::module_deserialise_helper;
+use crate::loader_deserialise_helper;
 // Package section
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
-use crate::module_deserialise_helper::*;
+use crate::loader_deserialise_helper::*;
 
 // Dependencies section
 use serde::Deserialize;
 
 // Re-export
-pub use module_deserialise_helper::PRIMITIVE_TYPE_LINK;
+pub use loader_deserialise_helper::PRIMITIVE_TYPE_LINK;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]

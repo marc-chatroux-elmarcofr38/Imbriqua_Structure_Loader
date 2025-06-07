@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-//! Providing default value and custom function for deserialisation
+#![doc = include_str!("../doc/loader_deserialise_helper.md")]
 
 // Package section
 use crate::custom_log_tools::*;
