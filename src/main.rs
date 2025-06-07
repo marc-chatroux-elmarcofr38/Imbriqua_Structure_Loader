@@ -31,10 +31,10 @@ pub mod module_write_control;
 pub mod module_write_lib;
 pub mod module_write_mods;
 pub mod module_write_objects;
-pub mod result_manager;
 
 // For "main" use only
 mod output_cargo_checker;
+mod output_result_manager;
 
 fn main() {
     // // this method needs to be inside main() method
