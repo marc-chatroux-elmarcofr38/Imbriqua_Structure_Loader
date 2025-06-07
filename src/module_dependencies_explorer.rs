@@ -24,7 +24,7 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
-use crate::result_manager::*;
+use crate::output_result_manager::*;
 
 // Dependencies section
 use std::collections::{BTreeMap, HashMap};

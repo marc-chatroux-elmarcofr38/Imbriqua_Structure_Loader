@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/result_manager.md")]
+#![doc = include_str!("../doc/output_result_manager.md")]
 
 // Package section
 use crate::custom_file_tools::*;
