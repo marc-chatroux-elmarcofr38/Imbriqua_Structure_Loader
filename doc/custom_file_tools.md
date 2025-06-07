@@ -6,22 +6,22 @@ Adding __FileManager__ traits to __std::fs::Path__
 
 This traits add to __std::fs::Path__ the following function to folder :
 
+* [`FileManager::check_is_dir`] : Panic if it's not a directory (used by other function)
 * [`FileManager::get_folder_content`] : Return the content of the folder (as ReadDir)
 * [`FileManager::create_folder`] : Create the folder if don't exist
 * [`FileManager::copy_folder`] : Copy each item of a folder to a other
 * [`FileManager::move_folder`] : Move each item of a folder to a other
 * [`FileManager::delete_folder`] : Delete the folder if it exist
 * [`FileManager::purge_folder`] : Remove all content of the folder if it exist
-* [`FileManager::check_is_dir`] : Panic if it's not a directory (used by other function)
 
 This traits add to __std::fs::Path__ the following function to file :
 
+* [`FileManager::check_is_file`] : Panic if it's not a file (used by other function)
 * [`FileManager::write_new_file`] : Check if the file exist, and if it's file, and if it's readable and return it (as File)
 * [`FileManager::get_file_content`] : Check if the file exist, and if it's file, and if it's readable and return this content (as String)
 * [`FileManager::copy_file`] : Copy a file to a other location
 * [`FileManager::move_file`] : Move a file to a other location
 * [`FileManager::delete_file`] : Delete the file if it exist
-* [`FileManager::check_is_file`] : Panic if it's not a file (used by other function)
 
 This traits add to __std::fs::Path__ the following function to all path :
 

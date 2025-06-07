@@ -30,8 +30,8 @@ use crate::result_manager::*;
 use std::collections::{BTreeMap, HashMap};
 use std::iter::FromIterator;
 
-/// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using FileEnv object
-pub fn open_loader(file_env: FileEnv) -> LoadingTracker {
+/// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using ResultEnv object
+pub fn open_loader(file_env: ResultEnv) -> LoadingTracker {
     LoadingTracker::new(file_env)
 }
 
@@ -139,8 +139,8 @@ impl LoadingPreCalculation {
 #[derive(Clone, PartialEq, Debug)]
 /// Collection to package loaded, with loading function (load, treatment, export, etc.)
 pub struct LoadingTracker {
-    /// FileEnv linked with import (input_folder, and output_folder)
-    file_env: FileEnv,
+    /// ResultEnv linked with import (input_folder, and output_folder)
+    file_env: ResultEnv,
     /// Collection of package to import
     loaded_package: HashMap<String, LoadingPackage>,
     /// Order of the collection of package
@@ -152,7 +152,7 @@ pub struct LoadingTracker {
 // Basics
 impl LoadingTracker {
     /// Create new instance
-    pub fn new(file_env: FileEnv) -> Self {
+    pub fn new(file_env: ResultEnv) -> Self {
         LoadingTracker {
             file_env,
             loaded_package: HashMap::new(),
