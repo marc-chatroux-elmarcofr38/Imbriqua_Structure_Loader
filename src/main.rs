@@ -25,8 +25,8 @@ If not, see <https://www.gnu.org/licenses/>.
 pub mod custom_file_tools;
 pub mod custom_log_tools;
 pub mod loader_cmof_structure;
+pub mod loader_dependencies_explorer;
 pub mod loader_deserialise_helper;
-pub mod module_dependencies_explorer;
 pub mod module_write_control;
 pub mod module_write_lib;
 pub mod module_write_mods;
@@ -51,7 +51,7 @@ fn main() {
     // Initialise global logger, file environment and loading environment
     let _handle = custom_log_tools::open_logger(logger_configuration);
     let file_env = output_result_manager::open_env(input_folder, main_output_folder, result_folder);
-    let mut loading_env = module_dependencies_explorer::open_loader(file_env);
+    let mut loading_env = loader_dependencies_explorer::open_loader(file_env);
 
     // Load ordered packages list
     loading_env.prepare(main_package_file, main_package_id, "root");

@@ -24,7 +24,7 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
-use crate::module_dependencies_explorer::*;
+use crate::loader_dependencies_explorer::*;
 
 // Dependencies section
 pub use serde_json;
