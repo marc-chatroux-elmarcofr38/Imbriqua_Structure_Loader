@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/module_output_checker.md")]
+#![doc = include_str!("../doc/output_cargo_checker.md")]
 
 // Package section
 use crate::module_file_manager::*;

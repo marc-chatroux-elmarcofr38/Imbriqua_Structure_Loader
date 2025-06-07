@@ -1,4 +1,14 @@
-Tools for cargo checking of a library folder
+Tools for cargo checking of a cargo project folder : run cargo post-project command (check, test, build, doc, clean)
+
+# Usecase
+ - Example 1 : make documentation after running the current project
+    - In __src/main.rs__, add
+        ```rust
+        let link = output_cargo_checker::open_link("Cargo.toml");
+        assert!(link.cargo_custom_command(vec!["doc", "--no-deps"]));
+        ```
+
+ - Example 2 : execute check after that the current project write en result project
 
 # How to use
 

@@ -21,17 +21,20 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../README.MD")]
 
+// Shared module
 pub mod module_cmof_structure;
 pub mod module_dependencies_explorer;
 pub mod module_deserialise_helper;
 pub mod module_file_env;
 pub mod module_file_manager;
 pub mod module_log;
-pub mod module_output_checker;
 pub mod module_write_control;
 pub mod module_write_lib;
 pub mod module_write_mods;
 pub mod module_write_objects;
+
+// For "main" use only
+mod output_cargo_checker;
 
 fn main() {
     // // this method needs to be inside main() method
@@ -43,7 +46,6 @@ fn main() {
     let main_output_folder = "../Output_file/"; // Folder dedicased to store output folders and files
     let main_package_file = "BPMNDI.json"; // File of the main package to explore
     let main_package_id = "_0"; // Package ID of main file to explore
-    let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
 
     // Initialise global logger, file environment and loading environment
     let _handle = module_log::open_logger(logger_configuration);
@@ -61,13 +63,19 @@ fn main() {
     // Cleaning
     loading_env.close();
 
-    // Make testing package link
+    link.purge_source(); // Purge
     let output_path = loading_env.get_output_folder();
-    let link = module_output_checker::open_link(cargo_testing_package);
-
-    // Clean, purge, load and test
-    assert!(link.cargo_clean());
-    link.purge_source();
     link.load_from(output_path);
-    // assert!(link.cargo_full_check());
+
+    // Make doc for loader
+    let cargo_loader_package = "Cargo.toml"; // Location of loader environment package Cargo.toml file
+    let link = output_cargo_checker::open_link(cargo_loader_package);
+    assert!(link.cargo_custom_command(vec!["doc", "--no-deps"]));
+
+    // Make testing package link
+    let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
+    let link = output_cargo_checker::open_link(cargo_testing_package);
+    assert!(link.cargo_clean()); // Make cargo clean
+
+    // assert!(link.cargo_full_check()); // Make cargo check, test build and doc
 }
