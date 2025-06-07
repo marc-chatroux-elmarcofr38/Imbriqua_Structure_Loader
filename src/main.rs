@@ -50,7 +50,7 @@ fn main() {
 
     // Initialise global logger, file environment and loading environment
     let _handle = custom_log_tools::open_logger(logger_configuration);
-    let file_env = result_manager::open_env(input_folder, main_output_folder, result_folder);
+    let file_env = output_result_manager::open_env(input_folder, main_output_folder, result_folder);
     let mut loading_env = module_dependencies_explorer::open_loader(file_env);
 
     // Load ordered packages list
