@@ -22,7 +22,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Package section
 use crate::custom_file_tools::*;
-use crate::module_log::*;
+use crate::custom_log_tools::*;
 
 // Dependencies section
 use std::process::Command;
@@ -250,7 +250,7 @@ fn represent_command_output(command: &mut Command) -> Option<bool> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::module_log::tests::initialize_log_for_test;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
 
     #[test]
     fn module_out_01_from() {

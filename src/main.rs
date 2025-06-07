@@ -23,10 +23,10 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Shared module
 pub mod custom_file_tools;
+pub mod custom_log_tools;
 pub mod module_cmof_structure;
 pub mod module_dependencies_explorer;
 pub mod module_deserialise_helper;
-pub mod module_log;
 pub mod module_write_control;
 pub mod module_write_lib;
 pub mod module_write_mods;
@@ -49,7 +49,7 @@ fn main() {
     let main_package_id = "_0"; // Package ID of main file to explore
 
     // Initialise global logger, file environment and loading environment
-    let _handle = module_log::open_logger(logger_configuration);
+    let _handle = custom_log_tools::open_logger(logger_configuration);
     let file_env = result_manager::open_env(input_folder, main_output_folder, result_folder);
     let mut loading_env = module_dependencies_explorer::open_loader(file_env);
 

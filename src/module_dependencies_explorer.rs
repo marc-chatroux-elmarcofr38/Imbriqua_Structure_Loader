@@ -22,8 +22,8 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Package section
 use crate::custom_file_tools::*;
+use crate::custom_log_tools::*;
 use crate::module_cmof_structure::*;
-use crate::module_log::*;
 use crate::result_manager::*;
 
 // Dependencies section
@@ -332,7 +332,7 @@ impl LoadingTracker {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::module_log::tests::initialize_log_for_test;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
 
     #[test]
     fn module_dep_01_open_loader() {

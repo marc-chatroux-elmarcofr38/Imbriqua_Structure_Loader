@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/module_log.md")]
+#![doc = include_str!("../doc/custom_log_tools.md")]
 
 // Package section
 use crate::custom_file_tools::*;

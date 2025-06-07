@@ -21,8 +21,8 @@ If not, see <https://www.gnu.org/licenses/>.
 //! Providing default value and custom function for deserialisation
 
 // Package section
+use crate::custom_log_tools::*;
 use crate::module_cmof_structure::*;
-use crate::module_log::*;
 
 // Dependencies section
 pub use infinitable::Infinitable as UnlimitedNatural;

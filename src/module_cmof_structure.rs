@@ -23,8 +23,8 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::module_deserialise_helper;
 // Package section
 use crate::custom_file_tools::*;
+use crate::custom_log_tools::*;
 use crate::module_deserialise_helper::*;
-use crate::module_log::*;
 
 // Dependencies section
 use serde::Deserialize;

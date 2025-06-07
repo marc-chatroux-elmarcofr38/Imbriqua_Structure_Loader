@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/custom_file_tools.md")]
 
 // Package section
-use crate::module_log::*;
+use crate::custom_log_tools::*;
 
 // Dependencies section
 pub use convert_case::{Case, Casing};
@@ -460,7 +460,7 @@ impl AddStringPrefix for String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::module_log::tests::initialize_log_for_test;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
     use std::io::Write;
 
     #[test]

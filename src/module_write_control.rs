@@ -22,9 +22,9 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Package section
 use crate::custom_file_tools::*;
+use crate::custom_log_tools::*;
 use crate::module_cmof_structure::*;
 use crate::module_dependencies_explorer::*;
-use crate::module_log::*;
 
 // Dependencies section
 pub use serde_json;
