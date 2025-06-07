@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/module_write_objects.md")]
+#![doc = include_str!("../doc/writing_mod_objects.md")]
 
 // Package section
 use crate::custom_file_tools::*;

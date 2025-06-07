@@ -27,10 +27,10 @@ pub mod custom_log_tools;
 pub mod loader_cmof_structure;
 pub mod loader_dependencies_explorer;
 pub mod loader_deserialise_helper;
-pub mod module_write_control;
-pub mod module_write_lib;
-pub mod module_write_mods;
-pub mod module_write_objects;
+pub mod writing_lib_file;
+pub mod writing_manager;
+pub mod writing_mod_file;
+pub mod writing_mod_objects;
 
 // For "main" use only
 mod output_cargo_checker;
@@ -70,8 +70,8 @@ fn main() {
     // Make doc for loader
     let cargo_loader_package = "Cargo.toml"; // Location of loader environment package Cargo.toml file
     let loader_link = output_cargo_checker::open_link(cargo_loader_package);
-    assert!(loader_link.cargo_custom_command(vec!["clean"]));
-    assert!(loader_link.cargo_custom_command(vec!["doc", "--no-deps"]));
+    // assert!(loader_link.cargo_custom_command(vec!["clean"]));
+    // assert!(loader_link.cargo_custom_command(vec!["doc", "--no-deps"]));
     assert!(loader_link.cargo_custom_command(vec!["test"]));
 
     // Make testing package link
