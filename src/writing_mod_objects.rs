@@ -40,15 +40,13 @@ use std::fmt::Debug;
 
 impl LoadingTracker {
     /// Make a module file for each package
-    pub fn write_mods(&mut self) {
+    pub fn write_mod_object(&mut self) {
         for (label, package) in self.get_package_in_order() {
             // Logs
             debug!("Generating \"{label}\" : START");
             // Create folder and lib file
             let folder = self.get_output_mod_folder(package);
             let (_, mut writing_mod_file) = self.get_output_package_mod_file(package);
-            // Write mod head
-            package.get_json().wrt_mod_head(&mut writing_mod_file);
             // Write mod structs
             package.get_json().wrt_struct_level(&mut writing_mod_file);
             // Logs
@@ -67,16 +65,6 @@ impl LoadingTracker {
 pub trait WritingModTrait: Debug {
     /// Implement writing of target struct instance as Rust struct trait implementation
     fn wrt_trait_level(&self, writer: &mut File) {
-        let _ = writeln!(writer);
-        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
-    }
-}
-
-/// Implement writing of target mod loading head element as Rust
-pub trait WritingModHead: Debug {
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : module file head (import part, "use", etc.)
-    fn wrt_mod_head(&self, writer: &mut File) {
         let _ = writeln!(writer);
         let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
     }
@@ -105,43 +93,6 @@ pub trait WritingModValidation: Debug {
     fn wrt_main_validation(&self, writer: &mut File) {
         let _ = writeln!(writer);
         let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl WritingModHead for CMOFPackage {
-    fn wrt_mod_head(&self, writer: &mut File) {
-        // Doc title
-        let _ = writeln!(writer, "//! {}", self.get_lowercase_name());
-        let _ = writeln!(writer, "use derive_builder::Builder;");
-
-        // Import
-        for import in self.package_import.iter() {
-            match import {
-                EnumPackageImport::PackageImport(content) => {
-                    content.wrt_mod_head(writer);
-                }
-            }
-        }
-    }
-}
-
-impl WritingModHead for CMOFPackageImport {
-    fn wrt_mod_head(&self, writer: &mut File) {
-        let _ = writeln!(writer, "/// Link from {} (PackageImport)", self.xmi_id);
-        match &self.imported_package {
-            EnumImportedPackage::ImportedPackage(package) => {
-                let content = package.href.clone();
-                let content = content.replace(".cmof#_0", "");
-                let content = content.to_case(Case::Snake);
-                let _ = writeln!(writer, "use crate::{};", content);
-            }
-        }
     }
 }
 

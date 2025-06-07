@@ -58,9 +58,11 @@ fn main() {
     // Generate list of class who don't necessite dependencies
     loading_env.writing_preparation();
     // Makin lib.rs file
-    loading_env.write_lib();
+    loading_env.write_lib_file();
     // Makin all mod_x.rs file
-    loading_env.write_mods();
+    loading_env.write_mod_file();
+    // Makin all mod_x.rs file
+    // loading_env.write_mod_object();
 
     // Cleaning
     loading_env.close();

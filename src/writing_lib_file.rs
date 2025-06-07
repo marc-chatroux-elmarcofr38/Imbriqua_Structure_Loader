@@ -36,12 +36,12 @@ use std::fmt::Debug;
 
 impl LoadingTracker {
     /// Make lib.rs from scratch and package
-    pub fn write_lib(&mut self) {
+    pub fn write_lib_file(&mut self) {
         let (filename, mut writing_file) = self.get_output_lib_file();
         // Write head
         let _ = write!(
             writing_file,
-            "#![doc = include_str!(\"../README.md\")]\n\n//! \n\n//! Imported from {:?}\n\n",
+            "#![doc = include_str!(\"../README.md\")]\n\n//! Imported from {:?}\n\n",
             self.get_output_folder()
         );
         // Write body
@@ -63,7 +63,7 @@ impl LoadingTracker {
 // ####################################################################################################
 
 /// Implement writing of target lib loading element as Rust
-pub trait WritingLibHead: Debug {
+trait WritingLibHead: Debug {
     /// Implement writing of target lib loading element as Rust
     fn wrt_lib_level(&self, writer: &mut File) {
         let _ = writeln!(writer);
