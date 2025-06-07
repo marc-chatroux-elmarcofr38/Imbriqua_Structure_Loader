@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/module_file_manager.md")]
+#![doc = include_str!("../doc/custom_file_tools.md")]
 
 // Package section
 use crate::module_log::*;

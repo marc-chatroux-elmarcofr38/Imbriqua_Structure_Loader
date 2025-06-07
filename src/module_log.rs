@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_log.md")]
 
 // Package section
-use crate::module_file_manager::*;
+use crate::custom_file_tools::*;
 
 // Dependencies section
 use anyhow::{Error, Result};

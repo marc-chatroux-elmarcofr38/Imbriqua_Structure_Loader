@@ -22,16 +22,16 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../README.MD")]
 
 // Shared module
+pub mod custom_file_tools;
 pub mod module_cmof_structure;
 pub mod module_dependencies_explorer;
 pub mod module_deserialise_helper;
-pub mod module_file_env;
-pub mod module_file_manager;
 pub mod module_log;
 pub mod module_write_control;
 pub mod module_write_lib;
 pub mod module_write_mods;
 pub mod module_write_objects;
+pub mod result_manager;
 
 // For "main" use only
 mod output_cargo_checker;
@@ -44,12 +44,13 @@ fn main() {
     let logger_configuration = "config_log.yml"; // File for configuring logger
     let input_folder = "metamodel_file/"; // Folder where input file can be find
     let main_output_folder = "../Output_file/"; // Folder dedicased to store output folders and files
+    let result_folder = "../Imbriqua_Structure_Result/src"; // Folder dedicased to store output folders and files
     let main_package_file = "BPMNDI.json"; // File of the main package to explore
     let main_package_id = "_0"; // Package ID of main file to explore
 
     // Initialise global logger, file environment and loading environment
     let _handle = module_log::open_logger(logger_configuration);
-    let file_env = module_file_env::open_env(input_folder, main_output_folder);
+    let file_env = result_manager::open_env(input_folder, main_output_folder, result_folder);
     let mut loading_env = module_dependencies_explorer::open_loader(file_env);
 
     // Load ordered packages list
@@ -62,20 +63,19 @@ fn main() {
     loading_env.write_mods();
     // Cleaning
     loading_env.close();
-
-    link.purge_source(); // Purge
-    let output_path = loading_env.get_output_folder();
-    link.load_from(output_path);
+    // Export the result
+    loading_env.export_result();
 
     // Make doc for loader
     let cargo_loader_package = "Cargo.toml"; // Location of loader environment package Cargo.toml file
-    let link = output_cargo_checker::open_link(cargo_loader_package);
-    assert!(link.cargo_custom_command(vec!["doc", "--no-deps"]));
+    let loader_link = output_cargo_checker::open_link(cargo_loader_package);
+    assert!(loader_link.cargo_custom_command(vec!["clean"]));
+    assert!(loader_link.cargo_custom_command(vec!["doc", "--no-deps"]));
+    assert!(loader_link.cargo_custom_command(vec!["test"]));
 
     // Make testing package link
     let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
-    let link = output_cargo_checker::open_link(cargo_testing_package);
-    assert!(link.cargo_clean()); // Make cargo clean
-
-    // assert!(link.cargo_full_check()); // Make cargo check, test build and doc
+    let result_link = output_cargo_checker::open_link(cargo_testing_package);
+    assert!(result_link.cargo_clean()); // Make cargo clean
+                                        // assert!(result_link.cargo_full_check()); // Make cargo check, test build and doc
 }

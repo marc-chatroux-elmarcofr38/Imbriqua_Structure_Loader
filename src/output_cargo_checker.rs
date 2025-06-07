@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/output_cargo_checker.md")]
 
 // Package section
-use crate::module_file_manager::*;
+use crate::custom_file_tools::*;
 use crate::module_log::*;
 
 // Dependencies section
@@ -34,6 +34,11 @@ use std::process::Command;
 pub struct PackageLink {
     /// PathBuf of the Cargo.toml file of the package
     absolute_path: PathBuf,
+}
+
+/// Shorcut of PackageLink::from()__, creating PackageLink instance for cargo checking
+pub fn open_link(str_relative_cargo_path: &str) -> PackageLink {
+    PackageLink::from(str_relative_cargo_path)
 }
 
 impl PackageLink {
@@ -178,22 +183,6 @@ impl PackageLink {
             }
         }
     }
-
-    /// Removing subelement of a "/src" folder
-    pub fn purge_source(&self) {
-        // Get folder
-        let source_path = self.get_absolute_source_path();
-        // Purge folder
-        source_path.purge_folder();
-    }
-
-    /// Copy all subelement of a source folder in a target folder
-    ///
-    /// from_path (&str) : source folder
-    pub fn load_from(&self, from_path: PathBuf) {
-        // Copy content of 'from_path' to self source folder
-        from_path.copy_folder(&self.get_absolute_source_path());
-    }
 }
 
 /// Printing command result, used by __check_result__ function
@@ -205,7 +194,7 @@ impl PackageLink {
 /// # Examples
 ///
 /// See module_output_checker documentation page for examples
-pub fn represent_command_output(command: &mut Command) -> Option<bool> {
+fn represent_command_output(command: &mut Command) -> Option<bool> {
     // Result catch
     let command_output = match command.output() {
         Ok(result) => result,
@@ -256,11 +245,6 @@ pub fn represent_command_output(command: &mut Command) -> Option<bool> {
     );
     // Boolean result of succes
     Some(command_output.status.success())
-}
-
-/// Shorcut of PackageLink::from()__, creating PackageLink instance for cargo checking
-pub fn open_link(str_relative_cargo_path: &str) -> PackageLink {
-    PackageLink::from(str_relative_cargo_path)
 }
 
 #[cfg(test)]
@@ -372,44 +356,5 @@ mod tests {
         let package_link = open_link(folder);
         let result = package_link.cargo_clean();
         assert!(result);
-    }
-
-    #[test]
-    fn module_out_08_purge_source() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let source =
-            Path::new("tests/module_output_checker/module_out_08_purge_source/project_b/src");
-        let folder = "tests/module_output_checker/module_out_08_purge_source/project_b/Cargo.toml";
-        let output = Path::new("tests/module_output_checker/module_out_09_load_from/output");
-        // Preparing
-        if source.get_folder_content().len() != 3 {
-            output.copy_folder(source);
-        }
-        assert_eq!(source.get_folder_content().len(), 3);
-        // Test
-        let package_link = open_link(folder);
-        package_link.purge_source();
-        assert_eq!(source.get_folder_content().len(), 0);
-    }
-
-    #[test]
-    fn module_out_09_load_from() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let source = Path::new("tests/module_output_checker/module_out_09_load_from/project_b/src");
-        let output = Path::new("tests/module_output_checker/module_out_09_load_from/output");
-        let folder = "tests/module_output_checker/module_out_09_load_from/project_b/Cargo.toml";
-        // Preparing
-        if !source.get_folder_content().is_empty() {
-            source.purge_folder();
-        }
-        assert_eq!(source.get_folder_content().len(), 0);
-        // Test
-        let package_link = open_link(folder);
-        package_link.load_from(output.canonicalize_pathbuf());
-        assert_eq!(source.get_folder_content().len(), 3);
     }
 }

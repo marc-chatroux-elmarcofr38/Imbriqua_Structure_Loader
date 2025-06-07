@@ -21,9 +21,9 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_write_mods.md")]
 
 // Package section
+use crate::custom_file_tools::*;
 use crate::module_cmof_structure::*;
 use crate::module_dependencies_explorer::*;
-use crate::module_file_manager::*;
 use crate::module_log::*;
 
 // Dependencies section

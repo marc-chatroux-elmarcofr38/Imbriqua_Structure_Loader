@@ -21,10 +21,10 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/module_dependencies_explorer.md")]
 
 // Package section
+use crate::custom_file_tools::*;
 use crate::module_cmof_structure::*;
-use crate::module_file_env::*;
-use crate::module_file_manager::*;
 use crate::module_log::*;
+use crate::result_manager::*;
 
 // Dependencies section
 use std::collections::{BTreeMap, HashMap};
@@ -209,6 +209,12 @@ impl LoadingTracker {
         // Ending loading (delete output folder if empty)
         self.file_env.delete_if_empty();
     }
+
+    /// Recall for copy output to result
+    pub fn export_result(&mut self) {
+        // Copy output to result
+        self.file_env.export_result();
+    }
 }
 
 // Algorithm
@@ -336,8 +342,9 @@ mod tests {
         let input_folder = "tests/module_dependencies_explorer/module_dep_01_open_loader/input";
         let main_output_folder =
             "tests/module_dependencies_explorer/module_dep_01_open_loader/output";
+        let result_folder = "tests/module_dependencies_explorer/module_dep_01_open_loader/result";
         // Preparing
-        let file_env = open_env(input_folder, main_output_folder);
+        let file_env = open_env(input_folder, main_output_folder, result_folder);
         // Test
         let loading_env = open_loader(file_env);
         let _ = loading_env.get_output_folder();
