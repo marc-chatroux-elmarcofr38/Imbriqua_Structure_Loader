@@ -24,8 +24,8 @@ If not, see <https://www.gnu.org/licenses/>.
 // Shared module
 pub mod custom_file_tools;
 pub mod custom_log_tools;
+pub mod loader_cmof_structure;
 pub mod loader_deserialise_helper;
-pub mod module_cmof_structure;
 pub mod module_dependencies_explorer;
 pub mod module_write_control;
 pub mod module_write_lib;

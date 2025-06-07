@@ -1,0 +1,1 @@
+Minimalist CMOF model structure

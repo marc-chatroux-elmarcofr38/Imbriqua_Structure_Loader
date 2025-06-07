@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-//! Minimalist CMOF model structure
+#![doc = include_str!("../doc/loader_cmof_structure.md")]
 
 use crate::loader_deserialise_helper;
 // Package section

@@ -22,7 +22,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Package section
 use crate::custom_log_tools::*;
-use crate::module_cmof_structure::*;
+use crate::loader_cmof_structure::*;
 
 // Dependencies section
 pub use infinitable::Infinitable as UnlimitedNatural;
