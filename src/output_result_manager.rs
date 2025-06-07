@@ -122,13 +122,15 @@ mod tests {
     use crate::custom_log_tools::tests::initialize_log_for_test;
 
     #[test]
-    fn module_env_01_open_env() {
+    fn output_result_manager_01_open_env() {
         // Logs
         initialize_log_for_test();
         // Setting
-        let input_path = "tests/module_file_env/module_env_01_open_env/input";
-        let main_output_path = "tests/module_file_env/module_env_01_open_env/main_output";
-        let result_path = "tests/module_file_env/module_env_01_open_env/result_output";
+        let input_path = "tests/output_result_manager/output_result_manager_01_open_env/input";
+        let main_output_path =
+            "tests/output_result_manager/output_result_manager_01_open_env/main_output";
+        let result_path =
+            "tests/output_result_manager/output_result_manager_01_open_env/result_output";
         // Preparing
         Path::new(main_output_path).purge_folder();
         // Test
@@ -136,13 +138,16 @@ mod tests {
     }
 
     #[test]
-    fn module_env_02_detele_if_empty() {
+    fn output_result_manager_02_detele_if_empty() {
         // Logs
         initialize_log_for_test();
         // Setting
-        let input_path = "tests/module_file_env/module_env_02_detele_if_empty/input";
-        let main_output_path = "tests/module_file_env/module_env_02_detele_if_empty/main_output";
-        let result_path = "tests/module_file_env/module_env_02_detele_if_empty/result";
+        let input_path =
+            "tests/output_result_manager/output_result_manager_02_detele_if_empty/input";
+        let main_output_path =
+            "tests/output_result_manager/output_result_manager_02_detele_if_empty/main_output";
+        let result_path =
+            "tests/output_result_manager/output_result_manager_02_detele_if_empty/result";
         // Preparing
         Path::new(main_output_path).purge_folder();
         // Test
@@ -151,13 +156,14 @@ mod tests {
     }
 
     #[test]
-    fn module_env_03_get_input_folder() {
+    fn output_result_manager_03_get_input_folder() {
         // Logs
         initialize_log_for_test();
         // Setting
-        let input_path = "tests/module_file_env/module_env_03_get_folders/input";
-        let main_output_path = "tests/module_file_env/module_env_03_get_folders/main_output";
-        let result_path = "tests/module_file_env/module_env_03_get_folders/result";
+        let input_path = "tests/output_result_manager/output_result_manager_03_get_folders/input";
+        let main_output_path =
+            "tests/output_result_manager/output_result_manager_03_get_folders/main_output";
+        let result_path = "tests/output_result_manager/output_result_manager_03_get_folders/result";
         // Preparing
         Path::new(main_output_path).purge_folder();
         // Test
@@ -168,15 +174,17 @@ mod tests {
     }
 
     #[test]
-    fn module_env_04_export_result() {
+    fn output_result_manager_04_export_result() {
         // Logs
         initialize_log_for_test();
         // Setting
-        let step_1 = "tests/module_file_env/module_env_04_export_result/step_1";
-        let step_2 = "tests/module_file_env/module_env_04_export_result/step_2";
-        let input_path = "tests/module_file_env/module_env_04_export_result/input";
-        let main_output_path = "tests/module_file_env/module_env_04_export_result/main_output";
-        let result_path = "tests/module_file_env/module_env_04_export_result/result";
+        let step_1 = "tests/output_result_manager/output_result_manager_04_export_result/step_1";
+        let step_2 = "tests/output_result_manager/output_result_manager_04_export_result/step_2";
+        let input_path = "tests/output_result_manager/output_result_manager_04_export_result/input";
+        let main_output_path =
+            "tests/output_result_manager/output_result_manager_04_export_result/main_output";
+        let result_path =
+            "tests/output_result_manager/output_result_manager_04_export_result/result";
         // Preparing
         Path::new(main_output_path).purge_folder();
         // Test
@@ -187,19 +195,27 @@ mod tests {
         // Export output in result
         file_env.export_result();
         // Check if all files are in result
-        let path_test_1 =
-            Path::new("tests/module_file_env/module_env_04_export_result/result/f1.txt");
-        let path_test_2 = Path::new("tests/module_file_env/module_env_04_export_result/result/f2");
-        let path_test_3 =
-            Path::new("tests/module_file_env/module_env_04_export_result/result/f2/f3.txt");
+        let path_test_1 = Path::new(
+            "tests/output_result_manager/output_result_manager_04_export_result/result/f1.txt",
+        );
+        let path_test_2 = Path::new(
+            "tests/output_result_manager/output_result_manager_04_export_result/result/f2",
+        );
+        let path_test_3 = Path::new(
+            "tests/output_result_manager/output_result_manager_04_export_result/result/f2/f3.txt",
+        );
         assert!(path_test_1.exists());
         assert!(path_test_2.exists());
         assert!(path_test_3.exists());
-        let path_test_1 =
-            Path::new("tests/module_file_env/module_env_04_export_result/result/f4.txt");
-        let path_test_2 = Path::new("tests/module_file_env/module_env_04_export_result/result/f4");
-        let path_test_3 =
-            Path::new("tests/module_file_env/module_env_04_export_result/result/f5/f6.txt");
+        let path_test_1 = Path::new(
+            "tests/output_result_manager/output_result_manager_04_export_result/result/f4.txt",
+        );
+        let path_test_2 = Path::new(
+            "tests/output_result_manager/output_result_manager_04_export_result/result/f4",
+        );
+        let path_test_3 = Path::new(
+            "tests/output_result_manager/output_result_manager_04_export_result/result/f5/f6.txt",
+        );
         assert!(!path_test_1.exists());
         assert!(!path_test_2.exists());
         assert!(!path_test_3.exists());

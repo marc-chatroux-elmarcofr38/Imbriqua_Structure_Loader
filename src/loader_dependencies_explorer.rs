@@ -335,14 +335,16 @@ mod tests {
     use crate::custom_log_tools::tests::initialize_log_for_test;
 
     #[test]
-    fn module_dep_01_open_loader() {
+    fn loader_dependencies_explorer_01_open_loader() {
         // Logs
         initialize_log_for_test();
         // Setting
-        let input_folder = "tests/module_dependencies_explorer/module_dep_01_open_loader/input";
+        let input_folder =
+            "tests/loader_dependencies_explorer/loader_dependencies_explorer_01_open_loader/input";
         let main_output_folder =
-            "tests/module_dependencies_explorer/module_dep_01_open_loader/output";
-        let result_folder = "tests/module_dependencies_explorer/module_dep_01_open_loader/result";
+            "tests/loader_dependencies_explorer/loader_dependencies_explorer_01_open_loader/output";
+        let result_folder =
+            "tests/loader_dependencies_explorer/loader_dependencies_explorer_01_open_loader/result";
         // Preparing
         let file_env = open_env(input_folder, main_output_folder, result_folder);
         // Test

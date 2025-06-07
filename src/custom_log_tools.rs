@@ -158,25 +158,25 @@ pub mod tests {
 
     static INIT: Once = Once::new();
 
-    /// Provide logs as set in "tests/module_log/config_log_for_test.yml"
+    /// Provide logs as set in "tests/custom_log_tools/config_log_for_test.yml"
     /// Provide logs for test in others module in "tests/tests.log"
-    /// by passing "use crate::module_log::tests::initialize_log_for_test;"
+    /// by passing "use crate::custom_log_tools::tests::initialize_log_for_test;"
     ///
     /// ```rust
     /// #[cfg(test)]
     /// mod tests {
     ///     use super::*;
-    ///     use crate::module_log::tests::initialize_log_for_test;
+    ///     use crate::custom_log_tools::tests::initialize_log_for_test;
     /// ```
     pub fn initialize_log_for_test() {
         INIT.call_once(|| {
-            open_logger("tests/module_log/config_log_for_test.yml");
+            open_logger("tests/custom_log_tools/config_log_for_test.yml");
             info!("\n\n\n\n\nNEW SESSION OF TEST\n\n");
         });
     }
 
     #[test]
-    fn module_log_01_check_configuration_by_backup() {
+    fn custom_log_tools_01_check_configuration_by_backup() {
         // Checking execution
         let result = get_config_by_backup();
         // Checking Result
@@ -184,17 +184,17 @@ pub mod tests {
     }
 
     #[test]
-    fn module_log_02_check_configuration_by_file() {
+    fn custom_log_tools_02_check_configuration_by_file() {
         // Checking execution
         let result = get_config_by_file(
-            "tests/module_log/module_log_02_check_configuration_by_file/config_log.yml",
+            "tests/custom_log_tools/custom_log_tools_02_check_configuration_by_file/config_log.yml",
         );
         // Checking Result
         assert!(result.is_ok());
     }
 
     #[test]
-    fn module_log_03_check_open_logger() {
+    fn custom_log_tools_03_check_open_logger() {
         initialize_log_for_test();
         trace!("LOG TEST : TRACE");
         debug!("LOG TEST : DEBUG");

@@ -29,7 +29,7 @@ use std::process::Command;
 
 /// Represent a cargo package folder link, used to checking metacode result
 ///
-/// See module_output_checker for examples and errors informations
+/// See output_cargo_checker for examples and errors informations
 #[derive(Clone, PartialEq, Debug)]
 pub struct PackageLink {
     /// PathBuf of the Cargo.toml file of the package
@@ -81,11 +81,11 @@ impl PackageLink {
     ///
     /// # Errors
     ///
-    /// See module_output_checker documentation page for errors details
+    /// See output_cargo_checker documentation page for errors details
     ///
     /// # Examples
     ///
-    /// See module_output_checker documentation page for example
+    /// See output_cargo_checker documentation page for example
     pub fn cargo_custom_command(&self, args: Vec<&str>) -> bool {
         // Instantiate command
         let mut cargo_1 = Command::new("cargo");
@@ -113,11 +113,11 @@ impl PackageLink {
     ///
     /// # Errors
     ///
-    /// See module_output_checker documentation page for errors details
+    /// See output_cargo_checker documentation page for errors details
     ///
     /// # Examples
     ///
-    /// See module_output_checker documentation page for examples
+    /// See output_cargo_checker documentation page for examples
     pub fn cargo_full_check(&self) -> bool {
         // Running 'cargo check --all-features'
         let res_1 = self.cargo_custom_command(vec!["check", "--all-features"]);
@@ -135,11 +135,11 @@ impl PackageLink {
     ///
     /// # Errors
     ///
-    /// See module_output_checker documentation page for errors details
+    /// See output_cargo_checker documentation page for errors details
     ///
     /// # Examples
     ///
-    /// See module_output_checker documentation page for examples
+    /// See output_cargo_checker documentation page for examples
     pub fn cargo_integrity_check(&self) -> bool {
         // Running 'cargo locate-project'
         let res_1 = &self.cargo_custom_command(vec!["locate-project"]);
@@ -166,11 +166,11 @@ impl PackageLink {
     ///
     /// # Errors
     ///
-    /// See module_output_checker documentation page for errors details
+    /// See output_cargo_checker documentation page for errors details
     ///
     /// # Examples
     ///
-    /// See module_output_checker documentation page for examples
+    /// See output_cargo_checker documentation page for examples
     pub fn cargo_clean(&self) -> bool {
         match &self.cargo_custom_command(vec!["clean"]) {
             true => {
@@ -189,11 +189,11 @@ impl PackageLink {
 ///
 /// # Errors
 ///
-/// See module_output_checker documentation page for errors details
+/// See output_cargo_checker documentation page for errors details
 ///
 /// # Examples
 ///
-/// See module_output_checker documentation page for examples
+/// See output_cargo_checker documentation page for examples
 fn represent_command_output(command: &mut Command) -> Option<bool> {
     // Result catch
     let command_output = match command.output() {
@@ -253,23 +253,23 @@ mod tests {
     use crate::custom_log_tools::tests::initialize_log_for_test;
 
     #[test]
-    fn module_out_01_from() {
+    fn output_cargo_checker_01_from() {
         // Logs
         initialize_log_for_test();
         // Setting
-        let folder = "tests/module_output_checker/module_out_01_from/project_b/Cargo.toml";
+        let folder = "tests/output_cargo_checker/output_cargo_checker_01_from/project_b/Cargo.toml";
         // Preparing
         // Test
         let _ = open_link(folder);
     }
 
     #[test]
-    fn module_out_02_get_absolute_cargo_path() {
+    fn output_cargo_checker_02_get_absolute_cargo_path() {
         // Logs
         initialize_log_for_test();
         // Setting
-        let folder = "tests/module_output_checker/module_out_02_get_absolute_cargo_path/project_b/Cargo.toml";
-        let good_result = Path::new("tests/module_output_checker/module_out_02_get_absolute_cargo_path/project_b/Cargo.toml");
+        let folder = "tests/output_cargo_checker/output_cargo_checker_02_get_absolute_cargo_path/project_b/Cargo.toml";
+        let good_result = Path::new("tests/output_cargo_checker/output_cargo_checker_02_get_absolute_cargo_path/project_b/Cargo.toml");
         // Preparing
         // Test
         let package_link = open_link(folder);
@@ -278,13 +278,13 @@ mod tests {
     }
 
     #[test]
-    fn module_out_03_get_absolute_source_path() {
+    fn output_cargo_checker_03_get_absolute_source_path() {
         // Logs
         initialize_log_for_test();
         // Setting
-        let folder = "tests/module_output_checker/module_out_03_get_absolute_source_path/project_b/Cargo.toml";
+        let folder = "tests/output_cargo_checker/output_cargo_checker_03_get_absolute_source_path/project_b/Cargo.toml";
         let good_result = Path::new(
-            "tests/module_output_checker/module_out_03_get_absolute_source_path/project_b/src",
+            "tests/output_cargo_checker/output_cargo_checker_03_get_absolute_source_path/project_b/src",
         );
         // Preparing
         // Test
@@ -294,14 +294,14 @@ mod tests {
     }
 
     #[test]
-    fn module_out_04_cargo_custom_command() {
+    fn output_cargo_checker_04_cargo_custom_command() {
         // Logs
         initialize_log_for_test();
         // Setting
         let folder =
-            "tests/module_output_checker/module_out_04_cargo_custom_command/project_b/Cargo.toml";
+            "tests/output_cargo_checker/output_cargo_checker_04_cargo_custom_command/project_b/Cargo.toml";
         let doc = Path::new(
-            "tests/module_output_checker/module_out_04_cargo_custom_command/project_b/target/doc",
+            "tests/output_cargo_checker/output_cargo_checker_04_cargo_custom_command/project_b/target/doc",
         );
         // Preparing
         if doc.exists() {
@@ -317,12 +317,12 @@ mod tests {
     }
 
     #[test]
-    fn module_out_05_cargo_full_check() {
+    fn output_cargo_checker_05_cargo_full_check() {
         // Logs
         initialize_log_for_test();
         // Setting
         let folder =
-            "tests/module_output_checker/module_out_05_cargo_full_check/project_b/Cargo.toml";
+            "tests/output_cargo_checker/output_cargo_checker_05_cargo_full_check/project_b/Cargo.toml";
         // Preparing
         // Test
         let package_link = open_link(folder);
@@ -332,12 +332,12 @@ mod tests {
     }
 
     #[test]
-    fn module_out_06_cargo_integrity_check() {
+    fn output_cargo_checker_06_cargo_integrity_check() {
         // Logs
         initialize_log_for_test();
         // Setting
         let folder =
-            "tests/module_output_checker/module_out_06_cargo_integrity_check/project_b/Cargo.toml";
+            "tests/output_cargo_checker/output_cargo_checker_06_cargo_integrity_check/project_b/Cargo.toml";
         // Preparing
         // Test
         let package_link = open_link(folder);
@@ -346,11 +346,12 @@ mod tests {
     }
 
     #[test]
-    fn module_out_07_cargo_clean() {
+    fn output_cargo_checker_07_cargo_clean() {
         // Logs
         initialize_log_for_test();
         // Setting
-        let folder = "tests/module_output_checker/module_out_07_cargo_clean/project_b/Cargo.toml";
+        let folder =
+            "tests/output_cargo_checker/output_cargo_checker_07_cargo_clean/project_b/Cargo.toml";
         // Preparing
         // Test
         let package_link = open_link(folder);
