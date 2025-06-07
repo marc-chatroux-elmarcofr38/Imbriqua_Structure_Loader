@@ -23,10 +23,11 @@ If not, see <https://www.gnu.org/licenses/>.
 // Package section
 use crate::module_cmof_structure::*;
 use crate::module_dependencies_explorer::*;
+use crate::module_file_manager::*;
 use crate::module_log::*;
 
 // Dependencies section
-// use std::fmt::Debug;
+pub use serde_json;
 
 // ####################################################################################################
 //
@@ -35,10 +36,53 @@ use crate::module_log::*;
 // ####################################################################################################
 
 impl LoadingTracker {
+    /// Get output file
+    pub fn get_output_lib_file(&self) -> (String, File) {
+        // Calculate folder path
+        let mut file_name = self.get_output_folder();
+        let filename = "lib.rs";
+        file_name.push(filename);
+        // Create empty file
+        let writer = file_name.write_new_file();
+        (filename.to_string(), writer)
+    }
+    /// Get output folder for the package --> ex : src/dc
+    pub fn get_output_mod_folder(&self, package: &LoadingPackage) -> PathBuf {
+        // Calculate folder path
+        let mut folder_name = self.get_output_folder();
+        let pachage_name = package.get_lowercase_name() + "/";
+        folder_name.push(&pachage_name);
+        // Create empty file
+        let _ = folder_name.create_folder();
+        folder_name
+    }
+
+    /// Get mod file for the package --> ex : src/dc/mod.rs
+    pub fn get_output_package_mod_file(&self, package: &LoadingPackage) -> (String, File) {
+        // Calculate folder path
+        let mut file_name = self.get_output_folder();
+        let filename = package.get_lowercase_name() + "/mod.rs";
+        file_name.push(&filename);
+        // Create empty file
+        let writer = file_name.write_new_file();
+        (filename.to_string(), writer)
+    }
+
+    /// Get output file of a object of a package --> ex : src/dc/font.rs
+    pub fn get_output_object_file(&self, package: &LoadingPackage, object: &str) -> (String, File) {
+        // Calculate folder path
+        let mut file_name = self.get_output_folder();
+        let filename = package.get_lowercase_name() + "/" + object + ".rs";
+        file_name.push(&filename);
+        // Create empty file
+        let writer = file_name.write_new_file();
+        (filename.to_string(), writer)
+    }
+
     /// Build all pre calculing information
     pub fn writing_preparation(&mut self) {
         // Alone classes
-        for (_, (_, package)) in self.clone().get_package_in_order() {
+        for (_, package) in self.clone().get_package_in_order() {
             for owned_member in package.get_json().owned_member.clone().into_iter() {
                 match owned_member {
                     EnumOwnedMember::Class(content) => {

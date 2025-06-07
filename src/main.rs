@@ -28,9 +28,10 @@ pub mod module_file_env;
 pub mod module_file_manager;
 pub mod module_log;
 pub mod module_output_checker;
+pub mod module_write_control;
 pub mod module_write_lib;
 pub mod module_write_mods;
-pub mod module_writing_preparation;
+pub mod module_write_objects;
 
 fn main() {
     // // this method needs to be inside main() method

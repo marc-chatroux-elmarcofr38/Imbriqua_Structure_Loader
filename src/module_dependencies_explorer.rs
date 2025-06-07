@@ -28,6 +28,7 @@ use crate::module_log::*;
 
 // Dependencies section
 use std::collections::{BTreeMap, HashMap};
+use std::iter::FromIterator;
 
 /// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using FileEnv object
 pub fn open_loader(file_env: FileEnv) -> LoadingTracker {
@@ -213,15 +214,17 @@ impl LoadingTracker {
 // Algorithm
 impl LoadingTracker {
     ///
-    pub fn get_package_in_order(&self) -> HashMap<&usize, (&String, &LoadingPackage)> {
-        let mut result: HashMap<&usize, (&String, &LoadingPackage)> = HashMap::new();
+    pub fn get_package_in_order(&self) -> Vec<(&String, &LoadingPackage)> {
+        let mut result: HashMap<&String, &LoadingPackage> = HashMap::new();
         debug!("{:?}", &self.importing_order);
-        for (key, value) in &self.importing_order {
+        for (_, value) in &self.importing_order {
             if self.loaded_package.get(value).is_some() {
-                result.insert(&key, (&value, self.loaded_package.get(value).unwrap()));
+                result.insert(&value, self.loaded_package.get(value).unwrap());
             }
         }
-        result
+        let mut v = Vec::from_iter(result);
+        v.sort_by(|&(a, _), &(b, _)| a.cmp(&b));
+        v
     }
 
     /// Load minidom element from a gived package, including dependencies, and save element in loaded_package

@@ -35,16 +35,6 @@ use std::fmt::Debug;
 // ####################################################################################################
 
 impl LoadingTracker {
-    /// Get output file
-    fn get_output_lib_file(&self) -> (String, File) {
-        // Calculate folder path
-        let mut file_name = self.get_output_folder();
-        let filename = "lib.rs";
-        file_name.push(filename);
-        // Create empty file
-        let writer = file_name.write_new_file();
-        (filename.to_string(), writer)
-    }
     /// Make lib.rs from scratch and package
     pub fn write_lib(&mut self) {
         let (filename, mut writing_file) = self.get_output_lib_file();
@@ -55,7 +45,7 @@ impl LoadingTracker {
             self.get_output_folder()
         );
         // Write body
-        for (_, (label, package)) in self.get_package_in_order() {
+        for (label, package) in self.get_package_in_order() {
             // Logs
             debug!("Generating \"{filename}\" from \"{label}\" : START");
             // Write lib head
