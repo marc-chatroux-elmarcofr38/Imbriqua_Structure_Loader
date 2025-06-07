@@ -150,6 +150,7 @@ fn get_config_by_file(config_file: &str) -> Result<Config> {
     Ok(config)
 }
 
+/// Test on the log module
 #[cfg(test)]
 pub mod tests {
     use super::*;
@@ -157,6 +158,16 @@ pub mod tests {
 
     static INIT: Once = Once::new();
 
+    /// Provide logs as set in "tests/module_log/config_log_for_test.yml"
+    /// Provide logs for test in others module in "tests/tests.log"
+    /// by passing "use crate::module_log::tests::initialize_log_for_test;"
+    ///
+    /// ```rust
+    /// #[cfg(test)]
+    /// mod tests {
+    ///     use super::*;
+    ///     use crate::module_log::tests::initialize_log_for_test;
+    /// ```
     pub fn initialize_log_for_test() {
         INIT.call_once(|| {
             open_logger("tests/module_log/config_log_for_test.yml");

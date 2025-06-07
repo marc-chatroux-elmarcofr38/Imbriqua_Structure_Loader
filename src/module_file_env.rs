@@ -87,7 +87,7 @@ pub fn open_env(input_folder: &str, main_output_folder: &str) -> FileEnv {
 }
 
 #[cfg(test)]
-pub mod tests {
+mod tests {
     use super::*;
     use crate::module_log::tests::initialize_log_for_test;
 
