@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
+#![allow(unused)]
 #![doc = include_str!("../doc/custom_log_tools.md")]
 
 // Package section
