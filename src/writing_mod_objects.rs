@@ -94,7 +94,7 @@ impl WritingCallModObject for EnumOwnedMember {
             }
             EnumOwnedMember::PrimitiveType(content) => {
                 let _ = content;
-                // content.wrt_call_mod_object(folder, package_name);
+                content.wrt_call_mod_object(folder, package_name);
             }
         }
     }
@@ -105,7 +105,7 @@ impl WritingCallModObject for CMOFAssociation {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.name.to_case(Case::Snake).as_str(),
+                self.get_level_path().as_str(),
             );
         // Doc title
         let _ = writeln!(
@@ -114,8 +114,7 @@ impl WritingCallModObject for CMOFAssociation {
             self.name.to_case(Case::Snake).as_str()
         );
         let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "");
-        let _ = writeln!(writing_mod_file, "use crate::{}::*;", package_name);
+        let _ = writeln!(writing_mod_file, "\nuse crate::{}::*;", package_name);
         let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
@@ -126,7 +125,7 @@ impl WritingCallModObject for CMOFClass {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.name.to_case(Case::Snake).as_str(),
+                self.get_level_path().as_str(),
             );
         // Doc title
         let _ = writeln!(
@@ -135,8 +134,7 @@ impl WritingCallModObject for CMOFClass {
             self.name.to_case(Case::Snake).as_str()
         );
         let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "");
-        let _ = writeln!(writing_mod_file, "use crate::{}::*;", package_name);
+        let _ = writeln!(writing_mod_file, "\nuse crate::{}::*;", package_name);
         let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
@@ -147,7 +145,7 @@ impl WritingCallModObject for CMOFDataType {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.name.to_case(Case::Snake).as_str(),
+                self.get_level_path().as_str(),
             );
         // Doc title
         let _ = writeln!(
@@ -156,8 +154,7 @@ impl WritingCallModObject for CMOFDataType {
             self.name.to_case(Case::Snake).as_str()
         );
         let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "");
-        let _ = writeln!(writing_mod_file, "use crate::{}::*;", package_name);
+        let _ = writeln!(writing_mod_file, "\nuse crate::{}::*;", package_name);
         let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
@@ -177,8 +174,7 @@ impl WritingCallModObject for CMOFEnumeration {
             self.name.to_case(Case::Snake).as_str()
         );
         let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "");
-        let _ = writeln!(writing_mod_file, "use crate::{}::*;", package_name);
+        let _ = writeln!(writing_mod_file, "\nuse crate::{}::*;", package_name);
         let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
@@ -189,7 +185,7 @@ impl WritingCallModObject for CMOFPrimitiveType {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.name.to_case(Case::Snake).as_str(),
+                self.get_level_path().as_str(),
             );
         // Doc title
         let _ = writeln!(
@@ -198,8 +194,7 @@ impl WritingCallModObject for CMOFPrimitiveType {
             self.name.to_case(Case::Snake).as_str()
         );
         let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "");
-        let _ = writeln!(writing_mod_file, "use crate::{}::*;", package_name);
+        let _ = writeln!(writing_mod_file, "\nuse crate::{}::*;", package_name);
         let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
