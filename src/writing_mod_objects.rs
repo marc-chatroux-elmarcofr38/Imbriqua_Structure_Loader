@@ -123,48 +123,26 @@ impl WritingCallModObject for EnumOwnedMember {
     fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
         match self {
             EnumOwnedMember::Association(content) => {
-                content.wrt_call_mod_object(folder, package_name);
+                // content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::Class(content) => {
-                content.wrt_call_mod_object(folder, package_name);
+                // content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::DataType(content) => {
-                content.wrt_call_mod_object(folder, package_name);
+                // content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::Enumeration(content) => {
                 content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::PrimitiveType(content) => {
-                content.wrt_call_mod_object(folder, package_name);
+                // content.wrt_call_mod_object(folder, package_name);
             }
         }
     }
 }
 
 impl WritingCallModObject for CMOFAssociation {
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
-        let (_, mut writing_mod_file) =
-            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                &folder,
-                self.name.to_case(Case::Snake).as_str(),
-            );
-        // Doc title
-        let _ = writeln!(
-            writing_mod_file,
-            "//! {}",
-            self.name.to_case(Case::Snake).as_str()
-        );
-        let _ = writeln!(writing_mod_file, "#[allow(unused)]");
-        let _ = writeln!(writing_mod_file, "#[allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "");
-        let _ = writeln!(
-            writing_mod_file,
-            "use crate::{}::*;",
-            package_name.to_case(Case::Snake).as_str()
-        );
-        let _ = writeln!(writing_mod_file, "use crate::Builder;");
-        self.wrt_mod_object(&mut writing_mod_file);
-    }
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {}
 }
 
 impl WritingCallModObject for CMOFClass {
@@ -180,8 +158,7 @@ impl WritingCallModObject for CMOFClass {
             "//! {}",
             self.name.to_case(Case::Snake).as_str()
         );
-        let _ = writeln!(writing_mod_file, "#[allow(unused)]");
-        let _ = writeln!(writing_mod_file, "#[allow(unused_imports)]");
+        let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
         let _ = writeln!(writing_mod_file, "");
         let _ = writeln!(
             writing_mod_file,
@@ -206,8 +183,7 @@ impl WritingCallModObject for CMOFDataType {
             "//! {}",
             self.name.to_case(Case::Snake).as_str()
         );
-        let _ = writeln!(writing_mod_file, "#[allow(unused)]");
-        let _ = writeln!(writing_mod_file, "#[allow(unused_imports)]");
+        let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
         let _ = writeln!(writing_mod_file, "");
         let _ = writeln!(
             writing_mod_file,
@@ -232,8 +208,7 @@ impl WritingCallModObject for CMOFEnumeration {
             "//! {}",
             self.name.to_case(Case::Snake).as_str()
         );
-        let _ = writeln!(writing_mod_file, "#[allow(unused)]");
-        let _ = writeln!(writing_mod_file, "#[allow(unused_imports)]");
+        let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
         let _ = writeln!(writing_mod_file, "");
         let _ = writeln!(
             writing_mod_file,
@@ -258,8 +233,7 @@ impl WritingCallModObject for CMOFPrimitiveType {
             "//! {}",
             self.name.to_case(Case::Snake).as_str()
         );
-        let _ = writeln!(writing_mod_file, "#[allow(unused)]");
-        let _ = writeln!(writing_mod_file, "#[allow(unused_imports)]");
+        let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
         let _ = writeln!(writing_mod_file, "");
         let _ = writeln!(
             writing_mod_file,
@@ -300,7 +274,7 @@ impl WritingModObject for CMOFClass {
         self.wrt_struct_start(writer);
         // OwnedAttribute
         for content in self.owned_attribute.iter() {
-            content.wrt_mod_object(writer);
+            // content.wrt_mod_object(writer);
         }
         // End of Struct
         self.wrt_struct_end(writer);
@@ -350,7 +324,7 @@ impl WritingModObject for CMOFDataType {
 
         // OwnedAttribute
         for content in self.owned_attribute.iter() {
-            content.wrt_mod_object(writer);
+            // content.wrt_mod_object(writer);
         }
 
         // End of struct
@@ -400,7 +374,11 @@ impl WritingModObject for CMOFEnumeration {
 
         // Enum
         let _ = writeln!(writer, "#[derive(Debug, Clone)]");
-        let _ = writeln!(writer, "pub enum {} {{", self.name.to_case(Case::Snake));
+        let _ = writeln!(
+            writer,
+            "pub enum {} {{",
+            self.name.to_case(Case::UpperCamel)
+        );
         for content in self.owned_attribute.iter() {
             content.wrt_mod_object(writer);
         }
@@ -423,11 +401,11 @@ impl WritingModObject for CMOFEnumerationLiteral {
         let _ = writeln!(
             writer,
             "    /// '{}' from (id : '{}', name : '{}')",
-            self.name.to_case(Case::Snake),
+            self.name.to_case(Case::UpperCamel),
             self.xmi_id,
             self.name
         );
-        let _ = writeln!(writer, "    {}, ", self.name.to_case(Case::Snake));
+        let _ = writeln!(writer, "    {}, ", self.name.to_case(Case::UpperCamel));
     }
 }
 
@@ -599,8 +577,10 @@ impl WritingModObject for CMOFProperty {
             a = if self.is_public() { "pub" } else { "" },
             b = if self.is_option() { "Option<" } else { "" },
             c = if self.is_vec() { "Vec<" } else { "" },
-            d = if self.is_lifetime_dpt() { "&'a " } else { "" },
-            e = if self.is_lifetime_dpt() { "<'a>" } else { "" },
+            d = if self.is_lifetime_dpt() { "" } else { "" },
+            // d = if self.is_lifetime_dpt() { "&'a " } else { "" },
+            e = if self.is_lifetime_dpt() { "" } else { "" },
+            // e = if self.is_lifetime_dpt() { "<'a>" } else { "" },
             f = if self.is_vec() { ">" } else { "" },
             g = if self.is_option() { ">" } else { "" }
         );
@@ -829,7 +809,8 @@ impl CMOFClass {
             writer,
             "pub struct {a}{b} {{",
             a = self.name,
-            b = if self.is_lifetime_dpt() { "<'a>" } else { "" }
+            // b = if self.is_lifetime_dpt() { "<'a>" } else { "" }
+            b = if self.is_lifetime_dpt() { "" } else { "" }
         );
     }
     /// Write struct end part
@@ -875,7 +856,8 @@ impl CMOFClass {
             writer,
             "impl{b} {a}Builder{b} {{",
             a = self.name,
-            b = if self.is_lifetime_dpt() { "<'a>" } else { "" }
+            // b = if self.is_lifetime_dpt() { "<'a>" } else { "" }
+            b = if self.is_lifetime_dpt() { "" } else { "" }
         );
     }
     /// Write validation end part

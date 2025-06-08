@@ -37,20 +37,17 @@ use std::fmt::Debug;
 impl LoadingTracker {
     /// Make lib.rs from scratch and package
     pub fn write_lib_file(&mut self) {
-        let (filename, mut writing_file) = self.get_output_lib_file();
+        let (filename, mut writer) = self.get_output_lib_file();
         // Write head
-        let _ = write!(
-            writing_file,
-            "#![doc = include_str!(\"../README.md\")]\n\n//! Imported from {:?}\n\n",
-            self.get_output_folder()
-        );
-        let _ = writeln!(writing_file, "pub use derive_builder::Builder;\n\n");
+        let _ = writeln!(writer, "#![doc = include_str!(\"../README.md\")]");
+        let _ = writeln!(writer, "\n//! Imported from {:?}", self.get_output_folder());
+        let _ = writeln!(writer, "pub use derive_builder::Builder;");
         // Write body
         for (label, package) in self.get_package_in_order() {
             // Logs
             debug!("Generating \"{filename}\" from \"{label}\" : START");
             // Write lib head
-            package.wrt_lib_level(&mut writing_file);
+            package.wrt_lib_level(&mut writer);
             // Logs
             info!("Generating \"{filename}\" from \"{label}\" : Finished");
         }
@@ -77,7 +74,7 @@ impl WritingLibHead for LoadingPackage {
         // Module pachage uri
         let _ = writeln!(
             writer,
-            "/// {}{} : {}",
+            "\n/// {}{} : {}",
             &self.get_json().name,
             &self.get_json().xmi_id,
             &self.get_json().uri
