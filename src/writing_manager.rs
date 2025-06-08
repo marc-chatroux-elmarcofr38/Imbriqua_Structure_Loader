@@ -30,6 +30,7 @@ use crate::loader_dependencies_explorer::*;
 
 // Dependencies section
 pub use serde_json;
+use std::fmt::Debug;
 
 // ####################################################################################################
 //
@@ -38,7 +39,7 @@ pub use serde_json;
 // ####################################################################################################
 
 impl LoadingTracker {
-    /// Get output file
+    /// Get output lib.rs file
     pub fn get_output_lib_file(&self) -> (String, File) {
         // Calculate folder path
         let mut file_name = self.get_output_folder();
@@ -52,7 +53,7 @@ impl LoadingTracker {
     pub fn get_output_mod_folder(&self, package: &LoadingPackage) -> PathBuf {
         // Calculate folder path
         let mut folder_name = self.get_output_folder();
-        let pachage_name = package.get_lowercase_name() + "/";
+        let pachage_name = package.get_level_name() + "/";
         folder_name.push(&pachage_name);
         // Create empty file
         let _ = folder_name.create_folder();
@@ -63,7 +64,7 @@ impl LoadingTracker {
     pub fn get_output_mod_file(&self, package: &LoadingPackage) -> (String, File) {
         // Calculate folder path
         let mut file_name = self.get_output_folder();
-        let filename = package.get_lowercase_name() + "/mod.rs";
+        let filename = package.get_level_name() + "/mod.rs";
         file_name.push(&filename);
         // Create empty file
         let writer = file_name.write_new_file();
@@ -139,6 +140,83 @@ pub fn is_simple_dpt(input: &str) -> bool {
 //
 // ####################################################################################################
 
+/// Implement writing of target mod loading head element as Rust
+pub trait WritingModHead: Debug {
+    /// Implement writing of target struct instance as Rust struct format
+    /// Writing section : module file head (import part, "use", etc.)
+    fn wrt_mod_head(&self, writer: &mut File) {
+        let _ = writeln!(writer);
+        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
+    }
+}
+
+/// Implement writing of target mod loading head element as Rust
+pub trait WritingModObjectCall: Debug {
+    /// Implement writing of target struct instance as Rust struct format
+    /// Writing section : struct element (macro for struct and struct)
+    fn wrt_mod_object_call(&self, writer: &mut File) {
+        let _ = writeln!(writer);
+        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
+    }
+}
+
+/// Implement writing of target lib loading element as Rust
+pub trait WritingLibHead: Debug {
+    /// Implement writing of target lib loading element as Rust
+    fn wrt_lib_level(&self, writer: &mut File) {
+        let _ = writeln!(writer);
+        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
+    }
+}
+
+/// Implement writing of target struct instance as Rust struct trait implementation
+pub trait WritingModTrait: Debug {
+    /// Implement writing of target struct instance as Rust struct trait implementation
+    fn wrt_trait_level(&self, writer: &mut File) {
+        let _ = writeln!(writer);
+        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
+    }
+}
+
+/// Implement writing of target mod loading head element as Rust
+pub trait WritingCallModObject: Debug {
+    /// Implement writing of target struct instance as Rust struct format
+    /// Writing section : struct element (macro for struct and struct)
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {}
+}
+
+/// Implement writing of target mod loading head element as Rust
+pub trait WritingModObject: Debug {
+    /// Implement writing of target struct instance as Rust struct format
+    /// Writing section : struct element (macro for struct and struct)
+    fn wrt_mod_object(&self, writer: &mut File) {
+        let _ = writeln!(writer);
+        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
+    }
+}
+
+/// Implement writing of target struct validationfunction as Rust format
+pub trait WritingModValidation: Debug {
+    /// Implement writing of target struct instance as Rust struct format
+    /// Writing section : macro adding struct validation
+    fn wrt_sub_validation(&self, writer: &mut File) {
+        let _ = writeln!(writer);
+        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
+    }
+    /// Implement writing of target struct instance as Rust struct format
+    /// Writing section : additionnal validation function for struct validation
+    fn wrt_main_validation(&self, writer: &mut File) {
+        let _ = writeln!(writer);
+        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
 /// Provide naming method for CMOF Object
 pub trait Naming {
     /// Name for object file, add linked import
@@ -147,10 +225,59 @@ pub trait Naming {
     }
 }
 
+impl Naming for LoadingPackage {
+    fn get_level_name(&self) -> String {
+        let mut result = String::from("package_");
+        result.push_str(&self.get_lowercase_name().to_case(Case::Snake).as_str());
+        result
+    }
+}
+
+impl Naming for ImportedPackage {
+    fn get_level_name(&self) -> String {
+        let content = self.href.clone();
+        let content = content.replace(".cmof#_0", "");
+        let mut result = String::from("package_");
+        result.push_str(content.to_case(Case::Snake).as_str());
+        result
+    }
+}
+
+impl Naming for CMOFAssociation {
+    fn get_level_name(&self) -> String {
+        let mut result = String::from("link_");
+        result.push_str(self.name.to_case(Case::Snake).as_str());
+        result
+    }
+}
+
+impl Naming for CMOFClass {
+    fn get_level_name(&self) -> String {
+        let mut result = String::from("class_");
+        result.push_str(self.name.to_case(Case::Snake).as_str());
+        result
+    }
+}
+
+impl Naming for CMOFDataType {
+    fn get_level_name(&self) -> String {
+        let mut result = String::from("datatype_");
+        result.push_str(self.name.to_case(Case::Snake).as_str());
+        result
+    }
+}
+
 impl Naming for CMOFEnumeration {
     fn get_level_name(&self) -> String {
-        let mut result = String::new();
-        result.push_str("enum_");
+        let mut result = String::from("enum_");
+        result.push_str(self.name.to_case(Case::Snake).as_str());
+        result
+    }
+}
+
+impl Naming for CMOFPrimitiveType {
+    fn get_level_name(&self) -> String {
+        let mut result = String::from("primitivetype_");
         result.push_str(self.name.to_case(Case::Snake).as_str());
         result
     }

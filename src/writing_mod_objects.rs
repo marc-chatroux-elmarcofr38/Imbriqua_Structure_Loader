@@ -26,13 +26,11 @@ use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer;
 use crate::loader_dependencies_explorer::*;
-use crate::writing_manager::Naming;
+use crate::writing_manager::*;
 
 // Dependencies section
 use lazy_static::lazy_static;
-pub use serde_json;
 use std::collections::HashMap;
-use std::fmt::Debug;
 
 // ####################################################################################################
 //
@@ -51,58 +49,10 @@ impl LoadingTracker {
             // Write mod structs
             package
                 .get_json()
-                .wrt_call_mod_object(&folder, &package.get_lowercase_name());
+                .wrt_call_mod_object(&folder, &package.get_level_name());
             // Logs
             info!("Generating sub-mod file for \"{label}\" : Finished");
         }
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-//
-// ####################################################################################################
-
-/// Implement writing of target struct instance as Rust struct trait implementation
-pub trait WritingModTrait: Debug {
-    /// Implement writing of target struct instance as Rust struct trait implementation
-    fn wrt_trait_level(&self, writer: &mut File) {
-        let _ = writeln!(writer);
-        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
-    }
-}
-
-/// Implement writing of target mod loading head element as Rust
-pub trait WritingCallModObject: Debug {
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : struct element (macro for struct and struct)
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {}
-}
-
-/// Implement writing of target mod loading head element as Rust
-pub trait WritingModObject: Debug {
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : struct element (macro for struct and struct)
-    fn wrt_mod_object(&self, writer: &mut File) {
-        let _ = writeln!(writer);
-        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
-    }
-}
-
-/// Implement writing of target struct validationfunction as Rust format
-pub trait WritingModValidation: Debug {
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : macro adding struct validation
-    fn wrt_sub_validation(&self, writer: &mut File) {
-        let _ = writeln!(writer);
-        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
-    }
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : additionnal validation function for struct validation
-    fn wrt_main_validation(&self, writer: &mut File) {
-        let _ = writeln!(writer);
-        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
     }
 }
 
@@ -161,11 +111,7 @@ impl WritingCallModObject for CMOFClass {
         );
         let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
         let _ = writeln!(writing_mod_file, "");
-        let _ = writeln!(
-            writing_mod_file,
-            "use crate::{}::*;",
-            package_name.to_case(Case::Snake).as_str()
-        );
+        let _ = writeln!(writing_mod_file, "use crate::{}::*;", package_name);
         let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
@@ -186,11 +132,7 @@ impl WritingCallModObject for CMOFDataType {
         );
         let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
         let _ = writeln!(writing_mod_file, "");
-        let _ = writeln!(
-            writing_mod_file,
-            "use crate::{}::*;",
-            package_name.to_case(Case::Snake).as_str()
-        );
+        let _ = writeln!(writing_mod_file, "use crate::{}::*;", package_name);
         let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
@@ -211,11 +153,7 @@ impl WritingCallModObject for CMOFEnumeration {
         );
         let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
         let _ = writeln!(writing_mod_file, "");
-        let _ = writeln!(
-            writing_mod_file,
-            "use crate::{}::*;",
-            package_name.to_case(Case::Snake).as_str()
-        );
+        let _ = writeln!(writing_mod_file, "use crate::{}::*;", package_name);
         let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
@@ -236,11 +174,7 @@ impl WritingCallModObject for CMOFPrimitiveType {
         );
         let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
         let _ = writeln!(writing_mod_file, "");
-        let _ = writeln!(
-            writing_mod_file,
-            "use crate::{}::*;",
-            package_name.to_case(Case::Snake).as_str()
-        );
+        let _ = writeln!(writing_mod_file, "use crate::{}::*;", package_name);
         let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }

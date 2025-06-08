@@ -25,11 +25,9 @@ use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer::*;
-use crate::writing_manager::Naming;
+use crate::writing_manager::*;
 
 // Dependencies section
-pub use serde_json;
-use std::fmt::Debug;
 
 // ####################################################################################################
 //
@@ -64,32 +62,6 @@ impl LoadingTracker {
 //
 // ####################################################################################################
 
-/// Implement writing of target mod loading head element as Rust
-pub trait WritingModHead: Debug {
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : module file head (import part, "use", etc.)
-    fn wrt_mod_head(&self, writer: &mut File) {
-        let _ = writeln!(writer);
-        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
-    }
-}
-
-/// Implement writing of target mod loading head element as Rust
-pub trait WritingModObjectCall: Debug {
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : struct element (macro for struct and struct)
-    fn wrt_mod_object_call(&self, writer: &mut File) {
-        let _ = writeln!(writer);
-        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-//
-// ####################################################################################################
-
 impl WritingModHead for CMOFPackage {
     fn wrt_mod_head(&self, writer: &mut File) {
         // Doc title
@@ -112,10 +84,7 @@ impl WritingModHead for CMOFPackageImport {
         let _ = writeln!(writer, "/// Link from {} (PackageImport)", self.xmi_id);
         match &self.imported_package {
             EnumImportedPackage::ImportedPackage(package) => {
-                let content = package.href.clone();
-                let content = content.replace(".cmof#_0", "");
-                let content = content.to_case(Case::Snake);
-                let _ = writeln!(writer, "use crate::{};", content);
+                let _ = writeln!(writer, "use crate::{};", package.get_level_name());
             }
         }
     }

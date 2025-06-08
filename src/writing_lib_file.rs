@@ -24,9 +24,9 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_dependencies_explorer::*;
+use crate::writing_manager::*;
 
 // Dependencies section
-use std::fmt::Debug;
 
 // ####################################################################################################
 //
@@ -60,15 +60,6 @@ impl LoadingTracker {
 //
 // ####################################################################################################
 
-/// Implement writing of target lib loading element as Rust
-trait WritingLibHead: Debug {
-    /// Implement writing of target lib loading element as Rust
-    fn wrt_lib_level(&self, writer: &mut File) {
-        let _ = writeln!(writer);
-        let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
-    }
-}
-
 impl WritingLibHead for LoadingPackage {
     fn wrt_lib_level(&self, writer: &mut File) {
         // Module pachage uri
@@ -80,6 +71,6 @@ impl WritingLibHead for LoadingPackage {
             &self.get_json().uri
         );
         // Add mod import in main
-        let _ = writeln!(writer, "pub mod {};", &self.get_lowercase_name());
+        let _ = writeln!(writer, "pub mod {};", &self.get_level_name());
     }
 }
