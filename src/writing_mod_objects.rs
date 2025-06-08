@@ -44,13 +44,15 @@ impl LoadingTracker {
     pub fn write_mod_object(&mut self) {
         for (label, package) in self.get_package_in_order() {
             // Logs
-            debug!("Generating \"{label}\" : START");
+            debug!("Generating sub-mod file for \"{label}\" : START");
             // Create folder and lib file
             let folder: PathBuf = self.get_output_mod_folder(package);
             // Write mod structs
-            package.get_json().wrt_call_mod_object(&folder);
+            package
+                .get_json()
+                .wrt_call_mod_object(&folder, &package.get_lowercase_name());
             // Logs
-            info!("Generating \"{label}\" : Finished");
+            info!("Generating sub-mod file for \"{label}\" : Finished");
         }
     }
 }
@@ -74,7 +76,7 @@ pub trait WritingModTrait: Debug {
 pub trait WritingCallModObject: Debug {
     /// Implement writing of target struct instance as Rust struct format
     /// Writing section : struct element (macro for struct and struct)
-    fn wrt_call_mod_object(&self, folder: &PathBuf) {}
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {}
 }
 
 /// Implement writing of target mod loading head element as Rust
@@ -110,86 +112,161 @@ pub trait WritingModValidation: Debug {
 // ####################################################################################################
 
 impl WritingCallModObject for CMOFPackage {
-    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
         for class in self.owned_member.iter() {
-            class.wrt_call_mod_object(&folder)
+            class.wrt_call_mod_object(&folder, package_name)
         }
     }
 }
 
 impl WritingCallModObject for EnumOwnedMember {
-    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
         match self {
             EnumOwnedMember::Association(content) => {
-                content.wrt_call_mod_object(folder);
+                content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::Class(content) => {
-                content.wrt_call_mod_object(folder);
+                content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::DataType(content) => {
-                content.wrt_call_mod_object(folder);
+                content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::Enumeration(content) => {
-                content.wrt_call_mod_object(folder);
+                content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::PrimitiveType(content) => {
-                content.wrt_call_mod_object(folder);
+                content.wrt_call_mod_object(folder, package_name);
             }
         }
     }
 }
 
 impl WritingCallModObject for CMOFAssociation {
-    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.name.to_case(Case::UpperCamel).as_str(),
+                self.name.to_case(Case::Snake).as_str(),
             );
+        // Doc title
+        let _ = writeln!(
+            writing_mod_file,
+            "//! {}",
+            self.name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "#[allow(unused)]");
+        let _ = writeln!(writing_mod_file, "#[allow(unused_imports)]");
+        let _ = writeln!(writing_mod_file, "");
+        let _ = writeln!(
+            writing_mod_file,
+            "use crate::{}::*;",
+            package_name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
 }
 
 impl WritingCallModObject for CMOFClass {
-    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.name.to_case(Case::UpperCamel).as_str(),
+                self.name.to_case(Case::Snake).as_str(),
             );
+        // Doc title
+        let _ = writeln!(
+            writing_mod_file,
+            "//! {}",
+            self.name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "#[allow(unused)]");
+        let _ = writeln!(writing_mod_file, "#[allow(unused_imports)]");
+        let _ = writeln!(writing_mod_file, "");
+        let _ = writeln!(
+            writing_mod_file,
+            "use crate::{}::*;",
+            package_name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
 }
 
 impl WritingCallModObject for CMOFDataType {
-    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.name.to_case(Case::UpperCamel).as_str(),
+                self.name.to_case(Case::Snake).as_str(),
             );
+        // Doc title
+        let _ = writeln!(
+            writing_mod_file,
+            "//! {}",
+            self.name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "#[allow(unused)]");
+        let _ = writeln!(writing_mod_file, "#[allow(unused_imports)]");
+        let _ = writeln!(writing_mod_file, "");
+        let _ = writeln!(
+            writing_mod_file,
+            "use crate::{}::*;",
+            package_name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
 }
 
 impl WritingCallModObject for CMOFEnumeration {
-    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.name.to_case(Case::UpperCamel).as_str(),
+                self.name.to_case(Case::Snake).as_str(),
             );
+        // Doc title
+        let _ = writeln!(
+            writing_mod_file,
+            "//! {}",
+            self.name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "#[allow(unused)]");
+        let _ = writeln!(writing_mod_file, "#[allow(unused_imports)]");
+        let _ = writeln!(writing_mod_file, "");
+        let _ = writeln!(
+            writing_mod_file,
+            "use crate::{}::*;",
+            package_name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
 }
 
 impl WritingCallModObject for CMOFPrimitiveType {
-    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.name.to_case(Case::UpperCamel).as_str(),
+                self.name.to_case(Case::Snake).as_str(),
             );
+        // Doc title
+        let _ = writeln!(
+            writing_mod_file,
+            "//! {}",
+            self.name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "#[allow(unused)]");
+        let _ = writeln!(writing_mod_file, "#[allow(unused_imports)]");
+        let _ = writeln!(writing_mod_file, "");
+        let _ = writeln!(
+            writing_mod_file,
+            "use crate::{}::*;",
+            package_name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "use crate::Builder;");
         self.wrt_mod_object(&mut writing_mod_file);
     }
 }
@@ -323,11 +400,7 @@ impl WritingModObject for CMOFEnumeration {
 
         // Enum
         let _ = writeln!(writer, "#[derive(Debug, Clone)]");
-        let _ = writeln!(
-            writer,
-            "pub enum {} {{",
-            self.name.to_case(Case::UpperCamel)
-        );
+        let _ = writeln!(writer, "pub enum {} {{", self.name.to_case(Case::Snake));
         for content in self.owned_attribute.iter() {
             content.wrt_mod_object(writer);
         }
@@ -350,11 +423,11 @@ impl WritingModObject for CMOFEnumerationLiteral {
         let _ = writeln!(
             writer,
             "    /// '{}' from (id : '{}', name : '{}')",
-            self.name.to_case(Case::UpperCamel),
+            self.name.to_case(Case::Snake),
             self.xmi_id,
             self.name
         );
-        let _ = writeln!(writer, "    {}, ", self.name.to_case(Case::UpperCamel));
+        let _ = writeln!(writer, "    {}, ", self.name.to_case(Case::Snake));
     }
 }
 
@@ -503,12 +576,7 @@ impl WritingModObject for CMOFProperty {
                 _ => {
                     let content = self.get_type()
                         + "::"
-                        + self
-                            .default
-                            .as_ref()
-                            .unwrap()
-                            .to_case(Case::UpperCamel)
-                            .as_str();
+                        + self.default.as_ref().unwrap().to_case(Case::Snake).as_str();
                     macro_line.push_str(content.as_str());
                 }
             }
@@ -664,7 +732,7 @@ impl WritingModValidation for CMOFConstraint {
         match &self.specification {
             EnumSpecification::OpaqueExpression(content) => {
                 if content.language == String::from("OCL") {
-                    let _ = writeln!(writer, "        self.{}()?;", self.name);
+                    let _ = writeln!(writer, "        &self.{}()?;", self.name);
                 } else {
                     let _ = writeln!(
                         writer,
@@ -818,7 +886,7 @@ impl CMOFClass {
     }
     /// Write validation end part
     pub fn wrt_validation_build(&self, writer: &mut File) {
-        let _ = writeln!(writer, "    fn validatea(self) -> Result<(), String> {{");
+        let _ = writeln!(writer, "    fn validate(self) -> Result<(), String> {{");
         for content in self.owned_rule.iter() {
             content.wrt_main_validation(writer);
         }

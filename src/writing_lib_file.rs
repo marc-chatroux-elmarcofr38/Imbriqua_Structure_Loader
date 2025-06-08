@@ -44,6 +44,7 @@ impl LoadingTracker {
             "#![doc = include_str!(\"../README.md\")]\n\n//! Imported from {:?}\n\n",
             self.get_output_folder()
         );
+        let _ = writeln!(writing_file, "pub use derive_builder::Builder;\n\n");
         // Write body
         for (label, package) in self.get_package_in_order() {
             // Logs

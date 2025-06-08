@@ -93,8 +93,6 @@ impl WritingModHead for CMOFPackage {
     fn wrt_mod_head(&self, writer: &mut File) {
         // Doc title
         let _ = writeln!(writer, "//! {}", self.get_lowercase_name());
-        let _ = writeln!(writer, "");
-        let _ = writeln!(writer, "use derive_builder::Builder;");
 
         // Import
         for import in self.package_import.iter() {
@@ -141,27 +139,57 @@ impl WritingModObjectCall for EnumOwnedMember {
             EnumOwnedMember::Association(content) => {
                 let _ = writeln!(writer, "");
                 let _ = writeln!(writer, "/// Association : {}", content.name);
-                let _ = writeln!(writer, "pub mod {};", content.name);
+                let _ = writeln!(
+                    writer,
+                    "mod {};\npub use {}::{};",
+                    content.name.to_case(Case::Snake).as_str(),
+                    content.name.to_case(Case::Snake).as_str(),
+                    content.name.to_case(Case::UpperCamel).as_str()
+                );
             }
             EnumOwnedMember::Class(content) => {
                 let _ = writeln!(writer, "");
                 let _ = writeln!(writer, "/// Class : {}", content.name);
-                let _ = writeln!(writer, "pub mod {};", content.name);
+                let _ = writeln!(
+                    writer,
+                    "mod {};\npub use {}::{};",
+                    content.name.to_case(Case::Snake).as_str(),
+                    content.name.to_case(Case::Snake).as_str(),
+                    content.name.to_case(Case::UpperCamel).as_str()
+                );
             }
             EnumOwnedMember::DataType(content) => {
                 let _ = writeln!(writer, "");
                 let _ = writeln!(writer, "/// DataType : {}", content.name);
-                let _ = writeln!(writer, "pub mod {};", content.name);
+                let _ = writeln!(
+                    writer,
+                    "mod {};\npub use {}::{};",
+                    content.name.to_case(Case::Snake).as_str(),
+                    content.name.to_case(Case::Snake).as_str(),
+                    content.name.to_case(Case::UpperCamel).as_str()
+                );
             }
             EnumOwnedMember::Enumeration(content) => {
                 let _ = writeln!(writer, "");
                 let _ = writeln!(writer, "/// Enumeration : {}", content.name);
-                let _ = writeln!(writer, "pub mod {};", content.name);
+                let _ = writeln!(
+                    writer,
+                    "mod {};\npub use {}::{};",
+                    content.name.to_case(Case::Snake).as_str(),
+                    content.name.to_case(Case::Snake).as_str(),
+                    content.name.to_case(Case::UpperCamel).as_str()
+                );
             }
             EnumOwnedMember::PrimitiveType(content) => {
                 let _ = writeln!(writer, "");
                 let _ = writeln!(writer, "/// PrimitiveType : {}", content.name);
-                let _ = writeln!(writer, "pub mod {};", content.name);
+                let _ = writeln!(
+                    writer,
+                    "mod {};\npub use {}::{};",
+                    content.name.to_case(Case::Snake).as_str(),
+                    content.name.to_case(Case::Snake).as_str(),
+                    content.name.to_case(Case::UpperCamel).as_str()
+                );
             }
         }
     }
