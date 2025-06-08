@@ -115,22 +115,22 @@ impl WritingModObjectCall for EnumOwnedMember {
         match self {
             EnumOwnedMember::Association(content) => {
                 let _ = content;
-                // content.wrt_mod_object_call(writer);
+                content.wrt_mod_object_call(writer);
             }
             EnumOwnedMember::Class(content) => {
                 let _ = content;
-                // content.wrt_mod_object_call(writer);
+                content.wrt_mod_object_call(writer);
             }
             EnumOwnedMember::DataType(content) => {
                 let _ = content;
-                // content.wrt_mod_object_call(writer);
+                content.wrt_mod_object_call(writer);
             }
             EnumOwnedMember::Enumeration(content) => {
                 content.wrt_mod_object_call(writer);
             }
             EnumOwnedMember::PrimitiveType(content) => {
                 let _ = content;
-                // content.wrt_mod_object_call(writer);
+                content.wrt_mod_object_call(writer);
             }
         }
     }

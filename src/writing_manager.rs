@@ -234,6 +234,18 @@ impl NamingPath for LoadingPackage {
     }
 }
 
+impl NamingPath for EnumOwnedMember {
+    fn get_level_path(&self) -> String {
+        match self {
+            EnumOwnedMember::Association(content) => content.get_level_path(),
+            EnumOwnedMember::Class(content) => content.get_level_path(),
+            EnumOwnedMember::DataType(content) => content.get_level_path(),
+            EnumOwnedMember::Enumeration(content) => content.get_level_path(),
+            EnumOwnedMember::PrimitiveType(content) => content.get_level_path(),
+        }
+    }
+}
+
 impl NamingPath for ImportedPackage {
     fn get_level_path(&self) -> String {
         let content = self.href.clone();
@@ -295,18 +307,6 @@ pub trait NamingStruct {
     /// Name for object file, add linked import
     fn get_level_struct(&self) -> String {
         String::new()
-    }
-}
-
-impl NamingStruct for EnumOwnedMember {
-    fn get_level_struct(&self) -> String {
-        match self {
-            EnumOwnedMember::Association(content) => content.get_level_struct(),
-            EnumOwnedMember::Class(content) => content.get_level_struct(),
-            EnumOwnedMember::DataType(content) => content.get_level_struct(),
-            EnumOwnedMember::Enumeration(content) => content.get_level_struct(),
-            EnumOwnedMember::PrimitiveType(content) => content.get_level_struct(),
-        }
     }
 }
 
