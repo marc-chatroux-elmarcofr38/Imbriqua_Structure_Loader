@@ -104,7 +104,7 @@ impl WritingModHead for CMOFPackageImport {
 
 impl WritingModObjectCall for CMOFPackage {
     fn wrt_mod_object_call(&self, writer: &mut File) {
-        for class in self.owned_member.iter() {
+        for class in self.get_sorted_iter() {
             class.wrt_mod_object_call(writer)
         }
     }

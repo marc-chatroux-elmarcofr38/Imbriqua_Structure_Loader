@@ -2,7 +2,11 @@ Minimalist CMOF model structure
 
 # How to use
 
-...
+- No : Association
+- No : Class
+- No : DataType
+- Yes : Enumeration
+- No : PrimitiveType
 
 ## Minimal usecase
 

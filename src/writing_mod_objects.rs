@@ -34,7 +34,7 @@ use std::collections::HashMap;
 
 // ####################################################################################################
 //
-// ####################################################################################################
+// ########################################## MAIN ####################################################
 //
 // ####################################################################################################
 
@@ -44,12 +44,16 @@ impl LoadingTracker {
         for (label, package) in self.get_package_in_order() {
             // Logs
             debug!("Generating sub-mod file for \"{label}\" : START");
+
             // Create folder and lib file
             let folder: PathBuf = self.get_output_mod_folder(package);
-            // Write mod structs
+
+            // 1 - Write mod structs
             package
                 .get_json()
                 .wrt_call_mod_object(&folder, &package.get_level_path());
+            // 1 - Write mod structs
+
             // Logs
             info!("Generating sub-mod file for \"{label}\" : Finished");
         }
@@ -58,13 +62,13 @@ impl LoadingTracker {
 
 // ####################################################################################################
 //
-// ####################################################################################################
+// ############################################ 1 #####################################################
 //
 // ####################################################################################################
 
 impl WritingCallModObject for CMOFPackage {
     fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
-        for class in self.owned_member.iter() {
+        for class in self.get_sorted_iter() {
             class.wrt_call_mod_object(&folder, package_name)
         }
     }
@@ -74,18 +78,22 @@ impl WritingCallModObject for EnumOwnedMember {
     fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
         match self {
             EnumOwnedMember::Association(content) => {
+                let _ = content;
                 // content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::Class(content) => {
+                let _ = content;
                 // content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::DataType(content) => {
+                let _ = content;
                 // content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::Enumeration(content) => {
                 content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::PrimitiveType(content) => {
+                let _ = content;
                 // content.wrt_call_mod_object(folder, package_name);
             }
         }
@@ -93,7 +101,24 @@ impl WritingCallModObject for EnumOwnedMember {
 }
 
 impl WritingCallModObject for CMOFAssociation {
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {}
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
+        let (_, mut writing_mod_file) =
+            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                &folder,
+                self.name.to_case(Case::Snake).as_str(),
+            );
+        // Doc title
+        let _ = writeln!(
+            writing_mod_file,
+            "//! {}",
+            self.name.to_case(Case::Snake).as_str()
+        );
+        let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
+        let _ = writeln!(writing_mod_file, "");
+        let _ = writeln!(writing_mod_file, "use crate::{}::*;", package_name);
+        let _ = writeln!(writing_mod_file, "use crate::Builder;");
+        self.wrt_mod_object(&mut writing_mod_file);
+    }
 }
 
 impl WritingCallModObject for CMOFClass {
@@ -182,7 +207,7 @@ impl WritingCallModObject for CMOFPrimitiveType {
 
 // ####################################################################################################
 //
-// ####################################################################################################
+// ########################################### 1.1 ####################################################
 //
 // ####################################################################################################
 
@@ -195,7 +220,7 @@ impl WritingModObject for CMOFAssociation {
 
 // ####################################################################################################
 //
-// ####################################################################################################
+// ########################################### 1.2 ####################################################
 //
 // ####################################################################################################
 

@@ -298,6 +298,18 @@ pub trait NamingStruct {
     }
 }
 
+impl NamingStruct for EnumOwnedMember {
+    fn get_level_struct(&self) -> String {
+        match self {
+            EnumOwnedMember::Association(content) => content.get_level_struct(),
+            EnumOwnedMember::Class(content) => content.get_level_struct(),
+            EnumOwnedMember::DataType(content) => content.get_level_struct(),
+            EnumOwnedMember::Enumeration(content) => content.get_level_struct(),
+            EnumOwnedMember::PrimitiveType(content) => content.get_level_struct(),
+        }
+    }
+}
+
 impl NamingStruct for CMOFAssociation {
     fn get_level_struct(&self) -> String {
         let mut result = String::from("");

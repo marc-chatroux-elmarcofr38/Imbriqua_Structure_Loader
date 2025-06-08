@@ -20,14 +20,19 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../doc/loader_cmof_structure.md")]
 
+use std::collections::binary_heap::Iter;
+
 use crate::loader_deserialise_helper;
 // Package section
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_deserialise_helper::*;
+use crate::writing_manager::NamingPath;
+use crate::writing_manager::NamingStruct;
 
 // Dependencies section
 use serde::Deserialize;
+use std::collections::HashMap;
 
 // Re-export
 pub use loader_deserialise_helper::PRIMITIVE_TYPE_LINK;
@@ -222,6 +227,13 @@ impl CMOFPackage {
             .unwrap()
             .to_ascii_lowercase();
         str_result.to_case(Case::Snake)
+    }
+
+    /// Sort ownem_member
+    pub fn get_sorted_iter(&self) -> Vec<&EnumOwnedMember> {
+        let mut v: Vec<&EnumOwnedMember> = Vec::from_iter(&self.owned_member);
+        v.sort_by(|&a, &b| a.get_level_struct().cmp(&b.get_level_struct()));
+        v
     }
 }
 
