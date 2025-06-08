@@ -26,6 +26,7 @@ use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer;
 use crate::loader_dependencies_explorer::*;
+use crate::writing_manager::Naming;
 
 // Dependencies section
 use lazy_static::lazy_static;
@@ -200,7 +201,7 @@ impl WritingCallModObject for CMOFEnumeration {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.name.to_case(Case::Snake).as_str(),
+                self.get_level_name().as_str(),
             );
         // Doc title
         let _ = writeln!(

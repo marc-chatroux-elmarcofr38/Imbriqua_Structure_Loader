@@ -25,6 +25,7 @@ use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer::*;
+use crate::writing_manager::Naming;
 
 // Dependencies section
 pub use serde_json;
@@ -146,8 +147,8 @@ impl WritingModObjectCall for EnumOwnedMember {
                 let _ = writeln!(
                     writer,
                     "mod {};\npub use {}::{};",
-                    content.name.to_case(Case::Snake).as_str(),
-                    content.name.to_case(Case::Snake).as_str(),
+                    content.get_level_name(),
+                    content.get_level_name(),
                     content.name.to_case(Case::UpperCamel).as_str()
                 );
             }

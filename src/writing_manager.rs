@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 //! a ecrire
 
+use std::result;
+
 // Package section
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
@@ -128,5 +130,28 @@ pub fn is_simple_dpt(input: &str) -> bool {
         "dc::Real" => false,
         "dc::String" => false,
         _ => true,
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Provide naming method for CMOF Object
+pub trait Naming {
+    /// Name for object file, add linked import
+    fn get_level_name(&self) -> String {
+        String::new()
+    }
+}
+
+impl Naming for CMOFEnumeration {
+    fn get_level_name(&self) -> String {
+        let mut result = String::new();
+        result.push_str("enum_");
+        result.push_str(self.name.to_case(Case::Snake).as_str());
+        result
     }
 }
