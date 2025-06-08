@@ -49,7 +49,7 @@ impl LoadingTracker {
             // Write mod structs
             package
                 .get_json()
-                .wrt_call_mod_object(&folder, &package.get_level_name());
+                .wrt_call_mod_object(&folder, &package.get_level_path());
             // Logs
             info!("Generating sub-mod file for \"{label}\" : Finished");
         }
@@ -143,7 +143,7 @@ impl WritingCallModObject for CMOFEnumeration {
         let (_, mut writing_mod_file) =
             loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
                 &folder,
-                self.get_level_name().as_str(),
+                self.get_level_path().as_str(),
             );
         // Doc title
         let _ = writeln!(

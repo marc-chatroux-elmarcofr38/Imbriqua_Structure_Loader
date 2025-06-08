@@ -20,8 +20,6 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 //! a ecrire
 
-use std::result;
-
 // Package section
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
@@ -53,7 +51,7 @@ impl LoadingTracker {
     pub fn get_output_mod_folder(&self, package: &LoadingPackage) -> PathBuf {
         // Calculate folder path
         let mut folder_name = self.get_output_folder();
-        let pachage_name = package.get_level_name() + "/";
+        let pachage_name = package.get_level_path() + "/";
         folder_name.push(&pachage_name);
         // Create empty file
         let _ = folder_name.create_folder();
@@ -64,7 +62,7 @@ impl LoadingTracker {
     pub fn get_output_mod_file(&self, package: &LoadingPackage) -> (String, File) {
         // Calculate folder path
         let mut file_name = self.get_output_folder();
-        let filename = package.get_level_name() + "/mod.rs";
+        let filename = package.get_level_path() + "/mod.rs";
         file_name.push(&filename);
         // Create empty file
         let writer = file_name.write_new_file();
@@ -182,7 +180,10 @@ pub trait WritingModTrait: Debug {
 pub trait WritingCallModObject: Debug {
     /// Implement writing of target struct instance as Rust struct format
     /// Writing section : struct element (macro for struct and struct)
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {}
+    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
+        let _ = folder;
+        let _ = package_name;
+    }
 }
 
 /// Implement writing of target mod loading head element as Rust
@@ -213,28 +214,28 @@ pub trait WritingModValidation: Debug {
 
 // ####################################################################################################
 //
-// ####################################################################################################
+// ####################################### NamingPath #################################################
 //
 // ####################################################################################################
 
-/// Provide naming method for CMOF Object
-pub trait Naming {
+/// Provide naming method for CMOF Object : Path
+pub trait NamingPath {
     /// Name for object file, add linked import
-    fn get_level_name(&self) -> String {
+    fn get_level_path(&self) -> String {
         String::new()
     }
 }
 
-impl Naming for LoadingPackage {
-    fn get_level_name(&self) -> String {
-        let mut result = String::from("package_");
+impl NamingPath for LoadingPackage {
+    fn get_level_path(&self) -> String {
+        let mut result: String = String::from("package_");
         result.push_str(&self.get_lowercase_name().to_case(Case::Snake).as_str());
         result
     }
 }
 
-impl Naming for ImportedPackage {
-    fn get_level_name(&self) -> String {
+impl NamingPath for ImportedPackage {
+    fn get_level_path(&self) -> String {
         let content = self.href.clone();
         let content = content.replace(".cmof#_0", "");
         let mut result = String::from("package_");
@@ -243,42 +244,96 @@ impl Naming for ImportedPackage {
     }
 }
 
-impl Naming for CMOFAssociation {
-    fn get_level_name(&self) -> String {
+impl NamingPath for CMOFAssociation {
+    fn get_level_path(&self) -> String {
         let mut result = String::from("link_");
         result.push_str(self.name.to_case(Case::Snake).as_str());
         result
     }
 }
 
-impl Naming for CMOFClass {
-    fn get_level_name(&self) -> String {
+impl NamingPath for CMOFClass {
+    fn get_level_path(&self) -> String {
         let mut result = String::from("class_");
         result.push_str(self.name.to_case(Case::Snake).as_str());
         result
     }
 }
 
-impl Naming for CMOFDataType {
-    fn get_level_name(&self) -> String {
+impl NamingPath for CMOFDataType {
+    fn get_level_path(&self) -> String {
         let mut result = String::from("datatype_");
         result.push_str(self.name.to_case(Case::Snake).as_str());
         result
     }
 }
 
-impl Naming for CMOFEnumeration {
-    fn get_level_name(&self) -> String {
+impl NamingPath for CMOFEnumeration {
+    fn get_level_path(&self) -> String {
         let mut result = String::from("enum_");
         result.push_str(self.name.to_case(Case::Snake).as_str());
         result
     }
 }
 
-impl Naming for CMOFPrimitiveType {
-    fn get_level_name(&self) -> String {
+impl NamingPath for CMOFPrimitiveType {
+    fn get_level_path(&self) -> String {
         let mut result = String::from("primitivetype_");
         result.push_str(self.name.to_case(Case::Snake).as_str());
+        result
+    }
+}
+
+// ####################################################################################################
+//
+// ###################################### NamingStruct ################################################
+//
+// ####################################################################################################
+
+/// Provide naming method for CMOF Object : Struct
+pub trait NamingStruct {
+    /// Name for object file, add linked import
+    fn get_level_struct(&self) -> String {
+        String::new()
+    }
+}
+
+impl NamingStruct for CMOFAssociation {
+    fn get_level_struct(&self) -> String {
+        let mut result = String::from("");
+        result.push_str(self.name.to_case(Case::UpperCamel).as_str());
+        result
+    }
+}
+
+impl NamingStruct for CMOFClass {
+    fn get_level_struct(&self) -> String {
+        let mut result = String::from("");
+        result.push_str(self.name.to_case(Case::UpperCamel).as_str());
+        result
+    }
+}
+
+impl NamingStruct for CMOFDataType {
+    fn get_level_struct(&self) -> String {
+        let mut result = String::from("");
+        result.push_str(self.name.to_case(Case::UpperCamel).as_str());
+        result
+    }
+}
+
+impl NamingStruct for CMOFEnumeration {
+    fn get_level_struct(&self) -> String {
+        let mut result = String::from("");
+        result.push_str(self.name.to_case(Case::UpperCamel).as_str());
+        result
+    }
+}
+
+impl NamingStruct for CMOFPrimitiveType {
+    fn get_level_struct(&self) -> String {
+        let mut result = String::from("");
+        result.push_str(self.name.to_case(Case::UpperCamel).as_str());
         result
     }
 }

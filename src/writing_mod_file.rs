@@ -31,7 +31,7 @@ use crate::writing_manager::*;
 
 // ####################################################################################################
 //
-// ####################################################################################################
+// ########################################## MAIN ####################################################
 //
 // ####################################################################################################
 
@@ -41,15 +41,21 @@ impl LoadingTracker {
         for (label, package) in self.get_package_in_order() {
             // Logs
             debug!("Generating \"mod.rs\" for \"{label}\" : START");
+
             // Create folder and lib file
             let _ = self.get_output_mod_folder(package);
             let (_, mut writing_mod_file) = self.get_output_mod_file(package);
-            // Write mod head
+
+            // 1 - Write mod head
             package.get_json().wrt_mod_head(&mut writing_mod_file);
-            // Write mod object call
+            // 1 - Write mod head
+
+            // 2 - Write mod object call
             package
                 .get_json()
                 .wrt_mod_object_call(&mut writing_mod_file);
+            // 2 - Write mod object call
+
             // Logs
             info!("Generating \"mod.rs\" for \"{label}\" : Finished");
         }
@@ -58,7 +64,7 @@ impl LoadingTracker {
 
 // ####################################################################################################
 //
-// ####################################################################################################
+// ############################################ 1 #####################################################
 //
 // ####################################################################################################
 
@@ -66,7 +72,7 @@ impl WritingModHead for CMOFPackage {
     fn wrt_mod_head(&self, writer: &mut File) {
         // Doc title
         let _ = writeln!(writer, "//! {}", self.get_lowercase_name());
-        let _ = writeln!(writer, "#![allow(unused_imports)]");
+        let _ = writeln!(writer, "\n#![allow(unused_imports)]");
 
         // Import
         for import in self.package_import.iter() {
@@ -81,10 +87,10 @@ impl WritingModHead for CMOFPackage {
 
 impl WritingModHead for CMOFPackageImport {
     fn wrt_mod_head(&self, writer: &mut File) {
-        let _ = writeln!(writer, "/// Link from {} (PackageImport)", self.xmi_id);
+        let _ = writeln!(writer, "\n/// Link from {} (PackageImport)", self.xmi_id);
         match &self.imported_package {
             EnumImportedPackage::ImportedPackage(package) => {
-                let _ = writeln!(writer, "use crate::{};", package.get_level_name());
+                let _ = writeln!(writer, "use crate::{};", package.get_level_path());
             }
         }
     }
@@ -92,7 +98,7 @@ impl WritingModHead for CMOFPackageImport {
 
 // ####################################################################################################
 //
-// ####################################################################################################
+// ############################################ 2 #####################################################
 //
 // ####################################################################################################
 
@@ -107,21 +113,96 @@ impl WritingModObjectCall for CMOFPackage {
 impl WritingModObjectCall for EnumOwnedMember {
     fn wrt_mod_object_call(&self, writer: &mut File) {
         match self {
-            EnumOwnedMember::Association(content) => {}
-            EnumOwnedMember::Class(content) => {}
-            EnumOwnedMember::DataType(content) => {}
-            EnumOwnedMember::Enumeration(content) => {
-                let _ = writeln!(writer, "");
-                let _ = writeln!(writer, "/// Enumeration : {}", content.name);
-                let _ = writeln!(
-                    writer,
-                    "mod {};\npub use {}::{};",
-                    content.get_level_name(),
-                    content.get_level_name(),
-                    content.name.to_case(Case::UpperCamel).as_str()
-                );
+            EnumOwnedMember::Association(content) => {
+                let _ = content;
+                // content.wrt_mod_object_call(writer);
             }
-            EnumOwnedMember::PrimitiveType(content) => {}
+            EnumOwnedMember::Class(content) => {
+                let _ = content;
+                // content.wrt_mod_object_call(writer);
+            }
+            EnumOwnedMember::DataType(content) => {
+                let _ = content;
+                // content.wrt_mod_object_call(writer);
+            }
+            EnumOwnedMember::Enumeration(content) => {
+                content.wrt_mod_object_call(writer);
+            }
+            EnumOwnedMember::PrimitiveType(content) => {
+                let _ = content;
+                // content.wrt_mod_object_call(writer);
+            }
         }
     }
 }
+
+impl WritingModObjectCall for CMOFAssociation {
+    fn wrt_mod_object_call(&self, writer: &mut File) {
+        let _ = writeln!(writer, "\n/// Association : {}", self.name);
+        let _ = writeln!(
+            writer,
+            "mod {};\npub use {}::{};",
+            self.get_level_path(),
+            self.get_level_path(),
+            self.get_level_struct()
+        );
+    }
+}
+
+impl WritingModObjectCall for CMOFClass {
+    fn wrt_mod_object_call(&self, writer: &mut File) {
+        let _ = writeln!(writer, "\n/// Class : {}", self.name);
+        let _ = writeln!(
+            writer,
+            "mod {};\npub use {}::{};",
+            self.get_level_path(),
+            self.get_level_path(),
+            self.get_level_struct()
+        );
+    }
+}
+
+impl WritingModObjectCall for CMOFDataType {
+    fn wrt_mod_object_call(&self, writer: &mut File) {
+        let _ = writeln!(writer, "\n/// DataType : {}", self.name);
+        let _ = writeln!(
+            writer,
+            "mod {};\npub use {}::{};",
+            self.get_level_path(),
+            self.get_level_path(),
+            self.get_level_struct()
+        );
+    }
+}
+
+impl WritingModObjectCall for CMOFEnumeration {
+    fn wrt_mod_object_call(&self, writer: &mut File) {
+        let _ = writeln!(writer, "\n/// Enumeration : {}", self.name);
+        let _ = writeln!(
+            writer,
+            "mod {};\npub use {}::{};",
+            self.get_level_path(),
+            self.get_level_path(),
+            self.get_level_struct()
+        );
+    }
+}
+
+impl WritingModObjectCall for CMOFPrimitiveType {
+    fn wrt_mod_object_call(&self, writer: &mut File) {
+        let _ = writeln!(writer, "\n/// PrimitiveType : {}", self.name);
+        let _ = writeln!(
+            writer,
+            "mod {};\npub use {}::{};",
+            self.get_level_path(),
+            self.get_level_path(),
+            self.get_level_struct()
+        );
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################

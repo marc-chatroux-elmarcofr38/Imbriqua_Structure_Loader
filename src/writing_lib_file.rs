@@ -71,6 +71,6 @@ impl WritingLibHead for LoadingPackage {
             &self.get_json().uri
         );
         // Add mod import in main
-        let _ = writeln!(writer, "pub mod {};", &self.get_level_name());
+        let _ = writeln!(writer, "pub mod {};", &self.get_level_path());
     }
 }
