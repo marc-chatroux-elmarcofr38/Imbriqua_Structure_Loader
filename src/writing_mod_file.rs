@@ -123,13 +123,12 @@ impl WritingModObjectCall for EnumOwnedMember {
             }
             EnumOwnedMember::DataType(content) => {
                 let _ = content;
-                // content.wrt_mod_object_call(writer);
+                content.wrt_mod_object_call(writer);
             }
             EnumOwnedMember::Enumeration(content) => {
                 content.wrt_mod_object_call(writer);
             }
             EnumOwnedMember::PrimitiveType(content) => {
-                let _ = content;
                 content.wrt_mod_object_call(writer);
             }
         }

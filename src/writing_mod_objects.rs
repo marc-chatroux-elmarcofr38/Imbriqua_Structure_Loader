@@ -87,13 +87,12 @@ impl WritingCallModObject for EnumOwnedMember {
             }
             EnumOwnedMember::DataType(content) => {
                 let _ = content;
-                // content.wrt_call_mod_object(folder, package_name);
+                content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::Enumeration(content) => {
                 content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::PrimitiveType(content) => {
-                let _ = content;
                 content.wrt_call_mod_object(folder, package_name);
             }
         }
@@ -279,7 +278,7 @@ impl WritingModObject for CMOFDataType {
 
         // OwnedAttribute
         for content in self.owned_attribute.iter() {
-            // content.wrt_mod_object(writer);
+            content.wrt_mod_object(writer);
         }
 
         // End of struct
@@ -667,7 +666,7 @@ impl WritingModValidation for CMOFConstraint {
         match &self.specification {
             EnumSpecification::OpaqueExpression(content) => {
                 if content.language == String::from("OCL") {
-                    let _ = writeln!(writer, "        &self.{}()?;", self.name);
+                    let _ = writeln!(writer, "        self.clone().{}()?;", self.name);
                 } else {
                     let _ = writeln!(
                         writer,
