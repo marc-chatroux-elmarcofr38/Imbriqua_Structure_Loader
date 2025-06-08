@@ -86,7 +86,6 @@ impl WritingCallModObject for EnumOwnedMember {
                 // content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::DataType(content) => {
-                let _ = content;
                 content.wrt_call_mod_object(folder, package_name);
             }
             EnumOwnedMember::Enumeration(content) => {
