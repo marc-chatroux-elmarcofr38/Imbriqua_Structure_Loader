@@ -227,7 +227,7 @@ impl WritingModObject for CMOFClass {
         self.wrt_struct_start(writer);
         // OwnedAttribute
         for content in self.owned_attribute.iter() {
-            // content.wrt_mod_object(writer);
+            content.wrt_mod_object(writer);
         }
         // End of Struct
         self.wrt_struct_end(writer);

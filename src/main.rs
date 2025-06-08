@@ -72,13 +72,13 @@ fn main() {
     // Make doc for loader
     let cargo_loader_package = "Cargo.toml"; // Location of loader environment package Cargo.toml file
     let loader_link = output_cargo_checker::open_link(cargo_loader_package);
-    // assert!(loader_link.cargo_custom_command(vec!["clean"]));
+    assert!(loader_link.cargo_custom_command(vec!["clean"]));
     // assert!(loader_link.cargo_custom_command(vec!["doc", "--no-deps"]));
     // assert!(loader_link.cargo_custom_command(vec!["test"]));
 
     // Make testing package link
     let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
     let result_link = output_cargo_checker::open_link(cargo_testing_package);
-    // assert!(result_link.cargo_clean()); // Make cargo clean
-    // assert!(result_link.cargo_full_check()); // Make cargo check, test build and doc
+    assert!(result_link.cargo_clean()); // Make cargo clean
+                                        // assert!(result_link.cargo_full_check()); // Make cargo check, test build and doc
 }

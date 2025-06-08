@@ -20,22 +20,17 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../doc/loader_cmof_structure.md")]
 
-use std::collections::binary_heap::Iter;
-
-use crate::loader_deserialise_helper;
 // Package section
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_deserialise_helper::*;
-use crate::writing_manager::NamingPath;
-use crate::writing_manager::NamingStruct;
+use crate::writing_manager::*;
 
 // Dependencies section
 use serde::Deserialize;
-use std::collections::HashMap;
 
 // Re-export
-pub use loader_deserialise_helper::PRIMITIVE_TYPE_LINK;
+pub use crate::loader_deserialise_helper::PRIMITIVE_TYPE_LINK;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
