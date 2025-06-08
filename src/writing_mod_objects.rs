@@ -48,7 +48,7 @@ impl LoadingTracker {
             // Create folder and lib file
             let folder: PathBuf = self.get_output_mod_folder(package);
             // Write mod structs
-            package.get_json().wrt_mod_object(&folder);
+            package.get_json().wrt_call_mod_object(&folder);
             // Logs
             info!("Generating \"{label}\" : Finished");
         }
@@ -68,6 +68,13 @@ pub trait WritingModTrait: Debug {
         let _ = writeln!(writer);
         let _ = write!(writer, "{}", format!("{:#?}", self).prefix("// "));
     }
+}
+
+/// Implement writing of target mod loading head element as Rust
+pub trait WritingCallModObject: Debug {
+    /// Implement writing of target struct instance as Rust struct format
+    /// Writing section : struct element (macro for struct and struct)
+    fn wrt_call_mod_object(&self, folder: &PathBuf) {}
 }
 
 /// Implement writing of target mod loading head element as Rust
@@ -102,58 +109,88 @@ pub trait WritingModValidation: Debug {
 //
 // ####################################################################################################
 
-impl CMOFPackage {
-    fn wrt_mod_object(&self, folder: &PathBuf) {
+impl WritingCallModObject for CMOFPackage {
+    fn wrt_call_mod_object(&self, folder: &PathBuf) {
         for class in self.owned_member.iter() {
-            class.wrt_mod_object(&folder)
+            class.wrt_call_mod_object(&folder)
         }
     }
 }
 
-impl EnumOwnedMember {
-    fn wrt_mod_object(&self, folder: &PathBuf) {
+impl WritingCallModObject for EnumOwnedMember {
+    fn wrt_call_mod_object(&self, folder: &PathBuf) {
         match self {
             EnumOwnedMember::Association(content) => {
-                let (_, mut writing_mod_file) =
-                    loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                        &folder,
-                        content.name.to_case(Case::UpperCamel).as_str(),
-                    );
-                content.wrt_mod_object(&mut writing_mod_file);
+                content.wrt_call_mod_object(folder);
             }
             EnumOwnedMember::Class(content) => {
-                let (_, mut writing_mod_file) =
-                    loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                        &folder,
-                        content.name.to_case(Case::UpperCamel).as_str(),
-                    );
-                content.wrt_mod_object(&mut writing_mod_file);
+                content.wrt_call_mod_object(folder);
             }
             EnumOwnedMember::DataType(content) => {
-                let (_, mut writing_mod_file) =
-                    loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                        &folder,
-                        content.name.to_case(Case::UpperCamel).as_str(),
-                    );
-                content.wrt_mod_object(&mut writing_mod_file);
+                content.wrt_call_mod_object(folder);
             }
             EnumOwnedMember::Enumeration(content) => {
-                let (_, mut writing_mod_file) =
-                    loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                        &folder,
-                        content.name.to_case(Case::UpperCamel).as_str(),
-                    );
-                content.wrt_mod_object(&mut writing_mod_file);
+                content.wrt_call_mod_object(folder);
             }
             EnumOwnedMember::PrimitiveType(content) => {
-                let (_, mut writing_mod_file) =
-                    loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                        &folder,
-                        content.name.to_case(Case::UpperCamel).as_str(),
-                    );
-                content.wrt_mod_object(&mut writing_mod_file);
+                content.wrt_call_mod_object(folder);
             }
         }
+    }
+}
+
+impl WritingCallModObject for CMOFAssociation {
+    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+        let (_, mut writing_mod_file) =
+            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                &folder,
+                self.name.to_case(Case::UpperCamel).as_str(),
+            );
+        self.wrt_mod_object(&mut writing_mod_file);
+    }
+}
+
+impl WritingCallModObject for CMOFClass {
+    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+        let (_, mut writing_mod_file) =
+            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                &folder,
+                self.name.to_case(Case::UpperCamel).as_str(),
+            );
+        self.wrt_mod_object(&mut writing_mod_file);
+    }
+}
+
+impl WritingCallModObject for CMOFDataType {
+    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+        let (_, mut writing_mod_file) =
+            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                &folder,
+                self.name.to_case(Case::UpperCamel).as_str(),
+            );
+        self.wrt_mod_object(&mut writing_mod_file);
+    }
+}
+
+impl WritingCallModObject for CMOFEnumeration {
+    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+        let (_, mut writing_mod_file) =
+            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                &folder,
+                self.name.to_case(Case::UpperCamel).as_str(),
+            );
+        self.wrt_mod_object(&mut writing_mod_file);
+    }
+}
+
+impl WritingCallModObject for CMOFPrimitiveType {
+    fn wrt_call_mod_object(&self, folder: &PathBuf) {
+        let (_, mut writing_mod_file) =
+            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
+                &folder,
+                self.name.to_case(Case::UpperCamel).as_str(),
+            );
+        self.wrt_mod_object(&mut writing_mod_file);
     }
 }
 
