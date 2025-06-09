@@ -439,9 +439,7 @@ impl FileManager for Path {
 /// Adding same string as prefix of each row
 pub trait AddStringPrefix {
     /// Add prefix to each row of the input
-    fn prefix(&self, prefix: &str) -> String {
-        String::from(prefix)
-    }
+    fn prefix(&self, prefix: &str) -> String;
 }
 
 impl AddStringPrefix for String {
