@@ -50,19 +50,35 @@ impl LoadingTracker {
                 let (_, mut writer) = self.get_object_file(package, owned_member);
                 match owned_member {
                     EnumOwnedMember::Association(_content) => {
-                        // _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
+                        // _content.wrt_mod_object_caller(&mut writer, &self.pre_calculation, &package);
                     }
                     EnumOwnedMember::Class(_content) => {
-                        _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
+                        _content.wrt_mod_object_caller(
+                            &mut writer,
+                            &self.pre_calculation,
+                            &package,
+                        );
                     }
                     EnumOwnedMember::DataType(_content) => {
-                        _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
+                        _content.wrt_mod_object_caller(
+                            &mut writer,
+                            &self.pre_calculation,
+                            &package,
+                        );
                     }
                     EnumOwnedMember::Enumeration(_content) => {
-                        _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
+                        _content.wrt_mod_object_caller(
+                            &mut writer,
+                            &self.pre_calculation,
+                            &package,
+                        );
                     }
                     EnumOwnedMember::PrimitiveType(_content) => {
-                        _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
+                        _content.wrt_mod_object_caller(
+                            &mut writer,
+                            &self.pre_calculation,
+                            &package,
+                        );
                     }
                 }
             }
@@ -80,8 +96,8 @@ impl LoadingTracker {
 //
 // ####################################################################################################
 
-impl WritingCallModObject for CMOFAssociation {
-    fn wrt_call_mod_object(
+impl WritingModObjectCaller for CMOFAssociation {
+    fn wrt_mod_object_caller(
         &self,
         writer: &mut File,
         _pre_calculation: &LoadingPreCalculation,
@@ -96,8 +112,8 @@ impl WritingCallModObject for CMOFAssociation {
     }
 }
 
-impl WritingCallModObject for CMOFClass {
-    fn wrt_call_mod_object(
+impl WritingModObjectCaller for CMOFClass {
+    fn wrt_mod_object_caller(
         &self,
         writer: &mut File,
         _pre_calculation: &LoadingPreCalculation,
@@ -112,8 +128,8 @@ impl WritingCallModObject for CMOFClass {
     }
 }
 
-impl WritingCallModObject for CMOFDataType {
-    fn wrt_call_mod_object(
+impl WritingModObjectCaller for CMOFDataType {
+    fn wrt_mod_object_caller(
         &self,
         writer: &mut File,
         _pre_calculation: &LoadingPreCalculation,
@@ -128,8 +144,8 @@ impl WritingCallModObject for CMOFDataType {
     }
 }
 
-impl WritingCallModObject for CMOFEnumeration {
-    fn wrt_call_mod_object(
+impl WritingModObjectCaller for CMOFEnumeration {
+    fn wrt_mod_object_caller(
         &self,
         writer: &mut File,
         _pre_calculation: &LoadingPreCalculation,
@@ -144,8 +160,8 @@ impl WritingCallModObject for CMOFEnumeration {
     }
 }
 
-impl WritingCallModObject for CMOFPrimitiveType {
-    fn wrt_call_mod_object(
+impl WritingModObjectCaller for CMOFPrimitiveType {
+    fn wrt_mod_object_caller(
         &self,
         writer: &mut File,
         _pre_calculation: &LoadingPreCalculation,

@@ -73,7 +73,7 @@ impl LoadingTracker {
 //
 // ####################################################################################################
 
-impl WritingLibFileHead for LoadingPackage {
+impl WritingLibFile for LoadingPackage {
     fn wrt_lib_file_level(&self, writer: &mut File) {
         // Module pachage uri
         let _ = writeln!(

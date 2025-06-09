@@ -227,26 +227,26 @@ impl NamingStruct for CMOFPrimitiveType {
 //
 // ####################################################################################################
 
-/// Naming method for creating full path to Package and EnumOwnedMember, including __outpt_result_manager__ output folder by using LoadingTracker
+/// Trait providing full homogenous path to [`LoadingTracker`]
 pub trait WrittingPath {
     /// Get lib.rs file for the LoadingTracker
     ///
-    /// Example --> $output_folder$/src/lib.rs
+    /// Example --> ${output_folder}/src/lib.rs
     fn get_project_lib_file(&self) -> (PathBuf, File);
 
     /// Get output folder for the package
     ///
-    /// Example for dc package --> $output_folder$/src/dc
+    /// Example for dc package --> ${output_folder}/src/dc
     fn get_package_folder(&self, package: &LoadingPackage) -> PathBuf;
 
     /// Get mod.rs file for the package
     ///
-    /// Example for dc package --> $output_folder$/src/dc/mod.rs
+    /// Example for dc package --> ${output_folder}/src/dc/mod.rs
     fn get_package_mod_file(&self, package: &LoadingPackage) -> (PathBuf, File);
 
-    /// Get $.rs file for a object of a package
+    /// Get ${package}.rs file for a object of a package
     ///
-    /// Example for font object of dc package --> $output_folder$/src/dc/font.rs
+    /// Example for font object of dc package --> ${output_folder}/src/dc/font.rs
     fn get_object_file(
         &self,
         package: &LoadingPackage,
@@ -301,7 +301,7 @@ impl WrittingPath for LoadingTracker {
 // ####################################################################################################
 
 impl LoadingTracker {
-    /// Build all pre calculing information
+    /// Build all pre calculing information needed for writting
     pub fn writing_preparation(&mut self) {
         for (_, package) in self.clone().get_package_in_order() {
             for owned_member in package.get_json().get_sorted_iter() {
@@ -361,22 +361,22 @@ impl LoadingTracker {
     }
 }
 
-/// Bullshit function : define if a type (represent as string.....) involve to set a structure using reference ("&")
-pub fn is_simple_dpt(input: &str) -> bool {
-    match input {
-        "Boolean" => false,
-        "Integer" => false,
-        "Real" => false,
-        "String" => false,
-        "i8" => false,
-        "u8" => false,
-        "dc::Boolean" => false,
-        "dc::Integer" => false,
-        "dc::Real" => false,
-        "dc::String" => false,
-        _ => true,
-    }
-}
+// /// Bullshit function : define if a type (represent as string.....) involve to set a structure using reference ("&")
+// pub fn is_simple_dpt(input: &str) -> bool {
+//     match input {
+//         "Boolean" => false,
+//         "Integer" => false,
+//         "Real" => false,
+//         "String" => false,
+//         "i8" => false,
+//         "u8" => false,
+//         "dc::Boolean" => false,
+//         "dc::Integer" => false,
+//         "dc::Real" => false,
+//         "dc::String" => false,
+//         _ => true,
+//     }
+// }
 
 // ####################################################################################################
 //
@@ -384,23 +384,21 @@ pub fn is_simple_dpt(input: &str) -> bool {
 //
 // ####################################################################################################
 
-/// Implement writing of target lib loading element as Rust
-pub trait WritingLibFileHead: Debug {
-    /// Implement writing of target lib loading element as Rust
+/// Trait for writting __lib.rs__ file from sub-element of [`LoadingPackage`]
+pub trait WritingLibFile: Debug {
+    /// Writting __lib.rs__ file from sub-element of [`LoadingPackage`]
     fn wrt_lib_file_level(&self, writer: &mut File);
 }
 
-/// Implement writing of target mod loading head element as Rust
+/// Trait for writting __mod.rs__ file head from [`CMOFPackage`] (and [`CMOFPackageImport`]) element of [`LoadingPackage`]
 pub trait WritingModFileHead: Debug {
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : module file head (import part, "use", etc.)
+    /// Writting __mod.rs__ file head from [`CMOFPackage`] (and [`CMOFPackageImport`]) element of [`LoadingPackage`]
     fn wrt_mod_file_head(&self, writer: &mut File, pre_calculation: &LoadingPreCalculation);
 }
 
-/// Implement writing of target mod loading head element as Rust
+/// Trait for writting __mod.rs__ file head from [`EnumOwnedMember`] element of [`LoadingPackage`]
 pub trait WritingModFileObjectSection: Debug {
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : struct element (macro for struct and struct)
+    /// Writting __mod.rs__ file head from [`EnumOwnedMember`] element of [`LoadingPackage`]
     fn wrt_mod_file_object_section(
         &self,
         writer: &mut File,
@@ -408,17 +406,10 @@ pub trait WritingModFileObjectSection: Debug {
     );
 }
 
-// /// Implement writing of target struct instance as Rust struct trait implementation
-// pub trait WritingModTrait: Debug {
-//     /// Implement writing of target struct instance as Rust struct trait implementation
-//     fn wrt_trait_level(&self, writer: &mut File);
-// }
-
-/// Implement writing of target mod loading head element as Rust
-pub trait WritingCallModObject: Debug {
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : struct element (macro for struct and struct)
-    fn wrt_call_mod_object(
+/// Trait for dispatch run for writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
+pub trait WritingModObjectCaller: Debug {
+    /// Dispatch run for writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
+    fn wrt_mod_object_caller(
         &self,
         writer: &mut File,
         pre_calculation: &LoadingPreCalculation,
@@ -426,14 +417,13 @@ pub trait WritingCallModObject: Debug {
     );
 }
 
-/// Implement writing of target mod loading head element as Rust
+/// Trait for writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
 pub trait WritingModObject: Debug {
-    /// Implement writing of target struct instance as Rust struct format
-    /// Writing section : struct element (macro for struct and struct)
+    /// Writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
     fn wrt_mod_object(&self, writer: &mut File);
 }
 
-/// Implement writing of target struct validationfunction as Rust format
+/// Trait for writting __${owned_member}.rs__ struct validation from [`EnumOwnedMember`] element of [`LoadingPackage`]
 pub trait WritingModValidation: Debug {
     /// Implement writing of target struct instance as Rust struct format
     /// Writing section : macro adding struct validation
