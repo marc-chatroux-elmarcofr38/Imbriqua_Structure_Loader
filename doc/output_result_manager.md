@@ -2,24 +2,24 @@ Managing session-time archiving for output folder, including an input folder and
 
 # How to use
 
-Provinding 'shortcut' managing of input folder, output folder history and result folder, using __ResultEnv__ structure.
+Provinding 'shortcut' managing of input folder, output folder history and result folder, using [`ResultEnv`] structure.
 
-Output folder is organised during instance creation by creating subfolder named by running time formated name (%Y-%m-%d_%Hh%Mm%S/).
+Output folder is organised during instance creation by creating subfolder named by running time formated name (__%Y-%m-%d_%Hh%Mm%S/__).
 
-Object :
- - __ResultEnv__
-    - input_folder (__PathBuf__) : not used in feature, but se as shortcut
-    - output_folder (__PathBuf__) : new output instance as each ResultEnv instance
-    - result_folder (__PathBuf__) : used to export the last output if needed
+### Struct
+ - [`ResultEnv`] :
+    - [`ResultEnv::input_folder`] ([`PathBuf`]) : not used in feature, but se as shortcut
+    - [`ResultEnv::output_folder`] ([`PathBuf`]) : new output instance as each ResultEnv instance
+    - [`ResultEnv::result_folder`] ([`PathBuf`]) : used to export the last output if needed
 
-Tools :
- - __ResultEnv.get_input_folder__ : get the input folder
- - __ResultEnv.get_output_folder__ : get the current output folder
- - __ResultEnv.get_result_folder__ : get the result folder
- - __ResultEnv.delete_if_empty__ : delete current output folder (for cleaning), if empty
- - __ResultEnv.export_result__ : copy current output folder to result folder
+### Tools
+ - [`ResultEnv::get_input_folder`] : get the input folder
+ - [`ResultEnv::get_output_folder`] : get the current output folder
+ - [`ResultEnv::get_result_folder`] : get the result folder
+ - [`ResultEnv::delete_if_empty`] : delete current output folder (for cleaning), if empty
+ - [`ResultEnv::export_result`] : copy current output folder to result folder
 
-## Minimal usecase
+# Minimal usecase
 
 Minimal project : make statistic of data samples
 
