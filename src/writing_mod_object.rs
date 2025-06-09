@@ -47,7 +47,7 @@ impl LoadingTracker {
             // 1 - Write mod structs
             for owned_member in package.get_json().get_sorted_iter() {
                 // Get file
-                let (filename, mut writer) = self.get_object_file(package, owned_member);
+                let (_, mut writer) = self.get_object_file(package, owned_member);
                 match owned_member {
                     EnumOwnedMember::Association(_content) => {
                         // _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
@@ -84,7 +84,7 @@ impl WritingCallModObject for CMOFAssociation {
     fn wrt_call_mod_object(
         &self,
         writer: &mut File,
-        pre_calculation: &LoadingPreCalculation,
+        _pre_calculation: &LoadingPreCalculation,
         package: &LoadingPackage,
     ) {
         // Doc title
@@ -100,7 +100,7 @@ impl WritingCallModObject for CMOFClass {
     fn wrt_call_mod_object(
         &self,
         writer: &mut File,
-        pre_calculation: &LoadingPreCalculation,
+        _pre_calculation: &LoadingPreCalculation,
         package: &LoadingPackage,
     ) {
         // Doc title
@@ -116,7 +116,7 @@ impl WritingCallModObject for CMOFDataType {
     fn wrt_call_mod_object(
         &self,
         writer: &mut File,
-        pre_calculation: &LoadingPreCalculation,
+        _pre_calculation: &LoadingPreCalculation,
         package: &LoadingPackage,
     ) {
         // Doc title
@@ -132,7 +132,7 @@ impl WritingCallModObject for CMOFEnumeration {
     fn wrt_call_mod_object(
         &self,
         writer: &mut File,
-        pre_calculation: &LoadingPreCalculation,
+        _pre_calculation: &LoadingPreCalculation,
         package: &LoadingPackage,
     ) {
         // Doc title
@@ -148,7 +148,7 @@ impl WritingCallModObject for CMOFPrimitiveType {
     fn wrt_call_mod_object(
         &self,
         writer: &mut File,
-        pre_calculation: &LoadingPreCalculation,
+        _pre_calculation: &LoadingPreCalculation,
         package: &LoadingPackage,
     ) {
         // Doc title
