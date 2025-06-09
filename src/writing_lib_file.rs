@@ -37,19 +37,32 @@ use crate::writing_manager::*;
 impl LoadingTracker {
     /// Make lib.rs from scratch and package
     pub fn write_lib_file(&mut self) {
-        let (filename, mut writer) = self.get_output_lib_file();
+        // Get file
+        let (filename, mut writer) = self.get_project_lib_file();
+
         // Write head
         let _ = writeln!(writer, "#![doc = include_str!(\"../README.md\")]");
         let _ = writeln!(writer, "\n//! Imported from {:?}", self.get_output_folder());
         let _ = writeln!(writer, "\npub use derive_builder::Builder;");
+
         // Write body
         for (label, package) in self.get_package_in_order() {
             // Logs
-            debug!("Generating \"{filename}\" from \"{label}\" : START");
+            debug!(
+                "Generating \"{}\" from \"{}\" : START",
+                filename.display(),
+                label
+            );
+
             // Write lib head
-            package.wrt_lib_level(&mut writer);
+            package.wrt_lib_file_level(&mut writer);
+
             // Logs
-            info!("Generating \"{filename}\" from \"{label}\" : Finished");
+            info!(
+                "Generating \"{}\" from \"{}\" : Finished",
+                filename.display(),
+                label
+            );
         }
     }
 }
@@ -60,8 +73,8 @@ impl LoadingTracker {
 //
 // ####################################################################################################
 
-impl WritingLibHead for LoadingPackage {
-    fn wrt_lib_level(&self, writer: &mut File) {
+impl WritingLibFileHead for LoadingPackage {
+    fn wrt_lib_file_level(&self, writer: &mut File) {
         // Module pachage uri
         let _ = writeln!(
             writer,
@@ -71,6 +84,6 @@ impl WritingLibHead for LoadingPackage {
             &self.get_json().uri
         );
         // Add mod import in main
-        let _ = writeln!(writer, "pub mod {};", &self.get_level_path());
+        let _ = writeln!(writer, "pub mod {};", &self.get_path_name());
     }
 }

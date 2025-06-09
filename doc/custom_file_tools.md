@@ -29,16 +29,16 @@ This traits add to __std::fs::Path__ the following function to all path :
 
 ## Good practice
 
-Use [`crate::module_file_manager`] in each rust file, replacing `Path`, and `PathBuf`, with the following command :
+Use [`crate::custom_file_tools`] in each rust file, replacing `Path`, and `PathBuf`, with the following command :
 
-* __main.rs__ : `pub mod module_file_manager;`
-* random file : `use crate::module_file_manager::*;`
+* __main.rs__ : `pub mod custom_file_tools;`
+* random file : `use crate::custom_file_tools::*;`
 
 This practice allowing you to use new traits of [`Path`] and [`PathBuf`]
 
 ```rust
 // main.rs
-pub mod module_file_manager;
+pub mod custom_file_tools;
 
 fn main () {
     // ...
@@ -47,7 +47,7 @@ fn main () {
 
 ```rust
 // foo.rs
-use crate::module_file_manager__::{FileManager, Path, PathBuf};
+use crate::custom_file_tools__::{FileManager, Path, PathBuf};
 
 fn bar () {
     // ...

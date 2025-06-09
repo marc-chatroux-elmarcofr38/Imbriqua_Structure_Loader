@@ -18,13 +18,12 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/writing_mod_objects.md")]
+#![doc = include_str!("../doc/writing_mod_object.md")]
 
 // Package section
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
-use crate::loader_dependencies_explorer;
 use crate::loader_dependencies_explorer::*;
 use crate::writing_manager::*;
 
@@ -45,13 +44,28 @@ impl LoadingTracker {
             // Logs
             debug!("Generating sub-mod file for \"{label}\" : START");
 
-            // Create folder and lib file
-            let folder: PathBuf = self.get_output_mod_folder(package);
-
             // 1 - Write mod structs
-            package
-                .get_json()
-                .wrt_call_mod_object(&folder, &package.get_level_path());
+            for owned_member in package.get_json().get_sorted_iter() {
+                // Get file
+                let (filename, mut writer) = self.get_object_file(package, owned_member);
+                match owned_member {
+                    EnumOwnedMember::Association(_content) => {
+                        // _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
+                    }
+                    EnumOwnedMember::Class(_content) => {
+                        _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
+                    }
+                    EnumOwnedMember::DataType(_content) => {
+                        _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
+                    }
+                    EnumOwnedMember::Enumeration(_content) => {
+                        _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
+                    }
+                    EnumOwnedMember::PrimitiveType(_content) => {
+                        _content.wrt_call_mod_object(&mut writer, &self.pre_calculation, &package);
+                    }
+                }
+            }
             // 1 - Write mod structs
 
             // Logs
@@ -66,135 +80,83 @@ impl LoadingTracker {
 //
 // ####################################################################################################
 
-impl WritingCallModObject for CMOFPackage {
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
-        for class in self.get_sorted_iter() {
-            class.wrt_call_mod_object(&folder, package_name)
-        }
-    }
-}
-
-impl WritingCallModObject for EnumOwnedMember {
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
-        match self {
-            EnumOwnedMember::Association(content) => {
-                let _ = content;
-                // content.wrt_call_mod_object(folder, package_name);
-            }
-            EnumOwnedMember::Class(content) => {
-                let _ = content;
-                // content.wrt_call_mod_object(folder, package_name);
-            }
-            EnumOwnedMember::DataType(content) => {
-                content.wrt_call_mod_object(folder, package_name);
-            }
-            EnumOwnedMember::Enumeration(content) => {
-                content.wrt_call_mod_object(folder, package_name);
-            }
-            EnumOwnedMember::PrimitiveType(content) => {
-                content.wrt_call_mod_object(folder, package_name);
-            }
-        }
-    }
-}
-
 impl WritingCallModObject for CMOFAssociation {
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
-        let (_, mut writing_mod_file) =
-            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                &folder,
-                self.get_level_path().as_str(),
-            );
+    fn wrt_call_mod_object(
+        &self,
+        writer: &mut File,
+        pre_calculation: &LoadingPreCalculation,
+        package: &LoadingPackage,
+    ) {
         // Doc title
-        let _ = writeln!(
-            writing_mod_file,
-            "//! {}",
-            self.name.to_case(Case::Snake).as_str()
-        );
-        let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "\nuse crate::{}::*;", package_name);
-        let _ = writeln!(writing_mod_file, "use crate::Builder;");
-        self.wrt_mod_object(&mut writing_mod_file);
+        let _ = writeln!(writer, "//! {}", self.get_struct_name());
+        let _ = writeln!(writer, "#![allow(unused_imports)]");
+        let _ = writeln!(writer, "\nuse crate::{}::*;", package.get_lowercase_name());
+        let _ = writeln!(writer, "use crate::Builder;");
+        self.wrt_mod_object(writer);
     }
 }
 
 impl WritingCallModObject for CMOFClass {
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
-        let (_, mut writing_mod_file) =
-            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                &folder,
-                self.get_level_path().as_str(),
-            );
+    fn wrt_call_mod_object(
+        &self,
+        writer: &mut File,
+        pre_calculation: &LoadingPreCalculation,
+        package: &LoadingPackage,
+    ) {
         // Doc title
-        let _ = writeln!(
-            writing_mod_file,
-            "//! {}",
-            self.name.to_case(Case::Snake).as_str()
-        );
-        let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "\nuse crate::{}::*;", package_name);
-        let _ = writeln!(writing_mod_file, "use crate::Builder;");
-        self.wrt_mod_object(&mut writing_mod_file);
+        let _ = writeln!(writer, "//! {}", self.get_struct_name());
+        let _ = writeln!(writer, "#![allow(unused_imports)]");
+        let _ = writeln!(writer, "\nuse crate::{}::*;", package.get_lowercase_name());
+        let _ = writeln!(writer, "use crate::Builder;");
+        self.wrt_mod_object(writer);
     }
 }
 
 impl WritingCallModObject for CMOFDataType {
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
-        let (_, mut writing_mod_file) =
-            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                &folder,
-                self.get_level_path().as_str(),
-            );
+    fn wrt_call_mod_object(
+        &self,
+        writer: &mut File,
+        pre_calculation: &LoadingPreCalculation,
+        package: &LoadingPackage,
+    ) {
         // Doc title
-        let _ = writeln!(
-            writing_mod_file,
-            "//! {}",
-            self.name.to_case(Case::Snake).as_str()
-        );
-        let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "\nuse crate::{}::*;", package_name);
-        let _ = writeln!(writing_mod_file, "use crate::Builder;");
-        self.wrt_mod_object(&mut writing_mod_file);
+        let _ = writeln!(writer, "//! {}", self.get_struct_name());
+        let _ = writeln!(writer, "#![allow(unused_imports)]");
+        let _ = writeln!(writer, "\nuse crate::{}::*;", package.get_lowercase_name());
+        let _ = writeln!(writer, "use crate::Builder;");
+        self.wrt_mod_object(writer);
     }
 }
 
 impl WritingCallModObject for CMOFEnumeration {
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
-        let (_, mut writing_mod_file) =
-            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                &folder,
-                self.get_level_path().as_str(),
-            );
+    fn wrt_call_mod_object(
+        &self,
+        writer: &mut File,
+        pre_calculation: &LoadingPreCalculation,
+        package: &LoadingPackage,
+    ) {
         // Doc title
-        let _ = writeln!(
-            writing_mod_file,
-            "//! {}",
-            self.name.to_case(Case::Snake).as_str()
-        );
-        let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "\nuse crate::{}::*;", package_name);
-        let _ = writeln!(writing_mod_file, "use crate::Builder;");
-        self.wrt_mod_object(&mut writing_mod_file);
+        let _ = writeln!(writer, "//! {}", self.get_struct_name());
+        let _ = writeln!(writer, "#![allow(unused_imports)]");
+        let _ = writeln!(writer, "\nuse crate::{}::*;", package.get_lowercase_name());
+        let _ = writeln!(writer, "use crate::Builder;");
+        self.wrt_mod_object(writer);
     }
 }
 
 impl WritingCallModObject for CMOFPrimitiveType {
-    fn wrt_call_mod_object(&self, folder: &PathBuf, package_name: &str) {
-        let (_, mut writing_mod_file) =
-            loader_dependencies_explorer::LoadingTracker::get_output_mod_object(
-                &folder,
-                self.get_level_path().as_str(),
-            );
+    fn wrt_call_mod_object(
+        &self,
+        writer: &mut File,
+        pre_calculation: &LoadingPreCalculation,
+        package: &LoadingPackage,
+    ) {
         // Doc title
-        let _ = writeln!(
-            writing_mod_file,
-            "//! {}",
-            self.name.to_case(Case::Snake).as_str()
-        );
-        let _ = writeln!(writing_mod_file, "#![allow(unused_imports)]");
-        let _ = writeln!(writing_mod_file, "\nuse crate::{}::*;", package_name);
-        let _ = writeln!(writing_mod_file, "use crate::Builder;");
-        self.wrt_mod_object(&mut writing_mod_file);
+        let _ = writeln!(writer, "//! {}", self.get_struct_name());
+        let _ = writeln!(writer, "#![allow(unused_imports)]");
+        let _ = writeln!(writer, "\nuse crate::{}::*;", package.get_lowercase_name());
+        let _ = writeln!(writer, "use crate::Builder;");
+        self.wrt_mod_object(writer);
     }
 }
 
@@ -507,7 +469,12 @@ impl WritingModObject for CMOFProperty {
                 _ => {
                     let content = self.get_type()
                         + "::"
-                        + self.default.as_ref().unwrap().to_case(Case::Snake).as_str();
+                        + self
+                            .default
+                            .as_ref()
+                            .unwrap()
+                            .to_case(Case::UpperCamel)
+                            .as_str();
                     macro_line.push_str(content.as_str());
                 }
             }
@@ -522,6 +489,7 @@ impl WritingModObject for CMOFProperty {
         let _ = writeln!(writer, "{}", macro_line);
 
         // main line
+        // todo!("add conditionnal treatment for primitive property and link property");
         let _ = writeln!(
             writer,
             "    {a} {name}: {b}{c}{d}{content}{e}{f}{g},",
@@ -747,7 +715,7 @@ impl CMOFClass {
     }
     /// Write struct macro
     pub fn wrt_struct_macro(&self, writer: &mut File) {
-        let _ = writeln!(writer, "#[derive(Builder, Debug, Clone)]");
+        let _ = writeln!(writer, "\n#[derive(Builder, Debug, Clone)]");
         // Add validation if have constraint
         if self.owned_rule.len() > 0 {
             let _ = writeln!(
@@ -821,7 +789,7 @@ impl CMOFClass {
     }
     /// Write validation end part
     pub fn wrt_validation_build(&self, writer: &mut File) {
-        let _ = writeln!(writer, "    fn validate(self) -> Result<(), String> {{");
+        let _ = writeln!(writer, "    fn validate(&self) -> Result<(), String> {{");
         for content in self.owned_rule.iter() {
             content.wrt_main_validation(writer);
         }
@@ -887,7 +855,7 @@ impl EnumSuperClass {
 }
 
 impl SuperClass {
-    /// Ctting href in (Class [SnakeCase], File [SnakeCase], Class)
+    /// Cutting href in (Class {SnakeCase}, File {SnakeCase}, Class)
     pub fn cut_split(&self) -> (String, String, String) {
         let content = self.href.clone();
         let split_index = content.find('#').unwrap();

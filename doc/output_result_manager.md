@@ -24,10 +24,10 @@ Tools :
 Minimal project : make statistic of data samples
 
 ```rust
-mod module_file_env;
+mod output_result_manager;
 
 fn main() {
-    let file_env = module_file_env::open_env("input_folder/", "main_output_folder/", "result_folder");
+    let file_env = output_result_manager::open_env("input_folder/", "main_output_folder/", "result_folder");
 
     // Create statistic from files (example)
     let mut statistic = StatisticResult::new();
@@ -79,7 +79,7 @@ impl StatisticResult {
 .
 ├── src/
 │   ├── main.rs
-│   ├── module_file_env.rs
+│   ├── output_result_manager.rs
 │   └── ...
 │
 ├── input_folder/

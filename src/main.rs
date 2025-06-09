@@ -29,7 +29,7 @@ pub mod loader_deserialise_helper;
 pub mod writing_lib_file;
 pub mod writing_manager;
 pub mod writing_mod_file;
-pub mod writing_mod_objects;
+pub mod writing_mod_object;
 
 // For "main" use only
 mod output_cargo_checker;
@@ -70,14 +70,14 @@ fn main() {
 
     // Make doc for loader
     let cargo_loader_package = "Cargo.toml"; // Location of loader environment package Cargo.toml file
-    let loader_link = output_cargo_checker::open_link(cargo_loader_package);
-    assert!(loader_link.cargo_custom_command(vec!["clean"]));
-    // assert!(loader_link.cargo_custom_command(vec!["doc", "--no-deps"]));
-    // assert!(loader_link.cargo_custom_command(vec!["test"]));
+    let _loader_link = output_cargo_checker::open_link(cargo_loader_package);
+    // assert!(_loader_link.cargo_custom_command(vec!["clean"]));
+    // assert!(_loader_link.cargo_custom_command(vec!["doc", "--no-deps"]));
+    // assert!(_loader_link.cargo_custom_command(vec!["test"]));
 
     // Make testing package link
     let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
-    let result_link = output_cargo_checker::open_link(cargo_testing_package);
-    assert!(result_link.cargo_clean()); // Make cargo clean
-                                        // assert!(result_link.cargo_full_check()); // Make cargo check, test build and doc
+    let _result_link = output_cargo_checker::open_link(cargo_testing_package);
+    //assert!(_result_link.cargo_clean());
+    // assert!(_result_link.cargo_full_check()); // Make cargo check, test build and doc
 }

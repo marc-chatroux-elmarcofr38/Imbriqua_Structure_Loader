@@ -227,7 +227,7 @@ impl CMOFPackage {
     /// Sort ownem_member
     pub fn get_sorted_iter(&self) -> Vec<&EnumOwnedMember> {
         let mut v: Vec<&EnumOwnedMember> = Vec::from_iter(&self.owned_member);
-        v.sort_by(|&a, &b| a.get_level_path().cmp(&b.get_level_path()));
+        v.sort_by(|&a, &b| a.get_path_name().cmp(&b.get_path_name()));
         v
     }
 }

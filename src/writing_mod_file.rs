@@ -39,25 +39,51 @@ impl LoadingTracker {
     /// Make a module file for each package
     pub fn write_mod_file(&mut self) {
         for (label, package) in self.get_package_in_order() {
+            // Get folder and file
+            self.get_package_folder(package);
+            let (filename, mut writer) = self.get_package_mod_file(package);
+
             // Logs
-            debug!("Generating \"mod.rs\" for \"{label}\" : START");
-
-            // Create folder and lib file
-            let _ = self.get_output_mod_folder(package);
-            let (_, mut writing_mod_file) = self.get_output_mod_file(package);
+            debug!(
+                "Generating \"{}\" from \"{}\" : START",
+                filename.display(),
+                label
+            );
 
             // 1 - Write mod head
-            package.get_json().wrt_mod_head(&mut writing_mod_file);
-            // 1 - Write mod head
-
-            // 2 - Write mod object call
             package
                 .get_json()
-                .wrt_mod_object_call(&mut writing_mod_file);
+                .wrt_mod_file_head(&mut writer, &self.pre_calculation);
+            // 1 - Write mod head
+
+            // 2 - Write mod object call
+            for owned_member in package.get_json().get_sorted_iter() {
+                match owned_member {
+                    EnumOwnedMember::Association(_content) => {
+                        // _content.wrt_mod_file_object_section(&mut writer, &self.pre_calculation);
+                    }
+                    EnumOwnedMember::Class(_content) => {
+                        _content.wrt_mod_file_object_section(&mut writer, &self.pre_calculation);
+                    }
+                    EnumOwnedMember::DataType(_content) => {
+                        _content.wrt_mod_file_object_section(&mut writer, &self.pre_calculation);
+                    }
+                    EnumOwnedMember::Enumeration(_content) => {
+                        _content.wrt_mod_file_object_section(&mut writer, &self.pre_calculation);
+                    }
+                    EnumOwnedMember::PrimitiveType(_content) => {
+                        _content.wrt_mod_file_object_section(&mut writer, &self.pre_calculation);
+                    }
+                }
+            }
             // 2 - Write mod object call
 
             // Logs
-            info!("Generating \"mod.rs\" for \"{label}\" : Finished");
+            info!(
+                "Generating \"{}\" from \"{}\" : Finished",
+                filename.display(),
+                label
+            );
         }
     }
 }
@@ -68,8 +94,8 @@ impl LoadingTracker {
 //
 // ####################################################################################################
 
-impl WritingModHead for CMOFPackage {
-    fn wrt_mod_head(&self, writer: &mut File) {
+impl WritingModFileHead for CMOFPackage {
+    fn wrt_mod_file_head(&self, writer: &mut File, _pre_calculation: &LoadingPreCalculation) {
         // Doc title
         let _ = writeln!(writer, "//! {}", self.get_lowercase_name());
         let _ = writeln!(writer, "\n#![allow(unused_imports)]");
@@ -78,19 +104,19 @@ impl WritingModHead for CMOFPackage {
         for import in self.package_import.iter() {
             match import {
                 EnumPackageImport::PackageImport(content) => {
-                    content.wrt_mod_head(writer);
+                    content.wrt_mod_file_head(writer, _pre_calculation);
                 }
             }
         }
     }
 }
 
-impl WritingModHead for CMOFPackageImport {
-    fn wrt_mod_head(&self, writer: &mut File) {
+impl WritingModFileHead for CMOFPackageImport {
+    fn wrt_mod_file_head(&self, writer: &mut File, _pre_calculation: &LoadingPreCalculation) {
         let _ = writeln!(writer, "\n/// Link from {} (PackageImport)", self.xmi_id);
         match &self.imported_package {
             EnumImportedPackage::ImportedPackage(package) => {
-                let _ = writeln!(writer, "use crate::{};", package.get_level_path());
+                let _ = writeln!(writer, "use crate::{};", package.get_path_name());
             }
         }
     }
@@ -102,99 +128,87 @@ impl WritingModHead for CMOFPackageImport {
 //
 // ####################################################################################################
 
-impl WritingModObjectCall for CMOFPackage {
-    fn wrt_mod_object_call(&self, writer: &mut File) {
-        for class in self.get_sorted_iter() {
-            class.wrt_mod_object_call(writer)
-        }
-    }
-}
-
-impl WritingModObjectCall for EnumOwnedMember {
-    fn wrt_mod_object_call(&self, writer: &mut File) {
-        match self {
-            EnumOwnedMember::Association(content) => {
-                let _ = content;
-                // content.wrt_mod_object_call(writer);
-            }
-            EnumOwnedMember::Class(content) => {
-                let _ = content;
-                // content.wrt_mod_object_call(writer);
-            }
-            EnumOwnedMember::DataType(content) => {
-                content.wrt_mod_object_call(writer);
-            }
-            EnumOwnedMember::Enumeration(content) => {
-                content.wrt_mod_object_call(writer);
-            }
-            EnumOwnedMember::PrimitiveType(content) => {
-                content.wrt_mod_object_call(writer);
-            }
-        }
-    }
-}
-
-impl WritingModObjectCall for CMOFAssociation {
-    fn wrt_mod_object_call(&self, writer: &mut File) {
+impl WritingModFileObjectSection for CMOFAssociation {
+    fn wrt_mod_file_object_section(
+        &self,
+        writer: &mut File,
+        _pre_calculation: &LoadingPreCalculation,
+    ) {
         let _ = writeln!(writer, "\n/// Association : {}", self.name);
         let _ = writeln!(
             writer,
             "mod {};\npub use {}::{};",
-            self.get_level_path(),
-            self.get_level_path(),
-            self.get_level_struct()
+            self.get_path_name(),
+            self.get_path_name(),
+            self.get_struct_name()
         );
     }
 }
 
-impl WritingModObjectCall for CMOFClass {
-    fn wrt_mod_object_call(&self, writer: &mut File) {
+impl WritingModFileObjectSection for CMOFClass {
+    fn wrt_mod_file_object_section(
+        &self,
+        writer: &mut File,
+        _pre_calculation: &LoadingPreCalculation,
+    ) {
         let _ = writeln!(writer, "\n/// Class : {}", self.name);
         let _ = writeln!(
             writer,
             "mod {};\npub use {}::{};",
-            self.get_level_path(),
-            self.get_level_path(),
-            self.get_level_struct()
+            self.get_path_name(),
+            self.get_path_name(),
+            self.get_struct_name()
         );
     }
 }
 
-impl WritingModObjectCall for CMOFDataType {
-    fn wrt_mod_object_call(&self, writer: &mut File) {
+impl WritingModFileObjectSection for CMOFDataType {
+    fn wrt_mod_file_object_section(
+        &self,
+        writer: &mut File,
+        _pre_calculation: &LoadingPreCalculation,
+    ) {
         let _ = writeln!(writer, "\n/// DataType : {}", self.name);
         let _ = writeln!(
             writer,
             "mod {};\npub use {}::{};",
-            self.get_level_path(),
-            self.get_level_path(),
-            self.get_level_struct()
+            self.get_path_name(),
+            self.get_path_name(),
+            self.get_struct_name()
         );
     }
 }
 
-impl WritingModObjectCall for CMOFEnumeration {
-    fn wrt_mod_object_call(&self, writer: &mut File) {
+impl WritingModFileObjectSection for CMOFEnumeration {
+    fn wrt_mod_file_object_section(
+        &self,
+        writer: &mut File,
+        _pre_calculation: &LoadingPreCalculation,
+    ) {
         let _ = writeln!(writer, "\n/// Enumeration : {}", self.name);
         let _ = writeln!(
             writer,
             "mod {};\npub use {}::{};",
-            self.get_level_path(),
-            self.get_level_path(),
-            self.get_level_struct()
+            self.get_path_name(),
+            self.get_path_name(),
+            self.get_struct_name()
         );
     }
 }
 
-impl WritingModObjectCall for CMOFPrimitiveType {
-    fn wrt_mod_object_call(&self, writer: &mut File) {
+impl WritingModFileObjectSection for CMOFPrimitiveType {
+    fn wrt_mod_file_object_section(
+        &self,
+        writer: &mut File,
+        _pre_calculation: &LoadingPreCalculation,
+    ) {
         let _ = writeln!(writer, "\n/// PrimitiveType : {}", self.name);
         let _ = writeln!(
             writer,
             "mod {};\npub use {}::{};",
-            self.get_level_path(),
-            self.get_level_path(),
-            self.get_level_struct()
+            self.get_path_name(),
+            self.get_path_name(),
+            self.get_struct_name()
         );
     }
 }

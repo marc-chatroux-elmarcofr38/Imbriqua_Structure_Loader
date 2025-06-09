@@ -9,11 +9,11 @@ This two-step provide a working detailed logging backup configuration when confi
 ## Minimal usecase (with __config_log.yml__ file)
 
 ```rust
-mod module_log;
+mod custom_log_tools;
 
 fn main() {
 
-    let _handle = module_log::open_logger("config_log.yml");
+    let _handle = custom_log_tools::open_logger("config_log.yml");
 
     error!("It's an working error log");
     warn!("It's a working warn log");
@@ -26,16 +26,16 @@ fn main() {
 
 ## Good practice
 
-Use [`crate::module_log`] in each rust file, replacing `log`, `log4rs`, and `env_logger`, with the following command :
+Use [`crate::custom_log_tools`] in each rust file, replacing `log`, `log4rs`, and `env_logger`, with the following command :
 
-* __main.rs__ : `pub mod module_log;`
-* random file : `use crate::module_log::*;`
+* __main.rs__ : `pub mod custom_log_tools;`
+* random file : `use crate::custom_log_tools::*;`
 
 This practice allowing you to import logs macro (`error!()`, `warn!()`, `info!()`, `debug!()`, `trace!()`) in each rust file
 
 ```rust
 // main.rs
-pub mod module_log;
+pub mod custom_log_tools;
 
 fn main () {
     // ...
@@ -44,7 +44,7 @@ fn main () {
 
 ```rust
 // foo.rs
-use crate::module_log::*;
+use crate::custom_log_tools::*;
 
 fn bar () {
     // ...
@@ -147,7 +147,7 @@ Logs are provided in __tests/tests.log__ file, using the configuration file __te
 ```rust
 #[cfg(test)]
 mod tests {
-    use crate::module_log::tests::initialize_log_for_test;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
     // Other import...
 
     #[test]

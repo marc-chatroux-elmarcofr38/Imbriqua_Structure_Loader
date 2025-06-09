@@ -126,12 +126,15 @@ impl LoadingPackage {
 pub struct LoadingPreCalculation {
     /// Lassifing Class in function of lifetime se style
     pub class_classification: HashMap<String, ClassClassification>,
+    /// List of all OwnedMember, linked with their type
+    pub owned_member_type_list: Vec<(String, ClassType)>,
 }
 impl LoadingPreCalculation {
     /// Create new instance
     pub fn new() -> Self {
         LoadingPreCalculation {
             class_classification: HashMap::new(),
+            owned_member_type_list: Vec::new(),
         }
     }
 }
@@ -379,4 +382,19 @@ pub enum ClassClassification {
     Simple,
     /// Complex : need lifetime for utilization
     Complex,
+}
+
+#[derive(Clone, PartialEq, Debug)]
+/// State on package to load
+pub enum ClassType {
+    /// Association : CMOFAssociation
+    Association,
+    /// Class : CMOFClass
+    Class,
+    /// DataType : CMOFDataType
+    DataType,
+    /// Enumeration : CMOFEnumeration
+    Enumeration,
+    /// PrimitiveType : CMOFPrimitiveType
+    PrimitiveType,
 }

@@ -29,8 +29,6 @@ Also, [`PackageLink`] provide build-in folder management shortcut :
 
 * [`PackageLink::get_absolute_cargo_path`] : return the path of __Cargo.toml__
 * [`PackageLink::get_absolute_source_path`] : return the path of __src/__
-* [`PackageLink::purge_source`] : remove all content of the folder __src/__
-* [`PackageLink::load_from`] : copy all content of a output folder in  __src/__
 
 ## Minimal usecase
 
@@ -42,7 +40,7 @@ In the case of yout making a package __Project_A__ gererating a Rust library fil
 ### __/Project_A/main.rs__
 
 ```rust
-mod module_output_checker;
+mod output_cargo_checker;
 
 fn main() {
 
@@ -51,7 +49,7 @@ fn main() {
     }
 
     // Instantiation of PackageLink
-    let link = module_output_checker::open_link("../Project_B/Cargo.toml");
+    let link = output_cargo_checker::open_link("../Project_B/Cargo.toml");
     // Make full check
     assert_eq!(link.cargo_full_check(), true);
 }
@@ -76,7 +74,7 @@ $ cargo doc --manifest-path=".../Project_B/Cargo.toml" --no-deps
 │   ├── Cargo.lock
 │   ├── src/
 │   │   ├── main.rs
-│   │   ├── module_output_checker.rs
+│   │   ├── output_cargo_checker.rs
 │   │   └── ...
 │   └── ...
 │
@@ -98,13 +96,13 @@ PS : Of course, you can have a similar folder tree for executable package check
 
 In the case of yout making a package __Project_A__ gererating a Rust library file to test, the TODO list is :
 * Create a minimal cargo library package folder (like Imbriqua_Structure_Result, see file tree)
-* Create code generation script (Project_A objective) writing result in a output folder, classified by run time (like module_file_env)
+* Create code generation script (Project_A objective) writing result in a output folder, classified by run time (like output_result_manager)
 * In main of Project_A, use [`PackageLink`] like the following example (or with custom command)
 
 ### __/Project_A/main.rs__
 
 ```rust
-mod module_output_checker;
+mod output_cargo_checker;
 
 fn main() {
 
@@ -118,7 +116,7 @@ fn main() {
     }
 
     // Instantiation of PackageLink
-    let link = module_output_checker::open_link("../Project_B/Cargo.toml");
+    let link = output_cargo_checker::open_link("../Project_B/Cargo.toml");
 
     // cargo clean
     assert_eq!(link.cargo_clean(), true);
@@ -154,7 +152,7 @@ $ cargo run --manifest-path=".../Project_B/Cargo.toml"
 │   ├── Cargo.lock
 │   ├── src/
 │   │   ├── main.rs
-│   │   ├── module_output_checker.rs
+│   │   ├── output_cargo_checker.rs
 │   │   └── ...
 │   └── ...
 │
