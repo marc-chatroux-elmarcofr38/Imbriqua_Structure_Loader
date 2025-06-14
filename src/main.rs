@@ -43,7 +43,7 @@ fn main() {
     let logger_configuration = "config_log.yml"; // File for configuring logger
     let input_folder = "metamodel_file/"; // Folder where input file can be find
     let main_output_folder = "../Imbriqua_Output_file/"; // Folder dedicased to store output folders and files
-    let result_folder = "../Imbriqua_Structure_Result/src"; // Folder dedicased to store output folders and files
+    let result_folder = "../Imbriqua_Structure_Result/entities/src"; // Folder dedicased to store output folders and files
     let main_package_file = "BPMNDI.json"; // File of the main package to explore
     let main_package_id = "_0"; // Package ID of main file to explore
 
