@@ -76,79 +76,79 @@ pub trait NamingPath {
     ///
     /// Example : with package dc and datatype_font
     ///   ---> "dc::Font"
-    fn get_path_name(&self) -> String;
+    fn get_path_name(&self, package: &LoadingPackage) -> String;
 }
 
-impl NamingPath for LoadingPackage {
-    fn get_path_name(&self) -> String {
-        self.get_lowercase_name().to_case(Case::Snake)
-    }
-}
+// impl NamingPath for LoadingPackage {
+//     fn get_path_name(&self) -> String {
+//         self.get_lowercase_name().to_case(Case::Snake)
+//     }
+// }
 
-impl NamingPath for ImportedPackage {
-    fn get_path_name(&self) -> String {
-        let content = self.href.clone();
-        let content = content.replace(".cmof#_0", "");
-        let mut result = String::from("");
-        result.push_str(content.to_case(Case::Snake).as_str());
-        result
-    }
-}
+// impl NamingPath for ImportedPackage {
+//     fn get_path_name(&self) -> String {
+//         let content = self.href.clone();
+//         let content = content.replace(".cmof#_0", "");
+//         let mut result = String::from("");
+//         result.push_str(content.to_case(Case::Snake).as_str());
+//         result
+//     }
+// }
 
 impl NamingPath for EnumOwnedMember {
-    fn get_path_name(&self) -> String {
+    fn get_path_name(&self, package: &LoadingPackage) -> String {
         match self {
-            EnumOwnedMember::Association(content) => content.get_path_name(),
-            EnumOwnedMember::Class(content) => content.get_path_name(),
-            EnumOwnedMember::DataType(content) => content.get_path_name(),
-            EnumOwnedMember::Enumeration(content) => content.get_path_name(),
-            EnumOwnedMember::PrimitiveType(content) => content.get_path_name(),
+            EnumOwnedMember::Association(content) => content.get_path_name(package),
+            EnumOwnedMember::Class(content) => content.get_path_name(package),
+            EnumOwnedMember::DataType(content) => content.get_path_name(package),
+            EnumOwnedMember::Enumeration(content) => content.get_path_name(package),
+            EnumOwnedMember::PrimitiveType(content) => content.get_path_name(package),
         }
     }
 }
 
 impl NamingPath for CMOFAssociation {
-    fn get_path_name(&self) -> String {
-        self.name
-            .to_case(Case::Snake)
-            .prefix("link_")
-            .replace("\n", "")
+    fn get_path_name(&self, package: &LoadingPackage) -> String {
+        let mut result = package.get_lowercase_name();
+        result.push_str("_link_");
+        result.push_str(self.name.to_case(Case::Snake).as_str());
+        result.replace("\n", "")
     }
 }
 
 impl NamingPath for CMOFClass {
-    fn get_path_name(&self) -> String {
-        self.name
-            .to_case(Case::Snake)
-            .prefix("class_")
-            .replace("\n", "")
+    fn get_path_name(&self, package: &LoadingPackage) -> String {
+        let mut result = package.get_lowercase_name();
+        result.push_str("_class_");
+        result.push_str(self.name.to_case(Case::Snake).as_str());
+        result.replace("\n", "")
     }
 }
 
 impl NamingPath for CMOFDataType {
-    fn get_path_name(&self) -> String {
-        self.name
-            .to_case(Case::Snake)
-            .prefix("datatype_")
-            .replace("\n", "")
+    fn get_path_name(&self, package: &LoadingPackage) -> String {
+        let mut result = package.get_lowercase_name();
+        result.push_str("_datatype_");
+        result.push_str(self.name.to_case(Case::Snake).as_str());
+        result.replace("\n", "")
     }
 }
 
 impl NamingPath for CMOFEnumeration {
-    fn get_path_name(&self) -> String {
-        self.name
-            .to_case(Case::Snake)
-            .prefix("enum_")
-            .replace("\n", "")
+    fn get_path_name(&self, package: &LoadingPackage) -> String {
+        let mut result = package.get_lowercase_name();
+        result.push_str("_enum_");
+        result.push_str(self.name.to_case(Case::Snake).as_str());
+        result.replace("\n", "")
     }
 }
 
 impl NamingPath for CMOFPrimitiveType {
-    fn get_path_name(&self) -> String {
-        self.name
-            .to_case(Case::Snake)
-            .prefix("primitivetype_")
-            .replace("\n", "")
+    fn get_path_name(&self, package: &LoadingPackage) -> String {
+        let mut result = package.get_lowercase_name();
+        result.push_str("_primitivetype_");
+        result.push_str(self.name.to_case(Case::Snake).as_str());
+        result.replace("\n", "")
     }
 }
 
@@ -167,7 +167,7 @@ pub trait NamingStruct {
     ///
     ///
     /// Example : with package dc and datatype_font
-    ///   ---> datatpe_font
+    ///   ---> datatype_font
     fn get_struct_name(&self) -> String;
 }
 
@@ -234,16 +234,6 @@ pub trait WrittingPath {
     /// Example --> ${output_folder}/src/lib.rs
     fn get_project_lib_file(&self) -> (PathBuf, File);
 
-    /// Get output folder for the package
-    ///
-    /// Example for dc package --> ${output_folder}/src/dc
-    fn get_package_folder(&self, package: &LoadingPackage) -> PathBuf;
-
-    /// Get mod.rs file for the package
-    ///
-    /// Example for dc package --> ${output_folder}/src/dc/mod.rs
-    fn get_package_mod_file(&self, package: &LoadingPackage) -> (PathBuf, File);
-
     /// Get ${package}.rs file for a object of a package
     ///
     /// Example for font object of dc package --> ${output_folder}/src/dc/font.rs
@@ -262,23 +252,6 @@ impl WrittingPath for LoadingTracker {
         // Create file
         (file_name.clone(), file_name.write_new_file())
     }
-    fn get_package_folder(&self, package: &LoadingPackage) -> PathBuf {
-        // Calculate path
-        let mut folder_name = self.get_output_folder();
-        folder_name.push(package.get_path_name());
-        // Create empty folder
-        folder_name.create_folder();
-        folder_name
-    }
-
-    fn get_package_mod_file(&self, package: &LoadingPackage) -> (PathBuf, File) {
-        // Calculate path
-        let mut file_name = self.get_output_folder();
-        file_name.push(package.get_path_name());
-        file_name.push("mod.rs");
-        // Create file
-        (file_name.clone(), file_name.write_new_file())
-    }
 
     fn get_object_file(
         &self,
@@ -287,8 +260,7 @@ impl WrittingPath for LoadingTracker {
     ) -> (PathBuf, File) {
         // Calculate path
         let mut file_name = self.get_output_folder();
-        file_name.push(package.get_path_name());
-        file_name.push(object.get_path_name() + ".rs");
+        file_name.push(object.get_path_name(package) + ".rs");
         // Create file
         (file_name.clone(), file_name.write_new_file())
     }
@@ -304,10 +276,10 @@ impl LoadingTracker {
     /// Build all pre calculing information needed for writting
     pub fn writing_preparation(&mut self) {
         for (_, package) in self.clone().get_package_in_order() {
-            for owned_member in package.get_json().get_sorted_iter() {
+            for owned_member in package.get_sorted_iter() {
                 let mut real_key = package.get_lowercase_name();
                 real_key.push('_');
-                real_key.push_str(owned_member.get_path_name().as_str());
+                real_key.push_str(owned_member.get_struct_name().as_str());
                 let v = match owned_member {
                     EnumOwnedMember::Association(_) => ClassType::Association,
                     EnumOwnedMember::Class(_) => ClassType::Class,
@@ -402,6 +374,7 @@ pub trait WritingModFileObjectSection: Debug {
     fn wrt_mod_file_object_section(
         &self,
         writer: &mut File,
+        package: &LoadingPackage,
         pre_calculation: &LoadingPreCalculation,
     );
 }

@@ -45,7 +45,7 @@ impl LoadingTracker {
             debug!("Generating sub-mod file for \"{label}\" : START");
 
             // 1 - Write mod structs
-            for owned_member in package.get_json().get_sorted_iter() {
+            for owned_member in package.get_sorted_iter() {
                 // Get file
                 let (_, mut writer) = self.get_object_file(package, owned_member);
                 match owned_member {
@@ -105,9 +105,8 @@ impl WritingModObjectCaller for CMOFAssociation {
     ) {
         // Doc title
         let _ = writeln!(writer, "//! {}", self.get_struct_name());
+        let _ = writeln!(writer, "//! {}", self.get_path_name(package));
         let _ = writeln!(writer, "#![allow(unused_imports)]");
-        let _ = writeln!(writer, "\nuse crate::{}::*;", package.get_lowercase_name());
-        let _ = writeln!(writer, "use crate::Builder;");
         self.wrt_mod_object(writer);
     }
 }
@@ -121,9 +120,8 @@ impl WritingModObjectCaller for CMOFClass {
     ) {
         // Doc title
         let _ = writeln!(writer, "//! {}", self.get_struct_name());
+        let _ = writeln!(writer, "//! {}", self.get_path_name(package));
         let _ = writeln!(writer, "#![allow(unused_imports)]");
-        let _ = writeln!(writer, "\nuse crate::{}::*;", package.get_lowercase_name());
-        let _ = writeln!(writer, "use crate::Builder;");
         self.wrt_mod_object(writer);
     }
 }
@@ -137,9 +135,8 @@ impl WritingModObjectCaller for CMOFDataType {
     ) {
         // Doc title
         let _ = writeln!(writer, "//! {}", self.get_struct_name());
+        let _ = writeln!(writer, "//! {}", self.get_path_name(package));
         let _ = writeln!(writer, "#![allow(unused_imports)]");
-        let _ = writeln!(writer, "\nuse crate::{}::*;", package.get_lowercase_name());
-        let _ = writeln!(writer, "use crate::Builder;");
         self.wrt_mod_object(writer);
     }
 }
@@ -153,9 +150,8 @@ impl WritingModObjectCaller for CMOFEnumeration {
     ) {
         // Doc title
         let _ = writeln!(writer, "//! {}", self.get_struct_name());
+        let _ = writeln!(writer, "//! {}", self.get_path_name(package));
         let _ = writeln!(writer, "#![allow(unused_imports)]");
-        let _ = writeln!(writer, "\nuse crate::{}::*;", package.get_lowercase_name());
-        let _ = writeln!(writer, "use crate::Builder;");
         self.wrt_mod_object(writer);
     }
 }
@@ -169,9 +165,8 @@ impl WritingModObjectCaller for CMOFPrimitiveType {
     ) {
         // Doc title
         let _ = writeln!(writer, "//! {}", self.get_struct_name());
+        let _ = writeln!(writer, "//! {}", self.get_path_name(package));
         let _ = writeln!(writer, "#![allow(unused_imports)]");
-        let _ = writeln!(writer, "\nuse crate::{}::*;", package.get_lowercase_name());
-        let _ = writeln!(writer, "use crate::Builder;");
         self.wrt_mod_object(writer);
     }
 }
@@ -241,15 +236,16 @@ impl WritingModObject for CMOFDataType {
         );
 
         // Start of Struct
-        let _ = writeln!(writer, "#[derive(Builder, Debug, Clone)]");
+        // let _ = writeln!(writer, "#[derive(Builder, Debug, Clone)]");
+        let _ = writeln!(writer, "#[derive(Debug, Clone)]");
 
-        // Add validation if have constraint
-        if self.owned_rule.len() > 0 {
-            let _ = writeln!(
-                writer,
-                "#[builder(build_fn(validate = \"Self::validate\"))]"
-            );
-        }
+        // // Add validation if have constraint
+        // if self.owned_rule.len() > 0 {
+        //     let _ = writeln!(
+        //         writer,
+        //         "#[builder(build_fn(validate = \"Self::validate\"))]"
+        //     );
+        // }
 
         let _ = writeln!(writer, "pub struct {} {{", self.name);
 
@@ -264,25 +260,25 @@ impl WritingModObject for CMOFDataType {
 
         // ownedRule
         if self.owned_rule.len() > 0 {
-            // Start
-            let _ = writeln!(writer, "impl {}Builder {{", self.name);
+            // // Start
+            // let _ = writeln!(writer, "impl {}Builder {{", self.name);
 
-            // Sub function
-            for content in self.owned_rule.iter() {
-                content.wrt_sub_validation(writer);
-            }
+            // // Sub function
+            // for content in self.owned_rule.iter() {
+            //     content.wrt_sub_validation(writer);
+            // }
 
-            // Validation
-            let _ = writeln!(writer, "    fn validate(&self) -> Result<(), String> {{");
-            for content in self.owned_rule.iter() {
-                content.wrt_main_validation(writer);
-            }
-            let _ = writeln!(writer, "");
-            let _ = writeln!(writer, "        return Ok(());");
+            // // Validation
+            // let _ = writeln!(writer, "    fn validate(&self) -> Result<(), String> {{");
+            // for content in self.owned_rule.iter() {
+            //     content.wrt_main_validation(writer);
+            // }
+            // let _ = writeln!(writer, "");
+            // let _ = writeln!(writer, "        return Ok(());");
 
-            // End
-            let _ = writeln!(writer, "    }}");
-            let _ = writeln!(writer, "}}");
+            // // End
+            // let _ = writeln!(writer, "    }}");
+            // let _ = writeln!(writer, "}}");
         }
     }
 }
@@ -437,72 +433,72 @@ impl WritingModObject for CMOFProperty {
         // type
         let name = self.name.to_case(Case::Snake);
 
-        // Macro line
-        let mut macro_line = String::new();
-        // start of macro
-        macro_line.push_str("    #[builder(");
-        // setter section
-        macro_line.push_str("setter(into");
-        macro_line.push_str(if self.is_option() {
-            ", strip_option"
-        } else {
-            ""
-        });
-        macro_line.push_str(")");
+        // // Macro line
+        // let mut macro_line = String::new();
+        // // start of macro
+        // macro_line.push_str("    #[builder(");
+        // // setter section
+        // macro_line.push_str("setter(into");
+        // macro_line.push_str(if self.is_option() {
+        //     ", strip_option"
+        // } else {
+        //     ""
+        // });
+        // macro_line.push_str(")");
 
-        if self.is_option() && self.default.is_none() {
-            macro_line.push_str(", default");
-        }
+        // if self.is_option() && self.default.is_none() {
+        //     macro_line.push_str(", default");
+        // }
 
-        if self.default.is_some() {
-            macro_line.push_str(", default = \"");
-            if self.is_option() {
-                macro_line.push_str("Some(");
-            }
-            match self.get_type().as_str() {
-                "Boolean" => macro_line.push_str(self.default.as_ref().unwrap()),
-                "Integer" => macro_line.push_str(self.default.as_ref().unwrap()),
-                "Real" => {
-                    let mut value = self.default.as_ref().unwrap().clone();
-                    value.push_str(if !value.contains('.') { ".0" } else { "" });
-                    macro_line.push_str(value.as_str());
-                }
-                "String" => {
-                    let content = String::from("String::from(\\\"")
-                        + self.default.as_ref().unwrap().as_str()
-                        + "\\\")";
-                    macro_line.push_str(content.as_str());
-                }
-                "dc::Boolean" => macro_line.push_str(self.default.as_ref().unwrap()),
-                "dc::Integer" => macro_line.push_str(self.default.as_ref().unwrap()),
-                "dc::Real" => macro_line.push_str(self.default.as_ref().unwrap()),
-                "dc::String" => {
-                    let content = String::from("String::from(\\\"")
-                        + self.default.as_ref().unwrap().as_str()
-                        + "\\\")";
-                    macro_line.push_str(content.as_str());
-                }
-                _ => {
-                    let content = self.get_type()
-                        + "::"
-                        + self
-                            .default
-                            .as_ref()
-                            .unwrap()
-                            .to_case(Case::UpperCamel)
-                            .as_str();
-                    macro_line.push_str(content.as_str());
-                }
-            }
-            if self.is_option() {
-                macro_line.push_str(")");
-            }
-            macro_line.push_str("\"")
-        }
-        // end of macro
-        macro_line.push_str(")]");
+        // if self.default.is_some() {
+        //     macro_line.push_str(", default = \"");
+        //     if self.is_option() {
+        //         macro_line.push_str("Some(");
+        //     }
+        //     match self.get_type().as_str() {
+        //         "Boolean" => macro_line.push_str(self.default.as_ref().unwrap()),
+        //         "Integer" => macro_line.push_str(self.default.as_ref().unwrap()),
+        //         "Real" => {
+        //             let mut value = self.default.as_ref().unwrap().clone();
+        //             value.push_str(if !value.contains('.') { ".0" } else { "" });
+        //             macro_line.push_str(value.as_str());
+        //         }
+        //         "String" => {
+        //             let content = String::from("String::from(\\\"")
+        //                 + self.default.as_ref().unwrap().as_str()
+        //                 + "\\\")";
+        //             macro_line.push_str(content.as_str());
+        //         }
+        //         "dc::Boolean" => macro_line.push_str(self.default.as_ref().unwrap()),
+        //         "dc::Integer" => macro_line.push_str(self.default.as_ref().unwrap()),
+        //         "dc::Real" => macro_line.push_str(self.default.as_ref().unwrap()),
+        //         "dc::String" => {
+        //             let content = String::from("String::from(\\\"")
+        //                 + self.default.as_ref().unwrap().as_str()
+        //                 + "\\\")";
+        //             macro_line.push_str(content.as_str());
+        //         }
+        //         _ => {
+        //             let content = self.get_type()
+        //                 + "::"
+        //                 + self
+        //                     .default
+        //                     .as_ref()
+        //                     .unwrap()
+        //                     .to_case(Case::UpperCamel)
+        //                     .as_str();
+        //             macro_line.push_str(content.as_str());
+        //         }
+        //     }
+        //     if self.is_option() {
+        //         macro_line.push_str(")");
+        //     }
+        //     macro_line.push_str("\"")
+        // }
+        // // end of macro
+        // macro_line.push_str(")]");
 
-        let _ = writeln!(writer, "{}", macro_line);
+        // let _ = writeln!(writer, "{}", macro_line);
 
         // main line
         // todo!("add conditionnal treatment for primitive property and link property");
@@ -731,13 +727,14 @@ impl CMOFClass {
     }
     /// Write struct macro
     pub fn wrt_struct_macro(&self, writer: &mut File) {
-        let _ = writeln!(writer, "\n#[derive(Builder, Debug, Clone)]");
+        // let _ = writeln!(writer, "\n#[derive(Builder, Debug, Clone)]");
+        let _ = writeln!(writer, "\n#[derive(Debug, Clone)]");
         // Add validation if have constraint
         if self.owned_rule.len() > 0 {
-            let _ = writeln!(
-                writer,
-                "#[builder(build_fn(validate = \"Self::validate\"))]"
-            );
+            // let _ = writeln!(
+            //     writer,
+            //     "#[builder(build_fn(validate = \"Self::validate\"))]"
+            // );
         }
     }
     /// Write struct start part

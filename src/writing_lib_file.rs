@@ -23,6 +23,7 @@ If not, see <https://www.gnu.org/licenses/>.
 // Package section
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
+use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer::*;
 use crate::writing_manager::*;
 
@@ -37,15 +38,10 @@ use crate::writing_manager::*;
 impl LoadingTracker {
     /// Make lib.rs from scratch and package
     pub fn write_lib_file(&mut self) {
-        // Get file
+        // Get folder and file
         let (filename, mut writer) = self.get_project_lib_file();
+        let _ = writeln!(writer, "\n/// Imported from {:?}", self.get_output_folder());
 
-        // Write head
-        let _ = writeln!(writer, "#![doc = include_str!(\"../README.md\")]");
-        let _ = writeln!(writer, "\n//! Imported from {:?}", self.get_output_folder());
-        let _ = writeln!(writer, "\npub use derive_builder::Builder;");
-
-        // Write body
         for (label, package) in self.get_package_in_order() {
             // Logs
             debug!(
@@ -54,8 +50,35 @@ impl LoadingTracker {
                 label
             );
 
-            // Write lib head
-            package.wrt_lib_file_level(&mut writer);
+            // 1 - Write mod object call
+            for owned_member in package.get_sorted_iter() {
+                match owned_member {
+                    EnumOwnedMember::Association(_content) => {}
+                    EnumOwnedMember::Class(_content) => {
+                        _content.wrt_mod_file_object_section(
+                            &mut writer,
+                            &package,
+                            &self.pre_calculation,
+                        );
+                    }
+                    EnumOwnedMember::DataType(_content) => {
+                        _content.wrt_mod_file_object_section(
+                            &mut writer,
+                            &package,
+                            &self.pre_calculation,
+                        );
+                    }
+                    EnumOwnedMember::Enumeration(_content) => {
+                        _content.wrt_mod_file_object_section(
+                            &mut writer,
+                            &package,
+                            &self.pre_calculation,
+                        );
+                    }
+                    EnumOwnedMember::PrimitiveType(_content) => {}
+                }
+            }
+            // 1 - Write mod object call
 
             // Logs
             info!(
@@ -69,21 +92,48 @@ impl LoadingTracker {
 
 // ####################################################################################################
 //
-// ####################################################################################################
+// ############################################ 1 #####################################################
 //
 // ####################################################################################################
 
-impl WritingLibFile for LoadingPackage {
-    fn wrt_lib_file_level(&self, writer: &mut File) {
-        // Module pachage uri
-        let _ = writeln!(
-            writer,
-            "\n/// {}{} : {}",
-            &self.get_json().name,
-            &self.get_json().xmi_id,
-            &self.get_json().uri
-        );
-        // Add mod import in main
-        let _ = writeln!(writer, "pub mod {};", &self.get_path_name());
+impl WritingModFileObjectSection for CMOFClass {
+    fn wrt_mod_file_object_section(
+        &self,
+        writer: &mut File,
+        package: &LoadingPackage,
+        _pre_calculation: &LoadingPreCalculation,
+    ) {
+        let _ = writeln!(writer, "\n/// Class : {}", self.name);
+        let _ = writeln!(writer, "pub mod {};", self.get_path_name(package),);
     }
 }
+
+impl WritingModFileObjectSection for CMOFDataType {
+    fn wrt_mod_file_object_section(
+        &self,
+        writer: &mut File,
+        package: &LoadingPackage,
+        _pre_calculation: &LoadingPreCalculation,
+    ) {
+        let _ = writeln!(writer, "\n/// DataType : {}", self.name);
+        let _ = writeln!(writer, "pub mod {};", self.get_path_name(package),);
+    }
+}
+
+impl WritingModFileObjectSection for CMOFEnumeration {
+    fn wrt_mod_file_object_section(
+        &self,
+        writer: &mut File,
+        package: &LoadingPackage,
+        _pre_calculation: &LoadingPreCalculation,
+    ) {
+        let _ = writeln!(writer, "\n/// Enumeration : {}", self.name);
+        let _ = writeln!(writer, "pub mod {};", self.get_path_name(package),);
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################

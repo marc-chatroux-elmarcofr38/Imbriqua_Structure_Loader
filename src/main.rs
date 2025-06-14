@@ -28,7 +28,6 @@ pub mod loader_dependencies_explorer;
 pub mod loader_deserialise_helper;
 pub mod writing_lib_file;
 pub mod writing_manager;
-pub mod writing_mod_file;
 pub mod writing_mod_object;
 
 // For "main" use only
@@ -58,8 +57,6 @@ fn main() {
     loading_env.writing_preparation();
     // Makin lib.rs file
     loading_env.write_lib_file();
-    // Makin all mod_x.rs file
-    loading_env.write_mod_file();
     // Makin all mod_x.rs file
     loading_env.write_mod_object();
 
