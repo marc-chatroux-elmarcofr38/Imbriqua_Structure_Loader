@@ -40,7 +40,13 @@ impl LoadingTracker {
     pub fn write_lib_file(&mut self) {
         // Get folder and file
         let (filename, mut writer) = self.get_project_lib_file();
-        let _ = writeln!(writer, "\n/// Imported from {:?}", self.get_output_folder());
+
+        // Head
+        let _ = writeln!(
+            writer,
+            include_str!("../template/lib_part_1_common.tmpl"),
+            folder_name = self.get_output_folder(),
+        );
 
         for (label, package) in self.get_package_in_order() {
             // Logs
@@ -53,29 +59,13 @@ impl LoadingTracker {
             // 1 - Write mod object call
             for owned_member in package.get_sorted_iter() {
                 match owned_member {
-                    EnumOwnedMember::Association(_content) => {}
-                    EnumOwnedMember::Class(_content) => {
-                        _content.wrt_mod_file_object_section(
-                            &mut writer,
-                            &package,
-                            &self.pre_calculation,
-                        );
+                    EnumOwnedMember::Class(content) => {
+                        content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
                     }
-                    EnumOwnedMember::DataType(_content) => {
-                        _content.wrt_mod_file_object_section(
-                            &mut writer,
-                            &package,
-                            &self.pre_calculation,
-                        );
+                    EnumOwnedMember::DataType(content) => {
+                        content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
                     }
-                    EnumOwnedMember::Enumeration(_content) => {
-                        _content.wrt_mod_file_object_section(
-                            &mut writer,
-                            &package,
-                            &self.pre_calculation,
-                        );
-                    }
-                    EnumOwnedMember::PrimitiveType(_content) => {}
+                    _ => {}
                 }
             }
             // 1 - Write mod object call
@@ -96,44 +86,34 @@ impl LoadingTracker {
 //
 // ####################################################################################################
 
-impl WritingModFileObjectSection for CMOFClass {
-    fn wrt_mod_file_object_section(
+impl WritingLibFile for CMOFClass {
+    fn wrt_lib_file_level(
         &self,
         writer: &mut File,
         package: &LoadingPackage,
         _pre_calculation: &LoadingPreCalculation,
     ) {
-        let _ = writeln!(writer, "\n/// Class : {}", self.name);
-        let _ = writeln!(writer, "pub mod {};", self.get_path_name(package),);
+        let _ = writeln!(
+            writer,
+            include_str!("../template/lib_part_2_class.tmpl"),
+            entity_name = self.name,
+            entity_file_name = self.get_table_name(package),
+        );
     }
 }
 
-impl WritingModFileObjectSection for CMOFDataType {
-    fn wrt_mod_file_object_section(
+impl WritingLibFile for CMOFDataType {
+    fn wrt_lib_file_level(
         &self,
         writer: &mut File,
         package: &LoadingPackage,
         _pre_calculation: &LoadingPreCalculation,
     ) {
-        let _ = writeln!(writer, "\n/// DataType : {}", self.name);
-        let _ = writeln!(writer, "pub mod {};", self.get_path_name(package),);
+        let _ = writeln!(
+            writer,
+            include_str!("../template/lib_part_2_datatype.tmpl"),
+            entity_name = self.name,
+            entity_file_name = self.get_table_name(package),
+        );
     }
 }
-
-impl WritingModFileObjectSection for CMOFEnumeration {
-    fn wrt_mod_file_object_section(
-        &self,
-        writer: &mut File,
-        package: &LoadingPackage,
-        _pre_calculation: &LoadingPreCalculation,
-    ) {
-        let _ = writeln!(writer, "\n/// Enumeration : {}", self.name);
-        let _ = writeln!(writer, "pub mod {};", self.get_path_name(package),);
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-//
-// ####################################################################################################

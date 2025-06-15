@@ -26,9 +26,9 @@ pub mod custom_log_tools;
 pub mod loader_cmof_structure;
 pub mod loader_dependencies_explorer;
 pub mod loader_deserialise_helper;
+pub mod writing_entity;
 pub mod writing_lib_file;
 pub mod writing_manager;
-pub mod writing_mod_object;
 
 // For "main" use only
 mod output_cargo_checker;

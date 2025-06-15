@@ -25,15 +25,9 @@ Stored in [`LoadingTracker::pre_calculation`] ([`LoadingPreCalculation`])
 Following Traits provide organisation for writting output Rust file
 
 ### For writting __lib.rs__ from [`LoadingPackage`]
- - [`WritingLibFile`] : Trait for writting __lib.rs__ file from sub-element
+ - [`WritingLibFile`] : Trait for writting __lib.rs__ file from entities
 
 &rarr; Used in [`writing_lib_file`][crate::writing_lib_file]
-
-### For writting __${package}/mod.rs__ from [`LoadingPackage`]
- - [`WritingModFileHead`] : Trait for writting __mod.rs__ file head from [`CMOFPackage`] (and [`CMOFPackageImport`]) element
- - [`WritingModFileObjectSection`] : Trait for writting __mod.rs__ file head from [`EnumOwnedMember`] element
-
-&rarr; Used in [`writing_mod_file`][crate::writing_mod_file]
 
 ### For writting __${package}/${owned_member}.rs__ from [`LoadingPackage`]
  - [`WritingModObjectCaller`] : Trait for dispatch run for writting __${owned_member}.rs__ file from [`EnumOwnedMember`]

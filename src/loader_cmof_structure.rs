@@ -230,7 +230,7 @@ impl LoadingPackage {
     /// Sort ownem_member
     pub fn get_sorted_iter(&self) -> Vec<&EnumOwnedMember> {
         let mut v: Vec<&EnumOwnedMember> = Vec::from_iter(&self.get_json().owned_member);
-        v.sort_by(|&a, &b| a.get_path_name(&self).cmp(&b.get_path_name(&self)));
+        v.sort_by(|&a, &b| a.get_full_name(&self).cmp(&b.get_full_name(&self)));
         v
     }
 }
