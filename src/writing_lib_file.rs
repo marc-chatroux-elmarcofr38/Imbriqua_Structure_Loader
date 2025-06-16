@@ -39,43 +39,41 @@ impl LoadingTracker {
     /// Make lib.rs from scratch and package
     pub fn write_lib_file(&mut self) {
         // Get folder and file
-        let (filename, mut writer) = self.get_project_lib_file();
+        let (_, mut writer) = self.get_project_lib_file();
 
-        // Head
+        // Part 1 : Head of lib.rs, using template
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_1_common.tmpl"),
             folder_name = self.get_output_folder(),
         );
 
+        // Part 2 : entities part of lib.rs
         for (label, package) in self.get_package_in_order() {
             // Logs
-            debug!(
-                "Generating \"{}\" from \"{}\" : START",
-                filename.display(),
-                label
-            );
+            debug!("Generating \"lib.rs\" from \"{label}\" : START",);
 
-            // 1 - Write mod object call
-            for owned_member in package.get_sorted_iter() {
-                match owned_member {
+            // Writting for each entities, using template
+            for entity in package.get_sorted_iter() {
+                match entity {
                     EnumOwnedMember::Class(content) => {
                         content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
                     }
                     EnumOwnedMember::DataType(content) => {
                         content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
                     }
+                    EnumOwnedMember::Enumeration(content) => {
+                        content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
+                    }
+                    EnumOwnedMember::PrimitiveType(content) => {
+                        content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
+                    }
                     _ => {}
                 }
             }
-            // 1 - Write mod object call
 
             // Logs
-            info!(
-                "Generating \"{}\" from \"{}\" : Finished",
-                filename.display(),
-                label
-            );
+            info!("Generating \"lib.rs\" from \"{label}\" : Finished");
         }
     }
 }
@@ -96,8 +94,8 @@ impl WritingLibFile for CMOFClass {
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_2_class.tmpl"),
-            entity_name = self.name,
-            entity_file_name = self.get_table_name(package),
+            model_name = self.get_model_name(),
+            table_name = self.get_table_name(package),
         );
     }
 }
@@ -112,8 +110,40 @@ impl WritingLibFile for CMOFDataType {
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_2_datatype.tmpl"),
-            entity_name = self.name,
-            entity_file_name = self.get_table_name(package),
+            model_name = self.get_model_name(),
+            table_name = self.get_table_name(package),
+        );
+    }
+}
+
+impl WritingLibFile for CMOFEnumeration {
+    fn wrt_lib_file_level(
+        &self,
+        writer: &mut File,
+        package: &LoadingPackage,
+        _pre_calculation: &LoadingPreCalculation,
+    ) {
+        let _ = writeln!(
+            writer,
+            include_str!("../template/lib_part_2_enumeration.tmpl"),
+            model_name = self.get_model_name(),
+            table_name = self.get_table_name(package),
+        );
+    }
+}
+
+impl WritingLibFile for CMOFPrimitiveType {
+    fn wrt_lib_file_level(
+        &self,
+        writer: &mut File,
+        package: &LoadingPackage,
+        _pre_calculation: &LoadingPreCalculation,
+    ) {
+        let _ = writeln!(
+            writer,
+            include_str!("../template/lib_part_2_primitive_type.tmpl"),
+            model_name = self.get_model_name(),
+            table_name = self.get_table_name(package),
         );
     }
 }

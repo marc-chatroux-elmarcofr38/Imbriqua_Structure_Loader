@@ -341,8 +341,7 @@ pub struct CMOFProperty {
     pub owning_association: String,
     /// Optional association attribute
     #[serde(rename = "_association")]
-    #[serde(default = "default_empty_string")]
-    pub association: String,
+    pub association: Option<String>,
     /// Optional redefinedProperty object
     #[serde(rename = "redefinedProperty")]
     pub redefined_property_link: Option<EnumRedefinedProperty>,

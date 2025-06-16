@@ -4,15 +4,12 @@ Tools for other "writing" tools : including homogenous naming function and pre_c
 
 Following Traits provide homogenous for naming path, naming struct and naming link
  - [`NamingLink`], for providing link name [`EnumOwnedMember`] in package [`LoadingPackage`], as hierarchical position
- - [`NamingPath`], for providing path to [`LoadingPackage`], [`ImportedPackage`] and [`EnumOwnedMember`]
  - [`NamingStruct`], for providing struct name to [`EnumOwnedMember`]
 
 # Providing full homogenous path to [`LoadingTracker`]
 
 Implement :
  - [`LoadingTracker::get_project_lib_file`] : Get lib.rs file for the LoadingTracker
- - [`LoadingTracker::get_package_folder`] : Get output folder for the package
- - [`LoadingTracker::get_package_mod_file`] : Get mod.rs file for the package
  - [`LoadingTracker::get_object_file`] : Get ${package}.rs file for a object of a package
 
 # Adding [`LoadingTracker::writing_preparation`]
@@ -35,4 +32,4 @@ Following Traits provide organisation for writting output Rust file
  - [`WritingModValidation`] : Trait for writting __${owned_member}.rs__ struct validation from [`EnumOwnedMember`] element
  - Add part for add calculed import in head of file
 
-&rarr; Used in [`writing_mod_object`][crate::writing_mod_object]
+&rarr; Used in [`writing_entity`][crate::writing_entity]

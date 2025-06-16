@@ -353,15 +353,20 @@ pub trait WritingModObjectCaller: Debug {
     fn wrt_entity_fields_caller(
         &self,
         writer: &mut File,
-        pre_calculation: &LoadingPreCalculation,
         package: &LoadingPackage,
+        pre_calculation: &LoadingPreCalculation,
     );
 }
 
 /// Trait for writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
 pub trait WritingModObject: Debug {
     /// Writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
-    fn wrt_entity_fields(&self, writer: &mut File);
+    fn wrt_entity_fields(
+        &self,
+        writer: &mut File,
+        package: &LoadingPackage,
+        pre_calculation: &LoadingPreCalculation,
+    );
 }
 
 /// Trait for writting __${owned_member}.rs__ struct validation from [`EnumOwnedMember`] element of [`LoadingPackage`]
