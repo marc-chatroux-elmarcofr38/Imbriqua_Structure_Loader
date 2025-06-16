@@ -124,7 +124,7 @@ impl WritingModObjectCaller for CMOFClass {
         for field in self.owned_attribute.iter() {
             match field {
                 EnumOwnedAttribute::Property(content) => {
-                    // content.wrt_entity_fields(writer, package, pre_calculation);
+                    content.wrt_entity_fields(writer, package, pre_calculation);
                 }
             }
         }
