@@ -33,18 +33,18 @@ use std::collections::HashMap;
 use std::fmt;
 use std::marker::PhantomData;
 
-lazy_static! {
-    /// List of primitive type correlation
-    pub static ref PRIMITIVE_TYPE_LINK: HashMap<&'static str, &'static str> = {
-        let mut m = HashMap::new();
-        m.insert("Integer", "std::primitive::u64");
-        m.insert("Boolean", "std::primitive::bool");
-        m.insert("String", "std::string::String");
-        m.insert("UnlimitedNatural", "UnlimitedNatural<u64>");
-        m.insert("Real", "std::primitive::f64");
-        m
-    };
-}
+// lazy_static! {
+//     /// List of primitive type correlation
+//     pub static ref PRIMITIVE_TYPE_LINK: HashMap<&'static str, &'static str> = {
+//         let mut m = HashMap::new();
+//         m.insert("Integer", "std::primitive::u64");
+//         m.insert("Boolean", "std::primitive::bool");
+//         m.insert("String", "std::string::String");
+//         m.insert("UnlimitedNatural", "UnlimitedNatural<u64>");
+//         m.insert("Real", "std::primitive::f64");
+//         m
+//     };
+// }
 
 /// Deserialising to __isize__, from string (integer)
 pub fn deser_integer<'de, D>(deserializer: D) -> Result<isize, D::Error>

@@ -132,7 +132,7 @@ impl WritingModObjectCaller for CMOFClass {
         for field in self.owned_attribute.iter() {
             match field {
                 EnumOwnedAttribute::Property(content) => {
-                    content.wrt_entity_fields(writer, package, pre_calculation);
+                    content.wrt_property(writer, package, pre_calculation);
                 }
             }
         }
@@ -176,7 +176,7 @@ impl WritingModObjectCaller for CMOFDataType {
         for field in self.owned_attribute.iter() {
             match field {
                 EnumOwnedAttribute::Property(content) => {
-                    content.wrt_entity_fields(writer, package, pre_calculation);
+                    content.wrt_property(writer, package, pre_calculation);
                 }
             }
         }
@@ -209,7 +209,7 @@ impl WritingModObjectCaller for CMOFEnumeration {
         for field in self.owned_attribute.iter() {
             match field {
                 EnumOwnedLiteral::EnumerationLiteral(content) => {
-                    content.wrt_entity_fields(writer, &self, pre_calculation);
+                    content.wrt_enumeration_literal(writer, &self, pre_calculation);
                 }
             }
         }
@@ -232,8 +232,15 @@ impl WritingModObjectCaller for CMOFPrimitiveType {
     ) {
         // Part 1 : Head
         let object_type = self.name.as_str();
-        if PRIMITIVE_TYPE_LINK.get(object_type).is_some() {
-            let content = PRIMITIVE_TYPE_LINK.get(object_type).unwrap();
+        if pre_calculation
+            .primitive_type_conversion
+            .get(object_type)
+            .is_some()
+        {
+            let content = pre_calculation
+                .primitive_type_conversion
+                .get(object_type)
+                .unwrap();
             let _ = writeln!(
                 writer,
                 include_str!("../template/entity_primitive_type_part_1.tmpl"),
@@ -251,15 +258,24 @@ impl WritingModObjectCaller for CMOFPrimitiveType {
 //
 // ####################################################################################################
 
-impl WritingModObject for CMOFProperty {
-    fn wrt_entity_fields(
+impl CMOFProperty {
+    fn wrt_property(
         &self,
         writer: &mut File,
         _package: &LoadingPackage,
-        _pre_calculation: &LoadingPreCalculation,
+        pre_calculation: &LoadingPreCalculation,
     ) {
         // type
         let name = &self.name.to_case(Case::Snake);
+
+        if false {
+            // if need of #[sea_orm ....]
+            let _ = writeln!(
+                writer,
+                include_str!("../template/entity_field_part_1.tmpl"),
+                field_head = "",
+            );
+        };
 
         // // Macro line
         // let mut macro_line = String::new();
@@ -354,14 +370,20 @@ impl WritingModObject for CMOFProperty {
         // };
         if self.is_field() {
             let field_name = name;
-            let field_type = self.get_type();
-            let _ = writeln!(writer, "    {} : {},", field_name, field_type);
+            let field_type = self.get_type(&pre_calculation);
+            let _ = writeln!(
+                writer,
+                include_str!("../template/entity_field_part_2.tmpl"),
+                comment = self.xmi_id,
+                field_name = field_name,
+                field_type = field_type,
+            );
         }
     }
 }
 
 impl CMOFEnumerationLiteral {
-    fn wrt_entity_fields(
+    fn wrt_enumeration_literal(
         &self,
         writer: &mut File,
         enumeration: &CMOFEnumeration,
@@ -575,7 +597,23 @@ impl CMOFProperty {
     }
 
     ///
-    fn get_type(&self) -> String {
+    fn is_foreign(&self, pre_calculation: &LoadingPreCalculation) -> bool {
+        if !self.is_field() {
+            return false;
+        }
+
+        if self.simple_type.is_some() {
+            !self.association.is_none()
+        } else {
+            match self.complex_type.as_ref().unwrap() {
+                EnumType::PrimitiveTypeLink(_) => false,
+                _ => true,
+            }
+        }
+    }
+
+    ///
+    fn get_type(&self, pre_calculation: &LoadingPreCalculation) -> String {
         let mut result = String::new();
 
         if !self.is_field() {
@@ -599,9 +637,18 @@ impl CMOFProperty {
             match self.complex_type.as_ref().unwrap() {
                 EnumType::PrimitiveTypeLink(link) => {
                     // Simple field
-                    let key = link.href.as_str();
-                    if PRIMITIVE_TYPE_LINK.get(&key).is_some() {
-                        PRIMITIVE_TYPE_LINK.get(&key).unwrap()
+                    let key = link.href.clone();
+                    let key = match key.find(".cmof#") {
+                        Some(split_index) => key[split_index..].replace(".cmof#", "").to_string(),
+                        None => key,
+                    };
+
+                    if pre_calculation
+                        .primitive_type_conversion
+                        .get(&key)
+                        .is_some()
+                    {
+                        pre_calculation.primitive_type_conversion.get(&key).unwrap()
                     } else {
                         info!("Error : unknow PRIMITIVE TYPE{}", key);
                         "i32"

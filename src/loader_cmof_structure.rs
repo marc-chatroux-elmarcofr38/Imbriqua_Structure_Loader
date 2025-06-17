@@ -31,7 +31,7 @@ use crate::writing_manager::*;
 use serde::Deserialize;
 
 // Re-export
-pub use crate::loader_deserialise_helper::PRIMITIVE_TYPE_LINK;
+// pub use crate::loader_deserialise_helper::PRIMITIVE_TYPE_LINK;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
