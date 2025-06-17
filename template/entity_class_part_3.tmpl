@@ -1,9 +1,7 @@
-}}
+use sea_orm::entity::prelude::*;
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {{}}
-
-impl ActiveModelBehavior for ActiveModel {{}}
-
-// RAW :
-{raw}
+#[derive(Clone, Debug, Default, PartialEq, DeriveEntityModel)]
+#[sea_orm(table_name = "{table_name}")]
+pub struct Model {{
+    #[sea_orm(primary_key)]
+    pub pk_id: i32,

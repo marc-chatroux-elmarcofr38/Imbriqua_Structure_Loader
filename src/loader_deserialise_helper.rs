@@ -38,14 +38,10 @@ lazy_static! {
     pub static ref PRIMITIVE_TYPE_LINK: HashMap<&'static str, &'static str> = {
         let mut m = HashMap::new();
         m.insert("Integer", "std::primitive::u64");
-        m.insert("DC.cmof#Integer", "std::primitive::u64");
         m.insert("Boolean", "std::primitive::bool");
-        m.insert("DC.cmof#Boolean", "std::primitive::bool");
         m.insert("String", "std::string::String");
-        m.insert("DC.cmof#String", "std::string::String");
-        m.insert("UnlimitedNatural", "UnlimitedNatural<usize>");
+        m.insert("UnlimitedNatural", "UnlimitedNatural<u64>");
         m.insert("Real", "std::primitive::f64");
-        m.insert("DC.cmof#Real", "std::primitive::f64");
         m
     };
 }

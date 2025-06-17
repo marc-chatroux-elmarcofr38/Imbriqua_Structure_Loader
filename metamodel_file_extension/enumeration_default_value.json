@@ -1,0 +1,57 @@
+[
+    {
+        "key": "AdHocOrdering",
+        "value": "Parallel",
+        "comment": "From formal-13-12-10.pdf"
+    },
+    {
+        "key": "AssociationDirection",
+        "value": "None",
+        "comment": "From formal-13-12-10.pdf"
+    },
+    {
+        "key": "ChoreographyLoopType",
+        "value": "None",
+        "comment": "From formal-13-12-10.pdf"
+    },
+    {
+        "key": "EventBasedGatewayType",
+        "value": "Exclusive",
+        "comment": "Not in formal-13-12-10.pdf, personal choise"
+    },
+    {
+        "key": "GatewayDirection",
+        "value": "Unspecified",
+        "comment": "From formal-13-12-10.pdf"
+    },
+    {
+        "key": "ItemKind",
+        "value": "Information",
+        "comment": "From formal-13-12-10.pdf"
+    },
+    {
+        "key": "MultiInstanceBehavior",
+        "value": "All",
+        "comment": "From formal-13-12-10.pdf"
+    },
+    {
+        "key": "ProcessType",
+        "value": "None",
+        "comment": "From formal-13-12-10.pdf"
+    },
+    {
+        "key": "RelationshipDirection",
+        "value": "None",
+        "comment": "Not in formal-13-12-10.pdf, personal choise"
+    },
+    {
+        "key": "MessageVisibleKind",
+        "value": "Initiating",
+        "comment": "Not in formal-13-12-10.pdf, personal choise"
+    },
+    {
+        "key": "ParticipantBandKind",
+        "value": "TopInitiating",
+        "comment": "Not in formal-13-12-10.pdf, personal choise"
+    }
+]

@@ -117,6 +117,14 @@ impl WritingModObjectCaller for CMOFClass {
             writer,
             include_str!("../template/entity_class_part_1.tmpl"),
             full_name = self.get_full_name(package),
+        );
+        if true {
+            // for import
+            let _ = writeln!(writer, include_str!("../template/entity_class_part_2.tmpl"),);
+        }
+        let _ = writeln!(
+            writer,
+            include_str!("../template/entity_class_part_3.tmpl"),
             table_name = self.get_table_name(package),
         );
 
@@ -132,7 +140,7 @@ impl WritingModObjectCaller for CMOFClass {
         // Part 3 : End
         let _ = writeln!(
             writer,
-            include_str!("../template/entity_class_part_3.tmpl"),
+            include_str!("../template/entity_class_part_4.tmpl"),
             raw = format!("{:#?}", self).prefix("// "),
         );
     }
@@ -150,6 +158,17 @@ impl WritingModObjectCaller for CMOFDataType {
             writer,
             include_str!("../template/entity_datatype_part_1.tmpl"),
             full_name = self.get_full_name(package),
+        );
+        if true {
+            // for import
+            let _ = writeln!(
+                writer,
+                include_str!("../template/entity_datatype_part_2.tmpl"),
+            );
+        }
+        let _ = writeln!(
+            writer,
+            include_str!("../template/entity_datatype_part_3.tmpl"),
             table_name = self.get_table_name(package),
         );
 
@@ -165,7 +184,7 @@ impl WritingModObjectCaller for CMOFDataType {
         // Part 3 : End
         let _ = writeln!(
             writer,
-            include_str!("../template/entity_datatype_part_3.tmpl"),
+            include_str!("../template/entity_datatype_part_4.tmpl"),
             raw = format!("{:#?}", self).prefix("// "),
         );
     }
@@ -186,11 +205,11 @@ impl WritingModObjectCaller for CMOFEnumeration {
             model_name = self.get_model_name(),
         );
 
-        // // Part 2 : Fields
+        // // Part 2 : EnumerationLiteral
         for field in self.owned_attribute.iter() {
             match field {
                 EnumOwnedLiteral::EnumerationLiteral(content) => {
-                    content.wrt_entity_fields(writer, package, pre_calculation);
+                    content.wrt_entity_fields(writer, &self, pre_calculation);
                 }
             }
         }
@@ -198,7 +217,7 @@ impl WritingModObjectCaller for CMOFEnumeration {
         // Part 3 : End
         let _ = writeln!(
             writer,
-            include_str!("../template/entity_enumeration_part_3.tmpl"),
+            include_str!("../template/entity_enumeration_part_4.tmpl"),
             raw = format!("{:#?}", self).prefix("// "),
         );
     }
@@ -341,16 +360,38 @@ impl WritingModObject for CMOFProperty {
     }
 }
 
-impl WritingModObject for CMOFEnumerationLiteral {
+impl CMOFEnumerationLiteral {
     fn wrt_entity_fields(
         &self,
         writer: &mut File,
-        _package: &LoadingPackage,
-        _pre_calculation: &LoadingPreCalculation,
+        enumeration: &CMOFEnumeration,
+        pre_calculation: &LoadingPreCalculation,
     ) {
+        // For default
+        if pre_calculation
+            .enumeration_default_value
+            .contains_key(&enumeration.name)
+        {
+            let value_1 = pre_calculation
+                .enumeration_default_value
+                .get(&enumeration.name)
+                .unwrap();
+            let value_2 = &self.name.to_case(Case::UpperCamel);
+            if value_1 == value_2 {
+                //
+                let _ = writeln!(
+                    writer,
+                    include_str!("../template/entity_enumeration_part_2.tmpl"),
+                );
+            }
+        } else {
+            warn!("No enuneration default value for {}", enumeration.name)
+        };
+
+        // Value
         let _ = writeln!(
             writer,
-            include_str!("../template/entity_enumeration_part_2.tmpl"),
+            include_str!("../template/entity_enumeration_part_3.tmpl"),
             enumeration_value_snake = self.name,
             enumeration_value_camel = self.name.to_case(Case::UpperCamel),
         );

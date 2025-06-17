@@ -1,0 +1,27 @@
+[
+    {
+        "key": "Integer",
+        "value": "std::primitive::u64",
+        "comment": ""
+    },
+    {
+        "key": "Boolean",
+        "value": "std::primitive::bool",
+        "comment": ""
+    },
+    {
+        "key": "String",
+        "value": "std::string::String",
+        "comment": ""
+    },
+    {
+        "key": "UnlimitedNatural",
+        "value": "UnlimitedNatural<usize>",
+        "comment": ""
+    },
+    {
+        "key": "Real",
+        "value": "std::primitive::f64",
+        "comment": ""
+    }
+]

@@ -27,6 +27,7 @@ use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer::*;
 
 // Dependencies section
+use serde::Deserialize;
 use std::fmt::Debug;
 
 // ####################################################################################################
@@ -35,27 +36,27 @@ use std::fmt::Debug;
 //
 // ####################################################################################################
 
-/// Naming method for struct in package
-pub trait NamingLink {
-    /// Naming method for struct ([`EnumOwnedMember`]) in package ([`LoadingPackage`]), as hierarchical position
-    ///
-    /// Usecase :
-    /// - Usable for calling Resultant Struct from other package
-    ///
-    ///
-    /// Example : with package dc and datatype_font
-    ///   ---> "dc::Font"
-    fn get_cmof_name(&self, _package: &LoadingPackage) -> String;
-}
+// /// Naming method for struct in package
+// pub trait NamingLink {
+//     /// Naming method for struct ([`EnumOwnedMember`]) in package ([`LoadingPackage`]), as hierarchical position
+//     ///
+//     /// Usecase :
+//     /// - Usable for calling Resultant Struct from other package
+//     ///
+//     ///
+//     /// Example : with package dc and datatype_font
+//     ///   ---> "dc::Font"
+//     fn get_cmof_name(&self, _package: &LoadingPackage) -> String;
+// }
 
-impl NamingLink for EnumOwnedMember {
-    fn get_cmof_name(&self, _package: &LoadingPackage) -> String {
-        let mut result = _package.get_lowercase_name();
-        result.push_str("::");
-        result.push_str(self.get_model_name().as_str());
-        result
-    }
-}
+// impl NamingLink for EnumOwnedMember {
+//     fn get_cmof_name(&self, _package: &LoadingPackage) -> String {
+//         let mut result = _package.get_lowercase_name();
+//         result.push_str("::");
+//         result.push_str(self.get_model_name().as_str());
+//         result
+//     }
+// }
 
 // ####################################################################################################
 //
@@ -300,9 +301,18 @@ impl WrittingPath for LoadingTracker {
 //
 // ####################################################################################################
 
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct SimpleValue {
+    pub key: String,
+    pub value: String,
+    comment: String,
+}
+
 impl LoadingTracker {
     /// Build all pre calculing information needed for writting
     pub fn writing_preparation(&mut self) {
+        // owned_member_type_list
         for (_, package) in self.clone().get_package_in_order() {
             for owned_member in package.get_sorted_iter() {
                 let mut real_key = package.get_lowercase_name();
@@ -326,6 +336,34 @@ impl LoadingTracker {
         debug!(
             "Writing_preparation : owned_member_type_list {:#?}",
             self.pre_calculation.owned_member_type_list
+        );
+
+        // enumeration_default_value
+        let reader_path = Path::new("metamodel_file_extension/enumeration_default_value.json");
+        let reader = reader_path.get_file_content();
+        let values: Vec<SimpleValue> = serde_json::from_str(&reader).unwrap();
+        for import_simple_value in values {
+            self.pre_calculation
+                .enumeration_default_value
+                .insert(import_simple_value.key, import_simple_value.value);
+        }
+        debug!(
+            "Writing_preparation : enumeration_default_value {:#?}",
+            self.pre_calculation.enumeration_default_value
+        );
+
+        // primitive_type_conversion
+        let reader_path = Path::new("metamodel_file_extension/primitive_type_conversion.json");
+        let reader = reader_path.get_file_content();
+        let values: Vec<SimpleValue> = serde_json::from_str(&reader).unwrap();
+        for import_simple_value in values {
+            self.pre_calculation
+                .primitive_type_conversion
+                .insert(import_simple_value.key, import_simple_value.value);
+        }
+        debug!(
+            "Writing_preparation : primitive_type_conversion {:#?}",
+            self.pre_calculation.primitive_type_conversion
         );
     }
 }

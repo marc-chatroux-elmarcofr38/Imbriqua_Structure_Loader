@@ -128,6 +128,10 @@ pub struct LoadingPreCalculation {
     pub class_classification: HashMap<String, ClassClassification>,
     /// List of all OwnedMember, linked with their type
     pub owned_member_type_list: Vec<(String, ClassType)>,
+    /// All is in name
+    pub enumeration_default_value: HashMap<String, String>,
+    /// All is in name
+    pub primitive_type_conversion: HashMap<String, String>,
 }
 impl LoadingPreCalculation {
     /// Create new instance
@@ -135,6 +139,8 @@ impl LoadingPreCalculation {
         LoadingPreCalculation {
             class_classification: HashMap::new(),
             owned_member_type_list: Vec::new(),
+            enumeration_default_value: HashMap::new(),
+            primitive_type_conversion: HashMap::new(),
         }
     }
 }
