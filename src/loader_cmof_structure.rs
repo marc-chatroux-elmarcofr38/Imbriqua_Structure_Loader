@@ -46,18 +46,19 @@ pub struct CMOFAssociation {
     /// visibility attribute
     #[serde(rename = "_visibility")]
     pub visibility: EnumVisibilityKind,
-    /// Optional memberEnd attribute
+    /// memberEnd attribute, 2 for CMOF
     #[serde(rename = "_memberEnd")]
     #[serde(deserialize_with = "deser_split_2_space")]
-    pub member_end: Vec<String>,
+    pub member_end: (String, String),
     /// Optional ownedEnd object
     #[serde(rename = "ownedEnd")]
     #[serde(deserialize_with = "deser_vec")]
     #[serde(default = "default_empty_vec")]
     pub owned_end: Vec<EnumOwnedEnd>,
-    /// Optional ownedEnd object
+    // navigableOwnedEnd forbidden
+    /// Optional _isDerived object, need to by "false"
     #[serde(rename = "_isDerived")]
-    #[serde(deserialize_with = "deser_boolean")]
+    #[serde(deserialize_with = "deser_boolean_always_false")]
     #[serde(default = "default_false")]
     pub is_derived: bool,
 }
@@ -79,10 +80,14 @@ pub struct CMOFClass {
     pub is_abstract: bool,
     /// Optional superClass attribute (simple superClass)
     #[serde(rename = "_superClass")]
-    pub super_class: Option<String>,
+    #[serde(deserialize_with = "deser_spaced_string")]
+    #[serde(default = "default_empty_vec")]
+    pub super_class: Vec<String>,
     /// Optional superClass object (complex superClass)
     #[serde(rename = "superClass")]
-    pub super_class_link: Option<EnumSuperClass>,
+    #[serde(deserialize_with = "deser_vec")]
+    #[serde(default = "default_empty_vec")]
+    pub super_class_link: Vec<EnumSuperClass>,
     /// Optional ownedAttribute object array
     #[serde(rename = "ownedAttribute")]
     #[serde(deserialize_with = "deser_vec")]

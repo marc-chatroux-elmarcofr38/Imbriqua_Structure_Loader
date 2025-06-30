@@ -1,0 +1,17 @@
+//! {full_name}
+{import}
+#[derive(Clone, Debug, Default, PartialEq, DeriveEntityModel)]
+#[sea_orm(table_name = "{table_name}")]
+pub struct Model {{
+    #[sea_orm(primary_key)]
+    pub pk_id: i32,
+{fields}}}
+
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+pub enum Relation {{
+{relations}}}
+
+impl ActiveModelBehavior for ActiveModel {{}}
+
+// RAW :
+{raw}

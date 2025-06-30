@@ -26,25 +26,10 @@ use crate::loader_cmof_structure::*;
 
 // Dependencies section
 pub use infinitable::Infinitable as UnlimitedNatural;
-use lazy_static::lazy_static;
 use serde::de;
 use serde_json::Value;
-use std::collections::HashMap;
 use std::fmt;
 use std::marker::PhantomData;
-
-// lazy_static! {
-//     /// List of primitive type correlation
-//     pub static ref PRIMITIVE_TYPE_LINK: HashMap<&'static str, &'static str> = {
-//         let mut m = HashMap::new();
-//         m.insert("Integer", "std::primitive::u64");
-//         m.insert("Boolean", "std::primitive::bool");
-//         m.insert("String", "std::string::String");
-//         m.insert("UnlimitedNatural", "UnlimitedNatural<u64>");
-//         m.insert("Real", "std::primitive::f64");
-//         m
-//     };
-// }
 
 /// Deserialising to __isize__, from string (integer)
 pub fn deser_integer<'de, D>(deserializer: D) -> Result<isize, D::Error>
@@ -104,6 +89,74 @@ where
         Value::Null => false,
         // others
         _ => return Err(de::Error::custom("Wrong type, expected boolean")),
+    })
+}
+
+/// Deserialising to __boolean__, return always "true"
+pub fn deser_boolean_always_true<'de, D>(deserializer: D) -> Result<bool, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    let r = match de::Deserialize::deserialize(deserializer)? {
+        // Boolean as boolean
+        Value::Bool(b) => b,
+        // String, True if "yes" or "true"
+        Value::String(s) => (s == "yes") || (s == "true"),
+        // Number, True if not zero
+        Value::Number(num) => num.as_i64().ok_or(de::Error::custom("Invalid number"))? != 0,
+        // Null, always False
+        Value::Null => false,
+        // others
+        _ => return Err(de::Error::custom("Wrong type, expected boolean")),
+    };
+    Ok(match r {
+        true => true,
+        false => {
+            return Err(de::Error::custom(
+                "Wrong boolean check, expected \"true\" only",
+            ))
+        }
+    })
+}
+
+/// Deserialising to __boolean__, return always "true"
+pub fn deser_boolean_always_false<'de, D>(deserializer: D) -> Result<bool, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    let r = match de::Deserialize::deserialize(deserializer)? {
+        // Boolean as boolean
+        Value::Bool(b) => b,
+        // String, True if "yes" or "true"
+        Value::String(s) => (s == "yes") || (s == "true"),
+        // Number, True if not zero
+        Value::Number(num) => num.as_i64().ok_or(de::Error::custom("Invalid number"))? != 0,
+        // Null, always False
+        Value::Null => false,
+        // others
+        _ => return Err(de::Error::custom("Wrong type, expected boolean")),
+    };
+    Ok(match r {
+        true => {
+            return Err(de::Error::custom(
+                "Wrong boolean check, expected \"false\" only",
+            ))
+        }
+        false => false,
+    })
+}
+
+/// Convert string with space to vec of string, splitting on space
+pub fn deser_spaced_string<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    Ok(match de::Deserialize::deserialize(deserializer)? {
+        // Split text
+        Value::String(s) => s.split(" ").map(str::to_string).collect(),
+        // Null, always False
+        Value::Null => Vec::new(),
+        _ => return Err(de::Error::custom("Wrong type, expected String")),
     })
 }
 
@@ -168,7 +221,7 @@ where
 }
 
 /// Deserialising 2-String Vec, from String, require a 1-whitespace String
-pub fn deser_split_2_space<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+pub fn deser_split_2_space<'de, D>(deserializer: D) -> Result<(String, String), D::Error>
 where
     D: de::Deserializer<'de>,
 {
@@ -184,7 +237,8 @@ where
                 )));
             }
 
-            content.iter().map(|x| String::from(*x)).collect()
+            let r: Vec<String> = content.iter().map(|x| String::from(*x)).collect();
+            (r[0].clone(), r[1].clone())
         }
         // Value::Null => vec![String::from("empty")],
         _ => return Err(de::Error::custom("Wrong type, expected String")),

@@ -302,11 +302,9 @@ impl WrittingPath for LoadingTracker {
 // ####################################################################################################
 
 #[derive(Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
 struct SimpleValue {
     pub key: String,
     pub value: String,
-    comment: String,
 }
 
 impl LoadingTracker {
@@ -379,9 +377,9 @@ pub trait WritingLibFile: Debug {
     /// Writting __lib.rs__ file from sub-element of [`LoadingPackage`]
     fn wrt_lib_file_level(
         &self,
-        writer: &mut File,
-        package: &LoadingPackage,
-        pre_calculation: &LoadingPreCalculation,
+        wrt: &mut File,
+        pckg: &LoadingPackage,
+        pre_calc: &LoadingPreCalculation,
     );
 }
 
@@ -390,9 +388,9 @@ pub trait WritingModObjectCaller: Debug {
     /// Dispatch run for writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
     fn wrt_entity_fields_caller(
         &self,
-        writer: &mut File,
-        package: &LoadingPackage,
-        pre_calculation: &LoadingPreCalculation,
+        wrt: &mut File,
+        pckg: &LoadingPackage,
+        pre_calc: &LoadingPreCalculation,
     );
 }
 
@@ -401,9 +399,9 @@ pub trait WritingModObject: Debug {
     /// Writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
     fn wrt_entity_fields(
         &self,
-        writer: &mut File,
-        package: &LoadingPackage,
-        pre_calculation: &LoadingPreCalculation,
+        wrt: &mut File,
+        pckg: &LoadingPackage,
+        pre_calc: &LoadingPreCalculation,
     );
 }
 
