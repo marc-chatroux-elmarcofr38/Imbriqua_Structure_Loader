@@ -60,7 +60,7 @@ impl LoadingTracker {
                         // Get file
                         let (_, mut wrt) = self.get_object_file(pckg, entity);
                         //
-                        content.wrt_entity_fields_caller(&mut wrt, &pckg, &self.pre_calculation);
+                        content.write_content(&mut wrt, &pckg, &self.pre_calculation);
                     }
                     EnumOwnedMember::PrimitiveType(content) => {
                         // Get file
@@ -97,7 +97,7 @@ impl CMOFClass {
         );
     }
 
-    /// "import" content for entity_class.tmpl
+    /// "import" content for entity_class_main.tmpl
     fn get_import_content(&self, _pckg: &LPckg, _pre_calc: &LPreCalc) -> String {
         let mut result = String::from("\n");
         result.push_str("use crate::*;\n");
@@ -105,7 +105,7 @@ impl CMOFClass {
         result
     }
 
-    /// "fields" content for entity_class.tmpl
+    /// "fields" content for entity_class_main.tmpl
     fn get_fields_content(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
         let mut result = String::from("");
 
@@ -115,20 +115,19 @@ impl CMOFClass {
         }
 
         // For complex property
+        for field in self.get_all_complex_field() {
+            CMOFClass::write_field_complex_property(&field, &mut result, pckg, pre_calc);
+        }
 
         // For simple property
-        for field in self.owned_attribute.iter() {
-            match field {
-                EnumOwnedAttribute::Property(content) => {
-                    CMOFClass::write_field_simple_property(&content, &mut result, pckg, pre_calc);
-                }
-            }
+        for field in self.get_all_simple_field() {
+            CMOFClass::write_field_simple_property(&field, &mut result, pckg, pre_calc);
         }
 
         result
     }
 
-    /// "relations" content for entity_class.tmpl
+    /// "relations" content for entity_class_main.tmpl
     fn get_relations_content(&self, _pckg: &LPckg, _pre_calc: &LPreCalc) -> String {
         let result = String::from("");
         result
@@ -156,9 +155,11 @@ impl CMOFClass {
         result
     }
 
-    /// Write "Super" __from get_all_super__
+    /// Write "Super" from __get_all_super__
     fn write_field_super(class: &String, result: &mut String, _pckg: &LPckg, _pre_calc: &LPreCalc) {
-        let comment = class.prefix("SUPER CLASS : ").replace("\n", "");
+        // Comment
+        result.push_str(format!("    /// SIMPLE FIELD : {comment}\n", comment = class).as_str());
+        // Pub element
         let field_name = class
             .to_case(Case::Snake)
             .prefix("super_")
@@ -166,47 +167,250 @@ impl CMOFClass {
         let field_type = String::from("i64");
         result.push_str(
             format!(
-                include_str!("../template/entity_field_part_2.tmpl"),
-                comment = comment,
+                "    pub {field_name}: {field_type},\n",
                 field_name = field_name,
                 field_type = field_type,
             )
             .as_str(),
         );
-        result.push_str("\n");
     }
 
     /// Get all simple field
-    fn get_all_simple_field(&self) -> Vec<CMOFProperty> {
+    fn get_all_simple_field(&self) -> Vec<&CMOFProperty> {
         // As default, empty
-        let mut result: Vec<CMOFProperty> = Vec::new();
+        let mut result: Vec<&CMOFProperty> = Vec::new();
 
-        // // // For super class link
-        // for link in self.owned_attribute {
-        //     match link {
-        //         EnumOwnedAttribute::Property(content) => {
-        //             let class = content.href.clone();
-        //             let class = match class.find(".cmof#") {
-        //                 Some(split_index) => class[split_index..].replace(".cmof#", "").to_string(),
-        //                 None => class,
-        //             };
-        //             result.push(class);
-        //         }
-        //     }
-        // }
+        for property in &self.owned_attribute {
+            match property {
+                EnumOwnedAttribute::Property(content) => {
+                    if content.upper > infinitable::Finite(1) {
+                        // Not a field, N-N link
+                    } else if content.simple_type.is_some() {
+                        if content.association.is_none() {
+                            result.push(&content)
+                        }
+                    } else if matches!(
+                        content.complex_type.as_ref().unwrap(),
+                        EnumType::PrimitiveTypeLink(_)
+                    ) {
+                        result.push(&content);
+                    };
+                }
+            }
+        }
 
         result
     }
 
+    // Write field content for a simple field
     fn write_field_simple_property(
         content: &CMOFProperty,
         result: &mut String,
-        pckg: &LPckg,
+        _pckg: &LPckg,
         pre_calc: &LPreCalc,
     ) {
-        result.push_str(content.get_field_content(pckg, pre_calc).as_str());
+        // Comment
+        result.push_str(
+            format!(
+                "    /// SIMPLE FIELD : {comment}\n",
+                comment = content.xmi_id
+            )
+            .as_str(),
+        );
+        // SEA_ORM element
+        if content.default.is_some() {
+            result.push_str(
+                format!(
+                    "    #[sea_orm(default_value = \"{default_value}\")]\n",
+                    default_value = content.default.as_ref().unwrap()
+                )
+                .as_str(),
+            );
+        }
+        // Pub element
+        result.push_str(
+            format!(
+                "    pub {field_name}: {field_type},\n",
+                field_name = &content.name.to_case(Case::Snake),
+                field_type = content.get_type(&pre_calc),
+            )
+            .as_str(),
+        );
+    }
+
+    /// Get all simple field
+    fn get_all_complex_field(&self) -> Vec<&CMOFProperty> {
+        // As default, empty
+        let mut result: Vec<&CMOFProperty> = Vec::new();
+
+        for property in &self.owned_attribute {
+            match property {
+                EnumOwnedAttribute::Property(content) => {
+                    if content.upper > infinitable::Finite(1) {
+                        // Not a field, N-N link
+                    } else if content.simple_type.is_some() {
+                        if content.association.is_some() {
+                            result.push(&content)
+                        }
+                    } else if matches!(
+                        content.complex_type.as_ref().unwrap(),
+                        EnumType::ClassLink(_)
+                    ) {
+                        result.push(&content);
+                    } else if matches!(
+                        content.complex_type.as_ref().unwrap(),
+                        EnumType::DataTypeLink(_)
+                    ) {
+                        result.push(&content);
+                    };
+                }
+            }
+        }
+
+        result
+    }
+
+    // Write field content for a complex field
+    fn write_field_complex_property(
+        content: &CMOFProperty,
+        result: &mut String,
+        _pckg: &LPckg,
+        pre_calc: &LPreCalc,
+    ) {
+        // Comment
+        result.push_str(
+            format!(
+                "    /// COMPLEX FIELD : {comment}\n",
+                comment = content.xmi_id
+            )
+            .as_str(),
+        );
+        // SEA_ORM element
+        // Pub element
+        result.push_str(
+            format!(
+                "    pub {field_name}: {field_type},\n",
+                field_name = &content.name.to_case(Case::Snake),
+                field_type = content.get_type(&pre_calc),
+            )
+            .as_str(),
+        );
     }
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl CMOFDataType {}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl CMOFEnumeration {
+    /// write content to output file,from "CMOFEnumeration" object
+    fn write_content(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
+        let _ = writeln!(
+            wrt,
+            include_str!("../template/entity_enumeration_main.tmpl"),
+            full_name = self.get_full_name(pckg),
+            model_name = self.get_model_name(),
+            fields = self.get_fields_content(pckg, pre_calc),
+            raw = format!("{:#?}", self).prefix("// "),
+        );
+    }
+
+    /// "fields" content for entity_enumeration_main.tmpl
+    fn get_fields_content(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+        let mut result = String::from("");
+
+        // For all literal
+        for literal in self.get_all_literal() {
+            CMOFEnumeration::write_literal_property(literal, &self, &mut result, pckg, pre_calc);
+        }
+
+        result
+    }
+
+    /// Get all literal
+    fn get_all_literal(&self) -> Vec<&CMOFEnumerationLiteral> {
+        // As default, empty
+        let mut result: Vec<&CMOFEnumerationLiteral> = Vec::new();
+
+        for property in &self.owned_attribute {
+            match property {
+                EnumOwnedLiteral::EnumerationLiteral(content) => {
+                    result.push(&content);
+                }
+            }
+        }
+
+        result
+    }
+
+    // Write content for a literal
+    fn write_literal_property(
+        literal: &CMOFEnumerationLiteral,
+        enumeration: &CMOFEnumeration,
+        result: &mut String,
+        _pckg: &LPckg,
+        pre_calc: &LPreCalc,
+    ) {
+        // Comment
+        result.push_str(
+            format!(
+                "    /// ENUMERATION LITERAL : {comment}\n",
+                comment = literal.xmi_id
+            )
+            .as_str(),
+        );
+        // Default element
+        if pre_calc
+            .enumeration_default_value
+            .contains_key(&enumeration.name)
+        {
+            let value_1 = pre_calc
+                .enumeration_default_value
+                .get(&enumeration.name)
+                .unwrap();
+            let value_2 = &literal.name.to_case(Case::UpperCamel);
+            if value_1 == value_2 {
+                //
+                result.push_str(format!("    #[default]\n",).as_str());
+            }
+        } else {
+            warn!("No enuneration default value for {}", enumeration.name)
+        };
+        // Pub element
+        result.push_str(
+            format!(
+                "    #[sea_orm(string_value = \"{enumeration_value_snake}\")]\n",
+                enumeration_value_snake = literal.name,
+            )
+            .as_str(),
+        );
+        result.push_str(
+            format!(
+                "    {enumeration_value_camel},\n",
+                enumeration_value_camel = literal.name.to_case(Case::UpperCamel),
+            )
+            .as_str(),
+        );
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl CMOFPrimitiveType {}
 
 // ####################################################################################################
 //
@@ -245,34 +449,6 @@ impl WritingModObjectCaller for CMOFDataType {
         let _ = writeln!(
             wrt,
             include_str!("../template/entity_datatype_part_4.tmpl"),
-            raw = format!("{:#?}", self).prefix("// "),
-        );
-    }
-}
-
-impl WritingModObjectCaller for CMOFEnumeration {
-    fn wrt_entity_fields_caller(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
-        // Part 1 : Head
-        let _ = writeln!(
-            wrt,
-            include_str!("../template/entity_enumeration_part_1.tmpl"),
-            full_name = self.get_full_name(pckg),
-            model_name = self.get_model_name(),
-        );
-
-        // // Part 2 : EnumerationLiteral
-        for field in self.owned_attribute.iter() {
-            match field {
-                EnumOwnedLiteral::EnumerationLiteral(content) => {
-                    content.wrt_enumeration_literal(wrt, &self, pre_calc);
-                }
-            }
-        }
-
-        // Part 3 : End
-        let _ = writeln!(
-            wrt,
-            include_str!("../template/entity_enumeration_part_4.tmpl"),
             raw = format!("{:#?}", self).prefix("// "),
         );
     }
@@ -319,97 +495,6 @@ impl CMOFProperty {
             );
         };
 
-        // // Macro line
-        // let mut macro_line = String::new();
-        // // start of macro
-        // macro_line.push_str("    #[builder(");
-        // // setter section
-        // macro_line.push_str("setter(into");
-        // macro_line.push_str(if self.is_option() {
-        //     ", strip_option"
-        // } else {
-        //     ""
-        // });
-        // macro_line.push_str(")");
-
-        // if self.is_option() && self.default.is_none() {
-        //     macro_line.push_str(", default");
-        // }
-
-        // if self.default.is_some() {
-        //     macro_line.push_str(", default = \"");
-        //     if self.is_option() {
-        //         macro_line.push_str("Some(");
-        //     }
-        //     match self.get_type().as_str() {
-        //         "Boolean" => macro_line.push_str(self.default.as_ref().unwrap()),
-        //         "Integer" => macro_line.push_str(self.default.as_ref().unwrap()),
-        //         "Real" => {
-        //             let mut value = self.default.as_ref().unwrap().clone();
-        //             value.push_str(if !value.contains('.') { ".0" } else { "" });
-        //             macro_line.push_str(value.as_str());
-        //         }
-        //         "String" => {
-        //             let content = String::from("String::from(\\\"")
-        //                 + self.default.as_ref().unwrap().as_str()
-        //                 + "\\\")";
-        //             macro_line.push_str(content.as_str());
-        //         }
-        //         "dc::Boolean" => macro_line.push_str(self.default.as_ref().unwrap()),
-        //         "dc::Integer" => macro_line.push_str(self.default.as_ref().unwrap()),
-        //         "dc::Real" => macro_line.push_str(self.default.as_ref().unwrap()),
-        //         "dc::String" => {
-        //             let content = String::from("String::from(\\\"")
-        //                 + self.default.as_ref().unwrap().as_str()
-        //                 + "\\\")";
-        //             macro_line.push_str(content.as_str());
-        //         }
-        //         _ => {
-        //             let content = self.get_type()
-        //                 + "::"
-        //                 + self
-        //                     .default
-        //                     .as_ref()
-        //                     .unwrap()
-        //                     .to_case(Case::UpperCamel)
-        //                     .as_str();
-        //             macro_line.push_str(content.as_str());
-        //         }
-        //     }
-        //     if self.is_option() {
-        //         macro_line.push_str(")");
-        //     }
-        //     macro_line.push_str("\"")
-        // }
-        // // end of macro
-        // macro_line.push_str(")]");
-
-        // let _ = writeln!(wrt, "{}", macro_line);
-
-        // main line
-        // todo!("add conditionnal treatment for primitive property and link property");
-        // let object_type = self.get_type();
-        // let object_type = object_type.as_str();
-        // if PRIMITIVE_TYPE_LINK.get(object_type).is_some() {
-        //     let content = PRIMITIVE_TYPE_LINK.get(object_type).unwrap();
-        //     let _ = writeln!(
-        //         wrt,
-        //         "    {a} {name}: {b}{c}{d}{content}{e}{f}{g},",
-        //         name = name,
-        //         content = content,
-        //         a = if self.is_public() { "pub" } else { "" },
-        //         b = if self.is_option() { "Option<" } else { "" },
-        //         c = if self.is_vec() { "Vec<" } else { "" },
-        //         d = if self.is_lifetime_dpt() { "" } else { "" },
-        //         // d = if self.is_lifetime_dpt() { "&'a " } else { "" },
-        //         e = if self.is_lifetime_dpt() { "" } else { "" },
-        //         // e = if self.is_lifetime_dpt() { "<'a>" } else { "" },
-        //         f = if self.is_vec() { ">" } else { "" },
-        //         g = if self.is_option() { ">" } else { "" }
-        //     );
-        // } else {
-        //     info!("{}", object_type);
-        // };
         if self.is_field() {
             let field_name = name;
             let field_type = self.get_type(&pre_calc);
@@ -421,69 +506,6 @@ impl CMOFProperty {
                 field_type = field_type,
             );
         }
-    }
-
-    fn get_field_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
-        let mut result = String::from("");
-
-        // type
-        let name = &self.name.to_case(Case::Snake);
-
-        if self.is_field() {
-            let comment = self.xmi_id.prefix("SIMPLE FIELD : ").replace("\n", "");
-            let field_name = name;
-            let field_type = self.get_type(&pre_calc);
-            result.push_str(
-                format!(
-                    include_str!("../template/entity_field_part_2.tmpl"),
-                    comment = comment,
-                    field_name = field_name,
-                    field_type = field_type,
-                )
-                .as_str(),
-            );
-            result.push_str("\n");
-        };
-
-        result
-    }
-}
-
-impl CMOFEnumerationLiteral {
-    fn wrt_enumeration_literal(
-        &self,
-        wrt: &mut File,
-        enumeration: &CMOFEnumeration,
-        pre_calc: &LPreCalc,
-    ) {
-        // For default
-        if pre_calc
-            .enumeration_default_value
-            .contains_key(&enumeration.name)
-        {
-            let value_1 = pre_calc
-                .enumeration_default_value
-                .get(&enumeration.name)
-                .unwrap();
-            let value_2 = &self.name.to_case(Case::UpperCamel);
-            if value_1 == value_2 {
-                //
-                let _ = writeln!(
-                    wrt,
-                    include_str!("../template/entity_enumeration_part_2.tmpl"),
-                );
-            }
-        } else {
-            warn!("No enuneration default value for {}", enumeration.name)
-        };
-
-        // Value
-        let _ = writeln!(
-            wrt,
-            include_str!("../template/entity_enumeration_part_3.tmpl"),
-            enumeration_value_snake = self.name,
-            enumeration_value_camel = self.name.to_case(Case::UpperCamel),
-        );
     }
 }
 
@@ -546,7 +568,7 @@ impl CMOFProperty {
                 self.simple_type.as_ref().unwrap().as_str()
             } else {
                 // Foreign field
-                "i32"
+                "i64"
             }
         } else {
             match self.complex_type.as_ref().unwrap() {
@@ -562,16 +584,16 @@ impl CMOFProperty {
                         pre_calc.primitive_type_conversion.get(&key).unwrap()
                     } else {
                         info!("Error : unknow PRIMITIVE TYPE{}", key);
-                        "i32"
+                        "i64"
                     }
                 }
                 EnumType::ClassLink(_) => {
                     // Foreign field
-                    "i32"
+                    "i64"
                 }
                 EnumType::DataTypeLink(_) => {
                     // Foreign field
-                    "i32"
+                    "i64"
                 }
             }
         };
