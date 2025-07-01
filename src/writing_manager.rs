@@ -383,17 +383,6 @@ pub trait WritingLibFile: Debug {
     );
 }
 
-/// Trait for dispatch run for writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
-pub trait WritingModObjectCaller: Debug {
-    /// Dispatch run for writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
-    fn wrt_entity_fields_caller(
-        &self,
-        wrt: &mut File,
-        pckg: &LoadingPackage,
-        pre_calc: &LoadingPreCalculation,
-    );
-}
-
 /// Trait for writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]
 pub trait WritingModObject: Debug {
     /// Writting __${owned_member}.rs__ file from [`EnumOwnedMember`] element of [`LoadingPackage`]

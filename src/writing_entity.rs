@@ -33,7 +33,7 @@ use crate::writing_manager::*;
 
 // ####################################################################################################
 //
-// ########################################## MAIN ####################################################
+// ####################################################################################################
 //
 // ####################################################################################################
 
@@ -54,7 +54,7 @@ impl LoadingTracker {
                         // Get file
                         let (_, mut wrt) = self.get_object_file(pckg, entity);
                         //
-                        content.wrt_entity_fields_caller(&mut wrt, &pckg, &self.pre_calculation);
+                        content.write_content(&mut wrt, &pckg, &self.pre_calculation);
                     }
                     EnumOwnedMember::Enumeration(content) => {
                         // Get file
@@ -66,7 +66,7 @@ impl LoadingTracker {
                         // Get file
                         let (_, mut wrt) = self.get_object_file(pckg, entity);
                         //
-                        content.wrt_entity_fields_caller(&mut wrt, &pckg, &self.pre_calculation);
+                        content.write_content(&mut wrt, &pckg, &self.pre_calculation);
                     }
                     _ => {}
                 }
@@ -304,7 +304,81 @@ impl CMOFClass {
 //
 // ####################################################################################################
 
-impl CMOFDataType {}
+impl CMOFDataType {
+    /// write content to output file,from "CMOFDataType" object
+    fn write_content(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
+        let _ = writeln!(
+            wrt,
+            include_str!("../template/entity_datatype_main.tmpl"),
+            full_name = self.get_full_name(pckg),
+            table_name = self.get_table_name(pckg),
+            fields = self.get_fields_content(pckg, pre_calc),
+            raw = format!("{:#?}", self).prefix("// "),
+        );
+    }
+    /// "fields" content for entity_data_type_main.tmpl
+    fn get_fields_content(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+        let mut result = String::from("");
+
+        // For all property
+        for field in self.get_all_field() {
+            CMOFDataType::write_field_property(&field, &mut result, pckg, pre_calc);
+        }
+
+        result
+    }
+    /// Get all field
+    fn get_all_field(&self) -> Vec<&CMOFProperty> {
+        // As default, empty
+        let mut result: Vec<&CMOFProperty> = Vec::new();
+
+        for property in &self.owned_attribute {
+            match property {
+                EnumOwnedAttribute::Property(content) => {
+                    result.push(&content);
+                }
+            }
+        }
+
+        result
+    }
+
+    // Write field content
+    fn write_field_property(
+        content: &CMOFProperty,
+        result: &mut String,
+        _pckg: &LPckg,
+        pre_calc: &LPreCalc,
+    ) {
+        // Comment
+        result.push_str(
+            format!(
+                "    /// RUST DATA TYPE : {comment}\n",
+                comment = content.xmi_id
+            )
+            .as_str(),
+        );
+        // SEA_ORM element
+        if content.default.is_some() {
+            result.push_str(
+                format!(
+                    "    #[sea_orm(default_value = \"{default_value}\")]\n",
+                    default_value = content.default.as_ref().unwrap()
+                )
+                .as_str(),
+            );
+        }
+        // Pub element
+        result.push_str(
+            format!(
+                "    pub {field_name}: {field_type},\n",
+                field_name = &content.name.to_case(Case::Snake),
+                field_type = content.get_type(&pre_calc),
+            )
+            .as_str(),
+        );
+    }
+}
 
 // ####################################################################################################
 //
@@ -410,53 +484,9 @@ impl CMOFEnumeration {
 //
 // ####################################################################################################
 
-impl CMOFPrimitiveType {}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl WritingModObjectCaller for CMOFDataType {
-    fn wrt_entity_fields_caller(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
-        // Part 1 : Head
-        let _ = writeln!(
-            wrt,
-            include_str!("../template/entity_datatype_part_1.tmpl"),
-            full_name = self.get_full_name(pckg),
-        );
-        if true {
-            // for import
-            let _ = writeln!(wrt, include_str!("../template/entity_datatype_part_2.tmpl"),);
-        }
-        let _ = writeln!(
-            wrt,
-            include_str!("../template/entity_datatype_part_3.tmpl"),
-            table_name = self.get_table_name(pckg),
-        );
-
-        // // Part 2 : Fields
-        for field in self.owned_attribute.iter() {
-            match field {
-                EnumOwnedAttribute::Property(content) => {
-                    content.wrt_property(wrt, pckg, pre_calc);
-                }
-            }
-        }
-
-        // Part 3 : End
-        let _ = writeln!(
-            wrt,
-            include_str!("../template/entity_datatype_part_4.tmpl"),
-            raw = format!("{:#?}", self).prefix("// "),
-        );
-    }
-}
-
-impl WritingModObjectCaller for CMOFPrimitiveType {
-    fn wrt_entity_fields_caller(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
-        // Part 1 : Head
+impl CMOFPrimitiveType {
+    /// write content to output file,from "CMOFPrimitiveType" object
+    fn write_content(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
         let object_type = self.name.as_str();
         if pre_calc
             .primitive_type_conversion
@@ -466,7 +496,7 @@ impl WritingModObjectCaller for CMOFPrimitiveType {
             let content = pre_calc.primitive_type_conversion.get(object_type).unwrap();
             let _ = writeln!(
                 wrt,
-                include_str!("../template/entity_primitive_type_part_1.tmpl"),
+                include_str!("../template/entity_primitive_type_main.tmpl"),
                 full_name = self.get_full_name(pckg),
                 model_name = self.get_model_name(),
                 standard_object = content,
@@ -482,83 +512,15 @@ impl WritingModObjectCaller for CMOFPrimitiveType {
 // ####################################################################################################
 
 impl CMOFProperty {
-    fn wrt_property(&self, wrt: &mut File, _pckg: &LPckg, pre_calc: &LPreCalc) {
-        // type
-        let name = &self.name.to_case(Case::Snake);
-
-        if false {
-            // if need of #[sea_orm ....]
-            let _ = writeln!(
-                wrt,
-                include_str!("../template/entity_field_part_1.tmpl"),
-                field_head = "",
-            );
-        };
-
-        if self.is_field() {
-            let field_name = name;
-            let field_type = self.get_type(&pre_calc);
-            let _ = writeln!(
-                wrt,
-                include_str!("../template/entity_field_part_2.tmpl"),
-                comment = self.xmi_id,
-                field_name = field_name,
-                field_type = field_type,
-            );
-        }
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-//
-// ####################################################################################################
-
-// ####################################################################################################
-//
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl CMOFProperty {
-    /// If is Foreign field or simple field
-    fn is_field(&self) -> bool {
-        // upper : 1 or 0
-        self.upper <= infinitable::Finite(1)
-    }
-
-    /// If need to use option
-    fn is_option(&self) -> bool {
-        self.lower == 0
-    }
-
-    ///
-    fn _is_foreign(&self, _pre_calc: &LPreCalc) -> bool {
-        if !self.is_field() {
-            return false;
-        }
-
-        if self.simple_type.is_some() {
-            !self.association.is_none()
-        } else {
-            match self.complex_type.as_ref().unwrap() {
-                EnumType::PrimitiveTypeLink(_) => false,
-                _ => true,
-            }
-        }
-    }
-
-    ///
     fn get_type(&self, pre_calc: &LPreCalc) -> String {
         let mut result = String::new();
 
-        if !self.is_field() {
+        if self.upper > infinitable::Finite(1) {
             return result;
         }
 
         // OPTION
-        result.push_str(if self.is_option() { "Option<" } else { "" });
+        result.push_str(if self.lower == 0 { "Option<" } else { "" });
 
         // For field simple
 
@@ -600,7 +562,7 @@ impl CMOFProperty {
         result.push_str(content);
 
         // OPTION
-        result.push_str(if self.is_option() { ">" } else { "" });
+        result.push_str(if self.lower == 0 { ">" } else { "" });
 
         result
     }
