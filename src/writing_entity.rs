@@ -181,11 +181,19 @@ impl CMOFClass {
             let key = super_field;
             if pre_calc.owned_member_type_list.contains_key(&key) {
                 let matched_named = pre_calc.owned_member_type_list.get(&key).unwrap();
+                let table_name = &matched_named.table_name;
+                let model_name = &matched_named.model_name;
+                let comment = format!(
+                    "SUPER : ONE {} need ONE {}",
+                    self.get_model_name(),
+                    model_name
+                );
                 result.push_str(
                     format!(
                         include_str!("../template/entity_sub_relation_many.tmpl"),
-                        table_name = matched_named.table_name,
-                        model_name = matched_named.model_name,
+                        table_name = table_name,
+                        model_name = model_name,
+                        comment = comment,
                         foreign_field = field_name.to_case(Case::UpperCamel),
                     )
                     .as_str(),
@@ -206,11 +214,19 @@ impl CMOFClass {
                 let key = super_field;
                 if pre_calc.owned_member_type_list.contains_key(key) {
                     let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+                    let table_name = &matched_named.table_name;
+                    let model_name = &matched_named.model_name;
+                    let comment = format!(
+                        "SUPER : ONE {} need ONE {}",
+                        model_name,
+                        self.get_model_name()
+                    );
                     result.push_str(
                         format!(
                             include_str!("../template/entity_sub_relation_one.tmpl"),
-                            table_name = matched_named.table_name,
-                            model_name = matched_named.model_name,
+                            table_name = table_name,
+                            model_name = model_name,
+                            comment = comment,
                         )
                         .as_str(),
                     );
@@ -223,18 +239,26 @@ impl CMOFClass {
 
     /// "related" content for entity_class_main.tmpl
     fn get_related_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
-        let mut result = String::from("\n");
+        let mut result = String::new();
 
         // For "Super"
         for super_field in self.get_all_super() {
             let key = super_field;
             if pre_calc.owned_member_type_list.contains_key(&key) {
                 let matched_named = pre_calc.owned_member_type_list.get(&key).unwrap();
+                let table_name = &matched_named.table_name;
+                let model_name = &matched_named.model_name;
+                let comment = format!(
+                    "SUPER : ONE {} need ONE {}",
+                    self.get_model_name(),
+                    model_name
+                );
                 result.push_str(
                     format!(
                         include_str!("../template/entity_sub_related.tmpl"),
-                        table_name = matched_named.table_name,
-                        model_name = matched_named.model_name,
+                        table_name = table_name,
+                        model_name = model_name,
+                        comment = comment,
                     )
                     .as_str(),
                 );
@@ -254,11 +278,19 @@ impl CMOFClass {
                 let key = super_field;
                 if pre_calc.owned_member_type_list.contains_key(key) {
                     let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+                    let table_name = &matched_named.table_name;
+                    let model_name = &matched_named.model_name;
+                    let comment = format!(
+                        "SUPER : ONE {} need ONE {}",
+                        model_name,
+                        self.get_model_name()
+                    );
                     result.push_str(
                         format!(
                             include_str!("../template/entity_sub_related.tmpl"),
-                            table_name = matched_named.table_name,
-                            model_name = matched_named.model_name,
+                            table_name = table_name,
+                            model_name = model_name,
+                            comment = comment,
                         )
                         .as_str(),
                     );
@@ -294,7 +326,7 @@ impl CMOFClass {
     /// Write "Super" from __get_all_super__
     fn write_field_super(class: &String, result: &mut String, _pckg: &LPckg, _pre_calc: &LPreCalc) {
         // Comment
-        result.push_str(format!("    /// SIMPLE FIELD : {comment}\n", comment = class).as_str());
+        result.push_str(format!("    /// SUPER FIELD : {comment}\n", comment = class).as_str());
         // Pub element
         let field_name = class
             .to_case(Case::Snake)
