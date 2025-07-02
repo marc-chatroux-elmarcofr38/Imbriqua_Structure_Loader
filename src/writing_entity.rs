@@ -44,6 +44,12 @@ impl LoadingTracker {
             debug!("Generating sub-mod file for \"{label}\" : START");
             for entity in pckg.get_sorted_iter() {
                 match entity {
+                    EnumOwnedMember::Association(content) => {
+                        // Get file
+                        let (_, mut wrt) = self.get_object_file(pckg, entity);
+                        //
+                        content.write_content(&mut wrt, &pckg, &self.pre_calculation);
+                    }
                     EnumOwnedMember::Class(content) => {
                         // Get file
                         let (_, mut wrt) = self.get_object_file(pckg, entity);
@@ -68,11 +74,37 @@ impl LoadingTracker {
                         //
                         content.write_content(&mut wrt, &pckg, &self.pre_calculation);
                     }
-                    _ => {}
                 }
             }
             info!("Generating sub-mod file for \"{label}\" : Finished");
         }
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl CMOFAssociation {
+    /// write content to output file,from "CMOFClass" object
+    fn write_content(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
+        let _ = writeln!(
+            wrt,
+            include_str!("../template/entity_association_main.tmpl"),
+            full_name = self.get_full_name(pckg),
+            import = self.get_import_content(pckg, pre_calc),
+            raw = format!("{:#?}", self).prefix("// "),
+        );
+    }
+
+    /// "import" content for entity_class_main.tmpl
+    fn get_import_content(&self, _pckg: &LPckg, _pre_calc: &LPreCalc) -> String {
+        let mut result = String::from("\n");
+        result.push_str("use crate::*;\n");
+        result.push_str("use sea_orm::entity::prelude::*;\n");
+        result
     }
 }
 
@@ -232,7 +264,7 @@ impl CMOFClass {
             format!(
                 "    pub {field_name}: {field_type},\n",
                 field_name = &content.name.to_case(Case::Snake),
-                field_type = content.get_type(&pre_calc),
+                field_type = content.get_field_type(&pre_calc),
             )
             .as_str(),
         );
@@ -291,7 +323,7 @@ impl CMOFClass {
             format!(
                 "    pub {field_name}: {field_type},\n",
                 field_name = &content.name.to_case(Case::Snake),
-                field_type = content.get_type(&pre_calc),
+                field_type = content.get_field_type(&pre_calc),
             )
             .as_str(),
         );
@@ -373,7 +405,7 @@ impl CMOFDataType {
             format!(
                 "    pub {field_name}: {field_type},\n",
                 field_name = &content.name.to_case(Case::Snake),
-                field_type = content.get_type(&pre_calc),
+                field_type = content.get_field_type(&pre_calc),
             )
             .as_str(),
         );
@@ -512,7 +544,7 @@ impl CMOFPrimitiveType {
 // ####################################################################################################
 
 impl CMOFProperty {
-    fn get_type(&self, pre_calc: &LPreCalc) -> String {
+    fn get_field_type(&self, pre_calc: &LPreCalc) -> String {
         let mut result = String::new();
 
         if self.upper > infinitable::Finite(1) {

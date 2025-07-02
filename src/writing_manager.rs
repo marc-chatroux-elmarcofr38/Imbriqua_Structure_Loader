@@ -28,35 +28,8 @@ use crate::loader_dependencies_explorer::*;
 
 // Dependencies section
 use serde::Deserialize;
+use std::collections::HashMap;
 use std::fmt::Debug;
-
-// ####################################################################################################
-//
-// ######################################## NamingLink ################################################
-//
-// ####################################################################################################
-
-// /// Naming method for struct in package
-// pub trait NamingLink {
-//     /// Naming method for struct ([`EnumOwnedMember`]) in package ([`LoadingPackage`]), as hierarchical position
-//     ///
-//     /// Usecase :
-//     /// - Usable for calling Resultant Struct from other package
-//     ///
-//     ///
-//     /// Example : with package dc and datatype_font
-//     ///   ---> "dc::Font"
-//     fn get_cmof_name(&self, _package: &LoadingPackage) -> String;
-// }
-
-// impl NamingLink for EnumOwnedMember {
-//     fn get_cmof_name(&self, _package: &LoadingPackage) -> String {
-//         let mut result = _package.get_lowercase_name();
-//         result.push_str("::");
-//         result.push_str(self.get_model_name().as_str());
-//         result
-//     }
-// }
 
 // ####################################################################################################
 //
@@ -310,32 +283,6 @@ struct SimpleValue {
 impl LoadingTracker {
     /// Build all pre calculing information needed for writting
     pub fn writing_preparation(&mut self) {
-        // owned_member_type_list
-        for (_, package) in self.clone().get_package_in_order() {
-            for owned_member in package.get_sorted_iter() {
-                let mut real_key = package.get_lowercase_name();
-                real_key.push('_');
-                real_key.push_str(owned_member.get_model_name().as_str());
-                let v = match owned_member {
-                    EnumOwnedMember::Association(_) => ClassType::Association,
-                    EnumOwnedMember::Class(_) => ClassType::Class,
-                    EnumOwnedMember::DataType(_) => ClassType::DataType,
-                    EnumOwnedMember::Enumeration(_) => ClassType::Enumeration,
-                    EnumOwnedMember::PrimitiveType(_) => ClassType::PrimitiveType,
-                };
-                self.pre_calculation
-                    .owned_member_type_list
-                    .push((real_key, v));
-            }
-        }
-        self.pre_calculation
-            .owned_member_type_list
-            .sort_by(|(a, _), (b, _)| a.cmp(&b));
-        debug!(
-            "Writing_preparation : owned_member_type_list {:#?}",
-            self.pre_calculation.owned_member_type_list
-        );
-
         // enumeration_default_value
         let reader_path = Path::new("metamodel_file_extension/enumeration_default_value.json");
         let reader = reader_path.get_file_content();
@@ -363,6 +310,138 @@ impl LoadingTracker {
             "Writing_preparation : primitive_type_conversion {:#?}",
             self.pre_calculation.primitive_type_conversion
         );
+
+        // association_relation
+        let mut result: HashMap<String, Vec<ElementRelation>> = HashMap::new();
+        for (_, package) in self.get_package_in_order() {
+            for owned_member in package.get_sorted_iter() {
+                match owned_member {
+                    EnumOwnedMember::Association(content) => {
+                        let key = content.name.clone();
+                        for owned_end in &content.owned_end {
+                            match owned_end {
+                                EnumOwnedEnd::Property(property) => {
+                                    let value = ElementRelation {
+                                        element_type: property.get_type(),
+                                        lower: property.lower,
+                                        upper: property.upper,
+                                    };
+                                    if result.contains_key(&key) {
+                                        let result_vec = result.get_mut(&key).unwrap();
+                                        result_vec.push(value);
+                                    } else {
+                                        result.insert(key.clone(), Vec::from([value]));
+                                    };
+                                }
+                            }
+                        }
+                    }
+                    EnumOwnedMember::Class(content) => {
+                        for owned_attribute in &content.owned_attribute {
+                            match owned_attribute {
+                                EnumOwnedAttribute::Property(property) => {
+                                    if property.association.is_some() {
+                                        let key = property.association.clone().unwrap();
+
+                                        let value = ElementRelation {
+                                            element_type: property.get_type(),
+                                            lower: property.lower,
+                                            upper: property.upper,
+                                        };
+                                        if result.contains_key(&key) {
+                                            let result_vec = result.get_mut(&key).unwrap();
+                                            result_vec.push(value);
+                                        } else {
+                                            result.insert(key.clone(), Vec::from([value]));
+                                        };
+                                    };
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        for (relation_name, association) in &result {
+            if association.len() != 2 {
+                error!(
+                    "Association multiplicity error : need to be 2, not {num} : {name}",
+                    num = association.len(),
+                    name = relation_name,
+                );
+            }
+        }
+        self.pre_calculation.association_relation = result.clone();
+        debug!(
+            "Writing_preparation : association_relation {:#?}",
+            self.pre_calculation.association_relation
+        );
+
+        // association_relation_by_class
+        let mut result: HashMap<String, Vec<String>> = HashMap::new();
+        for (name, association) in &self.pre_calculation.association_relation {
+            for member in association {
+                let key = member.element_type.clone();
+                let value = name.clone();
+
+                if result.contains_key(&key) {
+                    let result_vec = result.get_mut(&key).unwrap();
+                    result_vec.push(value);
+                } else {
+                    result.insert(key.clone(), Vec::from([value]));
+                };
+            }
+        }
+        self.pre_calculation.association_relation_by_class = result.clone();
+        debug!(
+            "Writing_preparation : association_relation_by_class {:#?}",
+            self.pre_calculation.association_relation_by_class
+        );
+    }
+}
+
+impl CMOFProperty {
+    fn get_type(&self) -> String {
+        let mut result = String::new();
+
+        // For field simple
+        let content = if self.simple_type.is_some() {
+            self.simple_type.as_ref().unwrap()
+        } else {
+            match self.complex_type.as_ref().unwrap() {
+                EnumType::PrimitiveTypeLink(link) => {
+                    // Foreign field
+                    let key = link.href.clone();
+                    let key = match key.find(".cmof#") {
+                        Some(split_index) => key[split_index..].replace(".cmof#", ""),
+                        None => key,
+                    };
+                    &key.clone()
+                }
+                EnumType::ClassLink(link) => {
+                    // Foreign field
+                    let key = link.href.clone();
+                    let key = match key.find(".cmof#") {
+                        Some(split_index) => key[split_index..].replace(".cmof#", "").to_string(),
+                        None => key,
+                    };
+                    &key.clone()
+                }
+                EnumType::DataTypeLink(link) => {
+                    // Foreign field
+                    let key = link.href.clone();
+                    let key = match key.find(".cmof#") {
+                        Some(split_index) => key[split_index..].replace(".cmof#", "").to_string(),
+                        None => key,
+                    };
+                    &key.clone()
+                }
+            }
+        };
+        result.push_str(content);
+
+        result
     }
 }
 

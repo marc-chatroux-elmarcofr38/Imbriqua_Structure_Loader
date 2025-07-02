@@ -27,6 +27,7 @@ use crate::loader_cmof_structure::*;
 use crate::output_result_manager::*;
 
 // Dependencies section
+use infinitable::Infinitable as UnlimitedNatural;
 use std::collections::{BTreeMap, HashMap};
 use std::iter::FromIterator;
 
@@ -122,25 +123,42 @@ impl LoadingPackage {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// Representation of a package
+pub struct ElementRelation {
+    /// Type of the member of the association
+    pub element_type: String,
+    /// Lower bound for this member
+    pub lower: isize,
+    /// Upper bound for this member
+    pub upper: UnlimitedNatural<usize>,
+}
+
+#[derive(Clone, PartialEq, Debug)]
 /// List on values necessery for loading but requiring full read of input file for evaluate
 pub struct LoadingPreCalculation {
-    /// Lassifing Class in function of lifetime se style
-    pub class_classification: HashMap<String, ClassClassification>,
-    /// List of all OwnedMember, linked with their type
-    pub owned_member_type_list: Vec<(String, ClassType)>,
+    // /// Lassifing Class in function of lifetime se style
+    // pub class_classification: HashMap<String, ClassClassification>,
+    // /// List of all OwnedMember, linked with their type
+    // pub owned_member_type_list: Vec<(String, ClassType)>,
     /// All is in name
     pub enumeration_default_value: HashMap<String, String>,
     /// All is in name
     pub primitive_type_conversion: HashMap<String, String>,
+    /// All is in name
+    pub association_relation: HashMap<String, Vec<ElementRelation>>,
+    /// All is in name
+    pub association_relation_by_class: HashMap<String, Vec<String>>,
 }
 impl LoadingPreCalculation {
     /// Create new instance
     pub fn new() -> Self {
         LoadingPreCalculation {
-            class_classification: HashMap::new(),
-            owned_member_type_list: Vec::new(),
+            // class_classification: HashMap::new(),
+            // owned_member_type_list: Vec::new(),
             enumeration_default_value: HashMap::new(),
             primitive_type_conversion: HashMap::new(),
+            association_relation: HashMap::new(),
+            association_relation_by_class: HashMap::new(),
         }
     }
 }
