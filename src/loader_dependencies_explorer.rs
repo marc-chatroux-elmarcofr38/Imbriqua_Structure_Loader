@@ -134,6 +134,30 @@ pub struct ElementRelation {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// Help for AssociationRelation
+pub enum RelationPonderationType {
+    /// one relation_1 need one relation_2
+    OneToOne,
+    /// many relation_1 need one relation_2
+    OneToMany,
+    /// many relation_1 need many relation_2
+    ManyToMany,
+}
+
+#[derive(Clone, PartialEq, Debug)]
+/// Pre Calculation struct helping loading CMOFAssociation
+pub struct AssociationRelation {
+    /// First relation
+    pub relation_1: ElementRelation,
+    /// Second relation
+    pub relation_2: ElementRelation,
+    /// Ponderation of the relation
+    pub ponteration_type: RelationPonderationType,
+    /// if is itself reference
+    pub is_self_referencing: bool,
+}
+
+#[derive(Clone, PartialEq, Debug)]
 /// Help for naming
 pub struct Named {
     /// package lowercase name
@@ -149,21 +173,85 @@ pub struct Named {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// Help for AssociationRelation pivot
+pub enum RankRelation {
+    /// Is relation_1
+    IsOne,
+    /// Is relation_2
+    IsSecond,
+}
+
+#[derive(Clone, PartialEq, Debug)]
 /// List on values necessery for loading but requiring full read of input file for evaluate
 pub struct LoadingPreCalculation {
-    // /// Lassifing Class in function of lifetime se style
-    // pub class_classification: HashMap<String, ClassClassification>,
-    /// List of all OwnedMember, linked with their type
+    /// For each owned_member (as model_name format), all name of this package and itself
+    /// EX :
+    /// "Integer": Named {
+    ///     package_name: "dc",
+    ///     technical_name: "DC.cmof#Integer",
+    ///     table_name: "dc_integer",
+    ///     model_name: "Integer",
+    ///     full_name: "dc_primitive_integer",
+    /// },
+    /// "ACorrelationKeyRefCorrelationSubscription": Named {
+    ///     package_name: "bpmn_20",
+    ///     technical_name: "BPMN20.cmof#A_correlationKeyRef_correlationSubscription",
+    ///     table_name: "bpmn_20_a_correlation_key_ref_correlation_subscription",
+    ///     model_name: "ACorrelationKeyRefCorrelationSubscription",
+    ///     full_name: "bpmn_20_association_a_correlation_key_ref_correlation_subscription",
+    /// },
     pub owned_member_type_list: HashMap<String, Named>,
-    /// All is in name
+    /// For each CMOFEnumeration (as model_name format), this default value, loaded from "metamodel_file_extension/enumeration_default_value.json"
+    /// EX :
+    ///     "ParticipantBandKind": "TopInitiating",
+    ///     "MultiInstanceBehavior": "All",
     pub enumeration_default_value: HashMap<String, String>,
-    /// All is in name
+    /// For each CMOFPrimitiveType (as model_name format), this Rust equivalent type, loaded from "metamodel_file_extension/primitive_type_conversion.json"
+    /// EX :
+    ///     "ParticipantBandKind": "TopInitiating",
+    ///     "MultiInstanceBehavior": "All",
     pub primitive_type_conversion: HashMap<String, String>,
-    /// All is in name
-    pub association_relation: HashMap<String, Vec<ElementRelation>>,
-    /// All is in name
-    pub association_relation_by_class: HashMap<String, Vec<String>>,
-    /// All is in name
+    /// For each CMOFassociation (as model_name format), the linked AssociationRelation object
+    /// EX :
+    /// "A_inputDataRef_inputOutputBinding": AssociationRelation {
+    ///     relation_1: ElementRelation {
+    ///         element_type: "InputOutputBinding",
+    ///         lower: 0,
+    ///         upper: Infinity,
+    ///     },
+    ///     relation_2: ElementRelation {
+    ///         element_type: "InputSet",
+    ///         lower: 1,
+    ///         upper: Finite(
+    ///             1,
+    ///         ),
+    ///     },
+    ///     ponteration_type: OneToMany,
+    ///     is_self_referencing: false,
+    /// },
+    pub association_relation: HashMap<String, AssociationRelation>,
+    /// For each CMOFClass (as model_name format), all associed CMOFAssociation with rank (provided by association_relation)
+    /// EX :
+    /// "CorrelationProperty": [
+    ///     (
+    ///         "A_correlationPropertyRetrievalExpression_correlationproperty",
+    ///         IsSecond,
+    ///     ),
+    ///     (
+    ///         "A_type_correlationProperty",
+    ///         IsOne,
+    ///     ),
+    ///     (
+    ///         "A_correlationPropertyRef_correlationPropertyBinding",
+    ///         IsSecond,
+    ///     ),
+    ///     (
+    ///         "A_correlationPropertyRef_correlationKey",
+    ///         IsSecond,
+    ///     ),
+    /// ],
+    pub association_relation_by_class: HashMap<String, Vec<(String, RankRelation)>>,
+    /// For each CMOFClass (as model_name format), all CMOFClass (as model_name format) who use it as "Super"
     pub reverse_super_link: HashMap<String, Vec<String>>,
 }
 impl LoadingPreCalculation {

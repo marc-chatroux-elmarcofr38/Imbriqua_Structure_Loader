@@ -26,6 +26,7 @@ use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer::*;
 
+use infinitable::Infinitable;
 // Dependencies section
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -385,35 +386,73 @@ impl LoadingTracker {
                 }
             }
         }
-        for (relation_name, association) in &result {
+        for (relation_name, association) in result {
             if association.len() != 2 {
                 error!(
                     "Association multiplicity error : need to be 2, not {num} : {name}",
                     num = association.len(),
                     name = relation_name,
                 );
+            } else {
+                let key = relation_name;
+                let relation_1 = if association[0].upper < association[1].upper {
+                    association[1].clone()
+                } else {
+                    association[0].clone()
+                };
+                let relation_2 = if association[0].upper < association[1].upper {
+                    association[0].clone()
+                } else {
+                    association[1].clone()
+                };
+                let ponteration_type = if relation_2.upper == Infinitable::Infinity {
+                    RelationPonderationType::ManyToMany
+                } else if relation_1.upper == Infinitable::Infinity {
+                    RelationPonderationType::OneToMany
+                } else {
+                    RelationPonderationType::OneToOne
+                };
+                let is_self_referencing =
+                    association[0].element_type == association[1].element_type;
+                let value = AssociationRelation {
+                    relation_1: relation_1,
+                    relation_2: relation_2,
+                    ponteration_type: ponteration_type,
+                    is_self_referencing: is_self_referencing,
+                };
+                self.pre_calculation.association_relation.insert(key, value);
             }
         }
-        self.pre_calculation.association_relation = result.clone();
         // debug!(
         //     "Writing_preparation : association_relation {:#?}",
         //     self.pre_calculation.association_relation
         // );
 
         // association_relation_by_class
-        let mut result: HashMap<String, Vec<String>> = HashMap::new();
+        let mut result: HashMap<String, Vec<(String, RankRelation)>> = HashMap::new();
         for (name, association) in &self.pre_calculation.association_relation {
-            for member in association {
-                let key = member.element_type.clone();
-                let value = name.clone();
+            // Relation 1
+            let member = &association.relation_1;
+            let key = member.element_type.clone();
+            let value = (name.clone(), RankRelation::IsOne);
 
-                if result.contains_key(&key) {
-                    let result_vec = result.get_mut(&key).unwrap();
-                    result_vec.push(value);
-                } else {
-                    result.insert(key.clone(), Vec::from([value]));
-                };
-            }
+            if result.contains_key(&key) {
+                let result_vec = result.get_mut(&key).unwrap();
+                result_vec.push(value);
+            } else {
+                result.insert(key.clone(), Vec::from([value]));
+            };
+            // Relation 2
+            let member = &association.relation_2;
+            let key = member.element_type.clone();
+            let value = (name.clone(), RankRelation::IsSecond);
+
+            if result.contains_key(&key) {
+                let result_vec = result.get_mut(&key).unwrap();
+                result_vec.push(value);
+            } else {
+                result.insert(key.clone(), Vec::from([value]));
+            };
         }
         self.pre_calculation.association_relation_by_class = result.clone();
         // debug!(

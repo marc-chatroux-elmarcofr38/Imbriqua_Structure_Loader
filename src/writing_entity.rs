@@ -49,8 +49,8 @@ impl LoadingTracker {
                         let association =
                             self.pre_calculation.association_relation.get(&content.name);
                         if association.is_some()
-                            && association.unwrap()[0].upper == infinitable::Infinity
-                            && association.unwrap()[1].upper == infinitable::Infinity
+                            && association.unwrap().ponteration_type
+                                == RelationPonderationType::ManyToMany
                         {
                             // Get file
                             let (_, mut wrt) = self.get_object_file(pckg, entity);
