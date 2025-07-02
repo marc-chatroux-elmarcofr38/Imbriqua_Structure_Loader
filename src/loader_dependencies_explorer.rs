@@ -134,12 +134,27 @@ pub struct ElementRelation {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+/// Help for naming
+pub struct Named {
+    /// package lowercase name
+    pub package_name: String,
+    /// get_technical_name
+    pub technical_name: String,
+    /// get_table_name
+    pub table_name: String,
+    /// get_model_name
+    pub model_name: String,
+    /// get_full_name
+    pub full_name: String,
+}
+
+#[derive(Clone, PartialEq, Debug)]
 /// List on values necessery for loading but requiring full read of input file for evaluate
 pub struct LoadingPreCalculation {
     // /// Lassifing Class in function of lifetime se style
     // pub class_classification: HashMap<String, ClassClassification>,
-    // /// List of all OwnedMember, linked with their type
-    // pub owned_member_type_list: Vec<(String, ClassType)>,
+    /// List of all OwnedMember, linked with their type
+    pub owned_member_type_list: HashMap<String, Named>,
     /// All is in name
     pub enumeration_default_value: HashMap<String, String>,
     /// All is in name
@@ -148,17 +163,19 @@ pub struct LoadingPreCalculation {
     pub association_relation: HashMap<String, Vec<ElementRelation>>,
     /// All is in name
     pub association_relation_by_class: HashMap<String, Vec<String>>,
+    /// All is in name
+    pub reverse_super_link: HashMap<String, Vec<String>>,
 }
 impl LoadingPreCalculation {
     /// Create new instance
     pub fn new() -> Self {
         LoadingPreCalculation {
-            // class_classification: HashMap::new(),
-            // owned_member_type_list: Vec::new(),
+            owned_member_type_list: HashMap::new(),
             enumeration_default_value: HashMap::new(),
             primitive_type_conversion: HashMap::new(),
             association_relation: HashMap::new(),
             association_relation_by_class: HashMap::new(),
+            reverse_super_link: HashMap::new(),
         }
     }
 }
@@ -406,19 +423,4 @@ pub enum ClassClassification {
     Simple,
     /// Complex : need lifetime for utilization
     Complex,
-}
-
-#[derive(Clone, PartialEq, Debug)]
-/// State on package to load
-pub enum ClassType {
-    /// Association : CMOFAssociation
-    Association,
-    /// Class : CMOFClass
-    Class,
-    /// DataType : CMOFDataType
-    DataType,
-    /// Enumeration : CMOFEnumeration
-    Enumeration,
-    /// PrimitiveType : CMOFPrimitiveType
-    PrimitiveType,
 }

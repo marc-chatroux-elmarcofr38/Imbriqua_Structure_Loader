@@ -283,6 +283,28 @@ struct SimpleValue {
 impl LoadingTracker {
     /// Build all pre calculing information needed for writting
     pub fn writing_preparation(&mut self) {
+        // owned_member_type_list
+        let mut result: HashMap<String, Named> = HashMap::new();
+        for (_, package) in self.get_package_in_order() {
+            for owned_member in package.get_sorted_iter() {
+                let key = owned_member.get_model_name();
+                let value = Named {
+                    package_name: package.get_lowercase_name(),
+                    technical_name: owned_member.get_technical_name(package),
+                    table_name: owned_member.get_table_name(package),
+                    model_name: owned_member.get_model_name(),
+                    full_name: owned_member.get_full_name(package),
+                };
+                (package.clone(), owned_member.clone());
+                result.insert(key, value);
+            }
+        }
+        self.pre_calculation.owned_member_type_list = result.clone();
+        // debug!(
+        //     "Writing_preparation : owned_member_type_list {:#?}",
+        //     self.pre_calculation.owned_member_type_list
+        // );
+
         // enumeration_default_value
         let reader_path = Path::new("metamodel_file_extension/enumeration_default_value.json");
         let reader = reader_path.get_file_content();
@@ -292,10 +314,10 @@ impl LoadingTracker {
                 .enumeration_default_value
                 .insert(import_simple_value.key, import_simple_value.value);
         }
-        debug!(
-            "Writing_preparation : enumeration_default_value {:#?}",
-            self.pre_calculation.enumeration_default_value
-        );
+        // debug!(
+        //     "Writing_preparation : enumeration_default_value {:#?}",
+        //     self.pre_calculation.enumeration_default_value
+        // );
 
         // primitive_type_conversion
         let reader_path = Path::new("metamodel_file_extension/primitive_type_conversion.json");
@@ -306,10 +328,10 @@ impl LoadingTracker {
                 .primitive_type_conversion
                 .insert(import_simple_value.key, import_simple_value.value);
         }
-        debug!(
-            "Writing_preparation : primitive_type_conversion {:#?}",
-            self.pre_calculation.primitive_type_conversion
-        );
+        // debug!(
+        //     "Writing_preparation : primitive_type_conversion {:#?}",
+        //     self.pre_calculation.primitive_type_conversion
+        // );
 
         // association_relation
         let mut result: HashMap<String, Vec<ElementRelation>> = HashMap::new();
@@ -373,10 +395,10 @@ impl LoadingTracker {
             }
         }
         self.pre_calculation.association_relation = result.clone();
-        debug!(
-            "Writing_preparation : association_relation {:#?}",
-            self.pre_calculation.association_relation
-        );
+        // debug!(
+        //     "Writing_preparation : association_relation {:#?}",
+        //     self.pre_calculation.association_relation
+        // );
 
         // association_relation_by_class
         let mut result: HashMap<String, Vec<String>> = HashMap::new();
@@ -394,10 +416,58 @@ impl LoadingTracker {
             }
         }
         self.pre_calculation.association_relation_by_class = result.clone();
-        debug!(
-            "Writing_preparation : association_relation_by_class {:#?}",
-            self.pre_calculation.association_relation_by_class
-        );
+        // debug!(
+        //     "Writing_preparation : association_relation_by_class {:#?}",
+        //     self.pre_calculation.association_relation_by_class
+        // );
+
+        // reverse_super_link
+        let mut result: HashMap<String, Vec<String>> = HashMap::new();
+        for (_, package) in self.get_package_in_order() {
+            for owned_member in package.get_sorted_iter() {
+                match owned_member {
+                    EnumOwnedMember::Class(content) => {
+                        // As default, empty
+                        let mut list_of_super: Vec<String> = content.super_class.clone();
+
+                        // // For super class link
+                        for link in content.super_class_link.clone() {
+                            match link {
+                                EnumSuperClass::Class(content) => {
+                                    let class = content.href.clone();
+                                    let class = match class.find(".cmof#") {
+                                        Some(split_index) => {
+                                            class[split_index..].replace(".cmof#", "").to_string()
+                                        }
+                                        None => class,
+                                    };
+                                    list_of_super.push(class);
+                                }
+                            }
+                        }
+
+                        // for all element in result
+                        for super_field in list_of_super {
+                            let key = super_field.clone();
+                            let value = content.get_model_name();
+
+                            if result.contains_key(&key) {
+                                let result_vec = result.get_mut(&key).unwrap();
+                                result_vec.push(value);
+                            } else {
+                                result.insert(key.clone(), Vec::from([value]));
+                            };
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        self.pre_calculation.reverse_super_link = result.clone();
+        // debug!(
+        //     "Writing_preparation : reverse_super_link {:#?}",
+        //     self.pre_calculation.reverse_super_link
+        // );
     }
 }
 

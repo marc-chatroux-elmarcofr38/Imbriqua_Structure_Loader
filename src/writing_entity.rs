@@ -45,10 +45,18 @@ impl LoadingTracker {
             for entity in pckg.get_sorted_iter() {
                 match entity {
                     EnumOwnedMember::Association(content) => {
-                        // Get file
-                        let (_, mut wrt) = self.get_object_file(pckg, entity);
-                        //
-                        content.write_content(&mut wrt, &pckg, &self.pre_calculation);
+                        // Only for "Many to Many"
+                        let association =
+                            self.pre_calculation.association_relation.get(&content.name);
+                        if association.is_some()
+                            && association.unwrap()[0].upper == infinitable::Infinity
+                            && association.unwrap()[1].upper == infinitable::Infinity
+                        {
+                            // Get file
+                            let (_, mut wrt) = self.get_object_file(pckg, entity);
+                            //
+                            content.write_content(&mut wrt, &pckg, &self.pre_calculation);
+                        }
                     }
                     EnumOwnedMember::Class(content) => {
                         // Get file
@@ -92,7 +100,7 @@ impl CMOFAssociation {
     fn write_content(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
         let _ = writeln!(
             wrt,
-            include_str!("../template/entity_association_main.tmpl"),
+            include_str!("../template/entity_main_association.tmpl"),
             full_name = self.get_full_name(pckg),
             import = self.get_import_content(pckg, pre_calc),
             raw = format!("{:#?}", self).prefix("// "),
@@ -119,12 +127,13 @@ impl CMOFClass {
     fn write_content(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
         let _ = writeln!(
             wrt,
-            include_str!("../template/entity_class_main.tmpl"),
+            include_str!("../template/entity_main_class.tmpl"),
             full_name = self.get_full_name(pckg),
             import = self.get_import_content(pckg, pre_calc),
             table_name = self.get_table_name(pckg),
             fields = self.get_fields_content(pckg, pre_calc),
             relations = self.get_relations_content(pckg, pre_calc),
+            related = self.get_related_content(pckg, pre_calc),
             raw = format!("{:#?}", self).prefix("// "),
         );
     }
@@ -160,8 +169,103 @@ impl CMOFClass {
     }
 
     /// "relations" content for entity_class_main.tmpl
-    fn get_relations_content(&self, _pckg: &LPckg, _pre_calc: &LPreCalc) -> String {
-        let result = String::from("");
+    fn get_relations_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+        let mut result = String::new();
+
+        // For direct "Super"
+        for super_field in self.get_all_super() {
+            let field_name = super_field
+                .to_case(Case::Snake)
+                .prefix("super_")
+                .replace("\n", "");
+            let key = super_field;
+            if pre_calc.owned_member_type_list.contains_key(&key) {
+                let matched_named = pre_calc.owned_member_type_list.get(&key).unwrap();
+                result.push_str(
+                    format!(
+                        include_str!("../template/entity_sub_relation_many.tmpl"),
+                        table_name = matched_named.table_name,
+                        model_name = matched_named.model_name,
+                        foreign_field = field_name.to_case(Case::UpperCamel),
+                    )
+                    .as_str(),
+                );
+            }
+        }
+
+        // For reverse "Super"
+        if pre_calc
+            .reverse_super_link
+            .contains_key(&self.get_model_name())
+        {
+            let reverse_super = pre_calc
+                .reverse_super_link
+                .get(&self.get_model_name())
+                .unwrap();
+            for super_field in reverse_super {
+                let key = super_field;
+                if pre_calc.owned_member_type_list.contains_key(key) {
+                    let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+                    result.push_str(
+                        format!(
+                            include_str!("../template/entity_sub_relation_one.tmpl"),
+                            table_name = matched_named.table_name,
+                            model_name = matched_named.model_name,
+                        )
+                        .as_str(),
+                    );
+                }
+            }
+        }
+
+        result
+    }
+
+    /// "related" content for entity_class_main.tmpl
+    fn get_related_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+        let mut result = String::from("\n");
+
+        // For "Super"
+        for super_field in self.get_all_super() {
+            let key = super_field;
+            if pre_calc.owned_member_type_list.contains_key(&key) {
+                let matched_named = pre_calc.owned_member_type_list.get(&key).unwrap();
+                result.push_str(
+                    format!(
+                        include_str!("../template/entity_sub_related.tmpl"),
+                        table_name = matched_named.table_name,
+                        model_name = matched_named.model_name,
+                    )
+                    .as_str(),
+                );
+            }
+        }
+
+        // For reverse "Super"
+        if pre_calc
+            .reverse_super_link
+            .contains_key(&self.get_model_name())
+        {
+            let reverse_super = pre_calc
+                .reverse_super_link
+                .get(&self.get_model_name())
+                .unwrap();
+            for super_field in reverse_super {
+                let key = super_field;
+                if pre_calc.owned_member_type_list.contains_key(key) {
+                    let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+                    result.push_str(
+                        format!(
+                            include_str!("../template/entity_sub_related.tmpl"),
+                            table_name = matched_named.table_name,
+                            model_name = matched_named.model_name,
+                        )
+                        .as_str(),
+                    );
+                }
+            }
+        }
+
         result
     }
 
@@ -196,7 +300,7 @@ impl CMOFClass {
             .to_case(Case::Snake)
             .prefix("super_")
             .replace("\n", "");
-        let field_type = String::from("i64");
+        let field_type = String::from("i32");
         result.push_str(
             format!(
                 "    pub {field_name}: {field_type},\n",
@@ -260,10 +364,15 @@ impl CMOFClass {
             );
         }
         // Pub element
+        let field_name = if &content.name.to_case(Case::Snake) == &String::from("id") {
+            &String::from("bpmn_id")
+        } else {
+            &content.name.to_case(Case::Snake)
+        };
         result.push_str(
             format!(
                 "    pub {field_name}: {field_type},\n",
-                field_name = &content.name.to_case(Case::Snake),
+                field_name = field_name,
                 field_type = content.get_field_type(&pre_calc),
             )
             .as_str(),
@@ -341,7 +450,7 @@ impl CMOFDataType {
     fn write_content(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
         let _ = writeln!(
             wrt,
-            include_str!("../template/entity_datatype_main.tmpl"),
+            include_str!("../template/entity_main_datatype.tmpl"),
             full_name = self.get_full_name(pckg),
             table_name = self.get_table_name(pckg),
             fields = self.get_fields_content(pckg, pre_calc),
@@ -423,7 +532,7 @@ impl CMOFEnumeration {
     fn write_content(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
         let _ = writeln!(
             wrt,
-            include_str!("../template/entity_enumeration_main.tmpl"),
+            include_str!("../template/entity_main_enumeration.tmpl"),
             full_name = self.get_full_name(pckg),
             model_name = self.get_model_name(),
             fields = self.get_fields_content(pckg, pre_calc),
@@ -528,7 +637,7 @@ impl CMOFPrimitiveType {
             let content = pre_calc.primitive_type_conversion.get(object_type).unwrap();
             let _ = writeln!(
                 wrt,
-                include_str!("../template/entity_primitive_type_main.tmpl"),
+                include_str!("../template/entity_main_primitive_type.tmpl"),
                 full_name = self.get_full_name(pckg),
                 model_name = self.get_model_name(),
                 standard_object = content,
@@ -562,7 +671,7 @@ impl CMOFProperty {
                 self.simple_type.as_ref().unwrap().as_str()
             } else {
                 // Foreign field
-                "i64"
+                "i32"
             }
         } else {
             match self.complex_type.as_ref().unwrap() {
@@ -578,16 +687,16 @@ impl CMOFProperty {
                         pre_calc.primitive_type_conversion.get(&key).unwrap()
                     } else {
                         info!("Error : unknow PRIMITIVE TYPE{}", key);
-                        "i64"
+                        "i32"
                     }
                 }
                 EnumType::ClassLink(_) => {
                     // Foreign field
-                    "i64"
+                    "i32"
                 }
                 EnumType::DataTypeLink(_) => {
                     // Foreign field
-                    "i64"
+                    "i32"
                 }
             }
         };
