@@ -332,7 +332,7 @@ impl CMOFClass {
             .to_case(Case::Snake)
             .prefix("super_")
             .replace("\n", "");
-        let field_type = String::from("i32");
+        let field_type = String::from("i64");
         result.push_str(
             format!(
                 "    pub {field_name}: {field_type},\n",
@@ -703,7 +703,7 @@ impl CMOFProperty {
                 self.simple_type.as_ref().unwrap().as_str()
             } else {
                 // Foreign field
-                "i32"
+                "i64"
             }
         } else {
             match self.complex_type.as_ref().unwrap() {
@@ -724,11 +724,11 @@ impl CMOFProperty {
                 }
                 EnumType::ClassLink(_) => {
                     // Foreign field
-                    "i32"
+                    "i64"
                 }
                 EnumType::DataTypeLink(_) => {
                     // Foreign field
-                    "i32"
+                    "i64"
                 }
             }
         };

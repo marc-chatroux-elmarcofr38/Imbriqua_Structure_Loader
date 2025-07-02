@@ -4,7 +4,7 @@
 #[sea_orm(table_name = "{table_name}")]
 pub struct Model {{
     #[sea_orm(primary_key)]
-    pub id: i32,
+    pub id: i64,
 {fields}}}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
