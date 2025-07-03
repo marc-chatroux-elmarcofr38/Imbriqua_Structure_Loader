@@ -127,6 +127,8 @@ impl LoadingPackage {
 pub struct ElementRelation {
     /// Type of the member of the association
     pub element_type: String,
+    /// Name of the property
+    pub property_name: String,
     /// Lower bound for this member
     pub lower: isize,
     /// Upper bound for this member

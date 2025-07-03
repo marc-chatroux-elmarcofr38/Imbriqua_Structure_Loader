@@ -151,158 +151,87 @@ impl CMOFClass {
         let mut result = String::from("");
 
         // For super class
-        for class in self.get_all_super() {
-            CMOFClass::write_field_super(&class, &mut result, pckg, pre_calc);
+        for class in self.get_all_direct_super() {
+            CMOFClass::format_field_super(&class, &mut result, pckg, pre_calc);
         }
 
         // For complex property
         for field in self.get_all_complex_field() {
-            CMOFClass::write_field_complex_property(&field, &mut result, pckg, pre_calc);
+            CMOFClass::format_field_complex_property(&field, &mut result, pckg, pre_calc);
         }
 
         // For simple property
         for field in self.get_all_simple_field() {
-            CMOFClass::write_field_simple_property(&field, &mut result, pckg, pre_calc);
+            CMOFClass::format_field_simple_property(&field, &mut result, pckg, pre_calc);
         }
 
         result
     }
 
     /// "relations" content for entity_class_main.tmpl
-    fn get_relations_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+    fn get_relations_content(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
         let mut result = String::new();
 
         // For direct "Super"
-        for super_field in self.get_all_super() {
-            let field_name = super_field
-                .to_case(Case::Snake)
-                .prefix("super_")
-                .replace("\n", "");
-            let key = super_field;
-            if pre_calc.owned_member_type_list.contains_key(&key) {
-                let matched_named = pre_calc.owned_member_type_list.get(&key).unwrap();
-                let table_name = &matched_named.table_name;
-                let model_name = &matched_named.model_name;
-                let comment = format!(
-                    "SUPER : ONE {} need ONE {}",
-                    self.get_model_name(),
-                    model_name
-                );
-                result.push_str(
-                    format!(
-                        include_str!("../template/entity_sub_relation_many.tmpl"),
-                        table_name = table_name,
-                        model_name = model_name,
-                        comment = comment,
-                        foreign_field = field_name.to_case(Case::UpperCamel),
-                    )
-                    .as_str(),
-                );
-            }
+        for super_name in &self.get_all_direct_super() {
+            let class_model_name = &self.get_model_name();
+            CMOFClass::format_relation_direct_super(
+                class_model_name,
+                super_name,
+                &mut result,
+                pckg,
+                pre_calc,
+            );
         }
 
         // For reverse "Super"
-        if pre_calc
-            .reverse_super_link
-            .contains_key(&self.get_model_name())
-        {
-            let reverse_super = pre_calc
-                .reverse_super_link
-                .get(&self.get_model_name())
-                .unwrap();
-            for super_field in reverse_super {
-                let key = super_field;
-                if pre_calc.owned_member_type_list.contains_key(key) {
-                    let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
-                    let table_name = &matched_named.table_name;
-                    let model_name = &matched_named.model_name;
-                    let comment = format!(
-                        "SUPER : ONE {} need ONE {}",
-                        model_name,
-                        self.get_model_name()
-                    );
-                    result.push_str(
-                        format!(
-                            include_str!("../template/entity_sub_relation_one.tmpl"),
-                            table_name = table_name,
-                            model_name = model_name,
-                            comment = comment,
-                        )
-                        .as_str(),
-                    );
-                }
-            }
+        for super_name in &self.get_all_reverse_super(pre_calc) {
+            let class_model_name = &self.get_model_name();
+            CMOFClass::format_relation_reverse_super(
+                class_model_name,
+                super_name,
+                &mut result,
+                pckg,
+                pre_calc,
+            );
         }
 
         result
     }
 
     /// "related" content for entity_class_main.tmpl
-    fn get_related_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+    fn get_related_content(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
         let mut result = String::new();
 
         // For "Super"
-        for super_field in self.get_all_super() {
-            let key = super_field;
-            if pre_calc.owned_member_type_list.contains_key(&key) {
-                let matched_named = pre_calc.owned_member_type_list.get(&key).unwrap();
-                let table_name = &matched_named.table_name;
-                let model_name = &matched_named.model_name;
-                let comment = format!(
-                    "SUPER : ONE {} need ONE {}",
-                    self.get_model_name(),
-                    model_name
-                );
-                result.push_str(
-                    format!(
-                        include_str!("../template/entity_sub_related.tmpl"),
-                        table_name = table_name,
-                        model_name = model_name,
-                        comment = comment,
-                    )
-                    .as_str(),
-                );
-            }
+        for super_name in &self.get_all_direct_super() {
+            let class_model_name = &self.get_model_name();
+            CMOFClass::format_related_direct_super(
+                class_model_name,
+                super_name,
+                &mut result,
+                pckg,
+                pre_calc,
+            );
         }
 
         // For reverse "Super"
-        if pre_calc
-            .reverse_super_link
-            .contains_key(&self.get_model_name())
-        {
-            let reverse_super = pre_calc
-                .reverse_super_link
-                .get(&self.get_model_name())
-                .unwrap();
-            for super_field in reverse_super {
-                let key = super_field;
-                if pre_calc.owned_member_type_list.contains_key(key) {
-                    let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
-                    let table_name = &matched_named.table_name;
-                    let model_name = &matched_named.model_name;
-                    let comment = format!(
-                        "SUPER : ONE {} need ONE {}",
-                        model_name,
-                        self.get_model_name()
-                    );
-                    result.push_str(
-                        format!(
-                            include_str!("../template/entity_sub_related.tmpl"),
-                            table_name = table_name,
-                            model_name = model_name,
-                            comment = comment,
-                        )
-                        .as_str(),
-                    );
-                }
-            }
+        for super_name in &self.get_all_reverse_super(pre_calc) {
+            let class_model_name = &self.get_model_name();
+            CMOFClass::format_related_reverse_super(
+                class_model_name,
+                super_name,
+                &mut result,
+                pckg,
+                pre_calc,
+            );
         }
 
         result
     }
 
     /// Get all "Super" name
-    fn get_all_super(&self) -> Vec<String> {
+    fn get_all_direct_super(&self) -> Vec<String> {
         // As default, empty
         let mut result: Vec<String> = self.super_class.clone();
 
@@ -323,24 +252,20 @@ impl CMOFClass {
         result
     }
 
-    /// Write "Super" from __get_all_super__
-    fn write_field_super(class: &String, result: &mut String, _pckg: &LPckg, _pre_calc: &LPreCalc) {
-        // Comment
-        result.push_str(format!("    /// SUPER FIELD : {comment}\n", comment = class).as_str());
-        // Pub element
-        let field_name = class
-            .to_case(Case::Snake)
-            .prefix("super_")
-            .replace("\n", "");
-        let field_type = String::from("i64");
-        result.push_str(
-            format!(
-                "    pub {field_name}: {field_type},\n",
-                field_name = field_name,
-                field_type = field_type,
-            )
-            .as_str(),
-        );
+    /// Get all "Super" name
+    fn get_all_reverse_super(&self, pre_calc: &LPreCalc) -> Vec<String> {
+        if pre_calc
+            .reverse_super_link
+            .contains_key(&self.get_model_name())
+        {
+            pre_calc
+                .reverse_super_link
+                .get(&self.get_model_name())
+                .unwrap()
+                .clone()
+        } else {
+            Vec::new()
+        }
     }
 
     /// Get all simple field
@@ -370,8 +295,65 @@ impl CMOFClass {
         result
     }
 
-    // Write field content for a simple field
-    fn write_field_simple_property(
+    /// Get all complex field
+    fn get_all_complex_field(&self) -> Vec<&CMOFProperty> {
+        // As default, empty
+        let mut result: Vec<&CMOFProperty> = Vec::new();
+
+        for property in &self.owned_attribute {
+            match property {
+                EnumOwnedAttribute::Property(content) => {
+                    if content.upper > infinitable::Finite(1) {
+                        // Not a field, N-N link
+                    } else if content.simple_type.is_some() {
+                        if content.association.is_some() {
+                            result.push(&content)
+                        }
+                    } else if matches!(
+                        content.complex_type.as_ref().unwrap(),
+                        EnumType::ClassLink(_)
+                    ) {
+                        result.push(&content);
+                    } else if matches!(
+                        content.complex_type.as_ref().unwrap(),
+                        EnumType::DataTypeLink(_)
+                    ) {
+                        result.push(&content);
+                    };
+                }
+            }
+        }
+
+        result
+    }
+
+    /// Format "Super" from __get_all_direct_super__, to write field part
+    fn format_field_super(
+        class: &String,
+        result: &mut String,
+        _pckg: &LPckg,
+        _pre_calc: &LPreCalc,
+    ) {
+        // Comment
+        result.push_str(format!("    /// SUPER FIELD : {comment}\n", comment = class).as_str());
+        // Pub element
+        let field_name = class
+            .to_case(Case::Snake)
+            .prefix("super_")
+            .replace("\n", "");
+        let field_type = String::from("i64");
+        result.push_str(
+            format!(
+                "    pub {field_name}: {field_type},\n",
+                field_name = field_name,
+                field_type = field_type,
+            )
+            .as_str(),
+        );
+    }
+
+    /// Format "Simple property" from __get_all_simple_field__, to write field part
+    fn format_field_simple_property(
         content: &CMOFProperty,
         result: &mut String,
         _pckg: &LPckg,
@@ -411,40 +393,8 @@ impl CMOFClass {
         );
     }
 
-    /// Get all simple field
-    fn get_all_complex_field(&self) -> Vec<&CMOFProperty> {
-        // As default, empty
-        let mut result: Vec<&CMOFProperty> = Vec::new();
-
-        for property in &self.owned_attribute {
-            match property {
-                EnumOwnedAttribute::Property(content) => {
-                    if content.upper > infinitable::Finite(1) {
-                        // Not a field, N-N link
-                    } else if content.simple_type.is_some() {
-                        if content.association.is_some() {
-                            result.push(&content)
-                        }
-                    } else if matches!(
-                        content.complex_type.as_ref().unwrap(),
-                        EnumType::ClassLink(_)
-                    ) {
-                        result.push(&content);
-                    } else if matches!(
-                        content.complex_type.as_ref().unwrap(),
-                        EnumType::DataTypeLink(_)
-                    ) {
-                        result.push(&content);
-                    };
-                }
-            }
-        }
-
-        result
-    }
-
-    // Write field content for a complex field
-    fn write_field_complex_property(
+    /// Format "Complex property" from __get_all_complex_field__, to write field part
+    fn format_field_complex_property(
         content: &CMOFProperty,
         result: &mut String,
         _pckg: &LPckg,
@@ -468,6 +418,115 @@ impl CMOFClass {
             )
             .as_str(),
         );
+    }
+
+    /// Format "Super" from __get_all_direct_super__, to write relation part
+    fn format_relation_direct_super(
+        class_model_name: &String,
+        super_name: &String,
+        result: &mut String,
+        _pckg: &LPckg,
+        pre_calc: &LPreCalc,
+    ) {
+        let field_name = super_name
+            .to_case(Case::Snake)
+            .prefix("super_")
+            .replace("\n", "");
+        let key = super_name;
+        if pre_calc.owned_member_type_list.contains_key(key) {
+            let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+            let table_name = &matched_named.table_name;
+            let model_name = &matched_named.model_name;
+            let comment = format!("SUPER : ONE {} need ONE {}", class_model_name, model_name,);
+            result.push_str(
+                format!(
+                    include_str!("../template/entity_sub_relation_many.tmpl"),
+                    table_name = table_name,
+                    model_name = model_name,
+                    comment = comment,
+                    foreign_field = field_name.to_case(Case::UpperCamel),
+                )
+                .as_str(),
+            );
+        }
+    }
+
+    /// Format inverse of "Super" from __get_all_reverse_super__, to write relation part
+    fn format_relation_reverse_super(
+        class_model_name: &String,
+        super_name: &String,
+        result: &mut String,
+        _pckg: &LPckg,
+        pre_calc: &LPreCalc,
+    ) {
+        let key = super_name;
+        if pre_calc.owned_member_type_list.contains_key(key) {
+            let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+            let table_name = &matched_named.table_name;
+            let model_name = &matched_named.model_name;
+            let comment = format!("SUPER : ONE {} need ONE {}", model_name, class_model_name,);
+            result.push_str(
+                format!(
+                    include_str!("../template/entity_sub_relation_one.tmpl"),
+                    table_name = table_name,
+                    model_name = model_name,
+                    comment = comment,
+                )
+                .as_str(),
+            );
+        }
+    }
+
+    /// Format "Super" from __get_all_direct_super__, to write related part
+    fn format_related_direct_super(
+        class_model_name: &String,
+        super_name: &String,
+        result: &mut String,
+        _pckg: &LPckg,
+        pre_calc: &LPreCalc,
+    ) {
+        let key = super_name;
+        if pre_calc.owned_member_type_list.contains_key(key) {
+            let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+            let table_name = &matched_named.table_name;
+            let model_name = &matched_named.model_name;
+            let comment = format!("SUPER : ONE {} need ONE {}", class_model_name, model_name,);
+            result.push_str(
+                format!(
+                    include_str!("../template/entity_sub_related.tmpl"),
+                    table_name = table_name,
+                    model_name = model_name,
+                    comment = comment,
+                )
+                .as_str(),
+            );
+        }
+    }
+
+    /// Format inverse of "Super" from __get_all_reverse_super__, to write related part
+    fn format_related_reverse_super(
+        class_model_name: &String,
+        super_name: &String,
+        result: &mut String,
+        _pckg: &LPckg,
+        pre_calc: &LPreCalc,
+    ) {
+        let key = super_name;
+        if pre_calc.owned_member_type_list.contains_key(key) {
+            let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+            let table_name = &matched_named.table_name;
+            let model_name = &matched_named.model_name;
+            let comment = format!("SUPER : ONE {} need ONE {}", model_name, class_model_name,);
+            result.push_str(
+                format!(
+                    include_str!("../template/entity_sub_related.tmpl"),
+                    table_name = table_name,
+                    model_name = model_name,
+                    comment = comment,
+                )
+                .as_str(),
+            );
+        }
     }
 }
 

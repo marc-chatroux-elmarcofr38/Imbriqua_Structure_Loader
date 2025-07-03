@@ -346,6 +346,7 @@ impl LoadingTracker {
                                 EnumOwnedEnd::Property(property) => {
                                     let value = ElementRelation {
                                         element_type: property.get_type(),
+                                        property_name: property.name.clone(),
                                         lower: property.lower,
                                         upper: property.upper,
                                     };
@@ -368,6 +369,7 @@ impl LoadingTracker {
 
                                         let value = ElementRelation {
                                             element_type: property.get_type(),
+                                            property_name: property.name.clone(),
                                             lower: property.lower,
                                             upper: property.upper,
                                         };
@@ -423,10 +425,10 @@ impl LoadingTracker {
                 self.pre_calculation.association_relation.insert(key, value);
             }
         }
-        // debug!(
-        //     "Writing_preparation : association_relation {:#?}",
-        //     self.pre_calculation.association_relation
-        // );
+        debug!(
+            "Writing_preparation : association_relation {:#?}",
+            self.pre_calculation.association_relation
+        );
 
         // association_relation_by_class
         let mut result: HashMap<String, Vec<(String, RankRelation)>> = HashMap::new();
