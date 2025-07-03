@@ -141,8 +141,21 @@ impl CMOFClass {
     /// "import" content for entity_class_main.tmpl
     fn get_import_content(&self, _pckg: &LPckg, _pre_calc: &LPreCalc) -> String {
         let mut result = String::from("\n");
-        result.push_str("use crate::*;\n");
+
+        // Only for ***
+        let mut need_import = false;
+        for property in self.get_all_simple_field() {
+            if property.simple_type.is_some() {
+                need_import = true;
+            }
+        }
+        if need_import {
+            result.push_str("use crate::*;\n");
+        }
+
+        // For all
         result.push_str("use sea_orm::entity::prelude::*;\n");
+
         result
     }
 
