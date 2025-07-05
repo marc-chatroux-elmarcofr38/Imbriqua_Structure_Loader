@@ -1,5 +1,31 @@
 //! {full_name}
-{import}
+{import}    
+#[derive(Clone, Debug, Default, PartialEq, DeriveEntityModel)]
+#[sea_orm(table_name = "{table_name}")]
+pub struct Model {{
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub {relation_2_column_name_snake}_id: i64,
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub {relation_1_column_name_snake}_id: i64,
+}}
+
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+pub enum Relation {{
+    #[sea_orm(
+        belongs_to = "super::{relation_2_table_name}::Entity",
+        from = "Column::{relation_2_column_name_camel}Id",
+        to = "super::{relation_2_table_name}::Column::Id"
+    )]
+    CategoryValue,
+    #[sea_orm(
+        belongs_to = "super::{relation_1_table_name}::Entity",
+        from = "Column::{relation_1_column_name_camel}Id",
+        to = "super::{relation_1_table_name}::Column::Id"
+    )]
+    FlowElement,
+}}
+
+impl ActiveModelBehavior for ActiveModel {{}}
 
 // RAW :
 {raw}

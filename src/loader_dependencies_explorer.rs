@@ -133,6 +133,8 @@ pub struct ElementRelation {
     pub lower: isize,
     /// Upper bound for this member
     pub upper: UnlimitedNatural<usize>,
+    /// Origin of the relation
+    pub from: RelationSource,
 }
 
 #[derive(Clone, PartialEq, Debug)]
@@ -172,6 +174,15 @@ pub struct Named {
     pub model_name: String,
     /// get_full_name
     pub full_name: String,
+}
+
+#[derive(Clone, PartialEq, Debug)]
+/// Help for AssociationRelation pivot
+pub enum RelationSource {
+    /// If is fromm CMOFAssociation
+    FromAssociation,
+    /// If is from CMOFClass
+    FromClass,
 }
 
 #[derive(Clone, PartialEq, Debug)]

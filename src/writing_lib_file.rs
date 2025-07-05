@@ -56,6 +56,9 @@ impl LoadingTracker {
             // Writting for each entities, using template
             for entity in package.get_sorted_iter() {
                 match entity {
+                    EnumOwnedMember::Association(content) => {
+                        content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
+                    }
                     EnumOwnedMember::Class(content) => {
                         content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
                     }
@@ -83,6 +86,28 @@ impl LoadingTracker {
 // ############################################ 1 #####################################################
 //
 // ####################################################################################################
+
+impl WritingLibFile for CMOFAssociation {
+    fn wrt_lib_file_level(
+        &self,
+        writer: &mut File,
+        package: &LoadingPackage,
+        pre_calculation: &LoadingPreCalculation,
+    ) {
+        // Only for "Many to Many"
+        let association = pre_calculation.association_relation.get(&self.name);
+        if association.is_some()
+            && association.unwrap().ponteration_type == RelationPonderationType::ManyToMany
+        {
+            let _ = writeln!(
+                writer,
+                include_str!("../template/lib_part_2_association.tmpl"),
+                model_name = self.get_model_name(),
+                table_name = self.get_table_name(package),
+            );
+        }
+    }
+}
 
 impl WritingLibFile for CMOFClass {
     fn wrt_lib_file_level(

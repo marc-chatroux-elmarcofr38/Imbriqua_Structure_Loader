@@ -349,6 +349,7 @@ impl LoadingTracker {
                                         property_name: property.name.clone(),
                                         lower: property.lower,
                                         upper: property.upper,
+                                        from: RelationSource::FromAssociation,
                                     };
                                     if result.contains_key(&key) {
                                         let result_vec = result.get_mut(&key).unwrap();
@@ -372,6 +373,7 @@ impl LoadingTracker {
                                             property_name: property.name.clone(),
                                             lower: property.lower,
                                             upper: property.upper,
+                                            from: RelationSource::FromClass,
                                         };
                                         if result.contains_key(&key) {
                                             let result_vec = result.get_mut(&key).unwrap();
