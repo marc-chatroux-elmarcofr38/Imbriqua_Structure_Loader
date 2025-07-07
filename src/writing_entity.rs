@@ -59,9 +59,9 @@ impl LoadingTracker {
                                 let (_, mut wrt) = self.get_object_file(pckg, entity);
                                 //
                                 content.write_content(&mut wrt, &pckg, &self.pre_calculation);
+                            } else {
+                                warn!("Need association file implement for \"{}\" because it's referencin itself", content.name)
                             }
-                        } else {
-                            warn!("Need association file implement for \"{}\" because it's referencin itself", content.name)
                         }
                     }
                     EnumOwnedMember::Class(content) => {
