@@ -110,7 +110,7 @@ impl WritingLibFile for CMOFAssociation {
                 );
             } else {
                 warn!(
-                    "Need association implement for \"{}\" because it's referencin itself",
+                    "Need association lib implement for \"{}\" because it's referencin itself",
                     self.name
                 )
             }

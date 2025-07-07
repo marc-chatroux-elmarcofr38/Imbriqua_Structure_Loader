@@ -52,10 +52,16 @@ impl LoadingTracker {
                             && association.unwrap().ponteration_type
                                 == RelationPonderationType::ManyToMany
                         {
-                            // Get file
-                            let (_, mut wrt) = self.get_object_file(pckg, entity);
-                            //
-                            content.write_content(&mut wrt, &pckg, &self.pre_calculation);
+                            if association.unwrap().relation_1.element_type
+                                != association.unwrap().relation_2.element_type
+                            {
+                                // Get file
+                                let (_, mut wrt) = self.get_object_file(pckg, entity);
+                                //
+                                content.write_content(&mut wrt, &pckg, &self.pre_calculation);
+                            }
+                        } else {
+                            warn!("Need association file implement for \"{}\" because it's referencin itself", content.name)
                         }
                     }
                     EnumOwnedMember::Class(content) => {
