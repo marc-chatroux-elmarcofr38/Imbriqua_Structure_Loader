@@ -288,7 +288,10 @@ impl LoadingTracker {
         let mut result: HashMap<String, Named> = HashMap::new();
         for (_, package) in self.get_package_in_order() {
             for owned_member in package.get_sorted_iter() {
-                let key = owned_member.get_model_name();
+                let key = match owned_member {
+                    EnumOwnedMember::Association(content) => content.name.clone(),
+                    _ => owned_member.get_model_name().clone(),
+                };
                 let value = Named {
                     package_name: package.get_lowercase_name(),
                     technical_name: owned_member.get_technical_name(package),
@@ -301,10 +304,10 @@ impl LoadingTracker {
             }
         }
         self.pre_calculation.owned_member_type_list = result.clone();
-        // debug!(
-        //     "Writing_preparation : owned_member_type_list {:#?}",
-        //     self.pre_calculation.owned_member_type_list
-        // );
+        debug!(
+            "Writing_preparation : owned_member_type_list {:#?}",
+            self.pre_calculation.owned_member_type_list
+        );
 
         // enumeration_default_value
         let reader_path = Path::new("metamodel_file_extension/enumeration_default_value.json");
@@ -535,6 +538,15 @@ impl CMOFProperty {
                 EnumType::ClassLink(link) => {
                     // Foreign field
                     let key = link.href.clone();
+                    let key = match key.find("http://schema.omg.org/spec/MOF/2.0/cmof.xml#") {
+                        Some(split_index) => key[split_index..]
+                            .replace(
+                                "http://schema.omg.org/spec/MOF/2.0/cmof.xml#",
+                                "Extensibilty.cmof#",
+                            )
+                            .to_string(),
+                        None => key,
+                    };
                     let key = match key.find(".cmof#") {
                         Some(split_index) => key[split_index..].replace(".cmof#", "").to_string(),
                         None => key,

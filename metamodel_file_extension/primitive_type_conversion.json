@@ -23,5 +23,10 @@
         "key": "Real",
         "value": "std::primitive::f64",
         "comment": ""
+    },
+    {
+        "key": "Json",
+        "value": "serde_json::Value",
+        "comment": ""
     }
 ]

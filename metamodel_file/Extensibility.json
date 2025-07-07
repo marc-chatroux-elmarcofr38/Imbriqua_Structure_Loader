@@ -1,0 +1,39 @@
+{
+    "cmof:Package": {
+        "ownedMember": [
+            {
+                "_xmi:type": "cmof:PrimitiveType",
+                "_xmi:id": "Json",
+                "_name": "Json"
+            },
+            {
+                "ownedAttribute": [
+                    {
+                        "_xmi:type": "cmof:Property",
+                        "_xmi:id": "Element-Content",
+                        "_name": "Content",
+                        "_type": "Json"
+                    }
+                ],
+                "_xmi:type": "cmof:Class",
+                "_xmi:id": "Element",
+                "_name": "Element"
+            }
+        ],
+        "_xmi:id": "_0",
+        "_name": "Extensibility",
+        "_uri": "http://www.omg.org/spec/DD/20100524/DC-XMI"
+    },
+    "cmof:Tag": [
+        {
+            "_xmi:id": "_1",
+            "_name": "comment",
+            "_value": "Made by hand (CHATROUX Marc)",
+            "_element": "_0"
+        }
+    ],
+    "_xmi:version": "2.1",
+    "_xmlns:xmi": "http://schema.omg.org/spec/XMI/2.1",
+    "_xmlns:cmof": "http://schema.omg.org/spec/MOF/2.0/cmof.xml",
+    "_xmlns": ""
+}

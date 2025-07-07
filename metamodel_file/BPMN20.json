@@ -9,6 +9,15 @@
 				"_xmi:type": "cmof:PackageImport",
 				"_xmi:id": "_packageImport.1",
 				"_importingNamespace": "_0"
+			},
+			{
+				"importedPackage": {
+					"_xmi:type": "cmof:Package",
+					"_href": "Extensibility.cmof#_0"
+				},
+				"_xmi:type": "cmof:PackageImport",
+				"_xmi:id": "_packageImport.2",
+				"_importingNamespace": "_0"
 			}
 		],
 		"ownedMember": [
