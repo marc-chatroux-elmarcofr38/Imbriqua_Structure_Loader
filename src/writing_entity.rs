@@ -361,6 +361,7 @@ impl CMOFClass {
             }
         }
 
+        result.sort_by(|a, b| a.cmp(&b));
         result
     }
 
@@ -370,11 +371,14 @@ impl CMOFClass {
             .reverse_super_link
             .contains_key(&self.get_model_name())
         {
-            pre_calc
+            let mut result = pre_calc
                 .reverse_super_link
                 .get(&self.get_model_name())
                 .unwrap()
-                .clone()
+                .clone();
+
+            result.sort_by(|a, b| a.cmp(&b));
+            result
         } else {
             Vec::new()
         }
@@ -474,6 +478,7 @@ impl CMOFClass {
             }
         }
 
+        result.sort_by(|(a, _, _), (b, _, _)| a.cmp(&b));
         result
     }
 
