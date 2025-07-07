@@ -99,12 +99,21 @@ impl WritingLibFile for CMOFAssociation {
         if association.is_some()
             && association.unwrap().ponteration_type == RelationPonderationType::ManyToMany
         {
-            let _ = writeln!(
-                writer,
-                include_str!("../template/lib_part_2_association.tmpl"),
-                model_name = self.get_model_name(),
-                table_name = self.get_table_name(package),
-            );
+            if association.unwrap().relation_1.element_type
+                != association.unwrap().relation_2.element_type
+            {
+                let _ = writeln!(
+                    writer,
+                    include_str!("../template/lib_part_2_association.tmpl"),
+                    model_name = self.get_model_name(),
+                    table_name = self.get_table_name(package),
+                );
+            } else {
+                warn!(
+                    "Need association implement for \"{}\" because it's referencin itself",
+                    self.name
+                )
+            }
         }
     }
 }

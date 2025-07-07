@@ -281,17 +281,6 @@ impl CMOFClass {
         //     );
         // }
 
-        // // For "To Many"
-        // for (association_name, association) in &self.get_all_to_one(pre_calc) {
-        //     CMOFClass::format_relation_to_many(
-        //         association,
-        //         association_name,
-        //         &mut result,
-        //         pckg,
-        //         pre_calc,
-        //     );
-        // }
-
         result
     }
 
@@ -321,6 +310,27 @@ impl CMOFClass {
                 pckg,
                 pre_calc,
             );
+        }
+
+        // For "Many To Many"
+        for (association_name, actual_relation, other_relation) in
+            &self.get_all_many_to_many(pre_calc)
+        {
+            if actual_relation.element_type != other_relation.element_type {
+                CMOFClass::format_related_many_to_many(
+                    association_name,
+                    actual_relation,
+                    other_relation,
+                    &mut result,
+                    pckg,
+                    pre_calc,
+                );
+            } else {
+                warn!(
+                    "Need \"Many to  Many\" implement for \"{}\" linked to itself",
+                    actual_relation.element_type
+                );
+            }
         }
 
         result
@@ -423,16 +433,35 @@ impl CMOFClass {
         result
     }
 
-    ///
-    fn get_all_from_one(&self, pre_calc: &LPreCalc) -> Vec<(String, AssociationRelation)> {
-        let mut result: Vec<(String, AssociationRelation)> = Vec::new();
+    /// Get all Man to Many relation of the class
+    fn get_all_many_to_many(
+        &self,
+        pre_calc: &LPreCalc,
+    ) -> Vec<(String, ElementRelation, ElementRelation)> {
+        let mut result: Vec<(String, ElementRelation, ElementRelation)> = Vec::new();
 
         let key = &self.get_model_name();
         for (association_name, association) in &pre_calc.association_relation {
             if key == &association.relation_1.element_type {
                 match association.ponteration_type {
-                    RelationPonderationType::OneToOne => {
-                        result.push((association_name.clone(), association.clone()));
+                    RelationPonderationType::ManyToMany => {
+                        result.push((
+                            association_name.clone(),
+                            association.relation_1.clone(),
+                            association.relation_2.clone(),
+                        ));
+                    }
+                    _ => {}
+                }
+            }
+            if key == &association.relation_2.element_type {
+                match association.ponteration_type {
+                    RelationPonderationType::ManyToMany => {
+                        result.push((
+                            association_name.clone(),
+                            association.relation_2.clone(),
+                            association.relation_1.clone(),
+                        ));
                     }
                     _ => {}
                 }
@@ -442,7 +471,7 @@ impl CMOFClass {
         result
     }
 
-    ///
+    /// ?
     fn get_all_from_many(&self, pre_calc: &LPreCalc) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
 
@@ -464,7 +493,7 @@ impl CMOFClass {
         result
     }
 
-    ///
+    /// ?
     fn get_all_to_one(&self, pre_calc: &LPreCalc) -> Vec<(String, AssociationRelation)> {
         let mut result: Vec<(String, AssociationRelation)> = Vec::new();
 
@@ -650,75 +679,75 @@ impl CMOFClass {
         }
     }
 
-    fn format_relation_from_one(
-        association: &AssociationRelation,
-        association_name: &String,
-        result: &mut String,
-        _pckg: &LPckg,
-        pre_calc: &LPreCalc,
-    ) {
-        let class_model_name: &String = &association.relation_1.element_type;
-        let field_name: &String = &association
-            .relation_2
-            .property_name
-            .to_case(Case::UpperCamel);
-        let others = &association.relation_2.element_type;
-        let key = others;
-        if pre_calc.owned_member_type_list.contains_key(key) {
-            let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
-            let table_name = &matched_named.table_name;
-            let model_name = &matched_named.model_name;
-            let comment = format!(
-                "RELATION : ONE {} need ONE {} ({})",
-                class_model_name, model_name, association_name
-            );
-            result.push_str(
-                format!(
-                    include_str!("../template/entity_sub_relation_from_one.tmpl"),
-                    table_name = table_name,
-                    model_name = model_name,
-                    comment = comment,
-                    foreign_field = field_name,
-                )
-                .as_str(),
-            );
-        }
-    }
+    // fn format_relation_from_one(
+    //     association: &AssociationRelation,
+    //     association_name: &String,
+    //     result: &mut String,
+    //     _pckg: &LPckg,
+    //     pre_calc: &LPreCalc,
+    // ) {
+    //     let class_model_name: &String = &association.relation_1.element_type;
+    //     let field_name: &String = &association
+    //         .relation_2
+    //         .property_name
+    //         .to_case(Case::UpperCamel);
+    //     let others = &association.relation_2.element_type;
+    //     let key = others;
+    //     if pre_calc.owned_member_type_list.contains_key(key) {
+    //         let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+    //         let table_name = &matched_named.table_name;
+    //         let model_name = &matched_named.model_name;
+    //         let comment = format!(
+    //             "RELATION : ONE {} need ONE {} ({})",
+    //             class_model_name, model_name, association_name
+    //         );
+    //         result.push_str(
+    //             format!(
+    //                 include_str!("../template/entity_sub_relation_from_one.tmpl"),
+    //                 table_name = table_name,
+    //                 model_name = model_name,
+    //                 comment = comment,
+    //                 foreign_field = field_name,
+    //             )
+    //             .as_str(),
+    //         );
+    //     }
+    // }
 
-    fn format_relation_to_one(
-        association: &AssociationRelation,
-        association_name: &String,
-        result: &mut String,
-        _pckg: &LPckg,
-        pre_calc: &LPreCalc,
-    ) {
-        let class_model_name: &String = &association.relation_2.element_type;
-        let field_name: &String = &association
-            .relation_1
-            .property_name
-            .to_case(Case::UpperCamel);
-        let others = &association.relation_1.element_type;
-        let key = others;
-        if pre_calc.owned_member_type_list.contains_key(key) {
-            let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
-            let table_name = &matched_named.table_name;
-            let model_name = &matched_named.model_name;
-            let comment = format!(
-                "RELATION : ONE {} need ONE {} ({})",
-                class_model_name, model_name, association_name
-            );
-            result.push_str(
-                format!(
-                    include_str!("../template/entity_sub_relation_from_one.tmpl"),
-                    table_name = table_name,
-                    model_name = model_name,
-                    comment = comment,
-                    foreign_field = field_name,
-                )
-                .as_str(),
-            );
-        }
-    }
+    // fn format_relation_to_one(
+    //     association: &AssociationRelation,
+    //     association_name: &String,
+    //     result: &mut String,
+    //     _pckg: &LPckg,
+    //     pre_calc: &LPreCalc,
+    // ) {
+    //     let class_model_name: &String = &association.relation_2.element_type;
+    //     let field_name: &String = &association
+    //         .relation_1
+    //         .property_name
+    //         .to_case(Case::UpperCamel);
+    //     let others = &association.relation_1.element_type;
+    //     let key = others;
+    //     if pre_calc.owned_member_type_list.contains_key(key) {
+    //         let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+    //         let table_name = &matched_named.table_name;
+    //         let model_name = &matched_named.model_name;
+    //         let comment = format!(
+    //             "RELATION : ONE {} need ONE {} ({})",
+    //             class_model_name, model_name, association_name
+    //         );
+    //         result.push_str(
+    //             format!(
+    //                 include_str!("../template/entity_sub_relation_from_one.tmpl"),
+    //                 table_name = table_name,
+    //                 model_name = model_name,
+    //                 comment = comment,
+    //                 foreign_field = field_name,
+    //             )
+    //             .as_str(),
+    //         );
+    //     }
+    // }
 
     /// Format "Super" from __get_all_direct_super__, to write related part
     fn format_related_direct_super(
@@ -770,6 +799,37 @@ impl CMOFClass {
                 .as_str(),
             );
         }
+    }
+
+    /// Format inverse of "Super" from __get_all_reverse_super__, to write related part
+    fn format_related_many_to_many(
+        association_name: &String,
+        actual_relation: &ElementRelation,
+        other_relation: &ElementRelation,
+        result: &mut String,
+        _pckg: &LPckg,
+        pre_calc: &LPreCalc,
+    ) {
+        let association_named = pre_calc.owned_member_type_list.get(association_name);
+        let association_table_name = if association_named.is_some() {
+            &association_named.unwrap().table_name
+        } else {
+            &String::new()
+        };
+        let comment = format!(
+            "ManyToMany : with {} using {}",
+            other_relation.element_type, association_name,
+        );
+        result.push_str(
+            format!(
+                include_str!("../template/entity_sub_related_many_to_many.tmpl"),
+                association_table_name = association_table_name,
+                other_model = other_relation.element_type,
+                actual_model = actual_relation.element_type,
+                comment = comment,
+            )
+            .as_str(),
+        );
     }
 
     // /// Format of "Super" from __get_all_direct_super__, to write related part

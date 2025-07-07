@@ -1,0 +1,15 @@
+
+// {comment}
+impl Related<super::{association_table_name}::Entity> for Entity {{
+    fn to() -> RelationDef {{
+        super::{association_table_name}::Relation::{other_model}.def()
+    }}
+
+    fn via() -> Option<RelationDef> {{
+        Some(
+            super::{association_table_name}::Relation::{actual_model}
+                .def()
+                .rev(),
+        )
+    }}
+}}
