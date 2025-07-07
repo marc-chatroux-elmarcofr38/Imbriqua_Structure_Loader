@@ -71,7 +71,6 @@ impl LoadingTracker {
                     EnumOwnedMember::PrimitiveType(content) => {
                         content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
                     }
-                    _ => {}
                 }
             }
 
