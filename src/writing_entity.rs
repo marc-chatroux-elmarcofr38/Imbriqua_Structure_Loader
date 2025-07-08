@@ -654,7 +654,7 @@ impl CMOFClass {
             let comment = format!("SUPER : ONE {} need ONE {}", class_model_name, model_name,);
             result.push_str(
                 format!(
-                    include_str!("../template/entity_sub_relation_super_from_one.tmpl"),
+                    include_str!("../template/entity_sub_super_relation.tmpl"),
                     table_name = table_name,
                     model_name = model_name,
                     comment = comment,
@@ -776,7 +776,7 @@ impl CMOFClass {
             let comment = format!("SUPER : ONE {} need ONE {}", class_model_name, model_name,);
             result.push_str(
                 format!(
-                    include_str!("../template/entity_sub_related.tmpl"),
+                    include_str!("../template/entity_sub_super_related.tmpl"),
                     table_name = table_name,
                     model_name = model_name,
                     comment = comment,
@@ -802,7 +802,7 @@ impl CMOFClass {
             let comment = format!("SUPER : ONE {} need ONE {}", model_name, class_model_name,);
             result.push_str(
                 format!(
-                    include_str!("../template/entity_sub_related.tmpl"),
+                    include_str!("../template/entity_sub_super_related.tmpl"),
                     table_name = table_name,
                     model_name = model_name,
                     comment = comment,
