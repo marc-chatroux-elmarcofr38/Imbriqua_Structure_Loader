@@ -2,6 +2,7 @@
     #[sea_orm(
         belongs_to = "super::{table_name}::Entity",
         from = "Column::{foreign_field}",
-        to = "super::{table_name}::Column::Id"
+        to = "super::{table_name}::Column::Id",
+        on_delete = "Cascade"
     )]
     {model_name},
