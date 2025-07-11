@@ -13,5 +13,12 @@ pub enum Relation {{
 {related}
 impl ActiveModelBehavior for ActiveModel {{}}
 
+impl ActiveModel {{
+{help_doc}
+    pub fn help(&self) -> &str {{
+    r#"{help_fn}"#
+    }}
+}}
+
 // RAW :
 {raw}

@@ -173,6 +173,8 @@ impl CMOFClass {
             fields = self.get_fields_content(pckg, pre_calc),
             relations = self.get_relation_content(pckg, pre_calc),
             related = self.get_related_content(pckg, pre_calc),
+            help_doc = self.get_help(pckg, pre_calc).prefix("    /// "),
+            help_fn = self.get_help(pckg, pre_calc),
             raw = format!("{:#?}", self).prefix("// "),
         );
     }
@@ -254,8 +256,8 @@ impl CMOFClass {
             );
         }
 
-        // // For "From One"
-        // for (association_name, association) in &self.get_all_from_one(pre_calc) {
+        // // For "One to One"
+        // for (association_name, association) in &self.get_all_direct_one_to_one(pre_calc) {
         //     CMOFClass::format_relation_from_one(
         //         association,
         //         association_name,
@@ -482,19 +484,16 @@ impl CMOFClass {
         result
     }
 
-    /// ?
-    fn get_all_from_many(&self, pre_calc: &LPreCalc) -> Vec<String> {
-        let mut result: Vec<String> = Vec::new();
+    /// Get all direct One To One relation of the class
+    fn get_all_direct_one_to_one(&self, pre_calc: &LPreCalc) -> Vec<(String, AssociationRelation)> {
+        let mut result: Vec<(String, AssociationRelation)> = Vec::new();
 
         let key = &self.get_model_name();
-        for (relation_name, association) in &pre_calc.association_relation {
+        for (association_name, association) in &pre_calc.association_relation {
             if key == &association.relation_1.element_type {
                 match association.ponteration_type {
-                    RelationPonderationType::OneToMany => {
-                        result.push(relation_name.clone());
-                    }
-                    RelationPonderationType::ManyToMany => {
-                        result.push(relation_name.clone());
+                    RelationPonderationType::OneToOne => {
+                        result.push((association_name.clone(), association.clone()));
                     }
                     _ => {}
                 }
@@ -504,8 +503,11 @@ impl CMOFClass {
         result
     }
 
-    /// ?
-    fn get_all_to_one(&self, pre_calc: &LPreCalc) -> Vec<(String, AssociationRelation)> {
+    /// Get all reverse One To One relation of the class
+    fn get_all_reverse_one_to_one(
+        &self,
+        pre_calc: &LPreCalc,
+    ) -> Vec<(String, AssociationRelation)> {
         let mut result: Vec<(String, AssociationRelation)> = Vec::new();
 
         let key = &self.get_model_name();
@@ -514,28 +516,6 @@ impl CMOFClass {
                 match association.ponteration_type {
                     RelationPonderationType::OneToOne => {
                         result.push((association_name.clone(), association.clone()));
-                    }
-                    RelationPonderationType::OneToMany => {
-                        result.push((association_name.clone(), association.clone()));
-                    }
-                    _ => {}
-                }
-            }
-        }
-
-        result
-    }
-
-    ///
-    fn get_all_to_many(&self, pre_calc: &LPreCalc) -> Vec<String> {
-        let mut result: Vec<String> = Vec::new();
-
-        let key = &self.get_model_name();
-        for (relation_name, association) in &pre_calc.association_relation {
-            if key == &association.relation_2.element_type {
-                match association.ponteration_type {
-                    RelationPonderationType::ManyToMany => {
-                        result.push(relation_name.clone());
                     }
                     _ => {}
                 }
@@ -596,15 +576,10 @@ impl CMOFClass {
             );
         }
         // Pub element
-        let field_name = if &content.name.to_case(Case::Snake) == &String::from("id") {
-            &String::from("bpmn_id")
-        } else {
-            &content.name.to_case(Case::Snake)
-        };
         result.push_str(
             format!(
                 "    pub {field_name}: {field_type},\n",
-                field_name = field_name,
+                field_name = content.get_field_name(),
                 field_type = content.get_field_type(&pre_calc),
             )
             .as_str(),
@@ -841,6 +816,216 @@ impl CMOFClass {
             )
             .as_str(),
         );
+    }
+
+    // Return content for "help_doc" in "entity_main_class"
+    fn get_help(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+        let mut result = String::new();
+
+        // Add a head
+        result.push_str(
+            format!(
+                "# Help document for \"{}\" ({})\n\n",
+                self.get_model_name(),
+                self.get_full_name(pckg)
+            )
+            .as_str(),
+        );
+
+        // Common
+        result.push_str("## Common fields :\n");
+        result.push_str("* __id__ (sea_orm only)\n");
+        result.push_str("  * type : __i64__\n");
+        result.push_str("\n");
+
+        // Attribute : SIMPLE
+        let iter_properties = self.get_all_simple_field();
+        if iter_properties.len() > 0 {
+            result.push_str("## Simple fields :\n");
+        }
+        for property in iter_properties {
+            // Property head
+            result.push_str(
+                format!(
+                    "* __{}__ (xmi_id : \"{}\")\n",
+                    property.get_field_name(),
+                    property.xmi_id
+                )
+                .as_str(),
+            );
+
+            // Property content
+            result.push_str(
+                format!("  * type : __{}__\n", property.get_field_type(pre_calc)).as_str(),
+            );
+            if property.default.is_some() {
+                result.push_str(
+                    format!("  * default : \"{}\"\n", property.default.as_ref().unwrap()).as_str(),
+                );
+            };
+        }
+        result.push_str("\n");
+
+        // Attribute : Complex (direct One To One)
+        let iter_direct_one_to_one = self.get_all_direct_one_to_one(pre_calc);
+        if iter_direct_one_to_one.len() > 0 {
+            result.push_str("## Direct One To One :\n");
+        }
+        for (association_name, association) in iter_direct_one_to_one {
+            // Property head
+            result.push_str(
+                format!(
+                    "* __{}__ (__{}Model__) from {}\n",
+                    association.relation_2.element_type,
+                    association.relation_2.element_type,
+                    association_name
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * one-to-one link : one __{}__ need one __{}__)\n",
+                    self.get_model_name(),
+                    association.relation_2.element_type
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * callable using find_also_related(__{}Model__) from __{}__\n",
+                    association.relation_2.element_type,
+                    self.get_model_name()
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * saved in __{}__ field as foreing key\n",
+                    association.relation_2.property_name.to_case(Case::Snake)
+                )
+                .as_str(),
+            );
+        }
+        result.push_str("\n");
+
+        // Attribute : Super (direct)
+        let iter_direct_super = self.get_all_direct_super();
+        if iter_direct_super.len() > 0 {
+            result.push_str("## Direct Super :\n");
+        }
+        for direct_super in iter_direct_super {
+            let field_name = &direct_super
+                .to_case(Case::Snake)
+                .prefix("super_")
+                .replace("\n", "");
+            // Property head
+            result
+                .push_str(format!("* __{}__ (__{}Model__)\n", direct_super, direct_super).as_str());
+            result.push_str(
+                format!(
+                    "  * one-to-one link : one __{}__ need one __{}__)\n",
+                    self.get_model_name(),
+                    direct_super
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * callable using find_also_related(__{}Model__) from __{}__\n",
+                    direct_super,
+                    self.get_model_name()
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!("  * saved in __{}__ field as foreing key\n", field_name).as_str(),
+            );
+        }
+
+        // Attribute : Complex (Reverse One To One)
+        let iter_reverse_one_to_one = self.get_all_reverse_one_to_one(pre_calc);
+        if iter_reverse_one_to_one.len() > 0 {
+            result.push_str("## Reverse One To One :\n");
+        }
+        for (association_name, association) in iter_reverse_one_to_one {
+            // Property head
+            result.push_str(
+                format!(
+                    "* __{}__ (__{}Model__) from {}\n",
+                    association.relation_1.element_type,
+                    association.relation_1.element_type,
+                    association_name
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * one-to-one link : one __{}__ need one __{}__)\n",
+                    association.relation_1.element_type,
+                    self.get_model_name()
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * callable using find_also_related(__{}Model__) from __{}__\n",
+                    self.get_model_name(),
+                    association.relation_1.element_type
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * saved in __{}__ field as foreing key\n",
+                    association.relation_2.property_name.to_case(Case::Snake)
+                )
+                .as_str(),
+            );
+        }
+        result.push_str("\n");
+
+        // Attribute : Super (reverse)
+        let iter_reverse_super = self.get_all_reverse_super(pre_calc);
+        if iter_reverse_super.len() > 0 {
+            result.push_str("## Reverse Super :\n");
+        }
+        for reverse_super in iter_reverse_super {
+            let field_name = &self
+                .get_model_name()
+                .to_case(Case::Snake)
+                .prefix("super_")
+                .replace("\n", "");
+            // Property head
+            result.push_str(
+                format!("* __{}__ (__{}Model__)\n", reverse_super, reverse_super).as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * one-to-one link (reverse) : one __{}__ need one __{}__)\n",
+                    reverse_super,
+                    self.get_model_name()
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * callable using find_also_related(__{}Model__) from __{}__\n",
+                    self.get_model_name(),
+                    reverse_super
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * saved in __{}__ field as foreing key in __{}Model__\n",
+                    field_name, reverse_super
+                )
+                .as_str(),
+            );
+        }
+        result.push_str("\n");
+
+        result
     }
 
     // /// Format of "Super" from __get_all_direct_super__, to write related part
@@ -1121,5 +1306,13 @@ impl CMOFProperty {
         result.push_str(if self.lower == 0 { ">" } else { "" });
 
         result
+    }
+
+    fn get_field_name(&self) -> String {
+        if &self.name.to_case(Case::Snake) == &String::from("id") {
+            String::from("bpmn_id")
+        } else {
+            self.name.to_case(Case::Snake)
+        }
     }
 }

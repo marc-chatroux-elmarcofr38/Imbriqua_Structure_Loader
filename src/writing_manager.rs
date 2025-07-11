@@ -304,10 +304,10 @@ impl LoadingTracker {
             }
         }
         self.pre_calculation.owned_member_type_list = result.clone();
-        debug!(
-            "Writing_preparation : owned_member_type_list {:#?}",
-            self.pre_calculation.owned_member_type_list
-        );
+        // debug!(
+        //     "Writing_preparation : owned_member_type_list {:#?}",
+        //     self.pre_calculation.owned_member_type_list
+        // );
 
         // enumeration_default_value
         let reader_path = Path::new("metamodel_file_extension/enumeration_default_value.json");
@@ -412,9 +412,9 @@ impl LoadingTracker {
                 } else {
                     association[1].clone()
                 };
-                let ponteration_type = if relation_2.upper == Infinitable::Infinity {
+                let ponteration_type = if relation_2.upper > Infinitable::Finite(1) {
                     RelationPonderationType::ManyToMany
-                } else if relation_1.upper == Infinitable::Infinity {
+                } else if relation_1.upper > Infinitable::Finite(1) {
                     RelationPonderationType::OneToMany
                 } else {
                     RelationPonderationType::OneToOne
