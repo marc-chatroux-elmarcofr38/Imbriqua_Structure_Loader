@@ -2,3 +2,6 @@
 /output_file
 imbriqua_structure_loader.log
 /tests/tests.log
+perf.data
+perf.data.old
+flamegraph.svg

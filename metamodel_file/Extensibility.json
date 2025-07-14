@@ -3,8 +3,8 @@
         "ownedMember": [
             {
                 "_xmi:type": "cmof:PrimitiveType",
-                "_xmi:id": "Json",
-                "_name": "Json"
+                "_xmi:id": "JsonContent",
+                "_name": "JsonContent"
             },
             {
                 "ownedAttribute": [
@@ -12,7 +12,7 @@
                         "_xmi:type": "cmof:Property",
                         "_xmi:id": "Element-Content",
                         "_name": "Content",
-                        "_type": "Json"
+                        "_type": "JsonContent"
                     }
                 ],
                 "_xmi:type": "cmof:Class",

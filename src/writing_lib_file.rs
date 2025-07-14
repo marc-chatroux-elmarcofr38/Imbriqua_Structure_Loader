@@ -54,7 +54,7 @@ impl LoadingTracker {
             debug!("Generating \"lib.rs\" from \"{label}\" : START",);
 
             // Writting for each entities, using template
-            for entity in package.get_sorted_iter() {
+            for entity in package.get_sorted_owned_member() {
                 match entity {
                     EnumOwnedMember::Association(content) => {
                         content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);

@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../README.MD")]
 
+use log::warn;
+
 // Shared module
 pub mod custom_file_tools;
 pub mod custom_log_tools;
@@ -35,6 +37,9 @@ mod output_cargo_checker;
 mod output_result_manager;
 
 fn main() {
+    use std::time::Instant;
+    let start = Instant::now();
+
     // // this method needs to be inside main() method
     // std::env::set_var("RUST_BACKTRACE", "1");
 
@@ -65,16 +70,19 @@ fn main() {
     // Export the result
     loading_env.export_result();
 
-    // Make doc for loader
-    let cargo_loader_package = "Cargo.toml"; // Location of loader environment package Cargo.toml file
-    let _loader_link = output_cargo_checker::open_link(cargo_loader_package);
-    // assert!(_loader_link.cargo_custom_command(vec!["clean"]));
-    // assert!(_loader_link.cargo_custom_command(vec!["doc", "--no-deps"]));
-    // assert!(_loader_link.cargo_custom_command(vec!["test"]));
+    // // Make doc for loader
+    // let cargo_loader_package = "Cargo.toml"; // Location of loader environment package Cargo.toml file
+    // let _loader_link = output_cargo_checker::open_link(cargo_loader_package);
+    // // assert!(_loader_link.cargo_custom_command(vec!["clean"]));
+    // // assert!(_loader_link.cargo_custom_command(vec!["doc", "--no-deps"]));
+    // // assert!(_loader_link.cargo_custom_command(vec!["test"]));
 
-    // Make testing package link
-    let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
-    let _result_link = output_cargo_checker::open_link(cargo_testing_package);
-    //assert!(_result_link.cargo_clean());
-    // assert!(_result_link.cargo_full_check()); // Make cargo check, test build and doc
+    // // Make testing package link
+    // let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
+    // let _result_link = output_cargo_checker::open_link(cargo_testing_package);
+    // //assert!(_result_link.cargo_clean());
+    // // assert!(_result_link.cargo_full_check()); // Make cargo check, test build and doc
+
+    let duration = start.elapsed();
+    warn!("Execution time: {:?}", duration);
 }

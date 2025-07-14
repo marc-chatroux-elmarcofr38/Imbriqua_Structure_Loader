@@ -25,11 +25,13 @@ use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
 use crate::output_result_manager::*;
+use crate::writing_manager::*;
 
 // Dependencies section
 use infinitable::Infinitable as UnlimitedNatural;
 use std::collections::{BTreeMap, HashMap};
 use std::iter::FromIterator;
+use std::result;
 
 /// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using ResultEnv object
 pub fn open_loader(file_env: ResultEnv) -> LoadingTracker {
@@ -43,6 +45,8 @@ pub enum LoadingState {
     Empty,
     /// With Element (imported)
     Loaded,
+    /// With Element (imported)
+    Sorted,
     /// Element used (converted)
     Finished,
 }
@@ -58,6 +62,8 @@ pub struct LoadingPackage {
     cmof_object: Option<CMOFPackage>,
     /// State of the package
     state: LoadingState,
+    /// Sorted oned_member
+    sorted_owned_member: Vec<EnumOwnedMember>,
 }
 
 impl LoadingPackage {
@@ -68,6 +74,7 @@ impl LoadingPackage {
             id,
             cmof_object: None,
             state: LoadingState::Empty,
+            sorted_owned_member: Vec::new(),
         }
     }
 
@@ -100,19 +107,35 @@ impl LoadingPackage {
 
     /// Provide 'object' access control
     pub fn get_json(&self) -> &CMOFPackage {
-        if self.state != LoadingState::Loaded {
-            panic!()
+        if (self.state == LoadingState::Loaded) || (self.state == LoadingState::Sorted) {
+            if self.cmof_object.is_none() {
+                panic!(
+                    "Request \"get_json\" on empty json ({:?} status)",
+                    self.state
+                );
+            } else {
+                self.cmof_object.as_ref().unwrap()
+            }
+        } else {
+            panic!("Request \"get_json\" on {:?} status", self.state);
         }
-        if self.cmof_object.is_none() {
-            panic!()
-        }
-        self.cmof_object.as_ref().unwrap()
     }
 
     /// Save Element and change state
     pub fn make_loaded(&mut self, cmof: CMOFPackage) {
         self.cmof_object = Some(cmof);
         self.state = LoadingState::Loaded;
+    }
+
+    /// Save Element and change state
+    pub fn make_sorted(&mut self, v: Vec<EnumOwnedMember>) {
+        self.sorted_owned_member = v;
+        self.state = LoadingState::Sorted;
+    }
+
+    /// Save Element and change state
+    pub fn get_sorted_owned_member(&self) -> &Vec<EnumOwnedMember> {
+        &self.sorted_owned_member
     }
 
     /// Delete Element and change state
@@ -404,7 +427,7 @@ impl LoadingTracker {
         let string_content = file_path.get_file_content();
 
         // Deserialising
-        let cmof_result: FilePackage = serde_json::from_str(&string_content).unwrap();
+        let cmof_result: FilePackage = serde_json::from_slice(&string_content.as_bytes()).unwrap();
         let cmof_package = cmof_result.package;
 
         // Checi ID
@@ -419,6 +442,15 @@ impl LoadingTracker {
         let package_object = self.loaded_package.get_mut(&label).unwrap();
         // package_object.make_loaded_element(package_element);
         package_object.make_loaded(cmof_package);
+
+        // Sort OwnedMember
+        let mut v: Vec<EnumOwnedMember> =
+            Vec::from_iter(package_object.get_json().owned_member.clone());
+        v.sort_by(|a, b| {
+            a.get_full_name(&package_object)
+                .cmp(&b.get_full_name(&package_object))
+        });
+        package_object.make_sorted(v);
 
         // Define treatment order
         let max = self.get_order_len();

@@ -287,7 +287,7 @@ impl LoadingTracker {
         // owned_member_type_list
         let mut result: HashMap<String, Named> = HashMap::new();
         for (_, package) in self.get_package_in_order() {
-            for owned_member in package.get_sorted_iter() {
+            for owned_member in package.get_sorted_owned_member() {
                 let key = match owned_member {
                     EnumOwnedMember::Association(content) => content.name.clone(),
                     _ => owned_member.get_model_name().clone(),
@@ -299,7 +299,6 @@ impl LoadingTracker {
                     model_name: owned_member.get_model_name(),
                     full_name: owned_member.get_full_name(package),
                 };
-                (package.clone(), owned_member.clone());
                 result.insert(key, value);
             }
         }
@@ -340,7 +339,7 @@ impl LoadingTracker {
         // association_relation
         let mut result: HashMap<String, Vec<ElementRelation>> = HashMap::new();
         for (_, package) in self.get_package_in_order() {
-            for owned_member in package.get_sorted_iter() {
+            for owned_member in package.get_sorted_owned_member() {
                 match owned_member {
                     EnumOwnedMember::Association(content) => {
                         let key = content.name.clone();
@@ -470,7 +469,7 @@ impl LoadingTracker {
         // reverse_super_link
         let mut result: HashMap<String, Vec<String>> = HashMap::new();
         for (_, package) in self.get_package_in_order() {
-            for owned_member in package.get_sorted_iter() {
+            for owned_member in package.get_sorted_owned_member() {
                 match owned_member {
                     EnumOwnedMember::Class(content) => {
                         // As default, empty

@@ -42,7 +42,7 @@ impl LoadingTracker {
     pub fn write_mod_object(&mut self) {
         for (label, pckg) in self.get_package_in_order() {
             debug!("Generating sub-mod file for \"{label}\" : START");
-            for entity in pckg.get_sorted_iter() {
+            for entity in pckg.get_sorted_owned_member() {
                 match entity {
                     EnumOwnedMember::Association(content) => {
                         // Only for "Many to Many"
@@ -344,48 +344,6 @@ impl CMOFClass {
         result
     }
 
-    /// Get all "Super" name
-    fn get_all_direct_super(&self) -> Vec<String> {
-        // As default, empty
-        let mut result: Vec<String> = self.super_class.clone();
-
-        // // For super class link
-        for link in self.super_class_link.clone() {
-            match link {
-                EnumSuperClass::Class(content) => {
-                    let class = content.href.clone();
-                    let class = match class.find(".cmof#") {
-                        Some(split_index) => class[split_index..].replace(".cmof#", "").to_string(),
-                        None => class,
-                    };
-                    result.push(class);
-                }
-            }
-        }
-
-        result.sort_by(|a, b| a.cmp(&b));
-        result
-    }
-
-    /// Get all "Super" name
-    fn get_all_reverse_super(&self, pre_calc: &LPreCalc) -> Vec<String> {
-        if pre_calc
-            .reverse_super_link
-            .contains_key(&self.get_model_name())
-        {
-            let mut result = pre_calc
-                .reverse_super_link
-                .get(&self.get_model_name())
-                .unwrap()
-                .clone();
-
-            result.sort_by(|a, b| a.cmp(&b));
-            result
-        } else {
-            Vec::new()
-        }
-    }
-
     /// Get all simple field
     fn get_all_simple_field(&self) -> Vec<&CMOFProperty> {
         // As default, empty
@@ -443,6 +401,48 @@ impl CMOFClass {
         }
 
         result
+    }
+
+    /// Get all "Super" name
+    fn get_all_direct_super(&self) -> Vec<String> {
+        // As default, empty
+        let mut result: Vec<String> = self.super_class.clone();
+
+        // // For super class link
+        for link in self.super_class_link.clone() {
+            match link {
+                EnumSuperClass::Class(content) => {
+                    let class = content.href.clone();
+                    let class = match class.find(".cmof#") {
+                        Some(split_index) => class[split_index..].replace(".cmof#", "").to_string(),
+                        None => class,
+                    };
+                    result.push(class);
+                }
+            }
+        }
+
+        result.sort_by(|a, b| a.cmp(&b));
+        result
+    }
+
+    /// Get all "Super" name
+    fn get_all_reverse_super(&self, pre_calc: &LPreCalc) -> Vec<String> {
+        if pre_calc
+            .reverse_super_link
+            .contains_key(&self.get_model_name())
+        {
+            let mut result = pre_calc
+                .reverse_super_link
+                .get(&self.get_model_name())
+                .unwrap()
+                .clone();
+
+            result.sort_by(|a, b| a.cmp(&b));
+            result
+        } else {
+            Vec::new()
+        }
     }
 
     /// Get all Man to Many relation of the class
@@ -515,6 +515,94 @@ impl CMOFClass {
             if key == &association.relation_2.element_type {
                 match association.ponteration_type {
                     RelationPonderationType::OneToOne => {
+                        result.push((association_name.clone(), association.clone()));
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        result
+    }
+
+    /// Get all direct One To Many relation of the class
+    fn get_all_direct_one_to_many(
+        &self,
+        pre_calc: &LPreCalc,
+    ) -> Vec<(String, AssociationRelation)> {
+        let mut result: Vec<(String, AssociationRelation)> = Vec::new();
+
+        let key = &self.get_model_name();
+        for (association_name, association) in &pre_calc.association_relation {
+            if key == &association.relation_1.element_type {
+                match association.ponteration_type {
+                    RelationPonderationType::OneToMany => {
+                        result.push((association_name.clone(), association.clone()));
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        result
+    }
+
+    /// Get all reverse One To Many relation of the class
+    fn get_all_reverse_one_to_many(
+        &self,
+        pre_calc: &LPreCalc,
+    ) -> Vec<(String, AssociationRelation)> {
+        let mut result: Vec<(String, AssociationRelation)> = Vec::new();
+
+        let key = &self.get_model_name();
+        for (association_name, association) in &pre_calc.association_relation {
+            if key == &association.relation_2.element_type {
+                match association.ponteration_type {
+                    RelationPonderationType::OneToMany => {
+                        result.push((association_name.clone(), association.clone()));
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        result
+    }
+
+    /// Get all direct Many To Many relation of the class
+    fn get_all_direct_many_to_many(
+        &self,
+        pre_calc: &LPreCalc,
+    ) -> Vec<(String, AssociationRelation)> {
+        let mut result: Vec<(String, AssociationRelation)> = Vec::new();
+
+        let key = &self.get_model_name();
+        for (association_name, association) in &pre_calc.association_relation {
+            if key == &association.relation_1.element_type {
+                match association.ponteration_type {
+                    RelationPonderationType::ManyToMany => {
+                        result.push((association_name.clone(), association.clone()));
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        result
+    }
+
+    /// Get all reverse Many To Many relation of the class
+    fn get_all_reverse_many_to_many(
+        &self,
+        pre_calc: &LPreCalc,
+    ) -> Vec<(String, AssociationRelation)> {
+        let mut result: Vec<(String, AssociationRelation)> = Vec::new();
+
+        let key = &self.get_model_name();
+        for (association_name, association) in &pre_calc.association_relation {
+            if key == &association.relation_2.element_type {
+                match association.ponteration_type {
+                    RelationPonderationType::ManyToMany => {
                         result.push((association_name.clone(), association.clone()));
                     }
                     _ => {}
@@ -665,76 +753,6 @@ impl CMOFClass {
         }
     }
 
-    // fn format_relation_from_one(
-    //     association: &AssociationRelation,
-    //     association_name: &String,
-    //     result: &mut String,
-    //     _pckg: &LPckg,
-    //     pre_calc: &LPreCalc,
-    // ) {
-    //     let class_model_name: &String = &association.relation_1.element_type;
-    //     let field_name: &String = &association
-    //         .relation_2
-    //         .property_name
-    //         .to_case(Case::UpperCamel);
-    //     let others = &association.relation_2.element_type;
-    //     let key = others;
-    //     if pre_calc.owned_member_type_list.contains_key(key) {
-    //         let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
-    //         let table_name = &matched_named.table_name;
-    //         let model_name = &matched_named.model_name;
-    //         let comment = format!(
-    //             "RELATION : ONE {} need ONE {} ({})",
-    //             class_model_name, model_name, association_name
-    //         );
-    //         result.push_str(
-    //             format!(
-    //                 include_str!("../template/entity_sub_relation_from_one.tmpl"),
-    //                 table_name = table_name,
-    //                 model_name = model_name,
-    //                 comment = comment,
-    //                 foreign_field = field_name,
-    //             )
-    //             .as_str(),
-    //         );
-    //     }
-    // }
-
-    // fn format_relation_to_one(
-    //     association: &AssociationRelation,
-    //     association_name: &String,
-    //     result: &mut String,
-    //     _pckg: &LPckg,
-    //     pre_calc: &LPreCalc,
-    // ) {
-    //     let class_model_name: &String = &association.relation_2.element_type;
-    //     let field_name: &String = &association
-    //         .relation_1
-    //         .property_name
-    //         .to_case(Case::UpperCamel);
-    //     let others = &association.relation_1.element_type;
-    //     let key = others;
-    //     if pre_calc.owned_member_type_list.contains_key(key) {
-    //         let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
-    //         let table_name = &matched_named.table_name;
-    //         let model_name = &matched_named.model_name;
-    //         let comment = format!(
-    //             "RELATION : ONE {} need ONE {} ({})",
-    //             class_model_name, model_name, association_name
-    //         );
-    //         result.push_str(
-    //             format!(
-    //                 include_str!("../template/entity_sub_relation_from_one.tmpl"),
-    //                 table_name = table_name,
-    //                 model_name = model_name,
-    //                 comment = comment,
-    //                 foreign_field = field_name,
-    //             )
-    //             .as_str(),
-    //         );
-    //     }
-    // }
-
     /// Format "Super" from __get_all_direct_super__, to write related part
     fn format_related_direct_super(
         class_model_name: &String,
@@ -884,8 +902,12 @@ impl CMOFClass {
             );
             result.push_str(
                 format!(
-                    "  * one-to-one link : one __{}__ need one __{}__)\n",
-                    self.get_model_name(),
+                    "  * one-to-one link : ({}-{}) __{}__ need ({}-{}) __{}__)\n",
+                    association.relation_2.lower,
+                    association.relation_2.upper,
+                    association.relation_1.element_type,
+                    association.relation_1.lower,
+                    association.relation_1.upper,
                     association.relation_2.element_type
                 )
                 .as_str(),
@@ -905,6 +927,54 @@ impl CMOFClass {
                 )
                 .as_str(),
             );
+        }
+        result.push_str("\n");
+
+        // Attribute : Relation (direct One To Many)
+        let iter_direct_one_to_many = self.get_all_direct_one_to_many(pre_calc);
+        if iter_direct_one_to_many.len() > 0 {
+            result.push_str("## Relation : One To Many :\n");
+        }
+        for (association_name, association) in iter_direct_one_to_many {
+            // Property head
+            result.push_str(
+                format!(
+                    "* __{}__ (__{}Model__) from {}\n",
+                    association.relation_2.element_type,
+                    association.relation_2.element_type,
+                    association_name
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * one-to-many link : ({}-{}) __{}__ need ({}-{}) __{}__)\n",
+                    association.relation_2.lower,
+                    association.relation_2.upper,
+                    association.relation_1.element_type,
+                    association.relation_1.lower,
+                    association.relation_1.upper,
+                    association.relation_2.element_type
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * callable using find_with_related(__{}Model__) from __{}__\n",
+                    association.relation_2.element_type,
+                    self.get_model_name()
+                )
+                .as_str(),
+            );
+            if association.relation_1.from == RelationSource::FromClass {
+                result.push_str(
+                    format!(
+                        "  * named {} in BPMN\n",
+                        association.relation_2.property_name.to_case(Case::Snake)
+                    )
+                    .as_str(),
+                );
+            }
         }
         result.push_str("\n");
 
@@ -960,9 +1030,13 @@ impl CMOFClass {
             );
             result.push_str(
                 format!(
-                    "  * one-to-one link : one __{}__ need one __{}__)\n",
+                    "  * one-to-one link : ({}-{}) __{}__ need ({}-{}) __{}__)\n",
+                    association.relation_2.lower,
+                    association.relation_2.upper,
                     association.relation_1.element_type,
-                    self.get_model_name()
+                    association.relation_1.lower,
+                    association.relation_1.upper,
+                    association.relation_2.element_type
                 )
                 .as_str(),
             );

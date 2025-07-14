@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_dependencies_explorer::LoadingPackage;
+use crate::loader_dependencies_explorer::LoadingState;
 use crate::loader_deserialise_helper::*;
 use crate::writing_manager::*;
 
@@ -228,15 +229,6 @@ impl CMOFPackage {
             .unwrap()
             .to_ascii_lowercase();
         str_result.to_case(Case::Snake)
-    }
-}
-
-impl LoadingPackage {
-    /// Sort ownem_member
-    pub fn get_sorted_iter(&self) -> Vec<&EnumOwnedMember> {
-        let mut v: Vec<&EnumOwnedMember> = Vec::from_iter(&self.get_json().owned_member);
-        v.sort_by(|&a, &b| a.get_full_name(&self).cmp(&b.get_full_name(&self)));
-        v
     }
 }
 
