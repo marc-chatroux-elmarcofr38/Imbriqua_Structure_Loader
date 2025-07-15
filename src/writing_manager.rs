@@ -152,7 +152,7 @@ impl LoadingTracker {
                 match owned_member {
                     EnumOwnedMember::Association(content) => {
                         let key = content.name.clone();
-                        for owned_end in &content.owned_end {
+                        for (_, owned_end) in &content.owned_end {
                             match owned_end {
                                 EnumOwnedEnd::Property(property) => {
                                     let value = ElementRelation {
@@ -173,7 +173,7 @@ impl LoadingTracker {
                         }
                     }
                     EnumOwnedMember::Class(content) => {
-                        for owned_attribute in &content.owned_attribute {
+                        for (_, owned_attribute) in &content.owned_attribute {
                             match owned_attribute {
                                 EnumOwnedAttribute::Property(property) => {
                                     if property.association.is_some() {

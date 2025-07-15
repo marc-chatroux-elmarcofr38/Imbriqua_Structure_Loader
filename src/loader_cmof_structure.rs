@@ -27,6 +27,7 @@ use crate::loader_deserialise_helper::*;
 
 // Dependencies section
 use serde::Deserialize;
+use std::collections::BTreeMap;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
@@ -47,9 +48,9 @@ pub struct CMOFAssociation {
     pub member_end: (String, String),
     /// Optional ownedEnd object
     #[serde(rename = "ownedEnd")]
-    #[serde(deserialize_with = "deser_vec")]
-    #[serde(default = "default_empty_vec")]
-    pub owned_end: Vec<EnumOwnedEnd>,
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(default = "default_empty_btreemap")]
+    pub owned_end: BTreeMap<String, EnumOwnedEnd>,
     // navigableOwnedEnd forbidden
     /// Optional _isDerived object, need to by "false"
     #[serde(rename = "_isDerived")]
@@ -85,14 +86,14 @@ pub struct CMOFClass {
     pub super_class_link: Vec<EnumSuperClass>,
     /// Optional ownedAttribute object array
     #[serde(rename = "ownedAttribute")]
-    #[serde(deserialize_with = "deser_vec")]
-    #[serde(default = "default_empty_vec")]
-    pub owned_attribute: Vec<EnumOwnedAttribute>,
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(default = "default_empty_btreemap")]
+    pub owned_attribute: BTreeMap<String, EnumOwnedAttribute>,
     /// Optional ownedRule object
     #[serde(rename = "ownedRule")]
-    #[serde(deserialize_with = "deser_vec")]
-    #[serde(default = "default_empty_vec")]
-    pub owned_rule: Vec<EnumOwnedRule>,
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(default = "default_empty_btreemap")]
+    pub owned_rule: BTreeMap<String, EnumOwnedRule>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -128,14 +129,14 @@ pub struct CMOFDataType {
     pub name: String,
     /// Optional ownedAttribute object array
     #[serde(rename = "ownedAttribute")]
-    #[serde(deserialize_with = "deser_vec")]
-    #[serde(default = "default_empty_vec")]
-    pub owned_attribute: Vec<EnumOwnedAttribute>,
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(default = "default_empty_btreemap")]
+    pub owned_attribute: BTreeMap<String, EnumOwnedAttribute>,
     /// Optional ownedRule object
     #[serde(rename = "ownedRule")]
-    #[serde(deserialize_with = "deser_vec")]
-    #[serde(default = "default_empty_vec")]
-    pub owned_rule: Vec<EnumOwnedRule>,
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(default = "default_empty_btreemap")]
+    pub owned_rule: BTreeMap<String, EnumOwnedRule>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -150,9 +151,9 @@ pub struct CMOFEnumeration {
     pub name: String,
     /// Optional ownedLiteral object arry
     #[serde(rename = "ownedLiteral")]
-    #[serde(deserialize_with = "deser_vec")]
-    #[serde(default = "default_empty_vec")]
-    pub owned_attribute: Vec<EnumOwnedLiteral>,
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(default = "default_empty_btreemap")]
+    pub owned_attribute: BTreeMap<String, EnumOwnedLiteral>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -203,14 +204,14 @@ pub struct CMOFPackage {
     pub uri: String,
     /// Optional packageImport object array
     #[serde(rename = "packageImport")]
-    #[serde(deserialize_with = "deser_vec")]
-    #[serde(default = "default_empty_vec")]
-    pub package_import: Vec<EnumPackageImport>,
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(default = "default_empty_btreemap")]
+    pub package_import: BTreeMap<String, EnumPackageImport>,
     /// Optional ownedMember object array
     #[serde(rename = "ownedMember")]
-    #[serde(deserialize_with = "deser_vec")]
-    #[serde(default = "default_empty_vec")]
-    pub owned_member: Vec<EnumOwnedMember>,
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(default = "default_empty_btreemap")]
+    pub owned_member: BTreeMap<String, EnumOwnedMember>,
 }
 
 impl CMOFPackage {

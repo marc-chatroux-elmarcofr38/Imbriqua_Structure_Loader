@@ -28,6 +28,7 @@ pub mod custom_log_tools;
 pub mod loader_cmof_structure;
 pub mod loader_dependencies_explorer;
 pub mod loader_deserialise_helper;
+pub mod loader_naming_for_breemap;
 pub mod writing_entity;
 pub mod writing_lib_file;
 pub mod writing_manager;
@@ -80,7 +81,7 @@ fn main() {
     // // Make testing package link
     // let cargo_testing_package = "../Imbriqua_Structure_Result/Cargo.toml"; // Location of testing environment package Cargo.toml file
     // let _result_link = output_cargo_checker::open_link(cargo_testing_package);
-    // //assert!(_result_link.cargo_clean());
+    // // assert!(_result_link.cargo_clean());
     // // assert!(_result_link.cargo_full_check()); // Make cargo check, test build and doc
 
     let duration = start.elapsed();

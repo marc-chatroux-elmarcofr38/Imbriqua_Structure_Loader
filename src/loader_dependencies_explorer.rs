@@ -443,7 +443,7 @@ impl LoadingTracker {
 
         // Sort OwnedMember
         let mut v: BTreeMap<String, EnumOwnedMember> = BTreeMap::new();
-        for d in package_object.get_json().owned_member.clone() {
+        for (_, d) in package_object.get_json().owned_member.clone() {
             v.insert(d.get_full_name(&package_object), d);
         }
         package_object.make_sorted(v);
@@ -461,7 +461,7 @@ impl LoadingTracker {
 
     /// Import dependencies of a package (indirect recursivity from prepare with add_dependencies)
     fn add_dependencies(&mut self, cmof_package: &CMOFPackage, label: String) {
-        for child in cmof_package.package_import.iter() {
+        for (_, child) in cmof_package.package_import.iter() {
             // Go to "importedPackage" child
             match child {
                 EnumPackageImport::PackageImport(content) => {

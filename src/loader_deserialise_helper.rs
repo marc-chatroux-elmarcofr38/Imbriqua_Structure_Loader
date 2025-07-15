@@ -23,11 +23,13 @@ If not, see <https://www.gnu.org/licenses/>.
 // Package section
 use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
+use crate::loader_naming_for_breemap::*;
 
 // Dependencies section
 pub use infinitable::Infinitable as UnlimitedNatural;
 use serde::de;
 use serde_json::Value;
+use std::collections::BTreeMap;
 use std::fmt;
 use std::marker::PhantomData;
 
@@ -220,6 +222,61 @@ where
     deserializer.deserialize_any(OneOrVec(PhantomData))
 }
 
+/// Deserialising to __BTreeMap__, from array or single object, various Object type tolerant
+/// Not 'Option' tolerant, use 'default' for this
+pub fn deser_btreemap_using_name_as_key<'de: 'te, 'te: 'de, D, V>(
+    deserializer: D,
+) -> Result<BTreeMap<String, V>, D::Error>
+where
+    D: de::Deserializer<'de>,
+    V: de::Deserialize<'te>,
+    V: AsNameField,
+{
+    struct OneOrVec<String, V>(PhantomData<BTreeMap<String, V>>);
+
+    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te> + AsNameField> de::Visitor<'de>
+        for OneOrVec<String, V>
+    {
+        type Value = BTreeMap<String, V>;
+
+        // Requested type description, returned in error case
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("object or array of object, with \"name\" attribute")
+        }
+
+        // Result for Null
+        fn visit_none<E>(self) -> Result<Self::Value, E> {
+            Ok(BTreeMap::new())
+        }
+
+        // Result for Object
+        fn visit_map<E>(self, map: E) -> Result<Self::Value, E::Error>
+        where
+            E: de::MapAccess<'de>,
+        {
+            let v: V = de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
+            let k = v.get_name_field();
+            Ok(BTreeMap::from([(k, v)]))
+        }
+
+        // Result for Array
+        fn visit_seq<S>(self, visitor: S) -> Result<Self::Value, S::Error>
+        where
+            S: de::SeqAccess<'de>,
+        {
+            let mut r: BTreeMap<String, V> = BTreeMap::new();
+            let big_v: Vec<V> =
+                de::Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))?;
+            for n in big_v {
+                r.insert(n.get_name_field(), n);
+            }
+            Ok(r)
+        }
+    }
+
+    deserializer.deserialize_any(OneOrVec(PhantomData))
+}
+
 /// Deserialising 2-String Vec, from String, require a 1-whitespace String
 pub fn deser_split_2_space<'de, D>(deserializer: D) -> Result<(String, String), D::Error>
 where
@@ -273,6 +330,11 @@ pub fn default_empty_string() -> String {
 /// Empty Vec, as default value for serde_default
 pub fn default_empty_vec<T>() -> Vec<T> {
     Vec::new()
+}
+
+/// Empty Vec, as default value for serde_default
+pub fn default_empty_btreemap<K, V>() -> BTreeMap<K, V> {
+    BTreeMap::new()
 }
 
 /// Default VisibilityKind, as default value for serde_default

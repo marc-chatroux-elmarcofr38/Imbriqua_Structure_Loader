@@ -20,6 +20,8 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../doc/writing_entity.md")]
 
+use std::collections::BTreeMap;
+
 // Package section
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
@@ -205,7 +207,7 @@ impl CMOFClass {
         let mut result = String::from("");
 
         // For super class
-        for class in self.get_all_direct_super() {
+        for (_, class) in self.get_all_direct_super() {
             CMOFClass::format_field_super(&class, &mut result, pckg, pre_calc);
         }
 
@@ -227,7 +229,7 @@ impl CMOFClass {
         let mut result = String::new();
 
         // For direct "Super"
-        for super_name in &self.get_all_direct_super() {
+        for (_, super_name) in &self.get_all_direct_super() {
             let class_model_name = &self.get_model_name();
             let field_name = &super_name
                 .to_case(Case::Snake)
@@ -297,7 +299,7 @@ impl CMOFClass {
         let mut result = String::new();
 
         // For "Super"
-        for super_name in &self.get_all_direct_super() {
+        for (_, super_name) in &self.get_all_direct_super() {
             let class_model_name: &String = &self.get_model_name();
             CMOFClass::format_related_direct_super(
                 class_model_name,
@@ -349,7 +351,7 @@ impl CMOFClass {
         // As default, empty
         let mut result: Vec<&CMOFProperty> = Vec::new();
 
-        for property in &self.owned_attribute {
+        for (_, property) in &self.owned_attribute {
             match property {
                 EnumOwnedAttribute::Property(content) => {
                     if content.upper > infinitable::Finite(1) {
@@ -376,7 +378,7 @@ impl CMOFClass {
         // As default, empty
         let mut result: Vec<&CMOFProperty> = Vec::new();
 
-        for property in &self.owned_attribute {
+        for (_, property) in &self.owned_attribute {
             match property {
                 EnumOwnedAttribute::Property(content) => {
                     if content.upper > infinitable::Finite(1) {
@@ -404,9 +406,13 @@ impl CMOFClass {
     }
 
     /// Get all "Super" name
-    fn get_all_direct_super(&self) -> Vec<String> {
+    fn get_all_direct_super(&self) -> BTreeMap<String, String> {
         // As default, empty
-        let mut result: Vec<String> = self.super_class.clone();
+        let mut result: BTreeMap<String, String> = BTreeMap::new();
+
+        for link in self.super_class.clone() {
+            result.insert(link.clone(), link.clone());
+        }
 
         // // For super class link
         for link in self.super_class_link.clone() {
@@ -417,12 +423,11 @@ impl CMOFClass {
                         Some(split_index) => class[split_index..].replace(".cmof#", "").to_string(),
                         None => class,
                     };
-                    result.push(class);
+                    result.insert(class.clone(), class.clone());
                 }
             }
         }
 
-        result.sort_by(|a, b| a.cmp(&b));
         result
     }
 
@@ -983,7 +988,7 @@ impl CMOFClass {
         if iter_direct_super.len() > 0 {
             result.push_str("## Direct Super :\n");
         }
-        for direct_super in iter_direct_super {
+        for (_, direct_super) in iter_direct_super {
             let field_name = &direct_super
                 .to_case(Case::Snake)
                 .prefix("super_")
@@ -1147,7 +1152,7 @@ impl CMOFDataType {
         // As default, empty
         let mut result: Vec<&CMOFProperty> = Vec::new();
 
-        for property in &self.owned_attribute {
+        for (_, property) in &self.owned_attribute {
             match property {
                 EnumOwnedAttribute::Property(content) => {
                     result.push(&content);
@@ -1231,7 +1236,7 @@ impl CMOFEnumeration {
         // As default, empty
         let mut result: Vec<&CMOFEnumerationLiteral> = Vec::new();
 
-        for property in &self.owned_attribute {
+        for (_, property) in &self.owned_attribute {
             match property {
                 EnumOwnedLiteral::EnumerationLiteral(content) => {
                     result.push(&content);
