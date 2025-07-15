@@ -63,7 +63,7 @@ pub struct LoadingPackage {
     /// State of the package
     state: LoadingState,
     /// Sorted oned_member
-    sorted_owned_member: Vec<EnumOwnedMember>,
+    sorted_owned_member: BTreeMap<String, EnumOwnedMember>,
 }
 
 impl LoadingPackage {
@@ -74,7 +74,7 @@ impl LoadingPackage {
             id,
             cmof_object: None,
             state: LoadingState::Empty,
-            sorted_owned_member: Vec::new(),
+            sorted_owned_member: BTreeMap::new(),
         }
     }
 
@@ -128,13 +128,13 @@ impl LoadingPackage {
     }
 
     /// Save Element and change state
-    pub fn make_sorted(&mut self, v: Vec<EnumOwnedMember>) {
+    pub fn make_sorted(&mut self, v: BTreeMap<String, EnumOwnedMember>) {
         self.sorted_owned_member = v;
         self.state = LoadingState::Sorted;
     }
 
     /// Save Element and change state
-    pub fn get_sorted_owned_member(&self) -> &Vec<EnumOwnedMember> {
+    pub fn get_sorted_owned_member(&self) -> &BTreeMap<String, EnumOwnedMember> {
         &self.sorted_owned_member
     }
 
@@ -265,7 +265,7 @@ pub struct LoadingPreCalculation {
     ///     ponteration_type: OneToMany,
     ///     is_self_referencing: false,
     /// },
-    pub association_relation: HashMap<String, AssociationRelation>,
+    pub association_relation: BTreeMap<String, AssociationRelation>,
     /// For each CMOFClass (as model_name format), all associed CMOFAssociation with rank (provided by association_relation)
     /// EX :
     /// "CorrelationProperty": [
@@ -297,7 +297,7 @@ impl LoadingPreCalculation {
             owned_member_type_list: HashMap::new(),
             enumeration_default_value: HashMap::new(),
             primitive_type_conversion: HashMap::new(),
-            association_relation: HashMap::new(),
+            association_relation: BTreeMap::new(),
             association_relation_by_class: HashMap::new(),
             reverse_super_link: HashMap::new(),
         }
@@ -444,12 +444,10 @@ impl LoadingTracker {
         package_object.make_loaded(cmof_package);
 
         // Sort OwnedMember
-        let mut v: Vec<EnumOwnedMember> =
-            Vec::from_iter(package_object.get_json().owned_member.clone());
-        v.sort_by(|a, b| {
-            a.get_full_name(&package_object)
-                .cmp(&b.get_full_name(&package_object))
-        });
+        let mut v: BTreeMap<String, EnumOwnedMember> = BTreeMap::new();
+        for d in package_object.get_json().owned_member.clone() {
+            v.insert(d.get_full_name(&package_object), d);
+        }
         package_object.make_sorted(v);
 
         // Define treatment order

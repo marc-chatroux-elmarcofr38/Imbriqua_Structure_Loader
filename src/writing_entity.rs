@@ -42,7 +42,7 @@ impl LoadingTracker {
     pub fn write_mod_object(&mut self) {
         for (label, pckg) in self.get_package_in_order() {
             debug!("Generating sub-mod file for \"{label}\" : START");
-            for entity in pckg.get_sorted_owned_member() {
+            for (_, entity) in pckg.get_sorted_owned_member() {
                 match entity {
                     EnumOwnedMember::Association(content) => {
                         // Only for "Many to Many"
