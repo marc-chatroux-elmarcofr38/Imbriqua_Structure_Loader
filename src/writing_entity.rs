@@ -547,71 +547,71 @@ impl CMOFClass {
         result
     }
 
-    /// Get all reverse One To Many relation of the class
-    fn get_all_reverse_one_to_many(
-        &self,
-        pre_calc: &LPreCalc,
-    ) -> Vec<(String, AssociationRelation)> {
-        let mut result: Vec<(String, AssociationRelation)> = Vec::new();
+    // /// Get all reverse One To Many relation of the class
+    // fn get_all_reverse_one_to_many(
+    //     &self,
+    //     pre_calc: &LPreCalc,
+    // ) -> Vec<(String, AssociationRelation)> {
+    //     let mut result: Vec<(String, AssociationRelation)> = Vec::new();
 
-        let key = &self.get_model_name();
-        for (association_name, association) in &pre_calc.association_relation {
-            if key == &association.relation_2.element_type {
-                match association.ponteration_type {
-                    RelationPonderationType::OneToMany => {
-                        result.push((association_name.clone(), association.clone()));
-                    }
-                    _ => {}
-                }
-            }
-        }
+    //     let key = &self.get_model_name();
+    //     for (association_name, association) in &pre_calc.association_relation {
+    //         if key == &association.relation_2.element_type {
+    //             match association.ponteration_type {
+    //                 RelationPonderationType::OneToMany => {
+    //                     result.push((association_name.clone(), association.clone()));
+    //                 }
+    //                 _ => {}
+    //             }
+    //         }
+    //     }
 
-        result
-    }
+    //     result
+    // }
 
-    /// Get all direct Many To Many relation of the class
-    fn get_all_direct_many_to_many(
-        &self,
-        pre_calc: &LPreCalc,
-    ) -> Vec<(String, AssociationRelation)> {
-        let mut result: Vec<(String, AssociationRelation)> = Vec::new();
+    // /// Get all direct Many To Many relation of the class
+    // fn get_all_direct_many_to_many(
+    //     &self,
+    //     pre_calc: &LPreCalc,
+    // ) -> Vec<(String, AssociationRelation)> {
+    //     let mut result: Vec<(String, AssociationRelation)> = Vec::new();
 
-        let key = &self.get_model_name();
-        for (association_name, association) in &pre_calc.association_relation {
-            if key == &association.relation_1.element_type {
-                match association.ponteration_type {
-                    RelationPonderationType::ManyToMany => {
-                        result.push((association_name.clone(), association.clone()));
-                    }
-                    _ => {}
-                }
-            }
-        }
+    //     let key = &self.get_model_name();
+    //     for (association_name, association) in &pre_calc.association_relation {
+    //         if key == &association.relation_1.element_type {
+    //             match association.ponteration_type {
+    //                 RelationPonderationType::ManyToMany => {
+    //                     result.push((association_name.clone(), association.clone()));
+    //                 }
+    //                 _ => {}
+    //             }
+    //         }
+    //     }
 
-        result
-    }
+    //     result
+    // }
 
-    /// Get all reverse Many To Many relation of the class
-    fn get_all_reverse_many_to_many(
-        &self,
-        pre_calc: &LPreCalc,
-    ) -> Vec<(String, AssociationRelation)> {
-        let mut result: Vec<(String, AssociationRelation)> = Vec::new();
+    // /// Get all reverse Many To Many relation of the class
+    // fn get_all_reverse_many_to_many(
+    //     &self,
+    //     pre_calc: &LPreCalc,
+    // ) -> Vec<(String, AssociationRelation)> {
+    //     let mut result: Vec<(String, AssociationRelation)> = Vec::new();
 
-        let key = &self.get_model_name();
-        for (association_name, association) in &pre_calc.association_relation {
-            if key == &association.relation_2.element_type {
-                match association.ponteration_type {
-                    RelationPonderationType::ManyToMany => {
-                        result.push((association_name.clone(), association.clone()));
-                    }
-                    _ => {}
-                }
-            }
-        }
+    //     let key = &self.get_model_name();
+    //     for (association_name, association) in &pre_calc.association_relation {
+    //         if key == &association.relation_2.element_type {
+    //             match association.ponteration_type {
+    //                 RelationPonderationType::ManyToMany => {
+    //                     result.push((association_name.clone(), association.clone()));
+    //                 }
+    //                 _ => {}
+    //             }
+    //         }
+    //     }
 
-        result
-    }
+    //     result
+    // }
 
     /// Format "Super" from __get_all_direct_super__, to write field part
     fn format_field_super(

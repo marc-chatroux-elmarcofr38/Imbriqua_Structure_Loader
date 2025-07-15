@@ -25,13 +25,11 @@ use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
 use crate::output_result_manager::*;
-use crate::writing_manager::*;
 
 // Dependencies section
 use infinitable::Infinitable as UnlimitedNatural;
 use std::collections::{BTreeMap, HashMap};
 use std::iter::FromIterator;
-use std::result;
 
 /// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using ResultEnv object
 pub fn open_loader(file_env: ResultEnv) -> LoadingTracker {
@@ -236,17 +234,17 @@ pub struct LoadingPreCalculation {
     ///     model_name: "ACorrelationKeyRefCorrelationSubscription",
     ///     full_name: "bpmn_20_association_a_correlation_key_ref_correlation_subscription",
     /// },
-    pub owned_member_type_list: HashMap<String, Named>,
+    pub owned_member_type_list: BTreeMap<String, Named>,
     /// For each CMOFEnumeration (as model_name format), this default value, loaded from "metamodel_file_extension/enumeration_default_value.json"
     /// EX :
     ///     "ParticipantBandKind": "TopInitiating",
     ///     "MultiInstanceBehavior": "All",
-    pub enumeration_default_value: HashMap<String, String>,
+    pub enumeration_default_value: BTreeMap<String, String>,
     /// For each CMOFPrimitiveType (as model_name format), this Rust equivalent type, loaded from "metamodel_file_extension/primitive_type_conversion.json"
     /// EX :
     ///     "ParticipantBandKind": "TopInitiating",
     ///     "MultiInstanceBehavior": "All",
-    pub primitive_type_conversion: HashMap<String, String>,
+    pub primitive_type_conversion: BTreeMap<String, String>,
     /// For each CMOFassociation (as model_name format), the linked AssociationRelation object
     /// EX :
     /// "A_inputDataRef_inputOutputBinding": AssociationRelation {
@@ -286,20 +284,20 @@ pub struct LoadingPreCalculation {
     ///         IsSecond,
     ///     ),
     /// ],
-    pub association_relation_by_class: HashMap<String, Vec<(String, RankRelation)>>,
+    pub association_relation_by_class: BTreeMap<String, Vec<(String, RankRelation)>>,
     /// For each CMOFClass (as model_name format), all CMOFClass (as model_name format) who use it as "Super"
-    pub reverse_super_link: HashMap<String, Vec<String>>,
+    pub reverse_super_link: BTreeMap<String, Vec<String>>,
 }
 impl LoadingPreCalculation {
     /// Create new instance
     pub fn new() -> Self {
         LoadingPreCalculation {
-            owned_member_type_list: HashMap::new(),
-            enumeration_default_value: HashMap::new(),
-            primitive_type_conversion: HashMap::new(),
+            owned_member_type_list: BTreeMap::new(),
+            enumeration_default_value: BTreeMap::new(),
+            primitive_type_conversion: BTreeMap::new(),
             association_relation: BTreeMap::new(),
-            association_relation_by_class: HashMap::new(),
-            reverse_super_link: HashMap::new(),
+            association_relation_by_class: BTreeMap::new(),
+            reverse_super_link: BTreeMap::new(),
         }
     }
 }
@@ -554,4 +552,196 @@ pub enum ClassClassification {
     Simple,
     /// Complex : need lifetime for utilization
     Complex,
+}
+
+// ####################################################################################################
+//
+// ###################################### NamingStruct ################################################
+//
+// ####################################################################################################
+
+/// Naming method for providing struct name
+pub trait NamingStruct {
+    /// --> DC.cmof#Font
+    fn get_technical_name(&self, package: &LoadingPackage) -> String;
+    /// --> dc_font
+    fn get_table_name(&self, package: &LoadingPackage) -> String;
+    /// --> Font
+    fn get_model_name(&self) -> String;
+    /// --> dc_datatype_font
+    fn get_full_name(&self, package: &LoadingPackage) -> String;
+}
+
+impl NamingStruct for EnumOwnedMember {
+    fn get_technical_name(&self, package: &LoadingPackage) -> String {
+        match self {
+            EnumOwnedMember::Association(content) => content.get_technical_name(package),
+            EnumOwnedMember::Class(content) => content.get_technical_name(package),
+            EnumOwnedMember::DataType(content) => content.get_technical_name(package),
+            EnumOwnedMember::Enumeration(content) => content.get_technical_name(package),
+            EnumOwnedMember::PrimitiveType(content) => content.get_technical_name(package),
+        }
+    }
+    fn get_table_name(&self, package: &LoadingPackage) -> String {
+        match self {
+            EnumOwnedMember::Association(content) => content.get_table_name(package),
+            EnumOwnedMember::Class(content) => content.get_table_name(package),
+            EnumOwnedMember::DataType(content) => content.get_table_name(package),
+            EnumOwnedMember::Enumeration(content) => content.get_table_name(package),
+            EnumOwnedMember::PrimitiveType(content) => content.get_table_name(package),
+        }
+    }
+    fn get_model_name(&self) -> String {
+        match self {
+            EnumOwnedMember::Association(content) => content.get_model_name(),
+            EnumOwnedMember::Class(content) => content.get_model_name(),
+            EnumOwnedMember::DataType(content) => content.get_model_name(),
+            EnumOwnedMember::Enumeration(content) => content.get_model_name(),
+            EnumOwnedMember::PrimitiveType(content) => content.get_model_name(),
+        }
+    }
+    fn get_full_name(&self, package: &LoadingPackage) -> String {
+        match self {
+            EnumOwnedMember::Association(content) => content.get_full_name(package),
+            EnumOwnedMember::Class(content) => content.get_full_name(package),
+            EnumOwnedMember::DataType(content) => content.get_full_name(package),
+            EnumOwnedMember::Enumeration(content) => content.get_full_name(package),
+            EnumOwnedMember::PrimitiveType(content) => content.get_full_name(package),
+        }
+    }
+}
+
+impl NamingStruct for CMOFAssociation {
+    fn get_technical_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name);
+        result.push_str(".cmof#");
+        result.push_str(self.name.as_str());
+        result
+    }
+    fn get_table_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
+        result.push_str("_");
+        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
+        result
+    }
+    fn get_model_name(&self) -> String {
+        self.name.to_case(Case::UpperCamel)
+    }
+    fn get_full_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
+        result.push_str("_association_");
+        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
+        result
+    }
+}
+
+impl NamingStruct for CMOFClass {
+    fn get_technical_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name);
+        result.push_str(".cmof#");
+        result.push_str(self.name.as_str());
+        result
+    }
+    fn get_table_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
+        result.push_str("_");
+        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
+        result
+    }
+    fn get_model_name(&self) -> String {
+        self.name.to_case(Case::UpperCamel)
+    }
+    fn get_full_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
+        result.push_str("_class_");
+        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
+        result
+    }
+}
+
+impl NamingStruct for CMOFDataType {
+    fn get_technical_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name);
+        result.push_str(".cmof#");
+        result.push_str(self.name.as_str());
+        result
+    }
+    fn get_table_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
+        result.push_str("_");
+        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
+        result
+    }
+    fn get_model_name(&self) -> String {
+        self.name.to_case(Case::UpperCamel)
+    }
+    fn get_full_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
+        result.push_str("_datatype_");
+        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
+        result
+    }
+}
+
+impl NamingStruct for CMOFEnumeration {
+    fn get_technical_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name);
+        result.push_str(".cmof#");
+        result.push_str(self.name.as_str());
+        result
+    }
+    fn get_table_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
+        result.push_str("_");
+        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
+        result
+    }
+    fn get_model_name(&self) -> String {
+        self.name.to_case(Case::UpperCamel)
+    }
+    fn get_full_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
+        result.push_str("_enumeration_");
+        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
+        result
+    }
+}
+
+impl NamingStruct for CMOFPrimitiveType {
+    fn get_technical_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name);
+        result.push_str(".cmof#");
+        result.push_str(self.name.as_str());
+        result
+    }
+    fn get_table_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
+        result.push_str("_");
+        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
+        result
+    }
+    fn get_model_name(&self) -> String {
+        self.name.to_case(Case::UpperCamel)
+    }
+    fn get_full_name(&self, package: &LoadingPackage) -> String {
+        let mut result = String::from("");
+        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
+        result.push_str("_primitive_");
+        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
+        result
+    }
 }
