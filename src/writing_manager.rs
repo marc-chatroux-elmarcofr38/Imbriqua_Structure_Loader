@@ -30,7 +30,6 @@ use crate::loader_dependencies_explorer::*;
 use infinitable::Infinitable;
 use serde::Deserialize;
 use std::collections::BTreeMap;
-use std::collections::HashMap;
 use std::fmt::Debug;
 
 // ####################################################################################################
@@ -96,13 +95,13 @@ impl LoadingTracker {
         // owned_member_type_list
         let mut result: BTreeMap<String, Named> = BTreeMap::new();
         for (_, package) in self.get_package_in_order() {
-            for (_, owned_member) in package.get_sorted_owned_member() {
+            for (_, owned_member) in &package.get_json().owned_member {
                 let key = match owned_member {
                     EnumOwnedMember::Association(content) => content.name.clone(),
                     _ => owned_member.get_model_name().clone(),
                 };
                 let value = Named {
-                    package_name: package.get_lowercase_name(),
+                    package_name: package.get_json().lowercase_name.clone(),
                     technical_name: owned_member.get_technical_name(package),
                     table_name: owned_member.get_table_name(package),
                     model_name: owned_member.get_model_name(),
@@ -112,10 +111,10 @@ impl LoadingTracker {
             }
         }
         self.pre_calculation.owned_member_type_list = result.clone();
-        // debug!(
-        //     "Writing_preparation : owned_member_type_list {:#?}",
-        //     self.pre_calculation.owned_member_type_list
-        // );
+        debug!(
+            "Writing_preparation : owned_member_type_list {:#?}",
+            self.pre_calculation.owned_member_type_list
+        );
 
         // enumeration_default_value
         let reader_path = Path::new("metamodel_file_extension/enumeration_default_value.json");
@@ -146,9 +145,9 @@ impl LoadingTracker {
         // );
 
         // association_relation
-        let mut result: HashMap<String, Vec<ElementRelation>> = HashMap::new();
+        let mut result: BTreeMap<String, Vec<ElementRelation>> = BTreeMap::new();
         for (_, package) in self.get_package_in_order() {
-            for (_, owned_member) in package.get_sorted_owned_member() {
+            for (_, owned_member) in &package.get_json().owned_member {
                 match owned_member {
                     EnumOwnedMember::Association(content) => {
                         let key = content.name.clone();
@@ -238,10 +237,10 @@ impl LoadingTracker {
                 self.pre_calculation.association_relation.insert(key, value);
             }
         }
-        debug!(
-            "Writing_preparation : association_relation {:#?}",
-            self.pre_calculation.association_relation
-        );
+        // debug!(
+        //     "Writing_preparation : association_relation {:#?}",
+        //     self.pre_calculation.association_relation
+        // );
 
         // association_relation_by_class
         let mut result: BTreeMap<String, Vec<(String, RankRelation)>> = BTreeMap::new();
@@ -278,7 +277,7 @@ impl LoadingTracker {
         // reverse_super_link
         let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
         for (_, package) in self.get_package_in_order() {
-            for (_, owned_member) in package.get_sorted_owned_member() {
+            for (_, owned_member) in &package.get_json().owned_member {
                 match owned_member {
                     EnumOwnedMember::Class(content) => {
                         // As default, empty
@@ -303,7 +302,7 @@ impl LoadingTracker {
                         // for all element in result
                         for super_field in list_of_super {
                             let key = super_field.clone();
-                            let value = content.get_model_name();
+                            let value = content.model_name.clone();
 
                             if result.contains_key(&key) {
                                 let result_vec = result.get_mut(&key).unwrap();

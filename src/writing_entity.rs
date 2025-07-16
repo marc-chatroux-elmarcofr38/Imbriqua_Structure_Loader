@@ -44,7 +44,7 @@ impl LoadingTracker {
     pub fn write_mod_object(&mut self) {
         for (label, pckg) in self.get_package_in_order() {
             debug!("Generating sub-mod file for \"{label}\" : START");
-            for (_, entity) in pckg.get_sorted_owned_member() {
+            for (_, entity) in &pckg.get_json().owned_member {
                 match entity {
                     EnumOwnedMember::Association(content) => {
                         // Only for "Many to Many"
@@ -88,7 +88,7 @@ impl LoadingTracker {
                         // Get file
                         let (_, mut wrt) = self.get_object_file(pckg, entity);
                         //
-                        content.write_content(&mut wrt, &pckg, &self.pre_calculation);
+                        content.write_content(&mut wrt, &self.pre_calculation);
                     }
                 }
             }
@@ -105,7 +105,7 @@ impl LoadingTracker {
 
 impl CMOFAssociation {
     /// write content to output file,from "CMOFClass" object
-    fn write_content(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
+    fn write_content(&self, wrt: &mut File, _pckg: &LPckg, pre_calc: &LPreCalc) {
         let association = pre_calc.association_relation.get(&self.name);
         if association.is_some()
             && association.unwrap().ponteration_type == RelationPonderationType::ManyToMany
@@ -135,9 +135,9 @@ impl CMOFAssociation {
             let _ = writeln!(
                 wrt,
                 include_str!("../template/entity_main_association.tmpl"),
-                full_name = self.get_full_name(pckg),
-                import = self.get_import_content(pckg, pre_calc),
-                table_name = self.get_table_name(pckg),
+                full_name = self.full_name,
+                import = self.get_import_content(),
+                table_name = self.table_name,
                 relation_1_table_name = relation_1_table_name,
                 relation_2_table_name = relation_2_table_name,
                 relation_1_column_name_snake = relation_1_column_name_camel.to_case(Case::Snake),
@@ -150,7 +150,7 @@ impl CMOFAssociation {
     }
 
     /// "import" content for entity_class_main.tmpl
-    fn get_import_content(&self, _pckg: &LPckg, _pre_calc: &LPreCalc) -> String {
+    fn get_import_content(&self) -> String {
         let mut result = String::from("\n");
         result.push_str("use sea_orm::entity::prelude::*;\n");
         result
@@ -169,20 +169,20 @@ impl CMOFClass {
         let _ = writeln!(
             wrt,
             include_str!("../template/entity_main_class.tmpl"),
-            full_name = self.get_full_name(pckg),
-            import = self.get_import_content(pckg, pre_calc),
-            table_name = self.get_table_name(pckg),
+            full_name = self.full_name,
+            import = self.get_import_content(),
+            table_name = self.table_name,
             fields = self.get_fields_content(pckg, pre_calc),
             relations = self.get_relation_content(pckg, pre_calc),
             related = self.get_related_content(pckg, pre_calc),
-            help_doc = self.get_help(pckg, pre_calc).prefix("    /// "),
-            help_fn = self.get_help(pckg, pre_calc),
+            help_doc = self.get_help(pre_calc).prefix("    /// "),
+            help_fn = self.get_help(pre_calc),
             raw = format!("{:#?}", self).prefix("// "),
         );
     }
 
     /// "import" content for entity_class_main.tmpl
-    fn get_import_content(&self, _pckg: &LPckg, _pre_calc: &LPreCalc) -> String {
+    fn get_import_content(&self) -> String {
         let mut result = String::from("\n");
 
         // Only for field that use CMOFEnumeration result, i.e. that have simple property without association
@@ -203,34 +203,34 @@ impl CMOFClass {
     }
 
     /// "fields" content for entity_class_main.tmpl
-    fn get_fields_content(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+    fn get_fields_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
         let mut result = String::from("");
 
         // For super class
         for (_, class) in self.get_all_direct_super() {
-            CMOFClass::format_field_super(&class, &mut result, pckg, pre_calc);
+            CMOFClass::format_field_super(&class, &mut result, pre_calc);
         }
 
         // For complex property
         for field in self.get_all_complex_field() {
-            CMOFClass::format_field_complex_property(&field, &mut result, pckg, pre_calc);
+            CMOFClass::format_field_complex_property(&field, &mut result, pre_calc);
         }
 
         // For simple property
         for field in self.get_all_simple_field() {
-            CMOFClass::format_field_simple_property(&field, &mut result, pckg, pre_calc);
+            CMOFClass::format_field_simple_property(&field, &mut result, pre_calc);
         }
 
         result
     }
 
     /// "relations" content for entity_class_main.tmpl
-    fn get_relation_content(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+    fn get_relation_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
         let mut result = String::new();
 
         // For direct "Super"
         for (_, super_name) in &self.get_all_direct_super() {
-            let class_model_name = &self.get_model_name();
+            let class_model_name = &self.model_name;
             let field_name = &super_name
                 .to_case(Case::Snake)
                 .prefix("super_")
@@ -241,19 +241,17 @@ impl CMOFClass {
                 super_name,
                 field_name,
                 &mut result,
-                pckg,
                 pre_calc,
             );
         }
 
         // For reverse "Super"
         for super_name in &self.get_all_reverse_super(pre_calc) {
-            let class_model_name: &String = &self.get_model_name();
+            let class_model_name: &String = &self.model_name;
             CMOFClass::format_relation_super_to_one(
                 class_model_name,
                 super_name,
                 &mut result,
-                pckg,
                 pre_calc,
             );
         }
@@ -295,29 +293,27 @@ impl CMOFClass {
     }
 
     /// "related" content for entity_class_main.tmpl
-    fn get_related_content(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+    fn get_related_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
         let mut result = String::new();
 
         // For "Super"
         for (_, super_name) in &self.get_all_direct_super() {
-            let class_model_name: &String = &self.get_model_name();
+            let class_model_name: &String = &self.model_name;
             CMOFClass::format_related_direct_super(
                 class_model_name,
                 super_name,
                 &mut result,
-                pckg,
                 pre_calc,
             );
         }
 
         // For reverse "Super"
         for super_name in &self.get_all_reverse_super(pre_calc) {
-            let class_model_name: &String = &self.get_model_name();
+            let class_model_name: &String = &self.model_name;
             CMOFClass::format_related_reverse_super(
                 class_model_name,
                 super_name,
                 &mut result,
-                pckg,
                 pre_calc,
             );
         }
@@ -332,7 +328,6 @@ impl CMOFClass {
                     actual_relation,
                     other_relation,
                     &mut result,
-                    pckg,
                     pre_calc,
                 );
             } else {
@@ -433,13 +428,10 @@ impl CMOFClass {
 
     /// Get all "Super" name
     fn get_all_reverse_super(&self, pre_calc: &LPreCalc) -> Vec<String> {
-        if pre_calc
-            .reverse_super_link
-            .contains_key(&self.get_model_name())
-        {
+        if pre_calc.reverse_super_link.contains_key(&self.model_name) {
             let mut result = pre_calc
                 .reverse_super_link
-                .get(&self.get_model_name())
+                .get(&self.model_name)
                 .unwrap()
                 .clone();
 
@@ -457,7 +449,7 @@ impl CMOFClass {
     ) -> Vec<(String, ElementRelation, ElementRelation)> {
         let mut result: Vec<(String, ElementRelation, ElementRelation)> = Vec::new();
 
-        let key = &self.get_model_name();
+        let key = &self.model_name;
         for (association_name, association) in &pre_calc.association_relation {
             if key == &association.relation_1.element_type {
                 match association.ponteration_type {
@@ -493,7 +485,7 @@ impl CMOFClass {
     fn get_all_direct_one_to_one(&self, pre_calc: &LPreCalc) -> Vec<(String, AssociationRelation)> {
         let mut result: Vec<(String, AssociationRelation)> = Vec::new();
 
-        let key = &self.get_model_name();
+        let key = &self.model_name;
         for (association_name, association) in &pre_calc.association_relation {
             if key == &association.relation_1.element_type {
                 match association.ponteration_type {
@@ -515,7 +507,7 @@ impl CMOFClass {
     ) -> Vec<(String, AssociationRelation)> {
         let mut result: Vec<(String, AssociationRelation)> = Vec::new();
 
-        let key = &self.get_model_name();
+        let key = &self.model_name;
         for (association_name, association) in &pre_calc.association_relation {
             if key == &association.relation_2.element_type {
                 match association.ponteration_type {
@@ -537,7 +529,7 @@ impl CMOFClass {
     ) -> Vec<(String, AssociationRelation)> {
         let mut result: Vec<(String, AssociationRelation)> = Vec::new();
 
-        let key = &self.get_model_name();
+        let key = &self.model_name;
         for (association_name, association) in &pre_calc.association_relation {
             if key == &association.relation_1.element_type {
                 match association.ponteration_type {
@@ -619,12 +611,7 @@ impl CMOFClass {
     // }
 
     /// Format "Super" from __get_all_direct_super__, to write field part
-    fn format_field_super(
-        class: &String,
-        result: &mut String,
-        _pckg: &LPckg,
-        _pre_calc: &LPreCalc,
-    ) {
+    fn format_field_super(class: &String, result: &mut String, _pre_calc: &LPreCalc) {
         // Comment
         result.push_str(format!("    /// SUPER FIELD : {comment}\n", comment = class).as_str());
         // Pub element
@@ -647,7 +634,6 @@ impl CMOFClass {
     fn format_field_simple_property(
         content: &CMOFProperty,
         result: &mut String,
-        _pckg: &LPckg,
         pre_calc: &LPreCalc,
     ) {
         // Comment
@@ -683,7 +669,6 @@ impl CMOFClass {
     fn format_field_complex_property(
         content: &CMOFProperty,
         result: &mut String,
-        _pckg: &LPckg,
         pre_calc: &LPreCalc,
     ) {
         // Comment
@@ -711,7 +696,6 @@ impl CMOFClass {
         super_name: &String,
         field_name: &String,
         result: &mut String,
-        _pckg: &LPckg,
         pre_calc: &LPreCalc,
     ) {
         let key = super_name;
@@ -737,7 +721,6 @@ impl CMOFClass {
         class_model_name: &String,
         super_name: &String,
         result: &mut String,
-        _pckg: &LPckg,
         pre_calc: &LPreCalc,
     ) {
         let key = super_name;
@@ -763,7 +746,6 @@ impl CMOFClass {
         class_model_name: &String,
         super_name: &String,
         result: &mut String,
-        _pckg: &LPckg,
         pre_calc: &LPreCalc,
     ) {
         let key = super_name;
@@ -789,7 +771,6 @@ impl CMOFClass {
         class_model_name: &String,
         super_name: &String,
         result: &mut String,
-        _pckg: &LPckg,
         pre_calc: &LPreCalc,
     ) {
         let key = super_name;
@@ -816,7 +797,6 @@ impl CMOFClass {
         actual_relation: &ElementRelation,
         other_relation: &ElementRelation,
         result: &mut String,
-        _pckg: &LPckg,
         pre_calc: &LPreCalc,
     ) {
         let association_named = pre_calc.owned_member_type_list.get(association_name);
@@ -842,15 +822,14 @@ impl CMOFClass {
     }
 
     // Return content for "help_doc" in "entity_main_class"
-    fn get_help(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+    fn get_help(&self, pre_calc: &LPreCalc) -> String {
         let mut result = String::new();
 
         // Add a head
         result.push_str(
             format!(
                 "# Help document for \"{}\" ({})\n\n",
-                self.get_model_name(),
-                self.get_full_name(pckg)
+                self.model_name, self.full_name
             )
             .as_str(),
         );
@@ -920,8 +899,7 @@ impl CMOFClass {
             result.push_str(
                 format!(
                     "  * callable using find_also_related(__{}Model__) from __{}__\n",
-                    association.relation_2.element_type,
-                    self.get_model_name()
+                    association.relation_2.element_type, self.model_name
                 )
                 .as_str(),
             );
@@ -966,8 +944,7 @@ impl CMOFClass {
             result.push_str(
                 format!(
                     "  * callable using find_with_related(__{}Model__) from __{}__\n",
-                    association.relation_2.element_type,
-                    self.get_model_name()
+                    association.relation_2.element_type, self.model_name
                 )
                 .as_str(),
             );
@@ -999,16 +976,14 @@ impl CMOFClass {
             result.push_str(
                 format!(
                     "  * one-to-one link : one __{}__ need one __{}__)\n",
-                    self.get_model_name(),
-                    direct_super
+                    self.model_name, direct_super
                 )
                 .as_str(),
             );
             result.push_str(
                 format!(
                     "  * callable using find_also_related(__{}Model__) from __{}__\n",
-                    direct_super,
-                    self.get_model_name()
+                    direct_super, self.model_name
                 )
                 .as_str(),
             );
@@ -1048,8 +1023,7 @@ impl CMOFClass {
             result.push_str(
                 format!(
                     "  * callable using find_also_related(__{}Model__) from __{}__\n",
-                    self.get_model_name(),
-                    association.relation_1.element_type
+                    self.model_name, association.relation_1.element_type
                 )
                 .as_str(),
             );
@@ -1070,7 +1044,7 @@ impl CMOFClass {
         }
         for reverse_super in iter_reverse_super {
             let field_name = &self
-                .get_model_name()
+                .model_name
                 .to_case(Case::Snake)
                 .prefix("super_")
                 .replace("\n", "");
@@ -1081,16 +1055,14 @@ impl CMOFClass {
             result.push_str(
                 format!(
                     "  * one-to-one link (reverse) : one __{}__ need one __{}__)\n",
-                    reverse_super,
-                    self.get_model_name()
+                    reverse_super, self.model_name
                 )
                 .as_str(),
             );
             result.push_str(
                 format!(
                     "  * callable using find_also_related(__{}Model__) from __{}__\n",
-                    self.get_model_name(),
-                    reverse_super
+                    self.model_name, reverse_super
                 )
                 .as_str(),
             );
@@ -1112,7 +1084,6 @@ impl CMOFClass {
     //     class_model_name: &String,
     //     super_name: &String,
     //     result: &mut String,
-    //     _pckg: &LPckg,
     //     pre_calc: &LPreCalc,
     // ) {
     // }
@@ -1130,19 +1101,19 @@ impl CMOFDataType {
         let _ = writeln!(
             wrt,
             include_str!("../template/entity_main_datatype.tmpl"),
-            full_name = self.get_full_name(pckg),
-            table_name = self.get_table_name(pckg),
+            full_name = self.full_name,
+            table_name = self.table_name,
             fields = self.get_fields_content(pckg, pre_calc),
             raw = format!("{:#?}", self).prefix("// "),
         );
     }
     /// "fields" content for entity_data_type_main.tmpl
-    fn get_fields_content(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+    fn get_fields_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
         let mut result = String::from("");
 
         // For all property
         for field in self.get_all_field() {
-            CMOFDataType::write_field_property(&field, &mut result, pckg, pre_calc);
+            CMOFDataType::write_field_property(&field, &mut result, pre_calc);
         }
 
         result
@@ -1164,12 +1135,7 @@ impl CMOFDataType {
     }
 
     // Write field content
-    fn write_field_property(
-        content: &CMOFProperty,
-        result: &mut String,
-        _pckg: &LPckg,
-        pre_calc: &LPreCalc,
-    ) {
+    fn write_field_property(content: &CMOFProperty, result: &mut String, pre_calc: &LPreCalc) {
         // Comment
         result.push_str(
             format!(
@@ -1212,20 +1178,20 @@ impl CMOFEnumeration {
         let _ = writeln!(
             wrt,
             include_str!("../template/entity_main_enumeration.tmpl"),
-            full_name = self.get_full_name(pckg),
-            model_name = self.get_model_name(),
+            full_name = self.full_name,
+            model_name = self.model_name,
             fields = self.get_fields_content(pckg, pre_calc),
             raw = format!("{:#?}", self).prefix("// "),
         );
     }
 
     /// "fields" content for entity_enumeration_main.tmpl
-    fn get_fields_content(&self, pckg: &LPckg, pre_calc: &LPreCalc) -> String {
+    fn get_fields_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
         let mut result = String::from("");
 
         // For all literal
         for literal in self.get_all_literal() {
-            CMOFEnumeration::write_literal_property(literal, &self, &mut result, pckg, pre_calc);
+            CMOFEnumeration::write_literal_property(literal, &self, &mut result, pre_calc);
         }
 
         result
@@ -1252,7 +1218,6 @@ impl CMOFEnumeration {
         literal: &CMOFEnumerationLiteral,
         enumeration: &CMOFEnumeration,
         result: &mut String,
-        _pckg: &LPckg,
         pre_calc: &LPreCalc,
     ) {
         // Comment
@@ -1306,7 +1271,7 @@ impl CMOFEnumeration {
 
 impl CMOFPrimitiveType {
     /// write content to output file,from "CMOFPrimitiveType" object
-    fn write_content(&self, wrt: &mut File, pckg: &LPckg, pre_calc: &LPreCalc) {
+    fn write_content(&self, wrt: &mut File, pre_calc: &LPreCalc) {
         let object_type = self.name.as_str();
         if pre_calc
             .primitive_type_conversion
@@ -1317,8 +1282,8 @@ impl CMOFPrimitiveType {
             let _ = writeln!(
                 wrt,
                 include_str!("../template/entity_main_primitive_type.tmpl"),
-                full_name = self.get_full_name(pckg),
-                model_name = self.get_model_name(),
+                full_name = self.full_name,
+                model_name = self.model_name,
                 standard_object = content,
             );
         }

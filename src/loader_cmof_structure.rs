@@ -24,6 +24,7 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::loader_deserialise_helper::*;
+use crate::loader_post_treament_deserialize::*;
 
 // Dependencies section
 use serde::Deserialize;
@@ -57,6 +58,18 @@ pub struct CMOFAssociation {
     #[serde(deserialize_with = "deser_boolean_always_false")]
     #[serde(default = "default_false")]
     pub is_derived: bool,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub technical_name: String,
+    /// Casing formating of "name" as table_name
+    #[serde(skip)]
+    pub table_name: String,
+    /// Casing formating of "name" as model_case
+    #[serde(skip)]
+    pub model_name: String,
+    /// Casing formating of "name" as full_name
+    #[serde(skip)]
+    pub full_name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -94,6 +107,18 @@ pub struct CMOFClass {
     #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
     pub owned_rule: BTreeMap<String, EnumOwnedRule>,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub technical_name: String,
+    /// Casing formating of "name" as table_name
+    #[serde(skip)]
+    pub table_name: String,
+    /// Casing formating of "name" as model_case
+    #[serde(skip)]
+    pub model_name: String,
+    /// Casing formating of "name" as full_name
+    #[serde(skip)]
+    pub full_name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -137,6 +162,18 @@ pub struct CMOFDataType {
     #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
     pub owned_rule: BTreeMap<String, EnumOwnedRule>,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub technical_name: String,
+    /// Casing formating of "name" as table_name
+    #[serde(skip)]
+    pub table_name: String,
+    /// Casing formating of "name" as model_case
+    #[serde(skip)]
+    pub model_name: String,
+    /// Casing formating of "name" as full_name
+    #[serde(skip)]
+    pub full_name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -154,6 +191,18 @@ pub struct CMOFEnumeration {
     #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
     pub owned_attribute: BTreeMap<String, EnumOwnedLiteral>,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub technical_name: String,
+    /// Casing formating of "name" as table_name
+    #[serde(skip)]
+    pub table_name: String,
+    /// Casing formating of "name" as model_case
+    #[serde(skip)]
+    pub model_name: String,
+    /// Casing formating of "name" as full_name
+    #[serde(skip)]
+    pub full_name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -212,19 +261,9 @@ pub struct CMOFPackage {
     #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
     pub owned_member: BTreeMap<String, EnumOwnedMember>,
-}
-
-impl CMOFPackage {
-    /// Lowercase name of the package (no '.', no '#', no uppercase)
-    pub fn get_lowercase_name(&self) -> String {
-        let str_result = Path::new(&self.name)
-            .file_stem()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_ascii_lowercase();
-        str_result.to_case(Case::Snake)
-    }
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub lowercase_name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -252,6 +291,18 @@ pub struct CMOFPrimitiveType {
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub technical_name: String,
+    /// Casing formating of "name" as table_name
+    #[serde(skip)]
+    pub table_name: String,
+    /// Casing formating of "name" as model_case
+    #[serde(skip)]
+    pub model_name: String,
+    /// Casing formating of "name" as full_name
+    #[serde(skip)]
+    pub full_name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -365,6 +416,7 @@ pub struct CMOFTag {
 /// RUST Struct for representing package file
 pub struct FilePackage {
     /// cmof:Package object
+    #[serde(deserialize_with = "deser_post_treatement_cmof_package")]
     #[serde(rename = "cmof:Package")]
     pub package: CMOFPackage,
     /// cmof:Tag object list

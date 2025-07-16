@@ -54,7 +54,7 @@ impl LoadingTracker {
             debug!("Generating \"lib.rs\" from \"{label}\" : START",);
 
             // Writting for each entities, using template
-            for (_, entity) in package.get_sorted_owned_member() {
+            for (_, entity) in &package.get_json().owned_member {
                 match entity {
                     EnumOwnedMember::Association(content) => {
                         content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
@@ -90,7 +90,7 @@ impl WritingLibFile for CMOFAssociation {
     fn wrt_lib_file_level(
         &self,
         writer: &mut File,
-        package: &LoadingPackage,
+        _package: &LoadingPackage,
         pre_calculation: &LoadingPreCalculation,
     ) {
         // Only for "Many to Many"
@@ -104,8 +104,8 @@ impl WritingLibFile for CMOFAssociation {
                 let _ = writeln!(
                     writer,
                     include_str!("../template/lib_part_2_association.tmpl"),
-                    model_name = self.get_model_name(),
-                    table_name = self.get_table_name(package),
+                    model_name = self.model_name,
+                    table_name = self.table_name,
                 );
             } else {
                 warn!(
@@ -121,14 +121,14 @@ impl WritingLibFile for CMOFClass {
     fn wrt_lib_file_level(
         &self,
         writer: &mut File,
-        package: &LoadingPackage,
+        _package: &LoadingPackage,
         _pre_calculation: &LoadingPreCalculation,
     ) {
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_2_class.tmpl"),
-            model_name = self.get_model_name(),
-            table_name = self.get_table_name(package),
+            model_name = self.model_name,
+            table_name = self.table_name,
         );
     }
 }
@@ -137,14 +137,14 @@ impl WritingLibFile for CMOFDataType {
     fn wrt_lib_file_level(
         &self,
         writer: &mut File,
-        package: &LoadingPackage,
+        _package: &LoadingPackage,
         _pre_calculation: &LoadingPreCalculation,
     ) {
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_2_datatype.tmpl"),
-            model_name = self.get_model_name(),
-            table_name = self.get_table_name(package),
+            model_name = self.model_name,
+            table_name = self.table_name,
         );
     }
 }
@@ -153,14 +153,14 @@ impl WritingLibFile for CMOFEnumeration {
     fn wrt_lib_file_level(
         &self,
         writer: &mut File,
-        package: &LoadingPackage,
+        _package: &LoadingPackage,
         _pre_calculation: &LoadingPreCalculation,
     ) {
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_2_enumeration.tmpl"),
-            model_name = self.get_model_name(),
-            table_name = self.get_table_name(package),
+            model_name = self.model_name,
+            table_name = self.table_name,
         );
     }
 }
@@ -169,14 +169,14 @@ impl WritingLibFile for CMOFPrimitiveType {
     fn wrt_lib_file_level(
         &self,
         writer: &mut File,
-        package: &LoadingPackage,
+        _package: &LoadingPackage,
         _pre_calculation: &LoadingPreCalculation,
     ) {
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_2_primitive_type.tmpl"),
-            model_name = self.get_model_name(),
-            table_name = self.get_table_name(package),
+            model_name = self.model_name,
+            table_name = self.table_name,
         );
     }
 }

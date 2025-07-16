@@ -28,8 +28,7 @@ use crate::output_result_manager::*;
 
 // Dependencies section
 use infinitable::Infinitable as UnlimitedNatural;
-use std::collections::{BTreeMap, HashMap};
-use std::iter::FromIterator;
+use std::collections::BTreeMap;
 
 /// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using ResultEnv object
 pub fn open_loader(file_env: ResultEnv) -> LoadingTracker {
@@ -43,8 +42,6 @@ pub enum LoadingState {
     Empty,
     /// With Element (imported)
     Loaded,
-    /// With Element (imported)
-    Sorted,
     /// Element used (converted)
     Finished,
 }
@@ -76,20 +73,6 @@ impl LoadingPackage {
         }
     }
 
-    /// Lowercase name of the package (no '.', no '#', no uppercase)
-    pub fn get_lowercase_name(&self) -> String {
-        let str_result = Path::new(&self.filename)
-            .file_stem()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_ascii_lowercase();
-        // let str_result = str_result.replace('.', "_");
-        // let str_result = str_result.replace('#', "_");
-        // str_result + self.id.as_str().to_ascii_lowercase().as_str()
-        str_result.to_case(Case::Snake)
-    }
-
     /// State of package
     pub fn get_state(&self) -> &LoadingState {
         &self.state
@@ -105,7 +88,7 @@ impl LoadingPackage {
 
     /// Provide 'object' access control
     pub fn get_json(&self) -> &CMOFPackage {
-        if (self.state == LoadingState::Loaded) || (self.state == LoadingState::Sorted) {
+        if self.state == LoadingState::Loaded {
             if self.cmof_object.is_none() {
                 panic!(
                     "Request \"get_json\" on empty json ({:?} status)",
@@ -123,17 +106,6 @@ impl LoadingPackage {
     pub fn make_loaded(&mut self, cmof: CMOFPackage) {
         self.cmof_object = Some(cmof);
         self.state = LoadingState::Loaded;
-    }
-
-    /// Save Element and change state
-    pub fn make_sorted(&mut self, v: BTreeMap<String, EnumOwnedMember>) {
-        self.sorted_owned_member = v;
-        self.state = LoadingState::Sorted;
-    }
-
-    /// Save Element and change state
-    pub fn get_sorted_owned_member(&self) -> &BTreeMap<String, EnumOwnedMember> {
-        &self.sorted_owned_member
     }
 
     /// Delete Element and change state
@@ -308,7 +280,7 @@ pub struct LoadingTracker {
     /// ResultEnv linked with import (input_folder, and output_folder)
     file_env: ResultEnv,
     /// Collection of package to import
-    loaded_package: HashMap<String, LoadingPackage>,
+    loaded_package: BTreeMap<String, LoadingPackage>,
     /// Order of the collection of package
     pub importing_order: BTreeMap<usize, String>,
     /// builing pre calculation result
@@ -321,7 +293,7 @@ impl LoadingTracker {
     pub fn new(file_env: ResultEnv) -> Self {
         LoadingTracker {
             file_env,
-            loaded_package: HashMap::new(),
+            loaded_package: BTreeMap::new(),
             importing_order: BTreeMap::new(),
             pre_calculation: LoadingPreCalculation::new(),
         }
@@ -386,17 +358,15 @@ impl LoadingTracker {
 // Algorithm
 impl LoadingTracker {
     ///
-    pub fn get_package_in_order(&self) -> Vec<(&String, &LoadingPackage)> {
-        let mut result: HashMap<&String, &LoadingPackage> = HashMap::new();
+    pub fn get_package_in_order(&self) -> BTreeMap<String, &LoadingPackage> {
+        let mut result: BTreeMap<String, &LoadingPackage> = BTreeMap::new();
         debug!("{:?}", &self.importing_order);
         for (_, value) in &self.importing_order {
             if self.loaded_package.get(value).is_some() {
-                result.insert(&value, self.loaded_package.get(value).unwrap());
+                result.insert(value.clone(), self.loaded_package.get(value).unwrap());
             }
         }
-        let mut v = Vec::from_iter(result);
-        v.sort_by(|&(a, _), &(b, _)| a.cmp(&b));
-        v
+        result
     }
 
     /// Load minidom element from a gived package, including dependencies, and save element in loaded_package
@@ -416,7 +386,7 @@ impl LoadingTracker {
             debug!("Loading \"{}\" : START", label);
         }
 
-        // Reserving label in HashMap
+        // Reserving label in BTreeMap
         self.loaded_package.insert(package.get_label(), package);
 
         // Generate file path
@@ -436,17 +406,10 @@ impl LoadingTracker {
         // Evaluate dependencies, and load it
         self.add_dependencies(&cmof_package, label.clone());
 
-        // Save object in hashmap attribute
+        // Save object in BTreeMap attribute
         let package_object = self.loaded_package.get_mut(&label).unwrap();
         // package_object.make_loaded_element(package_element);
         package_object.make_loaded(cmof_package);
-
-        // Sort OwnedMember
-        let mut v: BTreeMap<String, EnumOwnedMember> = BTreeMap::new();
-        for (_, d) in package_object.get_json().owned_member.clone() {
-            v.insert(d.get_full_name(&package_object), d);
-        }
-        package_object.make_sorted(v);
 
         // Define treatment order
         let max = self.get_order_len();
@@ -573,175 +536,40 @@ pub trait NamingStruct {
 }
 
 impl NamingStruct for EnumOwnedMember {
-    fn get_technical_name(&self, package: &LoadingPackage) -> String {
+    fn get_technical_name(&self, _package: &LoadingPackage) -> String {
         match self {
-            EnumOwnedMember::Association(content) => content.get_technical_name(package),
-            EnumOwnedMember::Class(content) => content.get_technical_name(package),
-            EnumOwnedMember::DataType(content) => content.get_technical_name(package),
-            EnumOwnedMember::Enumeration(content) => content.get_technical_name(package),
-            EnumOwnedMember::PrimitiveType(content) => content.get_technical_name(package),
+            EnumOwnedMember::Association(content) => content.technical_name.clone(),
+            EnumOwnedMember::Class(content) => content.technical_name.clone(),
+            EnumOwnedMember::DataType(content) => content.technical_name.clone(),
+            EnumOwnedMember::Enumeration(content) => content.technical_name.clone(),
+            EnumOwnedMember::PrimitiveType(content) => content.technical_name.clone(),
         }
     }
-    fn get_table_name(&self, package: &LoadingPackage) -> String {
+    fn get_table_name(&self, _package: &LoadingPackage) -> String {
         match self {
-            EnumOwnedMember::Association(content) => content.get_table_name(package),
-            EnumOwnedMember::Class(content) => content.get_table_name(package),
-            EnumOwnedMember::DataType(content) => content.get_table_name(package),
-            EnumOwnedMember::Enumeration(content) => content.get_table_name(package),
-            EnumOwnedMember::PrimitiveType(content) => content.get_table_name(package),
+            EnumOwnedMember::Association(content) => content.table_name.clone(),
+            EnumOwnedMember::Class(content) => content.table_name.clone(),
+            EnumOwnedMember::DataType(content) => content.table_name.clone(),
+            EnumOwnedMember::Enumeration(content) => content.table_name.clone(),
+            EnumOwnedMember::PrimitiveType(content) => content.table_name.clone(),
         }
     }
     fn get_model_name(&self) -> String {
         match self {
-            EnumOwnedMember::Association(content) => content.get_model_name(),
-            EnumOwnedMember::Class(content) => content.get_model_name(),
-            EnumOwnedMember::DataType(content) => content.get_model_name(),
-            EnumOwnedMember::Enumeration(content) => content.get_model_name(),
-            EnumOwnedMember::PrimitiveType(content) => content.get_model_name(),
+            EnumOwnedMember::Association(content) => content.model_name.clone(),
+            EnumOwnedMember::Class(content) => content.model_name.clone(),
+            EnumOwnedMember::DataType(content) => content.model_name.clone(),
+            EnumOwnedMember::Enumeration(content) => content.model_name.clone(),
+            EnumOwnedMember::PrimitiveType(content) => content.model_name.clone(),
         }
     }
-    fn get_full_name(&self, package: &LoadingPackage) -> String {
+    fn get_full_name(&self, _package: &LoadingPackage) -> String {
         match self {
-            EnumOwnedMember::Association(content) => content.get_full_name(package),
-            EnumOwnedMember::Class(content) => content.get_full_name(package),
-            EnumOwnedMember::DataType(content) => content.get_full_name(package),
-            EnumOwnedMember::Enumeration(content) => content.get_full_name(package),
-            EnumOwnedMember::PrimitiveType(content) => content.get_full_name(package),
+            EnumOwnedMember::Association(content) => content.full_name.clone(),
+            EnumOwnedMember::Class(content) => content.full_name.clone(),
+            EnumOwnedMember::DataType(content) => content.full_name.clone(),
+            EnumOwnedMember::Enumeration(content) => content.full_name.clone(),
+            EnumOwnedMember::PrimitiveType(content) => content.full_name.clone(),
         }
-    }
-}
-
-impl NamingStruct for CMOFAssociation {
-    fn get_technical_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name);
-        result.push_str(".cmof#");
-        result.push_str(self.name.as_str());
-        result
-    }
-    fn get_table_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
-        result.push_str("_");
-        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
-        result
-    }
-    fn get_model_name(&self) -> String {
-        self.name.to_case(Case::UpperCamel)
-    }
-    fn get_full_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
-        result.push_str("_association_");
-        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
-        result
-    }
-}
-
-impl NamingStruct for CMOFClass {
-    fn get_technical_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name);
-        result.push_str(".cmof#");
-        result.push_str(self.name.as_str());
-        result
-    }
-    fn get_table_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
-        result.push_str("_");
-        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
-        result
-    }
-    fn get_model_name(&self) -> String {
-        self.name.to_case(Case::UpperCamel)
-    }
-    fn get_full_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
-        result.push_str("_class_");
-        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
-        result
-    }
-}
-
-impl NamingStruct for CMOFDataType {
-    fn get_technical_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name);
-        result.push_str(".cmof#");
-        result.push_str(self.name.as_str());
-        result
-    }
-    fn get_table_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
-        result.push_str("_");
-        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
-        result
-    }
-    fn get_model_name(&self) -> String {
-        self.name.to_case(Case::UpperCamel)
-    }
-    fn get_full_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
-        result.push_str("_datatype_");
-        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
-        result
-    }
-}
-
-impl NamingStruct for CMOFEnumeration {
-    fn get_technical_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name);
-        result.push_str(".cmof#");
-        result.push_str(self.name.as_str());
-        result
-    }
-    fn get_table_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
-        result.push_str("_");
-        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
-        result
-    }
-    fn get_model_name(&self) -> String {
-        self.name.to_case(Case::UpperCamel)
-    }
-    fn get_full_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
-        result.push_str("_enumeration_");
-        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
-        result
-    }
-}
-
-impl NamingStruct for CMOFPrimitiveType {
-    fn get_technical_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name);
-        result.push_str(".cmof#");
-        result.push_str(self.name.as_str());
-        result
-    }
-    fn get_table_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
-        result.push_str("_");
-        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
-        result
-    }
-    fn get_model_name(&self) -> String {
-        self.name.to_case(Case::UpperCamel)
-    }
-    fn get_full_name(&self, package: &LoadingPackage) -> String {
-        let mut result = String::from("");
-        result.push_str(&package.get_json().name.to_case(Case::Snake).as_str());
-        result.push_str("_primitive_");
-        result.push_str(self.name.as_str().to_case(Case::Snake).as_str());
-        result
     }
 }

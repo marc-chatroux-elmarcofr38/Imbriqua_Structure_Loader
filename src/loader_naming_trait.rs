@@ -31,6 +31,12 @@ pub trait AsNameField {
     fn get_name_field(&self) -> String;
 }
 
+impl AsNameField for CMOFPackage {
+    fn get_name_field(&self) -> String {
+        self.name.clone()
+    }
+}
+
 impl AsNameField for EnumOwnedMember {
     fn get_name_field(&self) -> String {
         match self {

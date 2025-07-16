@@ -23,7 +23,7 @@ If not, see <https://www.gnu.org/licenses/>.
 // Package section
 use crate::custom_log_tools::*;
 use crate::loader_cmof_structure::*;
-use crate::loader_naming_for_breemap::*;
+use crate::loader_naming_trait::*;
 
 // Dependencies section
 pub use infinitable::Infinitable as UnlimitedNatural;
