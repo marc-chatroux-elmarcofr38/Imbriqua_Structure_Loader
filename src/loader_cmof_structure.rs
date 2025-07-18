@@ -29,14 +29,75 @@ use crate::loader_post_treament_deserialize::*;
 // Dependencies section
 use serde::Deserialize;
 use std::collections::BTreeMap;
+pub use std::rc::{Rc, Weak};
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+/// Reference to another XMI object
+pub struct XMIIdReference {
+    local_id: String,
+    package_id: String,
+    is_set: bool,
+}
+
+impl XMIIdReference {
+    /// Create when only local ID is available (need to use set_package after)
+    pub fn new_local(local_id: String) -> Self {
+        XMIIdReference {
+            local_id: local_id,
+            package_id: String::new(),
+            is_set: false,
+        }
+    }
+    ///
+    pub fn new_global(local_id: String, package_id: String) -> Self {
+        XMIIdReference {
+            local_id: local_id,
+            package_id: package_id,
+            is_set: true,
+        }
+    }
+    ///
+    pub fn set_package(&mut self, package_id: &String) {
+        self.package_id = package_id.clone();
+        self.is_set = true;
+    }
+    ///
+    pub fn get_local_id(&self) -> &String {
+        &self.local_id
+    }
+    ///
+    pub fn get_package_id(&self) -> &String {
+        &self.package_id
+    }
+    ///
+    pub fn label(&self) -> String {
+        let mut r = self.package_id.clone();
+        r.push_str("-");
+        r.push_str(self.local_id.as_str());
+        r
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Association Object
 pub struct CMOFAssociation {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
@@ -49,9 +110,9 @@ pub struct CMOFAssociation {
     pub member_end: (String, String),
     /// Optional ownedEnd object
     #[serde(rename = "ownedEnd")]
-    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_end: BTreeMap<String, EnumOwnedEnd>,
+    pub owned_end: BTreeMap<String, Rc<EnumOwnedEnd>>,
     // navigableOwnedEnd forbidden
     /// Optional _isDerived object, need to by "false"
     #[serde(rename = "_isDerived")]
@@ -77,8 +138,9 @@ pub struct CMOFAssociation {
 /// RUST Struct for deserialize CMOF Class Object
 pub struct CMOFClass {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
@@ -99,14 +161,14 @@ pub struct CMOFClass {
     pub super_class_link: Vec<EnumSuperClass>,
     /// Optional ownedAttribute object array
     #[serde(rename = "ownedAttribute")]
-    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_attribute: BTreeMap<String, EnumOwnedAttribute>,
+    pub owned_attribute: BTreeMap<String, Rc<EnumOwnedAttribute>>,
     /// Optional ownedRule object
     #[serde(rename = "ownedRule")]
-    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_rule: BTreeMap<String, EnumOwnedRule>,
+    pub owned_rule: BTreeMap<String, Rc<EnumOwnedRule>>,
     /// Casing formating of "name" as technical_name
     #[serde(skip)]
     pub technical_name: String,
@@ -126,8 +188,9 @@ pub struct CMOFClass {
 /// RUST Struct for deserialize CMOF Constraint Object
 pub struct CMOFConstraint {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
@@ -147,21 +210,22 @@ pub struct CMOFConstraint {
 /// RUST Struct for deserialize CMOF DataType Object
 pub struct CMOFDataType {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
     /// Optional ownedAttribute object array
     #[serde(rename = "ownedAttribute")]
-    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_attribute: BTreeMap<String, EnumOwnedAttribute>,
+    pub owned_attribute: BTreeMap<String, Rc<EnumOwnedAttribute>>,
     /// Optional ownedRule object
     #[serde(rename = "ownedRule")]
-    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_rule: BTreeMap<String, EnumOwnedRule>,
+    pub owned_rule: BTreeMap<String, Rc<EnumOwnedRule>>,
     /// Casing formating of "name" as technical_name
     #[serde(skip)]
     pub technical_name: String,
@@ -181,16 +245,17 @@ pub struct CMOFDataType {
 /// RUST Struct for deserialize CMOF Enumeration Object
 pub struct CMOFEnumeration {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
     /// Optional ownedLiteral object arry
     #[serde(rename = "ownedLiteral")]
-    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_attribute: BTreeMap<String, EnumOwnedLiteral>,
+    pub owned_attribute: BTreeMap<String, Rc<EnumOwnedLiteral>>,
     /// Casing formating of "name" as technical_name
     #[serde(skip)]
     pub technical_name: String,
@@ -210,8 +275,9 @@ pub struct CMOFEnumeration {
 /// RUST Struct for deserialize CMOF EnumerationLiteral Object
 pub struct CMOFEnumerationLiteral {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
@@ -228,8 +294,9 @@ pub struct CMOFEnumerationLiteral {
 /// RUST Struct for deserialize CMOF OpaqueExpression Object
 pub struct CMOFOpaqueExpression {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// body attribute
     #[serde(rename = "body")]
     pub body: String,
@@ -243,8 +310,9 @@ pub struct CMOFOpaqueExpression {
 /// RUST Struct for deserialize CMOF Package Object
 pub struct CMOFPackage {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
@@ -253,14 +321,14 @@ pub struct CMOFPackage {
     pub uri: String,
     /// Optional packageImport object array
     #[serde(rename = "packageImport")]
-    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub package_import: BTreeMap<String, EnumPackageImport>,
+    pub package_import: BTreeMap<String, Rc<EnumPackageImport>>,
     /// Optional ownedMember object array
     #[serde(rename = "ownedMember")]
-    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_member: BTreeMap<String, EnumOwnedMember>,
+    pub owned_member: BTreeMap<String, Rc<EnumOwnedMember>>,
     /// Casing formating of "name" as technical_name
     #[serde(skip)]
     pub lowercase_name: String,
@@ -271,8 +339,9 @@ pub struct CMOFPackage {
 /// RUST Struct for deserialize CMOF PackageImport Object
 pub struct CMOFPackageImport {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// importingNamespace attribute
     #[serde(rename = "_importingNamespace")]
     pub importing_namespace: String,
@@ -286,8 +355,9 @@ pub struct CMOFPackageImport {
 /// RUST Struct for deserialize CMOF PrimitiveType Object
 pub struct CMOFPrimitiveType {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
@@ -310,8 +380,9 @@ pub struct CMOFPrimitiveType {
 /// RUST Struct for deserialize CMOF Property Object
 pub struct CMOFProperty {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// name attribute
     #[serde(rename = "_name")]
     #[serde(deserialize_with = "deser_name")]
@@ -398,8 +469,9 @@ pub struct CMOFProperty {
 /// RUST Struct for deserialize CMOF Tag Object
 pub struct CMOFTag {
     /// xmi:id attribute
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: String,
+    pub xmi_id: XMIIdReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,

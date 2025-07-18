@@ -55,7 +55,7 @@ impl LoadingTracker {
 
             // Writting for each entities, using template
             for (_, entity) in &package.get_json().owned_member {
-                match entity {
+                match entity.as_ref() {
                     EnumOwnedMember::Association(content) => {
                         content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
                     }

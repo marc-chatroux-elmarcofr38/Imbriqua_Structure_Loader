@@ -45,7 +45,7 @@ impl LoadingTracker {
         for (label, pckg) in self.get_package_in_order() {
             debug!("Generating sub-mod file for \"{label}\" : START");
             for (_, entity) in &pckg.get_json().owned_member {
-                match entity {
+                match entity.as_ref() {
                     EnumOwnedMember::Association(content) => {
                         // Only for "Many to Many"
                         let association =
@@ -347,7 +347,7 @@ impl CMOFClass {
         let mut result: Vec<&CMOFProperty> = Vec::new();
 
         for (_, property) in &self.owned_attribute {
-            match property {
+            match property.as_ref() {
                 EnumOwnedAttribute::Property(content) => {
                     if content.upper > infinitable::Finite(1) {
                         // Not a field, N-N link
@@ -374,7 +374,7 @@ impl CMOFClass {
         let mut result: Vec<&CMOFProperty> = Vec::new();
 
         for (_, property) in &self.owned_attribute {
-            match property {
+            match property.as_ref() {
                 EnumOwnedAttribute::Property(content) => {
                     if content.upper > infinitable::Finite(1) {
                         // Not a field, N-N link
@@ -640,7 +640,7 @@ impl CMOFClass {
         result.push_str(
             format!(
                 "    /// SIMPLE FIELD : {comment}\n",
-                comment = content.xmi_id
+                comment = content.xmi_id.label()
             )
             .as_str(),
         );
@@ -675,7 +675,7 @@ impl CMOFClass {
         result.push_str(
             format!(
                 "    /// COMPLEX FIELD : {comment}\n",
-                comment = content.xmi_id
+                comment = content.xmi_id.label()
             )
             .as_str(),
         );
@@ -851,7 +851,7 @@ impl CMOFClass {
                 format!(
                     "* __{}__ (xmi_id : \"{}\")\n",
                     property.get_field_name(),
-                    property.xmi_id
+                    property.xmi_id.label()
                 )
                 .as_str(),
             );
@@ -1124,7 +1124,7 @@ impl CMOFDataType {
         let mut result: Vec<&CMOFProperty> = Vec::new();
 
         for (_, property) in &self.owned_attribute {
-            match property {
+            match property.as_ref() {
                 EnumOwnedAttribute::Property(content) => {
                     result.push(&content);
                 }
@@ -1140,7 +1140,7 @@ impl CMOFDataType {
         result.push_str(
             format!(
                 "    /// RUST DATA TYPE : {comment}\n",
-                comment = content.xmi_id
+                comment = content.xmi_id.label()
             )
             .as_str(),
         );
@@ -1203,7 +1203,7 @@ impl CMOFEnumeration {
         let mut result: Vec<&CMOFEnumerationLiteral> = Vec::new();
 
         for (_, property) in &self.owned_attribute {
-            match property {
+            match property.as_ref() {
                 EnumOwnedLiteral::EnumerationLiteral(content) => {
                     result.push(&content);
                 }
@@ -1224,7 +1224,7 @@ impl CMOFEnumeration {
         result.push_str(
             format!(
                 "    /// ENUMERATION LITERAL : {comment}\n",
-                comment = literal.xmi_id
+                comment = literal.xmi_id.label()
             )
             .as_str(),
         );

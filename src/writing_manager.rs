@@ -96,7 +96,7 @@ impl LoadingTracker {
         let mut result: BTreeMap<String, Named> = BTreeMap::new();
         for (_, package) in self.get_package_in_order() {
             for (_, owned_member) in &package.get_json().owned_member {
-                let key = match owned_member {
+                let key = match owned_member.as_ref() {
                     EnumOwnedMember::Association(content) => content.name.clone(),
                     _ => owned_member.get_model_name().clone(),
                 };
@@ -148,11 +148,11 @@ impl LoadingTracker {
         let mut result: BTreeMap<String, Vec<ElementRelation>> = BTreeMap::new();
         for (_, package) in self.get_package_in_order() {
             for (_, owned_member) in &package.get_json().owned_member {
-                match owned_member {
+                match owned_member.as_ref() {
                     EnumOwnedMember::Association(content) => {
                         let key = content.name.clone();
                         for (_, owned_end) in &content.owned_end {
-                            match owned_end {
+                            match owned_end.as_ref() {
                                 EnumOwnedEnd::Property(property) => {
                                     let value = ElementRelation {
                                         element_type: property.get_type(),
@@ -173,7 +173,7 @@ impl LoadingTracker {
                     }
                     EnumOwnedMember::Class(content) => {
                         for (_, owned_attribute) in &content.owned_attribute {
-                            match owned_attribute {
+                            match owned_attribute.as_ref() {
                                 EnumOwnedAttribute::Property(property) => {
                                     if property.association.is_some() {
                                         let key = property.association.clone().unwrap();
@@ -278,7 +278,7 @@ impl LoadingTracker {
         let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
         for (_, package) in self.get_package_in_order() {
             for (_, owned_member) in &package.get_json().owned_member {
-                match owned_member {
+                match owned_member.as_ref() {
                     EnumOwnedMember::Class(content) => {
                         // As default, empty
                         let mut list_of_super: Vec<String> = content.super_class.clone();
@@ -345,15 +345,6 @@ impl CMOFProperty {
                 EnumType::ClassLink(link) => {
                     // Foreign field
                     let key = link.href.clone();
-                    let key = match key.find("http://schema.omg.org/spec/MOF/2.0/cmof.xml#") {
-                        Some(split_index) => key[split_index..]
-                            .replace(
-                                "http://schema.omg.org/spec/MOF/2.0/cmof.xml#",
-                                "Extensibilty.cmof#",
-                            )
-                            .to_string(),
-                        None => key,
-                    };
                     let key = match key.find(".cmof#") {
                         Some(split_index) => key[split_index..].replace(".cmof#", "").to_string(),
                         None => key,

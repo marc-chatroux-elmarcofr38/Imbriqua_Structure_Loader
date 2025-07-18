@@ -398,8 +398,9 @@ impl LoadingTracker {
         let cmof_result: FilePackage = serde_json::from_slice(&string_content.as_bytes()).unwrap();
         let cmof_package = cmof_result.package;
 
-        // Checi ID
-        if cmof_package.xmi_id != package_id {
+        // Check ID
+        if cmof_package.xmi_id.get_local_id() != package_id {
+            error!("{} / {}", package_id, cmof_package.xmi_id.get_local_id());
             panic!()
         }
 
@@ -426,7 +427,7 @@ impl LoadingTracker {
     fn add_dependencies(&mut self, cmof_package: &CMOFPackage, label: String) {
         for (_, child) in cmof_package.package_import.iter() {
             // Go to "importedPackage" child
-            match child {
+            match child.as_ref() {
                 EnumPackageImport::PackageImport(content) => {
                     match &content.imported_package {
                         EnumImportedPackage::ImportedPackage(content_2) => {

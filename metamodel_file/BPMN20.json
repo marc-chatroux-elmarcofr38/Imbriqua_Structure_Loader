@@ -95,7 +95,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:Class",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Element"
+							"_href": "Extensibilty.cmof#Element"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Interface-implementationRef",
@@ -147,7 +147,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:Class",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Element"
+							"_href": "Extensibilty.cmof#Element"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Operation-implementationRef",
@@ -1018,7 +1018,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:Class",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Element"
+							"_href": "Extensibilty.cmof#Element"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Relationship-sources",
@@ -1029,7 +1029,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:Class",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Element"
+							"_href": "Extensibilty.cmof#Element"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "Relationship-targets",
@@ -1219,7 +1219,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:Class",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Element"
+							"_href": "Extensibilty.cmof#Element"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ExtensionAttributeValue-valueRef",
@@ -1230,7 +1230,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:Class",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Element"
+							"_href": "Extensibilty.cmof#Element"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ExtensionAttributeValue-value",
@@ -3755,7 +3755,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:Class",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Element"
+							"_href": "Extensibilty.cmof#Element"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "FormalExpression-body",
@@ -3811,7 +3811,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:Class",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Element"
+							"_href": "Extensibilty.cmof#Element"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "ItemDefinition-structureRef",

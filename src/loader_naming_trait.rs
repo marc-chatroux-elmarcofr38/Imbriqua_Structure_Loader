@@ -40,11 +40,11 @@ impl AsNameField for CMOFPackage {
 impl AsNameField for EnumOwnedMember {
     fn get_name_field(&self) -> String {
         match self {
-            EnumOwnedMember::Association(content) => content.xmi_id.clone(),
-            EnumOwnedMember::Class(content) => content.xmi_id.clone(),
-            EnumOwnedMember::DataType(content) => content.xmi_id.clone(),
-            EnumOwnedMember::Enumeration(content) => content.xmi_id.clone(),
-            EnumOwnedMember::PrimitiveType(content) => content.xmi_id.clone(),
+            EnumOwnedMember::Association(content) => content.xmi_id.label(),
+            EnumOwnedMember::Class(content) => content.xmi_id.label(),
+            EnumOwnedMember::DataType(content) => content.xmi_id.label(),
+            EnumOwnedMember::Enumeration(content) => content.xmi_id.label(),
+            EnumOwnedMember::PrimitiveType(content) => content.xmi_id.label(),
         }
     }
 }
@@ -52,7 +52,7 @@ impl AsNameField for EnumOwnedMember {
 impl AsNameField for EnumPackageImport {
     fn get_name_field(&self) -> String {
         match self {
-            EnumPackageImport::PackageImport(content) => content.xmi_id.clone(),
+            EnumPackageImport::PackageImport(content) => content.xmi_id.label(),
         }
     }
 }
@@ -60,7 +60,7 @@ impl AsNameField for EnumPackageImport {
 impl AsNameField for EnumOwnedEnd {
     fn get_name_field(&self) -> String {
         match self {
-            EnumOwnedEnd::Property(content) => content.xmi_id.clone(),
+            EnumOwnedEnd::Property(content) => content.xmi_id.label(),
         }
     }
 }
@@ -68,7 +68,7 @@ impl AsNameField for EnumOwnedEnd {
 impl AsNameField for EnumOwnedLiteral {
     fn get_name_field(&self) -> String {
         match self {
-            EnumOwnedLiteral::EnumerationLiteral(content) => content.xmi_id.clone(),
+            EnumOwnedLiteral::EnumerationLiteral(content) => content.xmi_id.label(),
         }
     }
 }
@@ -76,7 +76,7 @@ impl AsNameField for EnumOwnedLiteral {
 impl AsNameField for EnumOwnedAttribute {
     fn get_name_field(&self) -> String {
         match self {
-            EnumOwnedAttribute::Property(content) => content.xmi_id.clone(),
+            EnumOwnedAttribute::Property(content) => content.xmi_id.label(),
         }
     }
 }
@@ -84,7 +84,7 @@ impl AsNameField for EnumOwnedAttribute {
 impl AsNameField for EnumOwnedRule {
     fn get_name_field(&self) -> String {
         match self {
-            EnumOwnedRule::Constraint(content) => content.xmi_id.clone(),
+            EnumOwnedRule::Constraint(content) => content.xmi_id.label(),
         }
     }
 }

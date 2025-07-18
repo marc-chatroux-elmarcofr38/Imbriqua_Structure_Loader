@@ -32,6 +32,42 @@ use serde_json::Value;
 use std::collections::BTreeMap;
 use std::fmt;
 use std::marker::PhantomData;
+use std::rc::Rc;
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Convert string with space to vec of string, splitting on space
+pub fn deser_xmi_id<'de, D>(deserializer: D) -> Result<XMIIdReference, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    Ok(match de::Deserialize::deserialize(deserializer)? {
+        // Split text
+        Value::String(s) => match s.find(".cmof#") {
+            Some(split_index) => {
+                let a = s[split_index..].replace(".cmof#", "").to_string();
+                let b = s[..split_index].to_string();
+                XMIIdReference::new_global(a, b)
+            }
+            None => XMIIdReference::new_local(s),
+        },
+        _ => {
+            return Err(de::Error::custom(
+                "Wrong type, expected String for converting to XMI ID Reference",
+            ))
+        }
+    })
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
 
 /// Deserialising to __isize__, from string (integer)
 pub fn deser_integer<'de, D>(deserializer: D) -> Result<isize, D::Error>
@@ -52,6 +88,12 @@ where
         _ => return Err(de::Error::custom("Wrong type, expected Integer")),
     })
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
 
 /// Deserialising to __UnlimitedNatural__, from string ("*" or integer)
 pub fn deser_unlimited_natural<'de, D>(deserializer: D) -> Result<UnlimitedNatural<usize>, D::Error>
@@ -75,6 +117,12 @@ where
     })
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
 /// Deserialising to __boolean__, from boolean, 'yes' string, 'true' string, number !=0 and Null
 pub fn deser_boolean<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
@@ -93,6 +141,12 @@ where
         _ => return Err(de::Error::custom("Wrong type, expected boolean")),
     })
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
 
 /// Deserialising to __boolean__, return always "true"
 pub fn deser_boolean_always_true<'de, D>(deserializer: D) -> Result<bool, D::Error>
@@ -121,6 +175,12 @@ where
     })
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
 /// Deserialising to __boolean__, return always "true"
 pub fn deser_boolean_always_false<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
@@ -148,6 +208,12 @@ where
     })
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
 /// Convert string with space to vec of string, splitting on space
 pub fn deser_spaced_string<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
 where
@@ -161,6 +227,12 @@ where
         _ => return Err(de::Error::custom("Wrong type, expected String")),
     })
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
 
 /// Deserialising to __String__, from name (prevent suspicious name)
 pub fn deser_name<'de, D>(deserializer: D) -> Result<String, D::Error>
@@ -177,6 +249,12 @@ where
         _ => return Err(de::Error::custom("Wrong type, expected string")),
     })
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
 
 /// Deserialising to __Vec__, from array or single object, various Object type tolerant
 /// Not 'Option' tolerant, use 'default' for this
@@ -221,6 +299,12 @@ where
 
     deserializer.deserialize_any(OneOrVec(PhantomData))
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
 
 /// Deserialising to __BTreeMap__, from array or single object, various Object type tolerant
 /// Not 'Option' tolerant, use 'default' for this
@@ -277,6 +361,76 @@ where
     deserializer.deserialize_any(OneOrVec(PhantomData))
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Deserialising to __BTreeMap__, from array or single object, various Object type tolerant
+/// Not 'Option' tolerant, use 'default' for this
+pub fn deser_btreemap_with_rc_using_name_as_key<'de: 'te, 'te: 'de, D, V>(
+    deserializer: D,
+) -> Result<BTreeMap<String, Rc<V>>, D::Error>
+where
+    D: de::Deserializer<'de>,
+    V: de::Deserialize<'te>,
+    V: AsNameField,
+{
+    struct OneOrVec<String, V>(PhantomData<BTreeMap<String, Rc<V>>>);
+
+    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te> + AsNameField> de::Visitor<'de>
+        for OneOrVec<String, V>
+    {
+        type Value = BTreeMap<String, Rc<V>>;
+
+        // Requested type description, returned in error case
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("object or array of object, with \"name\" attribute")
+        }
+
+        // Result for Null
+        fn visit_none<E>(self) -> Result<Self::Value, E> {
+            Ok(BTreeMap::new())
+        }
+
+        // Result for Object
+        fn visit_map<E>(self, map: E) -> Result<Self::Value, E::Error>
+        where
+            E: de::MapAccess<'de>,
+        {
+            let v: V = de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
+            let v = Rc::new(v);
+            let k = v.get_name_field();
+            Ok(BTreeMap::from([(k, v)]))
+        }
+
+        // Result for Array
+        fn visit_seq<S>(self, visitor: S) -> Result<Self::Value, S::Error>
+        where
+            S: de::SeqAccess<'de>,
+        {
+            let mut r: BTreeMap<String, Rc<V>> = BTreeMap::new();
+            let big_v: Vec<V> =
+                de::Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))?;
+            for n in big_v {
+                let k = n.get_name_field();
+                let v = Rc::new(n);
+                r.insert(k, v);
+            }
+            Ok(r)
+        }
+    }
+
+    deserializer.deserialize_any(OneOrVec(PhantomData))
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
 /// Deserialising 2-String Vec, from String, require a 1-whitespace String
 pub fn deser_split_2_space<'de, D>(deserializer: D) -> Result<(String, String), D::Error>
 where
@@ -302,6 +456,12 @@ where
     })
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
 /// __False__, as default value for serde_default
 pub fn default_false() -> bool {
     false
@@ -312,6 +472,12 @@ pub fn default_true() -> bool {
     true
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
 /// Empty String, as default value for serde_default
 pub fn default_lower() -> isize {
     1
@@ -321,6 +487,12 @@ pub fn default_lower() -> isize {
 pub fn default_upper() -> UnlimitedNatural<usize> {
     infinitable::Finite(1)
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
 
 /// Empty String, as default value for serde_default
 pub fn default_empty_string() -> String {
@@ -336,6 +508,12 @@ pub fn default_empty_vec<T>() -> Vec<T> {
 pub fn default_empty_btreemap<K, V>() -> BTreeMap<K, V> {
     BTreeMap::new()
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
 
 /// Default VisibilityKind, as default value for serde_default
 pub fn default_visibility() -> EnumVisibilityKind {

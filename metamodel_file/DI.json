@@ -41,7 +41,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:Class",
-							"_href": "http://schema.omg.org/spec/MOF/2.0/cmof.xml#Element"
+							"_href": "Extensibilty.cmof#Element"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "DiagramElement-modelElement",
