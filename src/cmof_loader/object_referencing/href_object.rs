@@ -34,8 +34,9 @@ use serde::Deserialize;
 /// RUST Struct for representing RedefinedProperty object
 pub struct HRefRedefinedProperty {
     /// Link to property of RedefinedProperty
+    #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: String,
+    pub href: XMIIdReference,
 }
 
 impl SetCMOFTools for HRefRedefinedProperty {
@@ -56,8 +57,9 @@ impl SetCMOFTools for HRefRedefinedProperty {
 /// RUST Struct for representing SubsettedProperty object
 pub struct HRefSubsettedProperty {
     /// Link to property of SubsettedProperty
+    #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: String,
+    pub href: XMIIdReference,
 }
 
 impl SetCMOFTools for HRefSubsettedProperty {
@@ -100,8 +102,9 @@ impl SetCMOFTools for HRefSuperClass {
 /// RUST Struct for representing ImportedPackage object
 pub struct HRefImportedPackage {
     /// Link of the package
+    #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: String,
+    pub href: XMIIdReference,
 }
 
 impl SetCMOFTools for HRefImportedPackage {

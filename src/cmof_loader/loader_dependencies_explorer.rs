@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../../doc/loader_dependencies_explorer.md")]
+#![doc = include_str!("loader_dependencies_explorer.md")]
 
 // Package section
 use crate::cmof_loader::*;
@@ -428,39 +428,20 @@ impl LoadingTracker {
         for (_, child) in cmof_package.package_import.iter() {
             // Go to "importedPackage" child
             match child.as_ref() {
-                EnumPackageImport::PackageImport(content) => {
-                    match &content.imported_package {
-                        EnumImportedPackage::ImportedPackage(content_2) => {
-                            let package_to_import = content_2.href.clone();
-
-                            //
-                            match package_to_import.find('#') {
-                                Some(split_index) => {
-                                    debug!(
-                                        "Loading \"{}\" : need to load \"{}\"",
-                                        label, package_to_import
-                                    );
-                                    let package_file: String =
-                                        package_to_import[..split_index].to_string();
-                                    let package_file: String =
-                                        package_file.replace(".cmof", ".json");
-                                    let split_index = split_index + 1;
-                                    let package_id: String =
-                                        package_to_import[split_index..].to_string();
-                                    self.prepare(
-                                        package_file.as_str(),
-                                        package_id.as_str(),
-                                        label.as_str(),
-                                    );
-                                }
-                                None => {
-                                    error!("ERROR_DEP04 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
-                                    panic!("PANIC_DEP04 - href attribute without '#' separator : package = \"{}\", href = \"{}\"", label, package_to_import);
-                                }
-                            }
-                        }
+                EnumPackageImport::PackageImport(content) => match &content.imported_package {
+                    EnumImportedPackage::ImportedPackage(content_2) => {
+                        let package_to_import = content_2.href.clone();
+                        debug!(
+                            "Loading \"{}\" : need to load \"{}\"",
+                            label,
+                            package_to_import.get_package_id()
+                        );
+                        let mut package_file: String = package_to_import.get_package_id().clone();
+                        package_file.push_str(".json");
+                        let package_id: String = package_to_import.get_object_id().clone();
+                        self.prepare(package_file.as_str(), package_id.as_str(), label.as_str());
                     }
-                }
+                },
             }
         }
     }

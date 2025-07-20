@@ -18,19 +18,17 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../../doc/loader_cmof_structure.md")]
+#![doc = include_str!("loader_cmof_structure.md")]
 
 // Mod section
 pub mod cmof_object;
 pub mod deserialize_helper;
-pub mod href;
 pub mod loader_dependencies_explorer;
-pub mod xmi_reference;
+pub mod object_referencing;
 pub use cmof_object::*;
 pub use deserialize_helper::*;
-pub use href::*;
 pub use loader_dependencies_explorer::*;
-pub use xmi_reference::*;
+pub use object_referencing::*;
 
 // Package section
 use crate::custom_file_tools::*;

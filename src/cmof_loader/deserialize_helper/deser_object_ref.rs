@@ -52,3 +52,35 @@ where
         }
     })
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Convert string with space to vec of string, splitting on space
+pub fn deser_href<'de, D>(deserializer: D) -> Result<XMIIdReference, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    Ok(match de::Deserialize::deserialize(deserializer)? {
+        // Split text
+        Value::String(s) => match s.find(".cmof#") {
+            Some(split_index) => {
+                let a = s[split_index..].replace(".cmof#", "").to_string();
+                let b = s[..split_index].to_string();
+                XMIIdReference::new_global(a, b)
+            }
+            None => {
+                return Err(de::Error::custom(format!(
+                    "HRef deserialize error : no \".cmof#\" for {}",
+                    s
+                )))
+            }
+        },
+        _ => {
+            return Err(de::Error::custom(
+                "Wrong type, expected String for converting to HRef Reference",
+            ))
+        }
+    })
+}
