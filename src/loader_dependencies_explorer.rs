@@ -21,9 +21,9 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/loader_dependencies_explorer.md")]
 
 // Package section
+use crate::cmof_loader::*;
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
-use crate::loader_cmof_structure::*;
 use crate::output_result_manager::*;
 
 // Dependencies section

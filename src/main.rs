@@ -23,9 +23,9 @@ If not, see <https://www.gnu.org/licenses/>.
 use log::warn;
 
 // Shared module
+pub mod cmof_loader;
 pub mod custom_file_tools;
 pub mod custom_log_tools;
-pub mod loader_cmof_structure;
 pub mod loader_dependencies_explorer;
 pub mod loader_deserialise_helper;
 pub mod loader_naming_trait;

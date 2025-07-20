@@ -23,9 +23,9 @@ If not, see <https://www.gnu.org/licenses/>.
 use std::collections::BTreeMap;
 
 // Package section
+use crate::cmof_loader::*;
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
-use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer::LoadingPackage as LPckg;
 use crate::loader_dependencies_explorer::LoadingPreCalculation as LPreCalc;
 use crate::loader_dependencies_explorer::*;
@@ -357,7 +357,7 @@ impl CMOFClass {
                         }
                     } else if matches!(
                         content.complex_type.as_ref().unwrap(),
-                        EnumType::PrimitiveTypeLink(_)
+                        EnumType::HRefPrimitiveType(_)
                     ) {
                         result.push(&content);
                     };
@@ -384,12 +384,12 @@ impl CMOFClass {
                         }
                     } else if matches!(
                         content.complex_type.as_ref().unwrap(),
-                        EnumType::ClassLink(_)
+                        EnumType::HRefClass(_)
                     ) {
                         result.push(&content);
                     } else if matches!(
                         content.complex_type.as_ref().unwrap(),
-                        EnumType::DataTypeLink(_)
+                        EnumType::HRefDataType(_)
                     ) {
                         result.push(&content);
                     };
@@ -412,7 +412,7 @@ impl CMOFClass {
         // // For super class link
         for link in self.super_class_link.clone() {
             match link {
-                EnumSuperClass::Class(content) => {
+                EnumSuperClass::HRefClass(content) => {
                     let class = content.href.clone();
                     let class = match class.find(".cmof#") {
                         Some(split_index) => class[split_index..].replace(".cmof#", "").to_string(),
@@ -1319,7 +1319,7 @@ impl CMOFProperty {
             }
         } else {
             match self.complex_type.as_ref().unwrap() {
-                EnumType::PrimitiveTypeLink(link) => {
+                EnumType::HRefPrimitiveType(link) => {
                     // Simple field
                     let key = link.href.clone();
                     let key = match key.find(".cmof#") {
@@ -1334,11 +1334,11 @@ impl CMOFProperty {
                         "i32"
                     }
                 }
-                EnumType::ClassLink(_) => {
+                EnumType::HRefClass(_) => {
                     // Foreign field
                     "i64"
                 }
-                EnumType::DataTypeLink(_) => {
+                EnumType::HRefDataType(_) => {
                     // Foreign field
                     "i64"
                 }

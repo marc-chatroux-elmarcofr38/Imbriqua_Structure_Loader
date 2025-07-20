@@ -55,7 +55,7 @@ impl StatisticResult {
 
     /// Treatment of all files of a input folder
     fn load_from_folder(&mut self, folder : PathBuf) {
-        for entry in folder.read_dir().unrap() {
+        for entry in folder.read_dir().unwrap() {
             // Load each file
             self.load_from_file(entry.path());
         }

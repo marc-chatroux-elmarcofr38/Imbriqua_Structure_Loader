@@ -21,9 +21,9 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/writing_manager.md")]
 
 // Package section
+use crate::cmof_loader::*;
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
-use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer::*;
 
 // Dependencies section
@@ -286,7 +286,7 @@ impl LoadingTracker {
                         // // For super class link
                         for link in content.super_class_link.clone() {
                             match link {
-                                EnumSuperClass::Class(content) => {
+                                EnumSuperClass::HRefClass(content) => {
                                     let class = content.href.clone();
                                     let class = match class.find(".cmof#") {
                                         Some(split_index) => {
@@ -333,7 +333,7 @@ impl CMOFProperty {
             self.simple_type.as_ref().unwrap()
         } else {
             match self.complex_type.as_ref().unwrap() {
-                EnumType::PrimitiveTypeLink(link) => {
+                EnumType::HRefPrimitiveType(link) => {
                     // Foreign field
                     let key = link.href.clone();
                     let key = match key.find(".cmof#") {
@@ -342,7 +342,7 @@ impl CMOFProperty {
                     };
                     &key.clone()
                 }
-                EnumType::ClassLink(link) => {
+                EnumType::HRefClass(link) => {
                     // Foreign field
                     let key = link.href.clone();
                     let key = match key.find(".cmof#") {
@@ -351,7 +351,7 @@ impl CMOFProperty {
                     };
                     &key.clone()
                 }
-                EnumType::DataTypeLink(link) => {
+                EnumType::HRefDataType(link) => {
                     // Foreign field
                     let key = link.href.clone();
                     let key = match key.find(".cmof#") {

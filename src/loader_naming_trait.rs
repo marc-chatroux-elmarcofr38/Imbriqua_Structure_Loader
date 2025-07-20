@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/loader_cmof_structure.md")]
 
 // Package section
-use crate::loader_cmof_structure::*;
+use crate::cmof_loader::*;
 
 // Dependencies section
 

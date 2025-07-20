@@ -21,9 +21,9 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/writing_lib_file.md")]
 
 // Package section
+use crate::cmof_loader::*;
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
-use crate::loader_cmof_structure::*;
 use crate::loader_dependencies_explorer::*;
 use crate::writing_manager::*;
 

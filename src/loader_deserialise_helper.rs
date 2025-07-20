@@ -21,8 +21,8 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../doc/loader_deserialise_helper.md")]
 
 // Package section
+use crate::cmof_loader::*;
 use crate::custom_log_tools::*;
-use crate::loader_cmof_structure::*;
 use crate::loader_naming_trait::*;
 
 // Dependencies section
@@ -516,6 +516,6 @@ pub fn default_empty_btreemap<K, V>() -> BTreeMap<K, V> {
 // ####################################################################################################
 
 /// Default VisibilityKind, as default value for serde_default
-pub fn default_visibility() -> EnumVisibilityKind {
-    EnumVisibilityKind::Public
+pub fn default_visibility() -> UMLVisibilityKind {
+    UMLVisibilityKind::Public
 }
