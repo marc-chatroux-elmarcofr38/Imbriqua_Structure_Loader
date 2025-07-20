@@ -197,3 +197,38 @@ where
 
     deserializer.deserialize_any(OneOrVec(PhantomData))
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Deserialising to __BTreeMap__, from array or single object, various Object type tolerant
+/// Not 'Option' tolerant, use 'default' for this
+pub fn deser_rc<'de: 'te, 'te: 'de, D, V>(deserializer: D) -> Result<Rc<V>, D::Error>
+where
+    D: de::Deserializer<'de>,
+    V: de::Deserialize<'te>,
+{
+    struct OneOrOne<V>(PhantomData<Rc<V>>);
+
+    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te>> de::Visitor<'de> for OneOrOne<V> {
+        type Value = Rc<V>;
+
+        // Requested type description, returned in error case
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("object only, for Rc")
+        }
+
+        // Result for Object
+        fn visit_map<E>(self, map: E) -> Result<Self::Value, E::Error>
+        where
+            E: de::MapAccess<'de>,
+        {
+            let v: V = de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
+            let v = Rc::new(v);
+            Ok(v)
+        }
+    }
+
+    deserializer.deserialize_any(OneOrOne(PhantomData))
+}

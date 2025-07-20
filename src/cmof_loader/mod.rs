@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("loader_cmof_structure.md")]
+#![doc = include_str!("cmof_loader.md")]
 
 // Mod section
 pub mod cmof_object;

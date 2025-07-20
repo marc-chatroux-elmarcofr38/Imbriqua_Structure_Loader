@@ -412,12 +412,8 @@ impl CMOFClass {
         for link in self.super_class_link.clone() {
             match link {
                 EnumSuperClass::HRefClass(content) => {
-                    let class = content.href.clone();
-                    let class = match class.find(".cmof#") {
-                        Some(split_index) => class[split_index..].replace(".cmof#", "").to_string(),
-                        None => class,
-                    };
-                    result.insert(class.clone(), class.clone());
+                    let object_id = content.href.get_object_id();
+                    result.insert(object_id.clone(), object_id.clone());
                 }
             }
         }
@@ -1320,14 +1316,10 @@ impl CMOFProperty {
             match self.complex_type.as_ref().unwrap() {
                 EnumType::HRefPrimitiveType(link) => {
                     // Simple field
-                    let key = link.href.clone();
-                    let key = match key.find(".cmof#") {
-                        Some(split_index) => key[split_index..].replace(".cmof#", "").to_string(),
-                        None => key,
-                    };
+                    let key = link.href.get_object_id();
 
-                    if pre_calc.primitive_type_conversion.get(&key).is_some() {
-                        pre_calc.primitive_type_conversion.get(&key).unwrap()
+                    if pre_calc.primitive_type_conversion.get(key).is_some() {
+                        pre_calc.primitive_type_conversion.get(key).unwrap()
                     } else {
                         info!("Error : unknow PRIMITIVE TYPE{}", key);
                         "i32"

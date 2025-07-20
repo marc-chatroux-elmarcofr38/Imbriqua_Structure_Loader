@@ -32,88 +32,131 @@ use crate::cmof_loader::*;
 /// All object with xmi_id in CMOF
 pub enum EnumCMOF {
     /// CMOFAssociation
-    CMOFAssociation(CMOFAssociation),
+    CMOFAssociation(Weak<CMOFAssociation>),
     /// CMOFClass
-    CMOFClass(CMOFClass),
+    CMOFClass(Weak<CMOFClass>),
     /// CMOFConstraint
-    CMOFConstraint(CMOFConstraint),
+    CMOFConstraint(Weak<CMOFConstraint>),
     /// CMOFDataType
-    CMOFDataType(CMOFDataType),
+    CMOFDataType(Weak<CMOFDataType>),
     /// CMOFEnumeration
-    CMOFEnumeration(CMOFEnumeration),
+    CMOFEnumeration(Weak<CMOFEnumeration>),
     /// CMOFEnumerationLiteral
-    CMOFEnumerationLiteral(CMOFEnumerationLiteral),
+    CMOFEnumerationLiteral(Weak<CMOFEnumerationLiteral>),
     /// CMOFOpaqueExpression
-    CMOFOpaqueExpression(CMOFOpaqueExpression),
+    CMOFOpaqueExpression(Weak<CMOFOpaqueExpression>),
     /// CMOFPackage
-    CMOFPackage(CMOFPackage),
+    CMOFPackage(Weak<CMOFPackage>),
     /// CMOFPackageImport
-    CMOFPackageImport(CMOFPackageImport),
+    CMOFPackageImport(Weak<CMOFPackageImport>),
     /// CMOFPrimitiveType
-    CMOFPrimitiveType(CMOFPrimitiveType),
+    CMOFPrimitiveType(Weak<CMOFPrimitiveType>),
     /// CMOFProperty
-    CMOFProperty(CMOFProperty),
+    CMOFProperty(Weak<CMOFProperty>),
     /// CMOFTag
-    CMOFTag(CMOFTag),
+    CMOFTag(Weak<CMOFTag>),
 }
 
 impl EnumCMOF {
     /// Get "label" of the xmi_id
-    pub fn label(&self) -> String {
+    pub fn label(&self) -> Result<String, anyhow::Error> {
         match self {
-            EnumCMOF::CMOFAssociation(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFClass(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFConstraint(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFDataType(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFEnumeration(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFEnumerationLiteral(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFOpaqueExpression(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFPackage(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFPackageImport(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFPrimitiveType(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFProperty(c) => c.xmi_id.label(),
-            EnumCMOF::CMOFTag(c) => c.xmi_id.label(),
-        }
-    }
-}
-
-impl SetCMOFTools for EnumCMOF {
-    fn make_post_deserialize(
-        &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
-    ) -> Result<(), anyhow::Error> {
-        match self {
-            EnumCMOF::CMOFAssociation(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFClass(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFConstraint(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFDataType(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFEnumeration(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFEnumerationLiteral(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFOpaqueExpression(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFPackage(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFPackageImport(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFPrimitiveType(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFProperty(c) => c.make_post_deserialize(dict),
-            EnumCMOF::CMOFTag(c) => c.make_post_deserialize(dict),
-        }
-    }
-}
-
-impl GetXMIId for EnumCMOF {
-    fn get_xmi_id_field(&self) -> String {
-        match self {
-            EnumCMOF::CMOFAssociation(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFClass(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFConstraint(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFDataType(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFEnumeration(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFEnumerationLiteral(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFOpaqueExpression(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFPackage(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFPackageImport(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFPrimitiveType(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFProperty(c) => c.get_xmi_id_field(),
-            EnumCMOF::CMOFTag(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFAssociation(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFClass(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFConstraint(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFDataType(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFEnumeration(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFEnumerationLiteral(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFOpaqueExpression(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFPackage(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFPackageImport(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFPrimitiveType(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFProperty(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
+            EnumCMOF::CMOFTag(c) => {
+                let r = c.upgrade();
+                if r.is_some() {
+                    Ok(r.unwrap().xmi_id.label())
+                } else {
+                    Err(anyhow::format_err!("Getting label of a unloaded Weak"))
+                }
+            }
         }
     }
 }
@@ -133,12 +176,22 @@ pub enum EnumImportedPackage {
 }
 
 impl SetCMOFTools for EnumImportedPackage {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumImportedPackage::ImportedPackage(c) => c.make_post_deserialize(dict),
+            EnumImportedPackage::ImportedPackage(c) => {
+                c.make_post_deserialize(dict_setting, dict_object)
+            }
         }
     }
 }
@@ -158,12 +211,20 @@ pub enum EnumOwnedAttribute {
 }
 
 impl SetCMOFTools for EnumOwnedAttribute {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumOwnedAttribute::Property(c) => c.make_post_deserialize(dict),
+            EnumOwnedAttribute::Property(c) => c.make_post_deserialize(dict_setting, dict_object),
         }
     }
 }
@@ -186,17 +247,34 @@ impl GetXMIId for EnumOwnedAttribute {
 /// RUST Struct for representing OwnedEnd Tag
 pub enum EnumOwnedEnd {
     /// OwnedEnd with cmof:Property type
+    #[serde(deserialize_with = "deser_rc")]
     #[serde(rename = "cmof:Property")]
-    Property(CMOFProperty),
+    Property(Rc<CMOFProperty>),
 }
 
 impl SetCMOFTools for EnumOwnedEnd {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumOwnedEnd::Property(c) => c.make_post_deserialize(dict),
+            EnumOwnedEnd::Property(c) => {
+                let m = Rc::get_mut(c);
+                if m.is_some() {
+                    m.unwrap().make_post_deserialize(dict_setting, dict_object);
+                    Ok(())
+                } else {
+                    Err(anyhow::format_err!("Error getting Mut of a Rc"))
+                }
+            }
         }
     }
 }
@@ -224,12 +302,22 @@ pub enum EnumOwnedLiteral {
 }
 
 impl SetCMOFTools for EnumOwnedLiteral {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumOwnedLiteral::EnumerationLiteral(c) => c.make_post_deserialize(dict),
+            EnumOwnedLiteral::EnumerationLiteral(c) => {
+                c.make_post_deserialize(dict_setting, dict_object)
+            }
         }
     }
 }
@@ -269,16 +357,24 @@ pub enum EnumOwnedMember {
 }
 
 impl SetCMOFTools for EnumOwnedMember {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumOwnedMember::Association(c) => c.make_post_deserialize(dict),
-            EnumOwnedMember::Class(c) => c.make_post_deserialize(dict),
-            EnumOwnedMember::DataType(c) => c.make_post_deserialize(dict),
-            EnumOwnedMember::Enumeration(c) => c.make_post_deserialize(dict),
-            EnumOwnedMember::PrimitiveType(c) => c.make_post_deserialize(dict),
+            EnumOwnedMember::Association(c) => c.make_post_deserialize(dict_setting, dict_object),
+            EnumOwnedMember::Class(c) => c.make_post_deserialize(dict_setting, dict_object),
+            EnumOwnedMember::DataType(c) => c.make_post_deserialize(dict_setting, dict_object),
+            EnumOwnedMember::Enumeration(c) => c.make_post_deserialize(dict_setting, dict_object),
+            EnumOwnedMember::PrimitiveType(c) => c.make_post_deserialize(dict_setting, dict_object),
         }
     }
 }
@@ -310,12 +406,20 @@ pub enum EnumOwnedRule {
 }
 
 impl SetCMOFTools for EnumOwnedRule {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumOwnedRule::Constraint(c) => c.make_post_deserialize(dict),
+            EnumOwnedRule::Constraint(c) => c.make_post_deserialize(dict_setting, dict_object),
         }
     }
 }
@@ -343,12 +447,22 @@ pub enum EnumPackageImport {
 }
 
 impl SetCMOFTools for EnumPackageImport {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumPackageImport::PackageImport(c) => c.make_post_deserialize(dict),
+            EnumPackageImport::PackageImport(c) => {
+                c.make_post_deserialize(dict_setting, dict_object)
+            }
         }
     }
 }
@@ -376,12 +490,22 @@ pub enum EnumRedefinedProperty {
 }
 
 impl SetCMOFTools for EnumRedefinedProperty {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumRedefinedProperty::Property(c) => c.make_post_deserialize(dict),
+            EnumRedefinedProperty::Property(c) => {
+                c.make_post_deserialize(dict_setting, dict_object)
+            }
         }
     }
 }
@@ -401,12 +525,22 @@ pub enum EnumSpecification {
 }
 
 impl SetCMOFTools for EnumSpecification {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumSpecification::OpaqueExpression(c) => c.make_post_deserialize(dict),
+            EnumSpecification::OpaqueExpression(c) => {
+                c.make_post_deserialize(dict_setting, dict_object)
+            }
         }
     }
 }
@@ -434,12 +568,22 @@ pub enum EnumSubsettedProperty {
 }
 
 impl SetCMOFTools for EnumSubsettedProperty {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumSubsettedProperty::Property(c) => c.make_post_deserialize(dict),
+            EnumSubsettedProperty::Property(c) => {
+                c.make_post_deserialize(dict_setting, dict_object)
+            }
         }
     }
 }
@@ -459,12 +603,20 @@ pub enum EnumSuperClass {
 }
 
 impl SetCMOFTools for EnumSuperClass {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumSuperClass::HRefClass(c) => c.make_post_deserialize(dict),
+            EnumSuperClass::HRefClass(c) => c.make_post_deserialize(dict_setting, dict_object),
         }
     }
 }
@@ -490,14 +642,22 @@ pub enum EnumType {
 }
 
 impl SetCMOFTools for EnumType {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumType::HRefClass(c) => c.make_post_deserialize(dict),
-            EnumType::HRefDataType(c) => c.make_post_deserialize(dict),
-            EnumType::HRefPrimitiveType(c) => c.make_post_deserialize(dict),
+            EnumType::HRefClass(c) => c.make_post_deserialize(dict_setting, dict_object),
+            EnumType::HRefDataType(c) => c.make_post_deserialize(dict_setting, dict_object),
+            EnumType::HRefPrimitiveType(c) => c.make_post_deserialize(dict_setting, dict_object),
         }
     }
 }

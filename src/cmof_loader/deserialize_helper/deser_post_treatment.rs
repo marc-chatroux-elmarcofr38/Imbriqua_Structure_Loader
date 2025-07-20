@@ -59,8 +59,15 @@ where
             let mut r: Self::Value =
                 de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
 
-            let mut dict = BTreeMap::new();
-            let result = r.make_post_deserialize(&mut dict);
+            let mut dict_setting: BTreeMap<String, String> = BTreeMap::new();
+            let mut dict_object: BTreeMap<String, EnumCMOF> = BTreeMap::new();
+            // Collect
+            let result = r.collect_object(&mut dict_object);
+            if result.is_err() {
+                panic!("{:?}", result.err());
+            }
+            // Make post deserialize
+            let result = r.make_post_deserialize(&mut dict_setting, &mut dict_object);
             if result.is_err() {
                 panic!("{:?}", result.err());
             }

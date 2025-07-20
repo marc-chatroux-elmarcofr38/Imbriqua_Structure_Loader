@@ -48,9 +48,9 @@ pub struct CMOFAssociation {
     pub member_end: (String, String),
     /// Optional ownedEnd object
     #[serde(rename = "ownedEnd")]
-    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_end: BTreeMap<String, Rc<EnumOwnedEnd>>,
+    pub owned_end: BTreeMap<String, EnumOwnedEnd>,
     // navigableOwnedEnd forbidden
     /// Optional _isDerived object, need to by "false"
     #[serde(rename = "_isDerived")]
@@ -76,12 +76,29 @@ pub struct CMOFAssociation {
 // ####################################################################################################
 
 impl SetCMOFTools for CMOFAssociation {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        // Catch all child
+        for (k, p) in &self.owned_end {
+            match p {
+                EnumOwnedEnd::Property(c) => {
+                    let w: Weak<CMOFProperty> = Rc::downgrade(c);
+                    dict_object.insert(k.clone(), EnumCMOF::CMOFProperty(w));
+                }
+            }
+        }
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict.get("package_name").ok_or(anyhow::format_err!(
+        let package_name = dict_setting.get("package_name").ok_or(anyhow::format_err!(
             "Dictionnary error in make_post_deserialize"
         ))?;
         let package_name_snake_case = package_name.to_case(Case::Snake);
@@ -98,8 +115,7 @@ impl SetCMOFTools for CMOFAssociation {
         );
         // Call on child
         for (_, p) in &mut self.owned_end {
-            let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
-            p_unwrap.make_post_deserialize(dict)?;
+            p.make_post_deserialize(dict_setting, dict_object)?;
         }
         //Return
         Ok(())

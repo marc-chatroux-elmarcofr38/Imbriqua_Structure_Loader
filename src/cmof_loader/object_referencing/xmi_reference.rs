@@ -20,22 +20,41 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 
 // Package section
-
-use std::collections::BTreeMap;
+use crate::cmof_loader::*;
 
 // Dependencies section
-use serde::Deserialize;
+use std::collections::BTreeMap;
+use std::fmt;
+use std::rc::Weak;
 
 // ####################################################################################################
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone)]
 /// Reference to another XMI object
 pub struct XMIIdReference {
     object_id: String,
     package_id: String,
     is_set: bool,
+    object: Weak<EnumCMOF>,
+}
+
+impl PartialEq for XMIIdReference {
+    fn eq(&self, other: &Self) -> bool {
+        self.label() == other.label()
+    }
+}
+
+impl fmt::Debug for XMIIdReference {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "\"Weak ref of \"{}\" (loaded : {})\"",
+            self.label(),
+            self.is_loaded(),
+        )
+    }
 }
 
 impl XMIIdReference {
@@ -45,6 +64,7 @@ impl XMIIdReference {
             object_id: object_id,
             package_id: String::new(),
             is_set: false,
+            object: Weak::new(),
         }
     }
 
@@ -54,6 +74,7 @@ impl XMIIdReference {
             object_id: object_id,
             package_id: package_id,
             is_set: true,
+            object: Weak::new(),
         }
     }
 
@@ -82,6 +103,11 @@ impl XMIIdReference {
         r.push_str(self.object_id.as_str());
         r
     }
+
+    /// Return if Weak if set or not
+    pub fn is_loaded(&self) -> bool {
+        self.object.upgrade().is_some()
+    }
 }
 
 // ####################################################################################################
@@ -90,12 +116,19 @@ impl XMIIdReference {
 
 /// Tools for CMOF Object
 pub trait SetCMOFTools {
+    /// Allow to collect all CMOF object
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error>;
     /// Allow to define the post-treatment method : post_deserialize
     /// Make change after deserialization, on call
-    /// Use "dict" for share content between parent object to child object
+    /// Use "dict_setting" for share content between parent object to child object
+    /// Use "dict_object" for obtain object between objects
     fn make_post_deserialize(
         &mut self,
-        dict: &mut BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error>;
 }
 

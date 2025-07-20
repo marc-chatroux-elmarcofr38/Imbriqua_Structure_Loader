@@ -40,9 +40,16 @@ pub struct HRefRedefinedProperty {
 }
 
 impl SetCMOFTools for HRefRedefinedProperty {
+    fn collect_object(
+        &mut self,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
     fn make_post_deserialize(
         &mut self,
-        _dict: &mut std::collections::BTreeMap<String, String>,
+        _dict_setting: &mut BTreeMap<String, String>,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -63,9 +70,16 @@ pub struct HRefSubsettedProperty {
 }
 
 impl SetCMOFTools for HRefSubsettedProperty {
+    fn collect_object(
+        &mut self,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
     fn make_post_deserialize(
         &mut self,
-        _dict: &mut std::collections::BTreeMap<String, String>,
+        _dict_setting: &mut BTreeMap<String, String>,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -80,14 +94,22 @@ impl SetCMOFTools for HRefSubsettedProperty {
 /// RUST Struct for representing SuperClass Tag
 pub struct HRefSuperClass {
     /// Link to Class of SuperClass
+    #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: String,
+    pub href: XMIIdReference,
 }
 
 impl SetCMOFTools for HRefSuperClass {
+    fn collect_object(
+        &mut self,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
     fn make_post_deserialize(
         &mut self,
-        _dict: &mut std::collections::BTreeMap<String, String>,
+        _dict_setting: &mut BTreeMap<String, String>,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -108,9 +130,16 @@ pub struct HRefImportedPackage {
 }
 
 impl SetCMOFTools for HRefImportedPackage {
+    fn collect_object(
+        &mut self,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
     fn make_post_deserialize(
         &mut self,
-        _dict: &mut std::collections::BTreeMap<String, String>,
+        _dict_setting: &mut BTreeMap<String, String>,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -125,14 +154,22 @@ impl SetCMOFTools for HRefImportedPackage {
 /// RUST Struct for representing Class link
 pub struct HRefClass {
     /// Link of the Class type
+    #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: String,
+    pub href: XMIIdReference,
 }
 
 impl SetCMOFTools for HRefClass {
+    fn collect_object(
+        &mut self,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
     fn make_post_deserialize(
         &mut self,
-        _dict: &mut std::collections::BTreeMap<String, String>,
+        _dict_setting: &mut BTreeMap<String, String>,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -147,14 +184,22 @@ impl SetCMOFTools for HRefClass {
 /// RUST Struct for representing Primitive Type link
 pub struct HRefPrimitiveType {
     /// Link of the Class type
+    #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: String,
+    pub href: XMIIdReference,
 }
 
 impl SetCMOFTools for HRefPrimitiveType {
+    fn collect_object(
+        &mut self,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
     fn make_post_deserialize(
         &mut self,
-        _dict: &mut std::collections::BTreeMap<String, String>,
+        _dict_setting: &mut BTreeMap<String, String>,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -169,99 +214,23 @@ impl SetCMOFTools for HRefPrimitiveType {
 /// RUST Struct for representing Data Type link
 pub struct HRefDataType {
     /// Link of the Class type
+    #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: String,
+    pub href: XMIIdReference,
 }
 
 impl SetCMOFTools for HRefDataType {
-    fn make_post_deserialize(
+    fn collect_object(
         &mut self,
-        _dict: &mut std::collections::BTreeMap<String, String>,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-fn cut_href_and_edit(content: &String) -> (String, String, String) {
-    match content.find('#') {
-        Some(split_index) => {
-            let package: String = content[..split_index]
-                .to_string()
-                .replace(".cmof", "")
-                .to_ascii_lowercase()
-                .to_case(Case::Snake);
-            let split_index = split_index + 1;
-            let class: String = content[split_index..].to_string();
-            let result = package.clone() + "::" + class.as_str();
-            return (package, class, result);
-        }
-        None => {
-            error!(
-                "href attribute without '#' separator : href = \"{}\"",
-                content
-            );
-            panic!(
-                "href attribute without '#' separator : href = \"{}\"",
-                content
-            );
-        }
-    }
-}
-
-impl HRefClass {
-    /// Get the package of href
-    pub fn get_package(&self) -> String {
-        let result = cut_href_and_edit(&self.href);
-        return result.0;
-    }
-    /// Get the class of href
-    pub fn get_class(&self) -> String {
-        let result = cut_href_and_edit(&self.href);
-        return result.1;
-    }
-    /// Get the class link of href
-    pub fn get_rust_call_link(&self) -> String {
-        let result = cut_href_and_edit(&self.href);
-        return result.2;
-    }
-}
-
-impl HRefPrimitiveType {
-    /// Get the package of href
-    pub fn get_package(&self) -> String {
-        let result = cut_href_and_edit(&self.href);
-        return result.0;
-    }
-    /// Get the class of href
-    pub fn get_class(&self) -> String {
-        let result = cut_href_and_edit(&self.href);
-        return result.1;
-    }
-    /// Get the class link of href
-    pub fn get_rust_call_link(&self) -> String {
-        let result = cut_href_and_edit(&self.href);
-        return result.2;
-    }
-}
-
-impl HRefDataType {
-    /// Get the package of href
-    pub fn get_package(&self) -> String {
-        let result = cut_href_and_edit(&self.href);
-        return result.0;
-    }
-    /// Get the class of href
-    pub fn get_class(&self) -> String {
-        let result = cut_href_and_edit(&self.href);
-        return result.1;
-    }
-    /// Get the class link of href
-    pub fn get_rust_call_link(&self) -> String {
-        let result = cut_href_and_edit(&self.href);
-        return result.2;
+    fn make_post_deserialize(
+        &mut self,
+        _dict_setting: &mut BTreeMap<String, String>,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
     }
 }

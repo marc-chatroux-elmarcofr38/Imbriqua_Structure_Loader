@@ -83,12 +83,20 @@ pub struct CMOFClass {
 // ####################################################################################################
 
 impl SetCMOFTools for CMOFClass {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict.get("package_name").ok_or(anyhow::format_err!(
+        let package_name = dict_setting.get("package_name").ok_or(anyhow::format_err!(
             "Dictionnary error in make_post_deserialize"
         ))?;
         let package_name_snake_case = package_name.to_case(Case::Snake);
@@ -103,14 +111,14 @@ impl SetCMOFTools for CMOFClass {
         // Call on child
         for (_, p) in &mut self.owned_attribute {
             let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
-            p_unwrap.make_post_deserialize(dict)?;
+            p_unwrap.make_post_deserialize(dict_setting, dict_object)?;
         }
         for (_, p) in &mut self.owned_rule {
             let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
-            p_unwrap.make_post_deserialize(dict)?;
+            p_unwrap.make_post_deserialize(dict_setting, dict_object)?;
         }
         for p in &mut self.super_class_link {
-            p.make_post_deserialize(dict)?;
+            p.make_post_deserialize(dict_setting, dict_object)?;
         }
         //Return
         Ok(())

@@ -151,7 +151,7 @@ impl LoadingTracker {
                     EnumOwnedMember::Association(content) => {
                         let key = content.name.clone();
                         for (_, owned_end) in &content.owned_end {
-                            match owned_end.as_ref() {
+                            match owned_end {
                                 EnumOwnedEnd::Property(property) => {
                                     let value = ElementRelation {
                                         element_type: property.get_type(),
@@ -286,14 +286,8 @@ impl LoadingTracker {
                         for link in content.super_class_link.clone() {
                             match link {
                                 EnumSuperClass::HRefClass(content) => {
-                                    let class = content.href.clone();
-                                    let class = match class.find(".cmof#") {
-                                        Some(split_index) => {
-                                            class[split_index..].replace(".cmof#", "").to_string()
-                                        }
-                                        None => class,
-                                    };
-                                    list_of_super.push(class);
+                                    let class = content.href.get_object_id();
+                                    list_of_super.push(class.clone());
                                 }
                             }
                         }
@@ -334,29 +328,17 @@ impl CMOFProperty {
             match self.complex_type.as_ref().unwrap() {
                 EnumType::HRefPrimitiveType(link) => {
                     // Foreign field
-                    let key = link.href.clone();
-                    let key = match key.find(".cmof#") {
-                        Some(split_index) => key[split_index..].replace(".cmof#", ""),
-                        None => key,
-                    };
+                    let key = link.href.get_object_id();
                     &key.clone()
                 }
                 EnumType::HRefClass(link) => {
                     // Foreign field
-                    let key = link.href.clone();
-                    let key = match key.find(".cmof#") {
-                        Some(split_index) => key[split_index..].replace(".cmof#", "").to_string(),
-                        None => key,
-                    };
+                    let key = link.href.get_object_id();
                     &key.clone()
                 }
                 EnumType::HRefDataType(link) => {
                     // Foreign field
-                    let key = link.href.clone();
-                    let key = match key.find(".cmof#") {
-                        Some(split_index) => key[split_index..].replace(".cmof#", "").to_string(),
-                        None => key,
-                    };
+                    let key = link.href.get_object_id();
                     &key.clone()
                 }
             }

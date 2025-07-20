@@ -54,12 +54,20 @@ pub struct CMOFTag {
 // ####################################################################################################
 
 impl SetCMOFTools for CMOFTag {
+    fn collect_object(
+        &mut self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+
     fn make_post_deserialize(
         &mut self,
-        dict: &mut BTreeMap<String, String>,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict.get("package_name").ok_or(anyhow::format_err!(
+        let package_name = dict_setting.get("package_name").ok_or(anyhow::format_err!(
             "Dictionnary error in make_post_deserialize"
         ))?;
         // Set local values
