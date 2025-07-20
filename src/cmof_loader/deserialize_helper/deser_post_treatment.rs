@@ -23,54 +23,52 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::cmof_loader::*;
 
 // Dependencies section
-use serde::Deserialize;
+use serde::de;
 use std::collections::BTreeMap;
+use std::fmt;
 
 // ####################################################################################################
 //
 // ####################################################################################################
-
-#[derive(Clone, Debug, Deserialize, PartialEq)]
-#[serde(deny_unknown_fields)]
-/// RUST Struct for deserialize CMOF Tag Object
-pub struct CMOFTag {
-    /// xmi:id attribute
-    #[serde(deserialize_with = "deser_xmi_id")]
-    #[serde(rename = "_xmi:id")]
-    pub xmi_id: XMIIdReference,
-    /// name attribute
-    #[serde(rename = "_name")]
-    pub name: String,
-    /// value attribute
-    #[serde(rename = "_value")]
-    pub value: String,
-    /// element attribute
-    #[serde(rename = "_element")]
-    pub element: String,
-}
-
-// ####################################################################################################
 //
 // ####################################################################################################
 
-impl SetCMOFTools for CMOFTag {
-    fn make_post_deserialize(
-        &mut self,
-        dict: &mut BTreeMap<String, String>,
-    ) -> Result<(), anyhow::Error> {
-        // Get needed values
-        let package_name = dict.get("package_name").ok_or(anyhow::format_err!(
-            "Dictionnary error in make_post_deserialize"
-        ))?;
-        // Set local values
-        self.xmi_id.set_package(&package_name);
-        //Return
-        Ok(())
-    }
-}
+/// Deserialising to __isize__, from string (integer)
+pub fn deser_post_treatement_cmof_package<'de: 'te, 'te: 'de, D>(
+    deserializer: D,
+) -> Result<CMOFPackage, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    struct CustomVisitor;
 
-impl GetXMIId for CMOFTag {
-    fn get_xmi_id_field(&self) -> String {
-        self.xmi_id.label()
+    impl<'de: 'te, 'te: 'de> de::Visitor<'de> for CustomVisitor {
+        type Value = CMOFPackage;
+
+        // Requested type description, returned in error case
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("object requested (no empty, no list)")
+        }
+
+        // Result for Object
+        fn visit_map<E>(self, map: E) -> Result<Self::Value, E::Error>
+        where
+            E: de::MapAccess<'de>,
+        {
+            // Raw result
+            let mut r: Self::Value =
+                de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
+
+            let mut dict = BTreeMap::new();
+            let result = r.make_post_deserialize(&mut dict);
+            if result.is_err() {
+                panic!("{:?}", result.err());
+            }
+
+            // Return
+            Ok(r)
+        }
     }
+
+    deserializer.deserialize_any(CustomVisitor {})
 }

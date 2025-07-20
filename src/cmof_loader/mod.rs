@@ -21,17 +21,20 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("../../doc/loader_cmof_structure.md")]
 
 // Mod section
-mod cmof_object;
+pub mod cmof_object;
+pub mod deserialize_helper;
+pub mod href;
+pub mod loader_dependencies_explorer;
+pub mod xmi_reference;
 pub use cmof_object::*;
-mod href;
+pub use deserialize_helper::*;
 pub use href::*;
-mod xmi_reference;
+pub use loader_dependencies_explorer::*;
 pub use xmi_reference::*;
 
 // Package section
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
-use crate::loader_post_treament_deserialize::*;
 
 // Dependencies section
 pub use serde::Deserialize;

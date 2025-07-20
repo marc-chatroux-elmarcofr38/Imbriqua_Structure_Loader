@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/loader_dependencies_explorer.md")]
+#![doc = include_str!("../../doc/loader_dependencies_explorer.md")]
 
 // Package section
 use crate::cmof_loader::*;
@@ -399,8 +399,8 @@ impl LoadingTracker {
         let cmof_package = cmof_result.package;
 
         // Check ID
-        if cmof_package.xmi_id.get_local_id() != package_id {
-            error!("{} / {}", package_id, cmof_package.xmi_id.get_local_id());
+        if cmof_package.xmi_id.get_object_id() != package_id {
+            error!("{} / {}", package_id, cmof_package.xmi_id.get_object_id());
             panic!()
         }
 

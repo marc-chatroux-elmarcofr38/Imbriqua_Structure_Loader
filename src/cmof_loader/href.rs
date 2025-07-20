@@ -41,7 +41,7 @@ pub struct HRefRedefinedProperty {
 impl SetCMOFTools for HRefRedefinedProperty {
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        _dict: &mut std::collections::BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -63,7 +63,7 @@ pub struct HRefSubsettedProperty {
 impl SetCMOFTools for HRefSubsettedProperty {
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        _dict: &mut std::collections::BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -85,7 +85,7 @@ pub struct HRefSuperClass {
 impl SetCMOFTools for HRefSuperClass {
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        _dict: &mut std::collections::BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -107,7 +107,7 @@ pub struct HRefImportedPackage {
 impl SetCMOFTools for HRefImportedPackage {
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        _dict: &mut std::collections::BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -129,7 +129,7 @@ pub struct HRefClass {
 impl SetCMOFTools for HRefClass {
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        _dict: &mut std::collections::BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -151,7 +151,7 @@ pub struct HRefPrimitiveType {
 impl SetCMOFTools for HRefPrimitiveType {
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        _dict: &mut std::collections::BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }
@@ -173,7 +173,7 @@ pub struct HRefDataType {
 impl SetCMOFTools for HRefDataType {
     fn make_post_deserialize(
         &mut self,
-        dict: &mut std::collections::BTreeMap<String, String>,
+        _dict: &mut std::collections::BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }

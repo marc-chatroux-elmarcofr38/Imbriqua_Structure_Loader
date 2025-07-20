@@ -23,12 +23,11 @@ If not, see <https://www.gnu.org/licenses/>.
 use std::collections::BTreeMap;
 
 // Package section
+use crate::cmof_loader::LoadingPackage as LPckg;
+use crate::cmof_loader::LoadingPreCalculation as LPreCalc;
 use crate::cmof_loader::*;
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
-use crate::loader_dependencies_explorer::LoadingPackage as LPckg;
-use crate::loader_dependencies_explorer::LoadingPreCalculation as LPreCalc;
-use crate::loader_dependencies_explorer::*;
 use crate::writing_manager::*;
 
 // Dependencies section

@@ -99,6 +99,25 @@ impl SetCMOFTools for EnumCMOF {
     }
 }
 
+impl GetXMIId for EnumCMOF {
+    fn get_xmi_id_field(&self) -> String {
+        match self {
+            EnumCMOF::CMOFAssociation(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFClass(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFConstraint(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFDataType(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFEnumeration(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFEnumerationLiteral(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFOpaqueExpression(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFPackage(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFPackageImport(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFPrimitiveType(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFProperty(c) => c.get_xmi_id_field(),
+            EnumCMOF::CMOFTag(c) => c.get_xmi_id_field(),
+        }
+    }
+}
+
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -149,6 +168,14 @@ impl SetCMOFTools for EnumOwnedAttribute {
     }
 }
 
+impl GetXMIId for EnumOwnedAttribute {
+    fn get_xmi_id_field(&self) -> String {
+        match self {
+            EnumOwnedAttribute::Property(c) => c.get_xmi_id_field(),
+        }
+    }
+}
+
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -174,6 +201,14 @@ impl SetCMOFTools for EnumOwnedEnd {
     }
 }
 
+impl GetXMIId for EnumOwnedEnd {
+    fn get_xmi_id_field(&self) -> String {
+        match self {
+            EnumOwnedEnd::Property(c) => c.get_xmi_id_field(),
+        }
+    }
+}
+
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -195,6 +230,14 @@ impl SetCMOFTools for EnumOwnedLiteral {
     ) -> Result<(), anyhow::Error> {
         match self {
             EnumOwnedLiteral::EnumerationLiteral(c) => c.make_post_deserialize(dict),
+        }
+    }
+}
+
+impl GetXMIId for EnumOwnedLiteral {
+    fn get_xmi_id_field(&self) -> String {
+        match self {
+            EnumOwnedLiteral::EnumerationLiteral(c) => c.get_xmi_id_field(),
         }
     }
 }
@@ -240,6 +283,18 @@ impl SetCMOFTools for EnumOwnedMember {
     }
 }
 
+impl GetXMIId for EnumOwnedMember {
+    fn get_xmi_id_field(&self) -> String {
+        match self {
+            EnumOwnedMember::Association(c) => c.get_xmi_id_field(),
+            EnumOwnedMember::Class(c) => c.get_xmi_id_field(),
+            EnumOwnedMember::DataType(c) => c.get_xmi_id_field(),
+            EnumOwnedMember::Enumeration(c) => c.get_xmi_id_field(),
+            EnumOwnedMember::PrimitiveType(c) => c.get_xmi_id_field(),
+        }
+    }
+}
+
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -265,6 +320,14 @@ impl SetCMOFTools for EnumOwnedRule {
     }
 }
 
+impl GetXMIId for EnumOwnedRule {
+    fn get_xmi_id_field(&self) -> String {
+        match self {
+            EnumOwnedRule::Constraint(c) => c.get_xmi_id_field(),
+        }
+    }
+}
+
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -286,6 +349,14 @@ impl SetCMOFTools for EnumPackageImport {
     ) -> Result<(), anyhow::Error> {
         match self {
             EnumPackageImport::PackageImport(c) => c.make_post_deserialize(dict),
+        }
+    }
+}
+
+impl GetXMIId for EnumPackageImport {
+    fn get_xmi_id_field(&self) -> String {
+        match self {
+            EnumPackageImport::PackageImport(c) => c.get_xmi_id_field(),
         }
     }
 }
@@ -336,6 +407,14 @@ impl SetCMOFTools for EnumSpecification {
     ) -> Result<(), anyhow::Error> {
         match self {
             EnumSpecification::OpaqueExpression(c) => c.make_post_deserialize(dict),
+        }
+    }
+}
+
+impl GetXMIId for EnumSpecification {
+    fn get_xmi_id_field(&self) -> String {
+        match self {
+            EnumSpecification::OpaqueExpression(c) => c.get_xmi_id_field(),
         }
     }
 }

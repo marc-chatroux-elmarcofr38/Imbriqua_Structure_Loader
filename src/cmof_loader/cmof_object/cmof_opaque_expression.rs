@@ -21,7 +21,6 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Package section
 use crate::cmof_loader::*;
-use crate::loader_deserialise_helper::*;
 
 // Dependencies section
 use serde::Deserialize;
@@ -56,10 +55,18 @@ impl SetCMOFTools for CMOFOpaqueExpression {
         dict: &mut BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict.get("package_name").ok_or(anyhow::format_err!("Dictionnary error in make_post_deserialize"))?;
+        let package_name = dict.get("package_name").ok_or(anyhow::format_err!(
+            "Dictionnary error in make_post_deserialize"
+        ))?;
         // Set local values
         self.xmi_id.set_package(&package_name);
         //Return
         Ok(())
+    }
+}
+
+impl GetXMIId for CMOFOpaqueExpression {
+    fn get_xmi_id_field(&self) -> String {
+        self.xmi_id.label()
     }
 }

@@ -26,10 +26,6 @@ use log::warn;
 pub mod cmof_loader;
 pub mod custom_file_tools;
 pub mod custom_log_tools;
-pub mod loader_dependencies_explorer;
-pub mod loader_deserialise_helper;
-pub mod loader_naming_trait;
-pub mod loader_post_treament_deserialize;
 pub mod writing_entity;
 pub mod writing_lib_file;
 pub mod writing_manager;
@@ -56,7 +52,7 @@ fn main() {
     // Initialise global logger, file environment and loading environment
     let _handle = custom_log_tools::open_logger(logger_configuration);
     let file_env = output_result_manager::open_env(input_folder, main_output_folder, result_folder);
-    let mut loading_env = loader_dependencies_explorer::open_loader(file_env);
+    let mut loading_env = cmof_loader::open_loader(file_env);
     // Load ordered packages list
     loading_env.prepare(main_package_file, main_package_id, "root");
 

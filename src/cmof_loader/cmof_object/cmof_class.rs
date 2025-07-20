@@ -21,7 +21,6 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Package section
 use crate::cmof_loader::*;
-use crate::loader_deserialise_helper::*;
 
 // Dependencies section
 
@@ -115,5 +114,11 @@ impl SetCMOFTools for CMOFClass {
         }
         //Return
         Ok(())
+    }
+}
+
+impl GetXMIId for CMOFClass {
+    fn get_xmi_id_field(&self) -> String {
+        self.xmi_id.label()
     }
 }

@@ -21,7 +21,6 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Package section
 use crate::cmof_loader::*;
-use crate::loader_deserialise_helper::*;
 
 // Dependencies section
 
@@ -74,7 +73,9 @@ impl SetCMOFTools for CMOFDataType {
         dict: &mut BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict.get("package_name").ok_or(anyhow::format_err!("Dictionnary error in make_post_deserialize"))?;
+        let package_name = dict.get("package_name").ok_or(anyhow::format_err!(
+            "Dictionnary error in make_post_deserialize"
+        ))?;
         let package_name_snake_case = package_name.to_case(Case::Snake);
         let class_upper_case = self.name.to_case(Case::UpperCamel);
         let class_snake_case = self.name.to_case(Case::Snake);
@@ -95,5 +96,11 @@ impl SetCMOFTools for CMOFDataType {
         }
         //Return
         Ok(())
+    }
+}
+
+impl GetXMIId for CMOFDataType {
+    fn get_xmi_id_field(&self) -> String {
+        self.xmi_id.label()
     }
 }
