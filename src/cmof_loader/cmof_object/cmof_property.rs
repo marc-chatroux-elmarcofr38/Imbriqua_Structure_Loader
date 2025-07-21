@@ -35,9 +35,9 @@ use std::collections::BTreeMap;
 /// RUST Struct for deserialize CMOF Property Object
 pub struct CMOFProperty {
     /// xmi:id attribute
-    #[serde(deserialize_with = "deser_xmi_id")]
+    #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: XMIIdReference,
+    pub xmi_id: XMIIdLocalReference,
     /// name attribute
     #[serde(rename = "_name")]
     #[serde(deserialize_with = "deser_name")]
@@ -126,13 +126,6 @@ pub struct CMOFProperty {
 impl SetCMOFTools for CMOFProperty {
     fn collect_object(
         &mut self,
-        dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-
-    fn make_post_deserialize(
-        &mut self,
         dict_setting: &mut BTreeMap<String, String>,
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
@@ -147,19 +140,46 @@ impl SetCMOFTools for CMOFProperty {
             self.complex_type
                 .as_mut()
                 .unwrap()
-                .make_post_deserialize(dict_setting, dict_object)?;
+                .collect_object(dict_setting, dict_object)?;
         }
         if self.redefined_property_link.is_some() {
             self.redefined_property_link
                 .as_mut()
                 .unwrap()
-                .make_post_deserialize(dict_setting, dict_object)?;
+                .collect_object(dict_setting, dict_object)?;
         }
         if self.subsetted_property_link.is_some() {
             self.subsetted_property_link
                 .as_mut()
                 .unwrap()
-                .make_post_deserialize(dict_setting, dict_object)?;
+                .collect_object(dict_setting, dict_object)?;
+        }
+        //Return
+        Ok(())
+    }
+
+    fn make_post_deserialize(
+        &self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        // Call on child
+        if self.complex_type.is_some() {
+            self.complex_type
+                .as_ref()
+                .unwrap()
+                .make_post_deserialize(dict_object)?;
+        }
+        if self.redefined_property_link.is_some() {
+            self.redefined_property_link
+                .as_ref()
+                .unwrap()
+                .make_post_deserialize(dict_object)?;
+        }
+        if self.subsetted_property_link.is_some() {
+            self.subsetted_property_link
+                .as_ref()
+                .unwrap()
+                .make_post_deserialize(dict_object)?;
         }
         //Return
         Ok(())
@@ -169,5 +189,8 @@ impl SetCMOFTools for CMOFProperty {
 impl GetXMIId for CMOFProperty {
     fn get_xmi_id_field(&self) -> String {
         self.xmi_id.label()
+    }
+    fn get_xmi_id_object(&self) -> String {
+        self.xmi_id.get_object_id()
     }
 }

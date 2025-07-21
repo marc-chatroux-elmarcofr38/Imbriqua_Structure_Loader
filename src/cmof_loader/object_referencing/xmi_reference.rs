@@ -23,58 +23,44 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::cmof_loader::*;
 
 // Dependencies section
+use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::fmt;
-use std::rc::Weak;
 
 // ####################################################################################################
 //
 // ####################################################################################################
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 /// Reference to another XMI object
-pub struct XMIIdReference {
+pub struct XMIIdLocalReference {
     object_id: String,
     package_id: String,
     is_set: bool,
-    object: Weak<EnumCMOF>,
 }
 
-impl PartialEq for XMIIdReference {
+impl PartialEq for XMIIdLocalReference {
     fn eq(&self, other: &Self) -> bool {
         self.label() == other.label()
     }
 }
 
-impl fmt::Debug for XMIIdReference {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "\"Weak ref of \"{}\" (loaded : {})\"",
-            self.label(),
-            self.is_loaded(),
-        )
-    }
-}
-
-impl XMIIdReference {
+impl XMIIdLocalReference {
     /// Create when only object ID is available (need to use set_package after)
     pub fn new_local(object_id: String) -> Self {
-        XMIIdReference {
+        XMIIdLocalReference {
             object_id: object_id,
             package_id: String::new(),
             is_set: false,
-            object: Weak::new(),
         }
     }
 
     /// Create when object ID and package ID are available (DON'T need to use set_package after)
     pub fn new_global(object_id: String, package_id: String) -> Self {
-        XMIIdReference {
+        XMIIdLocalReference {
             object_id: object_id,
             package_id: package_id,
             is_set: true,
-            object: Weak::new(),
         }
     }
 
@@ -87,26 +73,108 @@ impl XMIIdReference {
     }
 
     /// Get object ID
-    pub fn get_object_id(&self) -> &String {
-        &self.object_id
+    pub fn get_object_id(&self) -> String {
+        self.object_id.clone()
     }
 
     /// Get package ID
-    pub fn get_package_id(&self) -> &String {
-        &self.package_id
+    pub fn get_package_id(&self) -> String {
+        self.package_id.clone()
     }
 
     /// Return combinaison of package ID and object ID
     pub fn label(&self) -> String {
-        let mut r = self.package_id.clone();
-        r.push_str("-");
-        r.push_str(self.object_id.as_str());
-        r
+        if self.is_set {
+            format!("{}-{}", self.get_package_id(), self.get_object_id())
+        } else {
+            panic!(
+                "Call \"label()\" on unset XMI ID : {}",
+                self.get_object_id()
+            );
+        }
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[derive(Clone)]
+/// Reference to another XMI object
+pub struct XMIIdReference {
+    object_id: String,
+    package_id: String,
+    is_set: bool,
+    /// Content of the ref, define with make_post_deserialize
+    pub object: RefCell<Option<EnumCMOF>>,
+}
+
+impl PartialEq for XMIIdReference {
+    fn eq(&self, other: &Self) -> bool {
+        self.label() == other.label()
+    }
+}
+
+impl fmt::Debug for XMIIdReference {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "\"RefCell of \'{}\' (loaded : {})\"",
+            self.label(),
+            self.object.borrow().is_some(),
+        )
+    }
+}
+
+impl XMIIdReference {
+    /// Create when only object ID is available (need to use set_package after)
+    pub fn new_local(object_id: String) -> Self {
+        XMIIdReference {
+            object_id: object_id,
+            package_id: String::new(),
+            is_set: false,
+            object: RefCell::new(None),
+        }
     }
 
-    /// Return if Weak if set or not
-    pub fn is_loaded(&self) -> bool {
-        self.object.upgrade().is_some()
+    /// Create when object ID and package ID are available (DON'T need to use set_package after)
+    pub fn new_global(object_id: String, package_id: String) -> Self {
+        XMIIdReference {
+            object_id: object_id,
+            package_id: package_id,
+            is_set: true,
+            object: RefCell::new(None),
+        }
+    }
+
+    /// Define package ID after a new_local
+    pub fn set_package(&mut self, package_id: &String) {
+        if !self.is_set {
+            self.package_id = package_id.clone();
+            self.is_set = true;
+        }
+    }
+
+    /// Get object ID
+    pub fn get_object_id(&self) -> String {
+        self.object_id.clone()
+    }
+
+    /// Get package ID
+    pub fn get_package_id(&self) -> String {
+        self.package_id.clone()
+    }
+
+    /// Return combinaison of package ID and object ID
+    pub fn label(&self) -> String {
+        if self.is_set {
+            format!("{}-{}", self.get_package_id(), self.get_object_id())
+        } else {
+            panic!(
+                "Call \"label()\" on unset XMI ID : {}",
+                self.get_object_id()
+            );
+        }
     }
 }
 
@@ -116,18 +184,19 @@ impl XMIIdReference {
 
 /// Tools for CMOF Object
 pub trait SetCMOFTools {
-    /// Allow to collect all CMOF object
+    /// Allow to finish XMIId of object and collect all CMOF object
+    /// Use "dict_setting" for share content between parent object to child object
+    /// Use "dict_object" for collect all object
     fn collect_object(
         &mut self,
+        dict_setting: &mut BTreeMap<String, String>,
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error>;
     /// Allow to define the post-treatment method : post_deserialize
-    /// Make change after deserialization, on call
-    /// Use "dict_setting" for share content between parent object to child object
+    /// Link external XMI Id of object by matching it on "dict_object"
     /// Use "dict_object" for obtain object between objects
     fn make_post_deserialize(
-        &mut self,
-        dict_setting: &mut BTreeMap<String, String>,
+        &self,
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error>;
 }
@@ -138,6 +207,24 @@ pub trait SetCMOFTools {
 
 /// Tool for CMOF Object
 pub trait GetXMIId {
-    /// Allow to get the xmi id field
+    /// Allow to get the xmi id field label (use in global BTreeMap)
     fn get_xmi_id_field(&self) -> String;
+    /// Allow to get the xmi id field object name (use in local BTreeMap)
+    fn get_xmi_id_object(&self) -> String;
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Naming method for providing struct name
+pub trait NamingStruct {
+    /// --> DC.cmof#Font
+    fn get_technical_name(&self, package: &LoadingPackage) -> String;
+    /// --> dc_font
+    fn get_table_name(&self, package: &LoadingPackage) -> String;
+    /// --> Font
+    fn get_model_name(&self) -> String;
+    /// --> dc_datatype_font
+    fn get_full_name(&self, package: &LoadingPackage) -> String;
 }

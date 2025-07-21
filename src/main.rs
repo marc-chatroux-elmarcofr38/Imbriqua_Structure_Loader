@@ -54,7 +54,7 @@ fn main() {
     let file_env = output_result_manager::open_env(input_folder, main_output_folder, result_folder);
     let mut loading_env = cmof_loader::open_loader(file_env);
     // Load ordered packages list
-    loading_env.prepare(main_package_file, main_package_id, "root");
+    loading_env.make_prepare(main_package_file, main_package_id, "root");
 
     // Generate list of class who don't necessite dependencies
     loading_env.writing_preparation();

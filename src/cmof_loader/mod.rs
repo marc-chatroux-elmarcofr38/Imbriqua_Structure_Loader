@@ -23,16 +23,17 @@ If not, see <https://www.gnu.org/licenses/>.
 // Mod section
 pub mod cmof_object;
 pub mod deserialize_helper;
-pub mod loader_dependencies_explorer;
+pub mod loading_tools;
 pub mod object_referencing;
 pub use cmof_object::*;
 pub use deserialize_helper::*;
-pub use loader_dependencies_explorer::*;
+pub use loading_tools::*;
 pub use object_referencing::*;
 
 // Package section
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
+use crate::output_result_manager::*;
 
 // Dependencies section
 pub use serde::Deserialize;
@@ -42,30 +43,32 @@ pub use std::rc::{Rc, Weak};
 // ####################################################################################################
 //
 // ####################################################################################################
-//
-// ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
-#[serde(deny_unknown_fields)]
-/// RUST Struct for representing package file
-pub struct FilePackage {
-    /// cmof:Package object
-    #[serde(deserialize_with = "deser_post_treatement_cmof_package")]
-    #[serde(rename = "cmof:Package")]
-    pub package: CMOFPackage,
-    /// cmof:Tag object list
-    #[serde(rename = "cmof:Tag")]
-    pub tags: Vec<CMOFTag>,
-    /// xmi version
-    #[serde(rename = "_xmi:version")]
-    pub xmi_versions: String,
-    /// XLM namespace XMI
-    #[serde(rename = "_xmlns:xmi")]
-    pub xmi_uri: String,
-    /// XML namespace CMOF
-    #[serde(rename = "_xmlns:cmof")]
-    pub cmof_uri: String,
-    /// XML namespace
-    #[serde(rename = "_xmlns")]
-    pub ns: String,
+/// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using ResultEnv object
+pub fn open_loader(file_env: ResultEnv) -> LoadingTracker {
+    LoadingTracker::new(file_env)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn loader_dependencies_explorer_01_open_loader() {
+        // Logs
+        initialize_log_for_test();
+        // Setting
+        let input_folder =
+            "tests/loader_dependencies_explorer/loader_dependencies_explorer_01_open_loader/input";
+        let main_output_folder =
+            "tests/loader_dependencies_explorer/loader_dependencies_explorer_01_open_loader/output";
+        let result_folder =
+            "tests/loader_dependencies_explorer/loader_dependencies_explorer_01_open_loader/result";
+        // Preparing
+        let file_env = open_env(input_folder, main_output_folder, result_folder);
+        // Test
+        let loading_env = open_loader(file_env);
+        let _ = loading_env.get_output_folder();
+    }
 }

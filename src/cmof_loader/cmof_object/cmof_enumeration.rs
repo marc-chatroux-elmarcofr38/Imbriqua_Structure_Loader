@@ -33,17 +33,17 @@ use crate::cmof_loader::*;
 /// RUST Struct for deserialize CMOF Enumeration Object
 pub struct CMOFEnumeration {
     /// xmi:id attribute
-    #[serde(deserialize_with = "deser_xmi_id")]
+    #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: XMIIdReference,
+    pub xmi_id: XMIIdLocalReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
     /// Optional ownedLiteral object arry
     #[serde(rename = "ownedLiteral")]
-    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_attribute: BTreeMap<String, Rc<EnumOwnedLiteral>>,
+    pub owned_attribute: BTreeMap<String, EnumOwnedLiteral>,
     /// Casing formating of "name" as technical_name
     #[serde(skip)]
     pub technical_name: String,
@@ -64,13 +64,6 @@ pub struct CMOFEnumeration {
 
 impl SetCMOFTools for CMOFEnumeration {
     fn collect_object(
-        &mut self,
-        dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-
-    fn make_post_deserialize(
         &mut self,
         dict_setting: &mut BTreeMap<String, String>,
         dict_object: &mut BTreeMap<String, EnumCMOF>,
@@ -93,8 +86,29 @@ impl SetCMOFTools for CMOFEnumeration {
         );
         // Call on child
         for (_, p) in &mut self.owned_attribute {
-            let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
-            p_unwrap.make_post_deserialize(dict_setting, dict_object)?;
+            match p {
+                EnumOwnedLiteral::EnumerationLiteral(ref mut c) => {
+                    let m = Rc::get_mut(c).unwrap();
+                    m.collect_object(dict_setting, dict_object)?;
+                    dict_object.insert(
+                        c.get_xmi_id_field(),
+                        EnumCMOF::CMOFEnumerationLiteral(c.clone()),
+                    );
+                }
+            }
+        }
+        //Return
+        Ok(())
+    }
+
+    fn make_post_deserialize(
+        &self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        // Call on child
+        for (_, p) in &self.owned_attribute {
+            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
+            p.make_post_deserialize(dict_object)?;
         }
         //Return
         Ok(())
@@ -104,5 +118,8 @@ impl SetCMOFTools for CMOFEnumeration {
 impl GetXMIId for CMOFEnumeration {
     fn get_xmi_id_field(&self) -> String {
         self.xmi_id.label()
+    }
+    fn get_xmi_id_object(&self) -> String {
+        self.xmi_id.get_object_id()
     }
 }

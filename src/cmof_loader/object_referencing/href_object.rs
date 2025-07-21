@@ -39,21 +39,32 @@ pub struct HRefRedefinedProperty {
     pub href: XMIIdReference,
 }
 
-impl SetCMOFTools for HRefRedefinedProperty {
-    fn collect_object(
-        &mut self,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-    fn make_post_deserialize(
-        &mut self,
-        _dict_setting: &mut BTreeMap<String, String>,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-}
+// impl SetCMOFTools for HRefRedefinedProperty {
+//     fn collect_object(
+//         &mut self,
+//         _dict_setting: &mut BTreeMap<String, String>,
+//         _dict_object: &mut BTreeMap<String, EnumCMOF>,
+//     ) -> Result<(), anyhow::Error> {
+//         Ok(())
+//     }
+//     fn make_post_deserialize(
+//         &self,
+//         dict_object: &mut BTreeMap<String, EnumCMOF>,
+//     ) -> Result<(), anyhow::Error> {
+//         let k = self.href.label();
+//         let r = dict_object.get(&k);
+//         if r.is_none() {
+//             return Err(anyhow::format_err!(
+//                 "Matching error in post_deserialize : \"{}\" not find in dict_object",
+//                 k
+//             ));
+//         } else {
+//             self.href.set_load(r.unwrap().clone());
+//         }
+//         // Return
+//         Ok(())
+//     }
+// }
 
 // ####################################################################################################
 //
@@ -67,22 +78,6 @@ pub struct HRefSubsettedProperty {
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
     pub href: XMIIdReference,
-}
-
-impl SetCMOFTools for HRefSubsettedProperty {
-    fn collect_object(
-        &mut self,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-    fn make_post_deserialize(
-        &mut self,
-        _dict_setting: &mut BTreeMap<String, String>,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
 }
 
 // ####################################################################################################
@@ -99,22 +94,6 @@ pub struct HRefSuperClass {
     pub href: XMIIdReference,
 }
 
-impl SetCMOFTools for HRefSuperClass {
-    fn collect_object(
-        &mut self,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-    fn make_post_deserialize(
-        &mut self,
-        _dict_setting: &mut BTreeMap<String, String>,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-}
-
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -127,22 +106,6 @@ pub struct HRefImportedPackage {
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
     pub href: XMIIdReference,
-}
-
-impl SetCMOFTools for HRefImportedPackage {
-    fn collect_object(
-        &mut self,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-    fn make_post_deserialize(
-        &mut self,
-        _dict_setting: &mut BTreeMap<String, String>,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
 }
 
 // ####################################################################################################
@@ -159,22 +122,6 @@ pub struct HRefClass {
     pub href: XMIIdReference,
 }
 
-impl SetCMOFTools for HRefClass {
-    fn collect_object(
-        &mut self,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-    fn make_post_deserialize(
-        &mut self,
-        _dict_setting: &mut BTreeMap<String, String>,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-}
-
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -189,22 +136,6 @@ pub struct HRefPrimitiveType {
     pub href: XMIIdReference,
 }
 
-impl SetCMOFTools for HRefPrimitiveType {
-    fn collect_object(
-        &mut self,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-    fn make_post_deserialize(
-        &mut self,
-        _dict_setting: &mut BTreeMap<String, String>,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-}
-
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -217,20 +148,4 @@ pub struct HRefDataType {
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
     pub href: XMIIdReference,
-}
-
-impl SetCMOFTools for HRefDataType {
-    fn collect_object(
-        &mut self,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-    fn make_post_deserialize(
-        &mut self,
-        _dict_setting: &mut BTreeMap<String, String>,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
 }

@@ -18,35 +18,18 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
+#![doc = include_str!("loading_tools.md")]
 
 // Mod section
-mod cmof_association;
-mod cmof_class;
-mod cmof_constraint;
-mod cmof_datatype;
-mod cmof_enumeration;
-mod cmof_enumeration_literal;
-mod cmof_opaque_expression;
-mod cmof_package;
-mod cmof_package_import;
-mod cmof_primitive_type;
-mod cmof_property;
-mod cmof_tag;
-mod enum_cmof_object;
-mod enum_href_object;
-mod uml_visibility_kind;
-pub use cmof_association::*;
-pub use cmof_class::*;
-pub use cmof_constraint::*;
-pub use cmof_datatype::*;
-pub use cmof_enumeration::*;
-pub use cmof_enumeration_literal::*;
-pub use cmof_opaque_expression::*;
-pub use cmof_package::*;
-pub use cmof_package_import::*;
-pub use cmof_primitive_type::*;
-pub use cmof_property::*;
-pub use cmof_tag::*;
-pub use enum_cmof_object::*;
-pub use enum_href_object::*;
-pub use uml_visibility_kind::*;
+mod tools_enum;
+mod tools_file_package;
+mod tools_loading_package;
+mod tools_objects;
+mod tools_precalculation;
+mod tools_tracker;
+pub use tools_enum::*;
+pub use tools_file_package::*;
+pub use tools_loading_package::*;
+pub use tools_objects::*;
+pub use tools_precalculation::*;
+pub use tools_tracker::*;

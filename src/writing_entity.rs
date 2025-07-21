@@ -44,7 +44,7 @@ impl LoadingTracker {
         for (label, pckg) in self.get_package_in_order() {
             debug!("Generating sub-mod file for \"{label}\" : START");
             for (_, entity) in &pckg.get_json().owned_member {
-                match entity.as_ref() {
+                match entity {
                     EnumOwnedMember::Association(content) => {
                         // Only for "Many to Many"
                         let association =
@@ -346,7 +346,7 @@ impl CMOFClass {
         let mut result: Vec<&CMOFProperty> = Vec::new();
 
         for (_, property) in &self.owned_attribute {
-            match property.as_ref() {
+            match property {
                 EnumOwnedAttribute::Property(content) => {
                     if content.upper > infinitable::Finite(1) {
                         // Not a field, N-N link
@@ -373,7 +373,7 @@ impl CMOFClass {
         let mut result: Vec<&CMOFProperty> = Vec::new();
 
         for (_, property) in &self.owned_attribute {
-            match property.as_ref() {
+            match property {
                 EnumOwnedAttribute::Property(content) => {
                     if content.upper > infinitable::Finite(1) {
                         // Not a field, N-N link
@@ -1119,7 +1119,7 @@ impl CMOFDataType {
         let mut result: Vec<&CMOFProperty> = Vec::new();
 
         for (_, property) in &self.owned_attribute {
-            match property.as_ref() {
+            match property {
                 EnumOwnedAttribute::Property(content) => {
                     result.push(&content);
                 }
@@ -1198,7 +1198,7 @@ impl CMOFEnumeration {
         let mut result: Vec<&CMOFEnumerationLiteral> = Vec::new();
 
         for (_, property) in &self.owned_attribute {
-            match property.as_ref() {
+            match property {
                 EnumOwnedLiteral::EnumerationLiteral(content) => {
                     result.push(&content);
                 }
@@ -1318,8 +1318,8 @@ impl CMOFProperty {
                     // Simple field
                     let key = link.href.get_object_id();
 
-                    if pre_calc.primitive_type_conversion.get(key).is_some() {
-                        pre_calc.primitive_type_conversion.get(key).unwrap()
+                    if pre_calc.primitive_type_conversion.get(&key).is_some() {
+                        pre_calc.primitive_type_conversion.get(&key).unwrap()
                     } else {
                         info!("Error : unknow PRIMITIVE TYPE{}", key);
                         "i32"

@@ -35,9 +35,9 @@ use std::collections::BTreeMap;
 /// RUST Struct for deserialize CMOF PackageImport Object
 pub struct CMOFPackageImport {
     /// xmi:id attribute
-    #[serde(deserialize_with = "deser_xmi_id")]
+    #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: XMIIdReference,
+    pub xmi_id: XMIIdLocalReference,
     /// importingNamespace attribute
     #[serde(rename = "_importingNamespace")]
     pub importing_namespace: String,
@@ -53,13 +53,6 @@ pub struct CMOFPackageImport {
 impl SetCMOFTools for CMOFPackageImport {
     fn collect_object(
         &mut self,
-        dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-
-    fn make_post_deserialize(
-        &mut self,
         dict_setting: &mut BTreeMap<String, String>,
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
@@ -71,7 +64,17 @@ impl SetCMOFTools for CMOFPackageImport {
         self.xmi_id.set_package(&package_name);
         // Call on child
         self.imported_package
-            .make_post_deserialize(dict_setting, dict_object)?;
+            .collect_object(dict_setting, dict_object)?;
+        //Return
+        Ok(())
+    }
+
+    fn make_post_deserialize(
+        &self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        // Call on child
+        self.imported_package.make_post_deserialize(dict_object)?;
         //Return
         Ok(())
     }
@@ -80,5 +83,8 @@ impl SetCMOFTools for CMOFPackageImport {
 impl GetXMIId for CMOFPackageImport {
     fn get_xmi_id_field(&self) -> String {
         self.xmi_id.label()
+    }
+    fn get_xmi_id_object(&self) -> String {
+        self.xmi_id.get_object_id()
     }
 }

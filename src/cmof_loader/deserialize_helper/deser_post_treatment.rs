@@ -62,14 +62,26 @@ where
             let mut dict_setting: BTreeMap<String, String> = BTreeMap::new();
             let mut dict_object: BTreeMap<String, EnumCMOF> = BTreeMap::new();
             // Collect
-            let result = r.collect_object(&mut dict_object);
+            let result = r.collect_object(&mut dict_setting, &mut dict_object);
             if result.is_err() {
-                panic!("{:?}", result.err());
-            }
+                panic!("Collect object error : {:?}", result.err());
+            };
+            // Debug (trace  level)
+            trace!("dict_setting after collect_object : {:#?}", dict_setting);
+            trace!(
+                "COUNT of dict_setting after collect_object : {}",
+                dict_setting.len()
+            );
+            trace!("Self after collect_object : {:#?}", r);
+            trace!(
+                "COUNT of dict_object after collect_object : {}",
+                dict_object.len()
+            );
+            trace!("dict_object after collect_object : {:#?}", dict_object);
             // Make post deserialize
-            let result = r.make_post_deserialize(&mut dict_setting, &mut dict_object);
+            let result = r.make_post_deserialize(&mut dict_object);
             if result.is_err() {
-                panic!("{:?}", result.err());
+                panic!("Make post deserialize error : {:?}", result.err());
             }
 
             // Return

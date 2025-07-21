@@ -41,7 +41,7 @@
 					{
 						"type": {
 							"_xmi:type": "cmof:Class",
-							"_href": "Extensibilty.cmof#Element"
+							"_href": "Extensibility.cmof#Element"
 						},
 						"_xmi:type": "cmof:Property",
 						"_xmi:id": "DiagramElement-modelElement",

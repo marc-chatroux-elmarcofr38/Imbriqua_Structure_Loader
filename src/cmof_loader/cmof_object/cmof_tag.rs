@@ -35,9 +35,9 @@ use std::collections::BTreeMap;
 /// RUST Struct for deserialize CMOF Tag Object
 pub struct CMOFTag {
     /// xmi:id attribute
-    #[serde(deserialize_with = "deser_xmi_id")]
+    #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: XMIIdReference,
+    pub xmi_id: XMIIdLocalReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
@@ -56,15 +56,8 @@ pub struct CMOFTag {
 impl SetCMOFTools for CMOFTag {
     fn collect_object(
         &mut self,
-        dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-
-    fn make_post_deserialize(
-        &mut self,
         dict_setting: &mut BTreeMap<String, String>,
-        dict_object: &mut BTreeMap<String, EnumCMOF>,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
         let package_name = dict_setting.get("package_name").ok_or(anyhow::format_err!(
@@ -75,10 +68,21 @@ impl SetCMOFTools for CMOFTag {
         //Return
         Ok(())
     }
+
+    fn make_post_deserialize(
+        &self,
+        _dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        //Return
+        Ok(())
+    }
 }
 
 impl GetXMIId for CMOFTag {
     fn get_xmi_id_field(&self) -> String {
         self.xmi_id.label()
+    }
+    fn get_xmi_id_object(&self) -> String {
+        self.xmi_id.get_object_id()
     }
 }

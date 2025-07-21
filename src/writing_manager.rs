@@ -95,7 +95,7 @@ impl LoadingTracker {
         let mut result: BTreeMap<String, Named> = BTreeMap::new();
         for (_, package) in self.get_package_in_order() {
             for (_, owned_member) in &package.get_json().owned_member {
-                let key = match owned_member.as_ref() {
+                let key = match owned_member {
                     EnumOwnedMember::Association(content) => content.name.clone(),
                     _ => owned_member.get_model_name().clone(),
                 };
@@ -110,7 +110,7 @@ impl LoadingTracker {
             }
         }
         self.pre_calculation.owned_member_type_list = result.clone();
-        debug!(
+        trace!(
             "Writing_preparation : owned_member_type_list {:#?}",
             self.pre_calculation.owned_member_type_list
         );
@@ -124,10 +124,10 @@ impl LoadingTracker {
                 .enumeration_default_value
                 .insert(import_simple_value.key, import_simple_value.value);
         }
-        // debug!(
-        //     "Writing_preparation : enumeration_default_value {:#?}",
-        //     self.pre_calculation.enumeration_default_value
-        // );
+        trace!(
+            "Writing_preparation : enumeration_default_value {:#?}",
+            self.pre_calculation.enumeration_default_value
+        );
 
         // primitive_type_conversion
         let reader_path = Path::new("metamodel_file_extension/primitive_type_conversion.json");
@@ -138,16 +138,16 @@ impl LoadingTracker {
                 .primitive_type_conversion
                 .insert(import_simple_value.key, import_simple_value.value);
         }
-        // debug!(
-        //     "Writing_preparation : primitive_type_conversion {:#?}",
-        //     self.pre_calculation.primitive_type_conversion
-        // );
+        trace!(
+            "Writing_preparation : primitive_type_conversion {:#?}",
+            self.pre_calculation.primitive_type_conversion
+        );
 
         // association_relation
         let mut result: BTreeMap<String, Vec<ElementRelation>> = BTreeMap::new();
         for (_, package) in self.get_package_in_order() {
             for (_, owned_member) in &package.get_json().owned_member {
-                match owned_member.as_ref() {
+                match owned_member {
                     EnumOwnedMember::Association(content) => {
                         let key = content.name.clone();
                         for (_, owned_end) in &content.owned_end {
@@ -172,7 +172,7 @@ impl LoadingTracker {
                     }
                     EnumOwnedMember::Class(content) => {
                         for (_, owned_attribute) in &content.owned_attribute {
-                            match owned_attribute.as_ref() {
+                            match owned_attribute {
                                 EnumOwnedAttribute::Property(property) => {
                                     if property.association.is_some() {
                                         let key = property.association.clone().unwrap();
@@ -236,10 +236,10 @@ impl LoadingTracker {
                 self.pre_calculation.association_relation.insert(key, value);
             }
         }
-        // debug!(
-        //     "Writing_preparation : association_relation {:#?}",
-        //     self.pre_calculation.association_relation
-        // );
+        trace!(
+            "Writing_preparation : association_relation {:#?}",
+            self.pre_calculation.association_relation
+        );
 
         // association_relation_by_class
         let mut result: BTreeMap<String, Vec<(String, RankRelation)>> = BTreeMap::new();
@@ -268,16 +268,16 @@ impl LoadingTracker {
             };
         }
         self.pre_calculation.association_relation_by_class = result.clone();
-        // debug!(
-        //     "Writing_preparation : association_relation_by_class {:#?}",
-        //     self.pre_calculation.association_relation_by_class
-        // );
+        trace!(
+            "Writing_preparation : association_relation_by_class {:#?}",
+            self.pre_calculation.association_relation_by_class
+        );
 
         // reverse_super_link
         let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
         for (_, package) in self.get_package_in_order() {
             for (_, owned_member) in &package.get_json().owned_member {
-                match owned_member.as_ref() {
+                match owned_member {
                     EnumOwnedMember::Class(content) => {
                         // As default, empty
                         let mut list_of_super: Vec<String> = content.super_class.clone();
@@ -310,10 +310,10 @@ impl LoadingTracker {
             }
         }
         self.pre_calculation.reverse_super_link = result.clone();
-        // debug!(
-        //     "Writing_preparation : reverse_super_link {:#?}",
-        //     self.pre_calculation.reverse_super_link
-        // );
+        trace!(
+            "Writing_preparation : reverse_super_link {:#?}",
+            self.pre_calculation.reverse_super_link
+        );
     }
 }
 

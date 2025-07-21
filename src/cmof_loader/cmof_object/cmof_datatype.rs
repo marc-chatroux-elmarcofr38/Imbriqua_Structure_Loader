@@ -33,22 +33,22 @@ use crate::cmof_loader::*;
 /// RUST Struct for deserialize CMOF DataType Object
 pub struct CMOFDataType {
     /// xmi:id attribute
-    #[serde(deserialize_with = "deser_xmi_id")]
+    #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
-    pub xmi_id: XMIIdReference,
+    pub xmi_id: XMIIdLocalReference,
     /// name attribute
     #[serde(rename = "_name")]
     pub name: String,
     /// Optional ownedAttribute object array
     #[serde(rename = "ownedAttribute")]
-    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_attribute: BTreeMap<String, Rc<EnumOwnedAttribute>>,
+    pub owned_attribute: BTreeMap<String, EnumOwnedAttribute>,
     /// Optional ownedRule object
     #[serde(rename = "ownedRule")]
-    #[serde(deserialize_with = "deser_btreemap_with_rc_using_name_as_key")]
+    #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
     #[serde(default = "default_empty_btreemap")]
-    pub owned_rule: BTreeMap<String, Rc<EnumOwnedRule>>,
+    pub owned_rule: BTreeMap<String, EnumOwnedRule>,
     /// Casing formating of "name" as technical_name
     #[serde(skip)]
     pub technical_name: String,
@@ -70,13 +70,6 @@ pub struct CMOFDataType {
 impl SetCMOFTools for CMOFDataType {
     fn collect_object(
         &mut self,
-        dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
-
-    fn make_post_deserialize(
-        &mut self,
         dict_setting: &mut BTreeMap<String, String>,
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
@@ -95,12 +88,29 @@ impl SetCMOFTools for CMOFDataType {
         self.full_name = format!("{}_datatype_{}", package_name_snake_case, class_snake_case);
         // Call on child
         for (_, p) in &mut self.owned_attribute {
-            let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
-            p_unwrap.make_post_deserialize(dict_setting, dict_object)?;
+            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
+            p.collect_object(dict_setting, dict_object)?;
         }
         for (_, p) in &mut self.owned_rule {
-            let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
-            p_unwrap.make_post_deserialize(dict_setting, dict_object)?;
+            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
+            p.collect_object(dict_setting, dict_object)?;
+        }
+        //Return
+        Ok(())
+    }
+
+    fn make_post_deserialize(
+        &self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        // Call on child
+        for (_, p) in &self.owned_attribute {
+            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
+            p.make_post_deserialize(dict_object)?;
+        }
+        for (_, p) in &self.owned_rule {
+            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
+            p.make_post_deserialize(dict_object)?;
         }
         //Return
         Ok(())
@@ -110,5 +120,8 @@ impl SetCMOFTools for CMOFDataType {
 impl GetXMIId for CMOFDataType {
     fn get_xmi_id_field(&self) -> String {
         self.xmi_id.label()
+    }
+    fn get_xmi_id_object(&self) -> String {
+        self.xmi_id.get_object_id()
     }
 }
