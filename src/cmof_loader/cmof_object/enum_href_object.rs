@@ -201,7 +201,7 @@ impl SetCMOFTools for EnumType {
 //
 // ####################################################################################################
 
-fn set_href(
+pub fn set_href(
     reference: &XMIIdReference,
     dict_object: &mut BTreeMap<String, EnumCMOF>,
 ) -> Result<(), anyhow::Error> {

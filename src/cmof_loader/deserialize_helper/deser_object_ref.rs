@@ -111,3 +111,38 @@ where
         }
     })
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Deserialising 2-String Vec, from String, require a 1-whitespace String
+pub fn deser_split_2_space_href<'de, D>(
+    deserializer: D,
+) -> Result<(XMIIdReference, XMIIdReference), D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    Ok(match de::Deserialize::deserialize(deserializer)? {
+        Value::String(s) => {
+            let content: Vec<&str> = s.split_whitespace().collect();
+
+            // Len criteria
+            if content.len() != 2 {
+                return Err(de::Error::custom(format!(
+                    "Need only one whitespace : raw='{}'",
+                    s
+                )));
+            }
+
+            let r: Vec<String> = content.iter().map(|x| String::from(*x)).collect();
+            let object_1 = r[0].clone();
+            let object_2 = r[1].clone();
+            let ref_1 = XMIIdReference::new_local(object_1);
+            let ref_2 = XMIIdReference::new_local(object_2);
+            (ref_1, ref_2)
+        }
+        // Value::Null => vec![String::from("empty")],
+        _ => return Err(de::Error::custom("Wrong type, expected String")),
+    })
+}

@@ -44,8 +44,8 @@ pub struct CMOFAssociation {
     pub visibility: UMLVisibilityKind,
     /// memberEnd attribute, 2 for CMOF
     #[serde(rename = "_memberEnd")]
-    #[serde(deserialize_with = "deser_split_2_space")]
-    pub member_end: (String, String),
+    #[serde(deserialize_with = "deser_split_2_space_href")]
+    pub member_end: (XMIIdReference, XMIIdReference),
     /// Optional ownedEnd object
     #[serde(rename = "ownedEnd")]
     #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
@@ -98,6 +98,8 @@ impl SetCMOFTools for CMOFAssociation {
             package_name_snake_case, class_snake_case
         );
         // Call on child
+        self.member_end.0.set_package(&package_name);
+        self.member_end.1.set_package(&package_name);
         for (_, p) in &mut self.owned_end {
             p.collect_object(dict_setting, dict_object)?;
         }
@@ -113,6 +115,8 @@ impl SetCMOFTools for CMOFAssociation {
         for (_, p) in &self.owned_end {
             p.make_post_deserialize(dict_object)?;
         }
+        set_href(&self.member_end.0, dict_object)?;
+        set_href(&self.member_end.1, dict_object)?;
         //Return
         Ok(())
     }

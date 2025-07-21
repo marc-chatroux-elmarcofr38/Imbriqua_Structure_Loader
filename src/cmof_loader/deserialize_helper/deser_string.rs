@@ -29,8 +29,6 @@ use serde_json::Value;
 // ####################################################################################################
 //
 // ####################################################################################################
-//
-// ####################################################################################################
 
 /// Convert string with space to vec of string, splitting on space
 pub fn deser_spaced_string<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
@@ -49,8 +47,6 @@ where
 // ####################################################################################################
 //
 // ####################################################################################################
-//
-// ####################################################################################################
 
 /// Deserialising to __String__, from name (prevent suspicious name)
 pub fn deser_name<'de, D>(deserializer: D) -> Result<String, D::Error>
@@ -65,36 +61,5 @@ where
         },
         // others
         _ => return Err(de::Error::custom("Wrong type, expected string")),
-    })
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-//
-// ####################################################################################################
-
-/// Deserialising 2-String Vec, from String, require a 1-whitespace String
-pub fn deser_split_2_space<'de, D>(deserializer: D) -> Result<(String, String), D::Error>
-where
-    D: de::Deserializer<'de>,
-{
-    Ok(match de::Deserialize::deserialize(deserializer)? {
-        Value::String(s) => {
-            let content: Vec<&str> = s.split_whitespace().collect();
-
-            // Len criteria
-            if content.len() != 2 {
-                return Err(de::Error::custom(format!(
-                    "Need only one whitespace : raw='{}'",
-                    s
-                )));
-            }
-
-            let r: Vec<String> = content.iter().map(|x| String::from(*x)).collect();
-            (r[0].clone(), r[1].clone())
-        }
-        // Value::Null => vec![String::from("empty")],
-        _ => return Err(de::Error::custom("Wrong type, expected String")),
     })
 }
