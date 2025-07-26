@@ -81,3 +81,12 @@ pub fn default_empty_btreemap<K, V>() -> BTreeMap<K, V> {
 pub fn default_visibility() -> UMLVisibilityKind {
     UMLVisibilityKind::Public
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Default VisibilityKind, as default value for serde_default
+pub fn default_option<T>() -> Option<T> {
+    None
+}

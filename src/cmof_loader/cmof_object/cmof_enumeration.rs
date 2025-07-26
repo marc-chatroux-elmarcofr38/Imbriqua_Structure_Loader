@@ -28,7 +28,7 @@ use crate::cmof_loader::*;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Enumeration Object
 pub struct CMOFEnumeration {
@@ -38,7 +38,7 @@ pub struct CMOFEnumeration {
     pub xmi_id: XMIIdLocalReference,
     /// name attribute
     #[serde(rename = "_name")]
-    pub name: String,
+    name: String,
     /// Optional ownedLiteral object arry
     #[serde(rename = "ownedLiteral")]
     #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
@@ -56,6 +56,30 @@ pub struct CMOFEnumeration {
     /// Casing formating of "name" as full_name
     #[serde(skip)]
     pub full_name: String,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl PartialEq for CMOFEnumeration {
+    fn eq(&self, other: &Self) -> bool {
+        self.xmi_id == other.xmi_id
+    }
+}
+
+impl Eq for CMOFEnumeration {}
+
+impl PartialOrd for CMOFEnumeration {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for CMOFEnumeration {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.xmi_id.cmp(&other.xmi_id)
+    }
 }
 
 // ####################################################################################################
@@ -91,7 +115,7 @@ impl SetCMOFTools for CMOFEnumeration {
                     let m = Rc::get_mut(c).unwrap();
                     m.collect_object(dict_setting, dict_object)?;
                     dict_object.insert(
-                        c.get_xmi_id_field(),
+                        c.get_xmi_id_field()?,
                         EnumCMOF::CMOFEnumerationLiteral(c.clone()),
                     );
                 }
@@ -107,7 +131,6 @@ impl SetCMOFTools for CMOFEnumeration {
     ) -> Result<(), anyhow::Error> {
         // Call on child
         for (_, p) in &self.owned_attribute {
-            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
             p.make_post_deserialize(dict_object)?;
         }
         //Return
@@ -115,11 +138,15 @@ impl SetCMOFTools for CMOFEnumeration {
     }
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+
 impl GetXMIId for CMOFEnumeration {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         self.xmi_id.label()
     }
-    fn get_xmi_id_object(&self) -> String {
-        self.xmi_id.get_object_id()
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
+        Ok(self.xmi_id.get_object_id())
     }
 }

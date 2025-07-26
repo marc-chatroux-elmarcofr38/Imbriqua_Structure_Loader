@@ -156,6 +156,8 @@ impl SetCMOFTools for EnumSuperClass {
     }
 }
 
+impl EnumSuperClass {}
+
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -201,17 +203,18 @@ impl SetCMOFTools for EnumType {
 //
 // ####################################################################################################
 
+/// Push content to RefCell in XMIIDReerence
 pub fn set_href(
     reference: &XMIIdReference,
     dict_object: &mut BTreeMap<String, EnumCMOF>,
 ) -> Result<(), anyhow::Error> {
     // Criteria
     if reference.object.borrow().is_some() {
-        panic!("'{}' is already loaded", reference.label())
+        panic!("'{:#?}' is already loaded", reference)
     };
 
     // Catch
-    let k = reference.label();
+    let k = reference.label()?;
     let r = dict_object.get(&k);
     if r.is_none() {
         return Err(anyhow::format_err!(

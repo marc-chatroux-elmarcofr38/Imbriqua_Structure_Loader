@@ -19,29 +19,8 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(dead_code)]
 #![warn(missing_docs)]
 
-// Package section
-use crate::cmof_loader::*;
-
-// Dependencies section
-use serde::de;
-use serde_json::Value;
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-/// Deserialising to __String__, from name (prevent suspicious name)
-pub fn deser_name<'de, D>(deserializer: D) -> Result<String, D::Error>
-where
-    D: de::Deserializer<'de>,
-{
-    Ok(match de::Deserialize::deserialize(deserializer)? {
-        // String, True if "yes" or "true"
-        Value::String(s) => match s.as_str() {
-            "type" => "r#type".to_string(),
-            _ => s,
-        },
-        // others
-        _ => return Err(de::Error::custom("Wrong type, expected string")),
-    })
-}
+// Mod section
+mod impl_cmof_association;
+mod relation_object;
+pub use impl_cmof_association::*;
+pub use relation_object::*;

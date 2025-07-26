@@ -85,6 +85,34 @@ where
 // ####################################################################################################
 
 /// Convert string with space to vec of string, splitting on space
+pub fn deser_option_xmi_id<'de, D>(deserializer: D) -> Result<Option<XMIIdReference>, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    Ok(match de::Deserialize::deserialize(deserializer)? {
+        // Split text
+        Value::String(s) => match s.find(".cmof#") {
+            Some(split_index) => {
+                let a = s[split_index..].replace(".cmof#", "").to_string();
+                let b = s[..split_index].to_string();
+                Some(XMIIdReference::new_global(a, b))
+            }
+            None => Some(XMIIdReference::new_local(s)),
+        },
+        Value::Null => None,
+        _ => {
+            return Err(de::Error::custom(
+                "Wrong type, expected String for converting to XMI ID Reference",
+            ))
+        }
+    })
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Convert string with space to vec of string, splitting on space
 pub fn deser_href<'de, D>(deserializer: D) -> Result<XMIIdReference, D::Error>
 where
     D: de::Deserializer<'de>,
@@ -99,14 +127,122 @@ where
             }
             None => {
                 return Err(de::Error::custom(format!(
-                    "HRef deserialize error : no \".cmof#\" for {}",
+                    "HRef deserialize error : no \".cmof#\" for {} (deser_href)",
                     s
                 )))
             }
         },
         _ => {
             return Err(de::Error::custom(
-                "Wrong type, expected String for converting to HRef Reference",
+                "Wrong type, expected String for converting to HRef Reference (deser_href)",
+            ))
+        }
+    })
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+pub fn deser_spaced_href<'de, D>(deserializer: D) -> Result<Vec<XMIIdReference>, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    Ok(match de::Deserialize::deserialize(deserializer)? {
+        // Split text
+        Value::String(s) => {
+            let splited: Vec<String> = s.split(" ").map(str::to_string).collect();
+            let mut r: Vec<XMIIdReference> = Vec::new();
+            for s in splited {
+                let v = match s.find(".cmof#") {
+                    Some(split_index) => {
+                        let a = s[split_index..].replace(".cmof#", "").to_string();
+                        let b = s[..split_index].to_string();
+                        XMIIdReference::new_global(a, b)
+                    }
+                    None => XMIIdReference::new_local(s),
+                };
+                r.push(v);
+            }
+            r
+        }
+        // Null, always False
+        Value::Null => Vec::new(),
+        _ => {
+            return Err(de::Error::custom(
+                "Wrong type, expected String (deser_spaced_href)",
+            ))
+        }
+    })
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Convert string with space to vec of string, splitting on space
+pub fn deser_vec_href<'de, D>(deserializer: D) -> Result<Vec<XMIIdReference>, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    Ok(match de::Deserialize::deserialize(deserializer)? {
+        // Split text
+        Value::Array(v_array) => {
+            let mut result: Vec<XMIIdReference> = Vec::new();
+            for v in v_array {
+                match v {
+                    Value::String(content) => {
+                        let c = match content.find(".cmof#") {
+                            Some(split_index) => {
+                                let a = content[split_index..].replace(".cmof#", "").to_string();
+                                let b = content[..split_index].to_string();
+                                XMIIdReference::new_global(a, b)
+                            }
+                            None => XMIIdReference::new_local(content),
+                        };
+                        result.push(c);
+                    }
+                    _ => {}
+                }
+            }
+            result
+        }
+        Value::Object(map) => {
+            let v = map.get("_href").unwrap().clone();
+            match v {
+                Value::String(content) => {
+                    let c = match content.find(".cmof#") {
+                        Some(split_index) => {
+                            let a = content[split_index..].replace(".cmof#", "").to_string();
+                            let b = content[..split_index].to_string();
+                            XMIIdReference::new_global(a, b)
+                        }
+                        None => XMIIdReference::new_local(content),
+                    };
+                    Vec::from([c])
+                }
+                _ => {
+                    return Err(de::Error::custom(
+                        "Wrong type, expected String for converting to HRef Reference (VEC)",
+                    ))
+                }
+            }
+        }
+        Value::String(v) => {
+            let c = match v.find(".cmof#") {
+                Some(split_index) => {
+                    let a = v[split_index..].replace(".cmof#", "").to_string();
+                    let b = v[..split_index].to_string();
+                    XMIIdReference::new_global(a, b)
+                }
+                None => XMIIdReference::new_local(v),
+            };
+            Vec::from([c])
+        }
+        Value::Null => Vec::new(),
+        _ => {
+            return Err(de::Error::custom(
+                "Wrong type, expected String for converting to HRef Reference (VEC)",
             ))
         }
     })

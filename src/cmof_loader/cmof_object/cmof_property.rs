@@ -30,7 +30,7 @@ use std::collections::BTreeMap;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Property Object
 pub struct CMOFProperty {
@@ -47,8 +47,10 @@ pub struct CMOFProperty {
     #[serde(default = "default_visibility")]
     pub visibility: UMLVisibilityKind,
     /// Optional type attribute (simple type)
+    #[serde(deserialize_with = "deser_option_xmi_id")]
+    #[serde(default = "default_option")]
     #[serde(rename = "_type")]
-    pub simple_type: Option<String>,
+    pub simple_type: Option<XMIIdReference>,
     /// Optional type object (complex type)
     #[serde(rename = "type")]
     pub complex_type: Option<EnumType>,
@@ -106,17 +108,42 @@ pub struct CMOFProperty {
     pub subsetted_property: Option<String>,
     /// Optional owningAssociation attribute
     #[serde(rename = "_owningAssociation")]
-    #[serde(default = "default_empty_string")]
-    pub owning_association: String,
+    pub owning_association: Option<String>,
     /// Optional association attribute
     #[serde(rename = "_association")]
-    pub association: Option<String>,
+    #[serde(deserialize_with = "deser_option_xmi_id")]
+    #[serde(default = "default_option")]
+    pub association: Option<XMIIdReference>,
     /// Optional redefinedProperty object
     #[serde(rename = "redefinedProperty")]
     pub redefined_property_link: Option<EnumRedefinedProperty>,
     /// Optional SubsettedProperty object
     #[serde(rename = "subsettedProperty")]
     pub subsetted_property_link: Option<EnumSubsettedProperty>,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl PartialEq for CMOFProperty {
+    fn eq(&self, other: &Self) -> bool {
+        self.xmi_id == other.xmi_id
+    }
+}
+
+impl Eq for CMOFProperty {}
+
+impl PartialOrd for CMOFProperty {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for CMOFProperty {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.xmi_id.cmp(&other.xmi_id)
+    }
 }
 
 // ####################################################################################################
@@ -135,6 +162,18 @@ impl SetCMOFTools for CMOFProperty {
         ))?;
         // Set local values
         self.xmi_id.set_package(&package_name);
+        if self.simple_type.is_some() {
+            self.simple_type
+                .as_mut()
+                .unwrap()
+                .set_package(&package_name);
+        }
+        if self.association.is_some() {
+            self.association
+                .as_mut()
+                .unwrap()
+                .set_package(&package_name);
+        }
         // Call on child
         if self.complex_type.is_some() {
             self.complex_type
@@ -181,16 +220,54 @@ impl SetCMOFTools for CMOFProperty {
                 .unwrap()
                 .make_post_deserialize(dict_object)?;
         }
+        if self.simple_type.is_some() {
+            set_href(&self.simple_type.as_ref().unwrap(), dict_object)?;
+        }
+        if self.association.is_some() {
+            set_href(&self.association.as_ref().unwrap(), dict_object)?;
+        }
         //Return
         Ok(())
     }
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+
 impl GetXMIId for CMOFProperty {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         self.xmi_id.label()
     }
-    fn get_xmi_id_object(&self) -> String {
-        self.xmi_id.get_object_id()
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
+        Ok(self.xmi_id.get_object_id())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl CMOFProperty {
+    pub fn get_type(&self) -> &XMIIdReference {
+        // For field simple
+        if self.simple_type.is_some() {
+            self.simple_type.as_ref().unwrap()
+        } else {
+            match self.complex_type.as_ref().unwrap() {
+                EnumType::HRefPrimitiveType(link) => {
+                    // Foreign field
+                    &link.href
+                }
+                EnumType::HRefClass(link) => {
+                    // Foreign field
+                    &link.href
+                }
+                EnumType::HRefDataType(link) => {
+                    // Foreign field
+                    &link.href
+                }
+            }
+        }
     }
 }

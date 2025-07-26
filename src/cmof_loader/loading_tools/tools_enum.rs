@@ -44,39 +44,6 @@ pub enum LoadingState {
 // ####################################################################################################
 
 #[derive(Clone, PartialEq, Debug)]
-/// Help for AssociationRelation
-pub enum RelationPonderationType {
-    /// one relation_1 need one relation_2
-    OneToOne,
-    /// many relation_1 need one relation_2
-    OneToMany,
-    /// many relation_1 need many relation_2
-    ManyToMany,
-}
-
-#[derive(Clone, PartialEq, Debug)]
-/// Help for AssociationRelation pivot
-pub enum RelationSource {
-    /// If is fromm CMOFAssociation
-    FromAssociation,
-    /// If is from CMOFClass
-    FromClass,
-}
-
-#[derive(Clone, PartialEq, Debug)]
-/// Help for AssociationRelation pivot
-pub enum RankRelation {
-    /// Is relation_1
-    IsOne,
-    /// Is relation_2
-    IsSecond,
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-#[derive(Clone, PartialEq, Debug)]
 /// State on package to load
 pub enum ClassClassification {
     /// Primal : depend of nothing

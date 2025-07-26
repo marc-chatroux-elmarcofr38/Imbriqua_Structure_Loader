@@ -31,7 +31,7 @@ use std::fmt;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 /// Reference to another XMI object
 pub struct XMIIdLocalReference {
     object_id: String,
@@ -41,7 +41,44 @@ pub struct XMIIdLocalReference {
 
 impl PartialEq for XMIIdLocalReference {
     fn eq(&self, other: &Self) -> bool {
-        self.label() == other.label()
+        self.object_id == other.object_id
+            && self.package_id == other.package_id
+            && self.package_id != String::new()
+            && other.package_id != String::new()
+    }
+}
+
+impl Eq for XMIIdLocalReference {}
+
+impl PartialOrd for XMIIdLocalReference {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for XMIIdLocalReference {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.package_id
+            .cmp(&other.package_id)
+            .then(self.object_id.cmp(&other.object_id))
+    }
+}
+
+impl fmt::Debug for XMIIdLocalReference {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.package_id != String::new() {
+            write!(
+                f,
+                "\"Complete XMIIdLocalReference RefCell of \'{}-{}\'",
+                self.package_id, self.object_id,
+            )
+        } else {
+            write!(
+                f,
+                "\"Uncomplete XMIIdLocalReference RefCell of \'{}\'",
+                self.object_id,
+            )
+        }
     }
 }
 
@@ -83,14 +120,18 @@ impl XMIIdLocalReference {
     }
 
     /// Return combinaison of package ID and object ID
-    pub fn label(&self) -> String {
+    pub fn label(&self) -> Result<String, anyhow::Error> {
         if self.is_set {
-            format!("{}-{}", self.get_package_id(), self.get_object_id())
-        } else {
-            panic!(
-                "Call \"label()\" on unset XMI ID : {}",
+            Ok(format!(
+                "{}-{}",
+                self.get_package_id(),
                 self.get_object_id()
-            );
+            ))
+        } else {
+            Err(anyhow::format_err!(
+                "Call \"label()\" on unset XMI ID : (XMIIdReference) {:#?}",
+                self
+            ))
         }
     }
 }
@@ -111,18 +152,34 @@ pub struct XMIIdReference {
 
 impl PartialEq for XMIIdReference {
     fn eq(&self, other: &Self) -> bool {
-        self.label() == other.label()
+        self.object_id == other.object_id
+            && self.package_id == other.package_id
+            && self.package_id != String::new()
+            && other.package_id != String::new()
     }
 }
 
 impl fmt::Debug for XMIIdReference {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "\"RefCell of \'{}\' (loaded : {})\"",
-            self.label(),
-            self.object.borrow().is_some(),
-        )
+        if self.object.borrow().is_some() {
+            write!(
+                f,
+                "\"Loaded XMIIdReference RefCell of \'{}-{}\'",
+                self.package_id, self.object_id,
+            )
+        } else if self.package_id != String::new() {
+            write!(
+                f,
+                "\"UnLoaded XMIIdReference RefCell of \'{}-{}\'",
+                self.package_id, self.object_id,
+            )
+        } else {
+            write!(
+                f,
+                "\"Uncomplete XMIIdReference RefCell of \'{}\'",
+                self.object_id,
+            )
+        }
     }
 }
 
@@ -166,14 +223,18 @@ impl XMIIdReference {
     }
 
     /// Return combinaison of package ID and object ID
-    pub fn label(&self) -> String {
+    pub fn label(&self) -> Result<String, anyhow::Error> {
         if self.is_set {
-            format!("{}-{}", self.get_package_id(), self.get_object_id())
-        } else {
-            panic!(
-                "Call \"label()\" on unset XMI ID : {}",
+            Ok(format!(
+                "{}-{}",
+                self.get_package_id(),
                 self.get_object_id()
-            );
+            ))
+        } else {
+            Err(anyhow::format_err!(
+                "Call \"label()\" on unset XMI ID : (XMIIdReference) {:#?}",
+                self
+            ))
         }
     }
 }
@@ -208,23 +269,7 @@ pub trait SetCMOFTools {
 /// Tool for CMOF Object
 pub trait GetXMIId {
     /// Allow to get the xmi id field label (use in global BTreeMap)
-    fn get_xmi_id_field(&self) -> String;
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error>;
     /// Allow to get the xmi id field object name (use in local BTreeMap)
-    fn get_xmi_id_object(&self) -> String;
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-/// Naming method for providing struct name
-pub trait NamingStruct {
-    /// --> DC.cmof#Font
-    fn get_technical_name(&self, package: &LoadingPackage) -> String;
-    /// --> dc_font
-    fn get_table_name(&self, package: &LoadingPackage) -> String;
-    /// --> Font
-    fn get_model_name(&self) -> String;
-    /// --> dc_datatype_font
-    fn get_full_name(&self, package: &LoadingPackage) -> String;
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error>;
 }

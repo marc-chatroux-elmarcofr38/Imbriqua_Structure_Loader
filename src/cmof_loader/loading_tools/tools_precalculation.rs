@@ -28,7 +28,7 @@ use crate::cmof_loader::*;
 //
 // ####################################################################################################
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, Debug)]
 /// List on values necessery for loading but requiring full read of input file for evaluate
 pub struct LoadingPreCalculation {
     /// For each owned_member (as model_name format), all name of this package and itself
@@ -48,16 +48,6 @@ pub struct LoadingPreCalculation {
     ///     full_name: "bpmn_20_association_a_correlation_key_ref_correlation_subscription",
     /// },
     pub owned_member_type_list: BTreeMap<String, Named>,
-    /// For each CMOFEnumeration (as model_name format), this default value, loaded from "metamodel_file_extension/enumeration_default_value.json"
-    /// EX :
-    ///     "ParticipantBandKind": "TopInitiating",
-    ///     "MultiInstanceBehavior": "All",
-    pub enumeration_default_value: BTreeMap<String, String>,
-    /// For each CMOFPrimitiveType (as model_name format), this Rust equivalent type, loaded from "metamodel_file_extension/primitive_type_conversion.json"
-    /// EX :
-    ///     "ParticipantBandKind": "TopInitiating",
-    ///     "MultiInstanceBehavior": "All",
-    pub primitive_type_conversion: BTreeMap<String, String>,
     /// For each CMOFassociation (as model_name format), the linked AssociationRelation object
     /// EX :
     /// "A_inputDataRef_inputOutputBinding": AssociationRelation {
@@ -99,15 +89,13 @@ pub struct LoadingPreCalculation {
     /// ],
     pub association_relation_by_class: BTreeMap<String, Vec<(String, RankRelation)>>,
     /// For each CMOFClass (as model_name format), all CMOFClass (as model_name format) who use it as "Super"
-    pub reverse_super_link: BTreeMap<String, Vec<String>>,
+    pub reverse_super_link: BTreeMap<String, Vec<Rc<CMOFClass>>>,
 }
 impl LoadingPreCalculation {
     /// Create new instance
     pub fn new() -> Self {
         LoadingPreCalculation {
             owned_member_type_list: BTreeMap::new(),
-            enumeration_default_value: BTreeMap::new(),
-            primitive_type_conversion: BTreeMap::new(),
             association_relation: BTreeMap::new(),
             association_relation_by_class: BTreeMap::new(),
             reverse_super_link: BTreeMap::new(),

@@ -30,7 +30,7 @@ use std::collections::BTreeMap;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF PackageImport Object
 pub struct CMOFPackageImport {
@@ -44,6 +44,30 @@ pub struct CMOFPackageImport {
     /// importedPackage object
     #[serde(rename = "importedPackage")]
     pub imported_package: EnumImportedPackage,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl PartialEq for CMOFPackageImport {
+    fn eq(&self, other: &Self) -> bool {
+        self.xmi_id == other.xmi_id
+    }
+}
+
+impl Eq for CMOFPackageImport {}
+
+impl PartialOrd for CMOFPackageImport {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for CMOFPackageImport {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.xmi_id.cmp(&other.xmi_id)
+    }
 }
 
 // ####################################################################################################
@@ -80,11 +104,15 @@ impl SetCMOFTools for CMOFPackageImport {
     }
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+
 impl GetXMIId for CMOFPackageImport {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         self.xmi_id.label()
     }
-    fn get_xmi_id_object(&self) -> String {
-        self.xmi_id.get_object_id()
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
+        Ok(self.xmi_id.get_object_id())
     }
 }

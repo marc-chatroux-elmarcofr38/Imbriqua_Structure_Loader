@@ -19,6 +19,8 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(dead_code)]
 #![warn(missing_docs)]
 
+use std::cell::RefCell;
+
 // Package section
 use crate::cmof_loader::*;
 
@@ -28,7 +30,7 @@ use crate::cmof_loader::*;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Class Object
 pub struct CMOFClass {
@@ -38,7 +40,7 @@ pub struct CMOFClass {
     pub xmi_id: XMIIdLocalReference,
     /// name attribute
     #[serde(rename = "_name")]
-    pub name: String,
+    name: String,
     /// isAbstract attribute
     #[serde(rename = "_isAbstract")]
     #[serde(deserialize_with = "deser_boolean")]
@@ -46,14 +48,14 @@ pub struct CMOFClass {
     pub is_abstract: bool,
     /// Optional superClass attribute (simple superClass)
     #[serde(rename = "_superClass")]
-    #[serde(deserialize_with = "deser_spaced_string")]
+    #[serde(deserialize_with = "deser_spaced_href")]
     #[serde(default = "default_empty_vec")]
-    pub super_class: Vec<String>,
+    super_class: Vec<XMIIdReference>,
     /// Optional superClass object (complex superClass)
     #[serde(rename = "superClass")]
-    #[serde(deserialize_with = "deser_vec")]
+    #[serde(deserialize_with = "deser_vec_href")]
     #[serde(default = "default_empty_vec")]
-    pub super_class_link: Vec<EnumSuperClass>,
+    super_class_link: Vec<XMIIdReference>,
     /// Optional ownedAttribute object array
     #[serde(rename = "ownedAttribute")]
     #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
@@ -76,6 +78,59 @@ pub struct CMOFClass {
     /// Casing formating of "name" as full_name
     #[serde(skip)]
     pub full_name: String,
+    ///
+    #[serde(skip)]
+    pub reverse_super: RefCell<Vec<Weak<CMOFClass>>>,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl CMOFClass {
+    pub fn get_super_class(&self) -> Result<BTreeMap<String, &XMIIdReference>, anyhow::Error> {
+        let mut r: BTreeMap<String, &XMIIdReference> = BTreeMap::new();
+        for v in &self.super_class {
+            r.insert(v.label()?, v);
+        }
+        for v in &self.super_class_link {
+            r.insert(v.label()?, v);
+        }
+        Ok(r)
+    }
+    pub fn get_super_model_name(&self) -> String {
+        self.model_name.prefix("Super").replace("\n", "")
+    }
+    pub fn get_super_field_name(&self) -> String {
+        self.model_name
+            .to_case(Case::Snake)
+            .prefix("super_")
+            .replace("\n", "")
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl PartialEq for CMOFClass {
+    fn eq(&self, other: &Self) -> bool {
+        self.xmi_id == other.xmi_id
+    }
+}
+
+impl Eq for CMOFClass {}
+
+impl PartialOrd for CMOFClass {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for CMOFClass {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.xmi_id.cmp(&other.xmi_id)
+    }
 }
 
 // ####################################################################################################
@@ -101,16 +156,18 @@ impl SetCMOFTools for CMOFClass {
         self.table_name = format!("{}_{}", package_name_snake_case, class_snake_case);
         self.model_name = format!("{}", class_upper_case);
         self.full_name = format!("{}_class_{}", package_name_snake_case, class_snake_case);
+        // Merge super_class and super_class_link
         // Call on child
+        for p in &mut self.super_class {
+            p.set_package(&package_name);
+        }
+        for p in &mut self.super_class_link {
+            p.set_package(&package_name);
+        }
         for (_, p) in &mut self.owned_attribute {
-            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
             p.collect_object(dict_setting, dict_object)?;
         }
         for (_, p) in &mut self.owned_rule {
-            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
-            p.collect_object(dict_setting, dict_object)?;
-        }
-        for p in &mut self.super_class_link {
             p.collect_object(dict_setting, dict_object)?;
         }
         //Return
@@ -123,26 +180,63 @@ impl SetCMOFTools for CMOFClass {
     ) -> Result<(), anyhow::Error> {
         // Call on child
         for (_, p) in &self.owned_attribute {
-            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
             p.make_post_deserialize(dict_object)?;
         }
         for (_, p) in &self.owned_rule {
-            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
             p.make_post_deserialize(dict_object)?;
         }
+        for p in &self.super_class {
+            set_href(&p, dict_object)?;
+        }
         for p in &self.super_class_link {
-            p.make_post_deserialize(dict_object)?;
+            set_href(&p, dict_object)?;
         }
         //Return
         Ok(())
     }
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+
 impl GetXMIId for CMOFClass {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         self.xmi_id.label()
     }
-    fn get_xmi_id_object(&self) -> String {
-        self.xmi_id.get_object_id()
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
+        Ok(self.xmi_id.get_object_id())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl CMOFClass {
+    pub fn generate_reverse_super_class(
+        &self,
+        dict_object: &BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        for (_, object) in dict_object {
+            match object {
+                EnumCMOF::CMOFClass(class) => {
+                    for (_, super_class_reference) in class.get_super_class()? {
+                        let super_object = super_class_reference.object.borrow();
+                        let super_object = super_object.as_ref().unwrap();
+                        match super_object {
+                            EnumCMOF::CMOFClass(super_class) => {
+                                if self.get_xmi_id_field()? == super_class.get_xmi_id_field()? {
+                                    self.reverse_super.borrow_mut().push(Rc::downgrade(class));
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+        Ok(())
     }
 }

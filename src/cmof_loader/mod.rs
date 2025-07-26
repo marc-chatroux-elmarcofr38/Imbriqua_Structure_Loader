@@ -21,10 +21,12 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("cmof_loader.md")]
 
 // Mod section
+pub mod association_treatment;
 pub mod cmof_object;
 pub mod deserialize_helper;
 pub mod loading_tools;
 pub mod object_referencing;
+pub use association_treatment::*;
 pub use cmof_object::*;
 pub use deserialize_helper::*;
 pub use loading_tools::*;
@@ -45,7 +47,7 @@ pub use std::rc::{Rc, Weak};
 // ####################################################################################################
 
 /// Shorcut of __LoadingTracker::new()__, creating LoadingTracker instance using ResultEnv object
-pub fn open_loader(file_env: ResultEnv) -> LoadingTracker {
+pub fn open_loader(file_env: ResultEnv) -> Result<LoadingTracker, anyhow::Error> {
     LoadingTracker::new(file_env)
 }
 
@@ -66,9 +68,9 @@ mod tests {
         let result_folder =
             "tests/loader_dependencies_explorer/loader_dependencies_explorer_01_open_loader/result";
         // Preparing
-        let file_env = open_env(input_folder, main_output_folder, result_folder);
+        let file_env = open_env(input_folder, main_output_folder, result_folder).unwrap();
         // Test
-        let loading_env = open_loader(file_env);
+        let loading_env = open_loader(file_env).unwrap();
         let _ = loading_env.get_output_folder();
     }
 }

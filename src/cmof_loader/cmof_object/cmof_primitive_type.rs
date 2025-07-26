@@ -30,7 +30,7 @@ use std::collections::BTreeMap;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF PrimitiveType Object
 pub struct CMOFPrimitiveType {
@@ -40,7 +40,7 @@ pub struct CMOFPrimitiveType {
     pub xmi_id: XMIIdLocalReference,
     /// name attribute
     #[serde(rename = "_name")]
-    pub name: String,
+    name: String,
     /// Casing formating of "name" as technical_name
     #[serde(skip)]
     pub technical_name: String,
@@ -53,6 +53,30 @@ pub struct CMOFPrimitiveType {
     /// Casing formating of "name" as full_name
     #[serde(skip)]
     pub full_name: String,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl PartialEq for CMOFPrimitiveType {
+    fn eq(&self, other: &Self) -> bool {
+        self.xmi_id == other.xmi_id
+    }
+}
+
+impl Eq for CMOFPrimitiveType {}
+
+impl PartialOrd for CMOFPrimitiveType {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for CMOFPrimitiveType {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.xmi_id.cmp(&other.xmi_id)
+    }
 }
 
 // ####################################################################################################
@@ -91,11 +115,15 @@ impl SetCMOFTools for CMOFPrimitiveType {
     }
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+
 impl GetXMIId for CMOFPrimitiveType {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         self.xmi_id.label()
     }
-    fn get_xmi_id_object(&self) -> String {
-        self.xmi_id.get_object_id()
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
+        Ok(self.xmi_id.get_object_id())
     }
 }

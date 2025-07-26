@@ -91,9 +91,10 @@ impl LoadingPackage {
     }
 
     /// Delete Element and change state
-    pub fn make_finished(&mut self) {
+    pub fn make_finished(&mut self) -> Result<(), anyhow::Error> {
         self.cmof_object = None;
         self.state = LoadingState::Finished;
+        Ok(())
     }
 }
 
@@ -107,7 +108,7 @@ impl SetCMOFTools for LoadingPackage {
             let r = self.cmof_object.as_mut().unwrap();
             let m = Rc::get_mut(r).unwrap();
             m.collect_object(dict_setting, dict_object)?;
-            dict_object.insert(m.get_xmi_id_field(), EnumCMOF::CMOFPackage(r.clone()));
+            dict_object.insert(m.get_xmi_id_field()?, EnumCMOF::CMOFPackage(r.clone()));
         } else {
             return Err(anyhow::format_err!("Loading Package without cmof_package"));
         }

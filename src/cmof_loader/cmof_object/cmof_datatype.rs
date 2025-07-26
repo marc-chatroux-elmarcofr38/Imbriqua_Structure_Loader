@@ -28,7 +28,7 @@ use crate::cmof_loader::*;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF DataType Object
 pub struct CMOFDataType {
@@ -38,7 +38,7 @@ pub struct CMOFDataType {
     pub xmi_id: XMIIdLocalReference,
     /// name attribute
     #[serde(rename = "_name")]
-    pub name: String,
+    name: String,
     /// Optional ownedAttribute object array
     #[serde(rename = "ownedAttribute")]
     #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
@@ -67,6 +67,30 @@ pub struct CMOFDataType {
 //
 // ####################################################################################################
 
+impl PartialEq for CMOFDataType {
+    fn eq(&self, other: &Self) -> bool {
+        self.xmi_id == other.xmi_id
+    }
+}
+
+impl Eq for CMOFDataType {}
+
+impl PartialOrd for CMOFDataType {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for CMOFDataType {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.xmi_id.cmp(&other.xmi_id)
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
 impl SetCMOFTools for CMOFDataType {
     fn collect_object(
         &mut self,
@@ -88,11 +112,9 @@ impl SetCMOFTools for CMOFDataType {
         self.full_name = format!("{}_datatype_{}", package_name_snake_case, class_snake_case);
         // Call on child
         for (_, p) in &mut self.owned_attribute {
-            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
             p.collect_object(dict_setting, dict_object)?;
         }
         for (_, p) in &mut self.owned_rule {
-            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
             p.collect_object(dict_setting, dict_object)?;
         }
         //Return
@@ -105,11 +127,9 @@ impl SetCMOFTools for CMOFDataType {
     ) -> Result<(), anyhow::Error> {
         // Call on child
         for (_, p) in &self.owned_attribute {
-            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
             p.make_post_deserialize(dict_object)?;
         }
         for (_, p) in &self.owned_rule {
-            // let p_unwrap = Rc::get_mut(p).ok_or(anyhow::format_err!("\"Weak\" unwrap error"))?;
             p.make_post_deserialize(dict_object)?;
         }
         //Return
@@ -117,11 +137,15 @@ impl SetCMOFTools for CMOFDataType {
     }
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+
 impl GetXMIId for CMOFDataType {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         self.xmi_id.label()
     }
-    fn get_xmi_id_object(&self) -> String {
-        self.xmi_id.get_object_id()
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
+        Ok(self.xmi_id.get_object_id())
     }
 }

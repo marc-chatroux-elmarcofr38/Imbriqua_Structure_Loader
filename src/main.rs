@@ -20,21 +20,23 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(missing_docs)]
 #![doc = include_str!("../README.MD")]
 
-use log::warn;
-
 // Shared module
 pub mod cmof_loader;
 pub mod custom_file_tools;
 pub mod custom_log_tools;
-pub mod writing_entity;
-pub mod writing_lib_file;
-pub mod writing_manager;
+
+// pub mod writing_entity;
+pub mod output_writing;
 
 // For "main" use only
 mod output_cargo_checker;
 mod output_result_manager;
 
-fn main() {
+use std::fmt::Debug;
+
+use log::{error, trace, warn};
+
+fn main() -> Result<(), anyhow::Error> {
     use std::time::Instant;
     let start = Instant::now();
 
@@ -50,23 +52,24 @@ fn main() {
     let main_package_id = "_0"; // Package ID of main file to explore
 
     // Initialise global logger, file environment and loading environment
-    let _handle = custom_log_tools::open_logger(logger_configuration);
-    let file_env = output_result_manager::open_env(input_folder, main_output_folder, result_folder);
-    let mut loading_env = cmof_loader::open_loader(file_env);
+    let _handle = custom_log_tools::open_logger(logger_configuration)?;
+    let file_env =
+        output_result_manager::open_env(input_folder, main_output_folder, result_folder)?;
+    let mut loading_env = cmof_loader::open_loader(file_env)?;
     // Load ordered packages list
-    loading_env.make_prepare(main_package_file, main_package_id, "root");
+    loading_env.make_prepare(main_package_file, main_package_id, "root")?;
 
     // Generate list of class who don't necessite dependencies
-    loading_env.writing_preparation();
+    loading_env.writing_preparation()?;
     // Makin lib.rs file
-    loading_env.write_lib_file();
+    loading_env.write_lib_file()?;
     // Makin all mod_x.rs file
-    loading_env.write_mod_object();
+    loading_env.write_mod_object()?;
 
     // Cleaning
-    loading_env.close();
+    loading_env.close()?;
     // Export the result
-    loading_env.export_result();
+    loading_env.export_result()?;
 
     // // Make doc for loader
     // let cargo_loader_package = "Cargo.toml"; // Location of loader environment package Cargo.toml file
@@ -83,4 +86,5 @@ fn main() {
 
     let duration = start.elapsed();
     warn!("Execution time: {:?}", duration);
+    Ok(())
 }

@@ -63,21 +63,22 @@ impl EnumCMOF {
     /// Get "label" of the xmi_id
     pub fn label(&self) -> Result<String, anyhow::Error> {
         match self {
-            EnumCMOF::CMOFAssociation(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFClass(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFConstraint(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFDataType(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFEnumeration(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFEnumerationLiteral(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFOpaqueExpression(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFPackage(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFPackageImport(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFPrimitiveType(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFProperty(c) => Ok(c.xmi_id.label()),
-            EnumCMOF::CMOFTag(c) => Ok(c.xmi_id.label()),
+            EnumCMOF::CMOFAssociation(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFClass(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFConstraint(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFDataType(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFEnumeration(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFEnumerationLiteral(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFOpaqueExpression(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFPackage(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFPackageImport(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFPrimitiveType(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFProperty(c) => c.xmi_id.label(),
+            EnumCMOF::CMOFTag(c) => c.xmi_id.label(),
         }
     }
 }
+
 // ####################################################################################################
 //
 // ####################################################################################################
@@ -103,7 +104,7 @@ impl SetCMOFTools for EnumOwnedAttribute {
             EnumOwnedAttribute::Property(c) => {
                 let m = Rc::get_mut(c).unwrap();
                 m.collect_object(dict_setting, dict_object)?;
-                dict_object.insert(c.get_xmi_id_field(), EnumCMOF::CMOFProperty(c.clone()));
+                dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFProperty(c.clone()));
             }
         }
         Ok(())
@@ -120,12 +121,12 @@ impl SetCMOFTools for EnumOwnedAttribute {
 }
 
 impl GetXMIId for EnumOwnedAttribute {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumOwnedAttribute::Property(c) => c.get_xmi_id_field(),
         }
     }
-    fn get_xmi_id_object(&self) -> String {
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumOwnedAttribute::Property(c) => c.get_xmi_id_object(),
         }
@@ -157,7 +158,7 @@ impl SetCMOFTools for EnumOwnedEnd {
             EnumOwnedEnd::Property(c) => {
                 let m = Rc::get_mut(c).unwrap();
                 m.collect_object(dict_setting, dict_object)?;
-                dict_object.insert(c.get_xmi_id_field(), EnumCMOF::CMOFProperty(c.clone()));
+                dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFProperty(c.clone()));
             }
         }
         Ok(())
@@ -174,12 +175,12 @@ impl SetCMOFTools for EnumOwnedEnd {
 }
 
 impl GetXMIId for EnumOwnedEnd {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumOwnedEnd::Property(c) => c.get_xmi_id_field(),
         }
     }
-    fn get_xmi_id_object(&self) -> String {
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumOwnedEnd::Property(c) => c.get_xmi_id_object(),
         }
@@ -227,12 +228,12 @@ impl SetCMOFTools for EnumOwnedLiteral {
 }
 
 impl GetXMIId for EnumOwnedLiteral {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumOwnedLiteral::EnumerationLiteral(c) => c.get_xmi_id_field(),
         }
     }
-    fn get_xmi_id_object(&self) -> String {
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumOwnedLiteral::EnumerationLiteral(c) => c.get_xmi_id_object(),
         }
@@ -306,7 +307,7 @@ impl SetCMOFTools for EnumOwnedMember {
 }
 
 impl GetXMIId for EnumOwnedMember {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumOwnedMember::Association(c) => c.get_xmi_id_field(),
             EnumOwnedMember::Class(c) => c.get_xmi_id_field(),
@@ -315,7 +316,7 @@ impl GetXMIId for EnumOwnedMember {
             EnumOwnedMember::PrimitiveType(c) => c.get_xmi_id_field(),
         }
     }
-    fn get_xmi_id_object(&self) -> String {
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumOwnedMember::Association(c) => c.get_xmi_id_object(),
             EnumOwnedMember::Class(c) => c.get_xmi_id_object(),
@@ -326,8 +327,8 @@ impl GetXMIId for EnumOwnedMember {
     }
 }
 
-impl NamingStruct for EnumOwnedMember {
-    fn get_technical_name(&self, _package: &LoadingPackage) -> String {
+impl EnumOwnedMember {
+    pub fn get_technical_name(&self) -> String {
         match self {
             EnumOwnedMember::Association(content) => content.technical_name.clone(),
             EnumOwnedMember::Class(content) => content.technical_name.clone(),
@@ -336,7 +337,7 @@ impl NamingStruct for EnumOwnedMember {
             EnumOwnedMember::PrimitiveType(content) => content.technical_name.clone(),
         }
     }
-    fn get_table_name(&self, _package: &LoadingPackage) -> String {
+    pub fn get_table_name(&self) -> String {
         match self {
             EnumOwnedMember::Association(content) => content.table_name.clone(),
             EnumOwnedMember::Class(content) => content.table_name.clone(),
@@ -345,7 +346,7 @@ impl NamingStruct for EnumOwnedMember {
             EnumOwnedMember::PrimitiveType(content) => content.table_name.clone(),
         }
     }
-    fn get_model_name(&self) -> String {
+    pub fn get_model_name(&self) -> String {
         match self {
             EnumOwnedMember::Association(content) => content.model_name.clone(),
             EnumOwnedMember::Class(content) => content.model_name.clone(),
@@ -354,7 +355,7 @@ impl NamingStruct for EnumOwnedMember {
             EnumOwnedMember::PrimitiveType(content) => content.model_name.clone(),
         }
     }
-    fn get_full_name(&self, _package: &LoadingPackage) -> String {
+    pub fn get_full_name(&self) -> String {
         match self {
             EnumOwnedMember::Association(content) => content.full_name.clone(),
             EnumOwnedMember::Class(content) => content.full_name.clone(),
@@ -390,7 +391,7 @@ impl SetCMOFTools for EnumOwnedRule {
             EnumOwnedRule::Constraint(c) => {
                 let m = Rc::get_mut(c).unwrap();
                 m.collect_object(dict_setting, dict_object)?;
-                dict_object.insert(c.get_xmi_id_field(), EnumCMOF::CMOFConstraint(c.clone()));
+                dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFConstraint(c.clone()));
             }
         }
         Ok(())
@@ -407,12 +408,12 @@ impl SetCMOFTools for EnumOwnedRule {
 }
 
 impl GetXMIId for EnumOwnedRule {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumOwnedRule::Constraint(c) => c.get_xmi_id_field(),
         }
     }
-    fn get_xmi_id_object(&self) -> String {
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumOwnedRule::Constraint(c) => c.get_xmi_id_object(),
         }
@@ -444,7 +445,10 @@ impl SetCMOFTools for EnumPackageImport {
             EnumPackageImport::PackageImport(c) => {
                 let m = Rc::get_mut(c).unwrap();
                 m.collect_object(dict_setting, dict_object)?;
-                dict_object.insert(c.get_xmi_id_field(), EnumCMOF::CMOFPackageImport(c.clone()));
+                dict_object.insert(
+                    c.get_xmi_id_field()?,
+                    EnumCMOF::CMOFPackageImport(c.clone()),
+                );
             }
         }
         Ok(())
@@ -461,12 +465,12 @@ impl SetCMOFTools for EnumPackageImport {
 }
 
 impl GetXMIId for EnumPackageImport {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumPackageImport::PackageImport(c) => c.get_xmi_id_field(),
         }
     }
-    fn get_xmi_id_object(&self) -> String {
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumPackageImport::PackageImport(c) => c.get_xmi_id_object(),
         }
@@ -499,7 +503,7 @@ impl SetCMOFTools for EnumSpecification {
                 let m = Rc::get_mut(c).unwrap();
                 m.collect_object(dict_setting, dict_object)?;
                 dict_object.insert(
-                    c.get_xmi_id_field(),
+                    c.get_xmi_id_field()?,
                     EnumCMOF::CMOFOpaqueExpression(c.clone()),
                 );
             }
@@ -520,12 +524,12 @@ impl SetCMOFTools for EnumSpecification {
 }
 
 impl GetXMIId for EnumSpecification {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumSpecification::OpaqueExpression(c) => c.get_xmi_id_field(),
         }
     }
-    fn get_xmi_id_object(&self) -> String {
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         match self {
             EnumSpecification::OpaqueExpression(c) => c.get_xmi_id_object(),
         }
@@ -556,7 +560,7 @@ fn catch_and_collect_object<T: SetCMOFTools>(
 //
 // ####################################################################################################
 
-fn catch_and_make_post_deserialize<T: SetCMOFTools>(
+fn catch_and_make_post_deserialize<T: SetCMOFTools + GetXMIId>(
     object: &Rc<T>,
     dict_object: &mut BTreeMap<String, EnumCMOF>,
 ) -> Result<(), anyhow::Error> {

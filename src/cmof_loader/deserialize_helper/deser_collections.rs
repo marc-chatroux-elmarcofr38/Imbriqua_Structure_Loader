@@ -114,7 +114,7 @@ where
             E: de::MapAccess<'de>,
         {
             let v: V = de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
-            let k = v.get_xmi_id_object();
+            let k = v.get_xmi_id_object().unwrap();
             Ok(BTreeMap::from([(k, v)]))
         }
 
@@ -127,7 +127,7 @@ where
             let big_v: Vec<V> =
                 de::Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))?;
             for n in big_v {
-                r.insert(n.get_xmi_id_object(), n);
+                r.insert(n.get_xmi_id_object().unwrap(), n);
             }
             Ok(r)
         }
@@ -174,7 +174,7 @@ where
         {
             let v: V = de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
             let v = Rc::new(v);
-            let k = v.get_xmi_id_object();
+            let k = v.get_xmi_id_object().unwrap();
             Ok(BTreeMap::from([(k, v)]))
         }
 
@@ -187,7 +187,7 @@ where
             let big_v: Vec<V> =
                 de::Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))?;
             for n in big_v {
-                let k = n.get_xmi_id_object();
+                let k = n.get_xmi_id_object().unwrap();
                 let v = Rc::new(n);
                 r.insert(k, v);
             }

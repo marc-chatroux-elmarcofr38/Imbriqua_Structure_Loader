@@ -29,34 +29,6 @@ use crate::cmof_loader::*;
 // ####################################################################################################
 
 #[derive(Clone, PartialEq, Debug)]
-/// Representation of a package
-pub struct ElementRelation {
-    /// Type of the member of the association
-    pub element_type: String,
-    /// Name of the property
-    pub property_name: String,
-    /// Lower bound for this member
-    pub lower: isize,
-    /// Upper bound for this member
-    pub upper: UnlimitedNatural<usize>,
-    /// Origin of the relation
-    pub from: RelationSource,
-}
-
-#[derive(Clone, PartialEq, Debug)]
-/// Pre Calculation struct helping loading CMOFAssociation
-pub struct AssociationRelation {
-    /// First relation
-    pub relation_1: ElementRelation,
-    /// Second relation
-    pub relation_2: ElementRelation,
-    /// Ponderation of the relation
-    pub ponteration_type: RelationPonderationType,
-    /// if is itself reference
-    pub is_self_referencing: bool,
-}
-
-#[derive(Clone, PartialEq, Debug)]
 /// Help for naming
 pub struct Named {
     /// package lowercase name

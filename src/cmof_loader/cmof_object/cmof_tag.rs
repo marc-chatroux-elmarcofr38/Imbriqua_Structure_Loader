@@ -30,7 +30,7 @@ use std::collections::BTreeMap;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Tag Object
 pub struct CMOFTag {
@@ -40,13 +40,37 @@ pub struct CMOFTag {
     pub xmi_id: XMIIdLocalReference,
     /// name attribute
     #[serde(rename = "_name")]
-    pub name: String,
+    _name: String,
     /// value attribute
     #[serde(rename = "_value")]
     pub value: String,
     /// element attribute
     #[serde(rename = "_element")]
     pub element: String,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl PartialEq for CMOFTag {
+    fn eq(&self, other: &Self) -> bool {
+        self.xmi_id == other.xmi_id
+    }
+}
+
+impl Eq for CMOFTag {}
+
+impl PartialOrd for CMOFTag {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for CMOFTag {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.xmi_id.cmp(&other.xmi_id)
+    }
 }
 
 // ####################################################################################################
@@ -78,11 +102,15 @@ impl SetCMOFTools for CMOFTag {
     }
 }
 
+// ####################################################################################################
+//
+// ####################################################################################################
+
 impl GetXMIId for CMOFTag {
-    fn get_xmi_id_field(&self) -> String {
+    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
         self.xmi_id.label()
     }
-    fn get_xmi_id_object(&self) -> String {
-        self.xmi_id.get_object_id()
+    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
+        Ok(self.xmi_id.get_object_id())
     }
 }
