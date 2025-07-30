@@ -38,6 +38,9 @@ pub struct CMOFPackageImport {
     #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
     pub xmi_id: XMIIdLocalReference,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub parent: XMIIdReference<EnumWeakCMOF>,
     /// importingNamespace attribute
     #[serde(rename = "_importingNamespace")]
     pub importing_namespace: String,
@@ -81,11 +84,15 @@ impl SetCMOFTools for CMOFPackageImport {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict_setting.get("package_name").ok_or(anyhow::format_err!(
-            "Dictionnary error in make_post_deserialize"
-        ))?;
+        let package_name = dict_setting
+            .get("package_name")
+            .ok_or(anyhow::format_err!(
+                "Dictionnary error in make_post_deserialize"
+            ))?
+            .clone();
+        let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package(&package_name);
+        self.xmi_id.set_package_id(&package_name);
         // Call on child
         self.imported_package
             .collect_object(dict_setting, dict_object)?;
@@ -99,6 +106,8 @@ impl SetCMOFTools for CMOFPackageImport {
     ) -> Result<(), anyhow::Error> {
         // Call on child
         self.imported_package.make_post_deserialize(dict_object)?;
+        // Self
+        set_href(&self.parent, dict_object)?;
         //Return
         Ok(())
     }

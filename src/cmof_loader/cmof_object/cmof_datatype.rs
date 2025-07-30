@@ -36,6 +36,9 @@ pub struct CMOFDataType {
     #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
     pub xmi_id: XMIIdLocalReference,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub parent: XMIIdReference<EnumWeakCMOF>,
     /// name attribute
     #[serde(rename = "_name")]
     name: String,
@@ -98,24 +101,44 @@ impl SetCMOFTools for CMOFDataType {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict_setting.get("package_name").ok_or(anyhow::format_err!(
-            "Dictionnary error in make_post_deserialize"
-        ))?;
+        let package_name = dict_setting
+            .get("package_name")
+            .ok_or(anyhow::format_err!(
+                "Dictionnary error in make_post_deserialize"
+            ))?
+            .clone();
         let package_name_snake_case = package_name.to_case(Case::Snake);
         let class_upper_case = self.name.to_case(Case::UpperCamel);
         let class_snake_case = self.name.to_case(Case::Snake);
+        let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package(&package_name);
+        self.xmi_id.set_package_id(&package_name);
         self.technical_name = format!("{}.cmof#{}", package_name, self.name);
         self.table_name = format!("{}_{}", package_name_snake_case, class_snake_case);
         self.model_name = format!("{}", class_upper_case);
         self.full_name = format!("{}_datatype_{}", package_name_snake_case, class_snake_case);
         // Call on child
         for (_, p) in &mut self.owned_attribute {
-            p.collect_object(dict_setting, dict_object)?;
+            match p {
+                EnumOwnedAttribute::Property(c) => {
+                    let m = Rc::get_mut(c).unwrap();
+                    m.parent.set_package_id(&package_name);
+                    m.parent.set_object_id(&parent_name);
+                    m.collect_object(dict_setting, dict_object)?;
+                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFProperty(c.clone()));
+                }
+            }
         }
         for (_, p) in &mut self.owned_rule {
-            p.collect_object(dict_setting, dict_object)?;
+            match p {
+                EnumOwnedRule::Constraint(c) => {
+                    let m = Rc::get_mut(c).unwrap();
+                    m.parent.set_package_id(&package_name);
+                    m.parent.set_object_id(&parent_name);
+                    m.collect_object(dict_setting, dict_object)?;
+                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFConstraint(c.clone()));
+                }
+            }
         }
         //Return
         Ok(())
@@ -127,11 +150,17 @@ impl SetCMOFTools for CMOFDataType {
     ) -> Result<(), anyhow::Error> {
         // Call on child
         for (_, p) in &self.owned_attribute {
-            p.make_post_deserialize(dict_object)?;
+            match p {
+                EnumOwnedAttribute::Property(c) => c.make_post_deserialize(dict_object)?,
+            }
         }
         for (_, p) in &self.owned_rule {
-            p.make_post_deserialize(dict_object)?;
+            match p {
+                EnumOwnedRule::Constraint(c) => c.make_post_deserialize(dict_object)?,
+            }
         }
+        // Self
+        set_href(&self.parent, dict_object)?;
         //Return
         Ok(())
     }

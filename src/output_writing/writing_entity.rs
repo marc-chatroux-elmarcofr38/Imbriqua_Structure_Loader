@@ -23,8 +23,6 @@ If not, see <https://www.gnu.org/licenses/>.
 use std::collections::BTreeMap;
 
 // Package section
-use crate::cmof_loader::LoadingPackage as LPckg;
-use crate::cmof_loader::LoadingPreCalculation as LPreCalc;
 use crate::cmof_loader::*;
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
@@ -53,12 +51,16 @@ impl LoadingTracker {
                         let association = content.get_association_relation();
                         if association.ponteration_type == RelationPonderationType::ManyToMany {
                             if !association.is_self_referencing {
-                                // // Get file
-                                // let (_, mut wrt) = self.get_object_file(entity);
-                                // //
-                                // content.write_content(&mut wrt, &self.pre_calculation)?;
+                                // Get file
+                                let (_, mut wrt) = self.get_object_file(entity);
+                                //
+                                let r = content.write_content(&mut wrt);
+                                catch_error_and_log(r, content)?
                             } else {
-                                warn!("Need association file implement for \"{}\" because it's referencin itself", content.model_name);
+                                warn!(
+                                "Need association file implement for \"{}\" because it's referencin itself",
+                                content.model_name
+                            );
                             }
                         }
                     }
@@ -66,14 +68,14 @@ impl LoadingTracker {
                         // Get file
                         let (_, mut wrt) = self.get_object_file(entity);
                         //
-                        let r = content.write_content(&mut wrt);
+                        let r = content.write_content(&mut wrt, &primitive_type_conversion);
                         catch_error_and_log(r, content)?
                     }
                     EnumOwnedMember::DataType(content) => {
                         // Get file
                         let (_, mut wrt) = self.get_object_file(entity);
                         //
-                        let r = content.write_content(&mut wrt);
+                        let r = content.write_content(&mut wrt, &primitive_type_conversion);
                         catch_error_and_log(r, content)?
                     }
                     EnumOwnedMember::Enumeration(content) => {
@@ -104,77 +106,89 @@ impl LoadingTracker {
 // //
 // // ####################################################################################################
 
-// impl CMOFAssociation {
-//     /// write content to output file,from "CMOFClass" object
-//     fn write_content(&self, wrt: &mut File, _pckg: &LPckg, pre_calc: &LPreCalc) {
-//         let association = self.get_association_relation();
-//         if association.ponteration_type == RelationPonderationType::ManyToMany {
-//             // Get relation 1 content
-//             let relation_1 = association.relation_1.get_type();
-//             let relation_1 = relation_1.object.borrow();
-//             let relation_1 = relation_1.as_ref().unwrap();
-//             let relation_1_named = match relation_1 {
-//                 EnumCMOF::CMOFAssociation(c) => &c.model_name,
-//                 EnumCMOF::CMOFClass(c) => &c.model_name,
-//                 EnumCMOF::CMOFDataType(c) => &c.model_name,
-//                 EnumCMOF::CMOFEnumeration(c) => &c.model_name,
-//                 EnumCMOF::CMOFPrimitiveType(c) => &c.model_name,
-//                 _ => panic!("jfsrs894g8sg98"),
-//             };
-//             let relation_1_table_name = match relation_1 {
-//                 EnumCMOF::CMOFAssociation(c) => &c.table_name,
-//                 EnumCMOF::CMOFClass(c) => &c.table_name,
-//                 EnumCMOF::CMOFDataType(c) => &c.table_name,
-//                 EnumCMOF::CMOFEnumeration(c) => &c.table_name,
-//                 EnumCMOF::CMOFPrimitiveType(c) => &c.table_name,
-//                 _ => panic!("jfsrs894g8sg9efefs8"),
-//             };
-//             let relation_1_column_name_camel = &relation_1_table_name;
-//             // Get relation 2 content
-//             let relation_2 = association.relation_2.get_type();
-//             let relation_2 = relation_2.object.borrow();
-//             let relation_2 = relation_2.as_ref().unwrap();
-//             let relation_2_named = match relation_2 {
-//                 EnumCMOF::CMOFAssociation(c) => &c.model_name,
-//                 EnumCMOF::CMOFClass(c) => &c.model_name,
-//                 EnumCMOF::CMOFDataType(c) => &c.model_name,
-//                 EnumCMOF::CMOFEnumeration(c) => &c.model_name,
-//                 EnumCMOF::CMOFPrimitiveType(c) => &c.model_name,
-//                 _ => panic!("jfsrs894g8sg98"),
-//             };
-//             let relation_2_table_name = match relation_2 {
-//                 EnumCMOF::CMOFAssociation(c) => &c.table_name,
-//                 EnumCMOF::CMOFClass(c) => &c.table_name,
-//                 EnumCMOF::CMOFDataType(c) => &c.table_name,
-//                 EnumCMOF::CMOFEnumeration(c) => &c.table_name,
-//                 EnumCMOF::CMOFPrimitiveType(c) => &c.table_name,
-//                 _ => panic!("jfsrs894g8sg9efefs8"),
-//             };
-//             let relation_2_column_name_camel = &relation_2_table_name;
-//             let _ = writeln!(
-//                 wrt,
-//                 include_str!("../template/entity_main_association.tmpl"),
-//                 full_name = self.full_name,
-//                 import = self.get_import_content(),
-//                 table_name = self.table_name,
-//                 relation_1_table_name = relation_1_table_name,
-//                 relation_2_table_name = relation_2_table_name,
-//                 relation_1_column_name_snake = relation_1_column_name_camel.to_case(Case::Snake),
-//                 relation_2_column_name_snake = relation_2_column_name_camel.to_case(Case::Snake),
-//                 relation_1_column_name_camel = relation_1_column_name_camel,
-//                 relation_2_column_name_camel = relation_2_column_name_camel,
-//                 raw = format!("{:#?}", self).prefix("// "),
-//             );
-//         }
-//     }
+impl CMOFAssociation {
+    /// write content to output file,from "CMOFClass" object
+    fn write_content(&self, wrt: &mut File) -> Result<(), anyhow::Error> {
+        // // Only for "Many to Many"
+        // let association = content.get_association_relation();
+        // if association.ponteration_type == RelationPonderationType::ManyToMany {
+        //     if !association.is_self_referencing {
+        //         // // Get file
+        //         // let (_, mut wrt) = self.get_object_file(entity);
+        //         // //
+        //         // content.write_content(&mut wrt, &self.pre_calculation)?;
+        //     } else {
+        //         warn!(
+        //             "Need association file implement for \"{}\" because it's referencin itself",
+        //             content.model_name
+        //         );
+        //     }
+        // }
+        let association = self.get_association_relation();
+        if association.ponteration_type == RelationPonderationType::ManyToMany {
+            // Get relation 1 content
+            let relation_1 = association.relation_1.get_type().get_object_as_enum()?;
+            let relation_1_named = match relation_1.clone() {
+                EnumCMOF::CMOFAssociation(c) => c.model_name.clone(),
+                EnumCMOF::CMOFClass(c) => c.model_name.clone(),
+                EnumCMOF::CMOFDataType(c) => c.model_name.clone(),
+                EnumCMOF::CMOFEnumeration(c) => c.model_name.clone(),
+                EnumCMOF::CMOFPrimitiveType(c) => c.model_name.clone(),
+                _ => panic!("jfsrs894g8sg98"),
+            };
+            let relation_1_table_name = match relation_1.clone() {
+                EnumCMOF::CMOFAssociation(c) => c.table_name.clone(),
+                EnumCMOF::CMOFClass(c) => c.table_name.clone(),
+                EnumCMOF::CMOFDataType(c) => c.table_name.clone(),
+                EnumCMOF::CMOFEnumeration(c) => c.table_name.clone(),
+                EnumCMOF::CMOFPrimitiveType(c) => c.table_name.clone(),
+                _ => panic!("jfsrs894g8sg9ef'z-ursuefs8"),
+            };
+            let relation_1_column_name_camel = &&relation_1_named;
+            // Get relation 2 content
+            let relation_2 = association.relation_2.get_type().get_object_as_enum()?;
+            let relation_2_named = match relation_2.clone() {
+                EnumCMOF::CMOFAssociation(c) => c.model_name.clone(),
+                EnumCMOF::CMOFClass(c) => c.model_name.clone(),
+                EnumCMOF::CMOFDataType(c) => c.model_name.clone(),
+                EnumCMOF::CMOFEnumeration(c) => c.model_name.clone(),
+                EnumCMOF::CMOFPrimitiveType(c) => c.model_name.clone(),
+                _ => panic!("jfsrs894g8sg98"),
+            };
+            let relation_2_table_name = match relation_2.clone() {
+                EnumCMOF::CMOFAssociation(c) => c.table_name.clone(),
+                EnumCMOF::CMOFClass(c) => c.table_name.clone(),
+                EnumCMOF::CMOFDataType(c) => c.table_name.clone(),
+                EnumCMOF::CMOFEnumeration(c) => c.table_name.clone(),
+                EnumCMOF::CMOFPrimitiveType(c) => c.table_name.clone(),
+                _ => panic!("jfsrs894g8sg9efefs8"),
+            };
+            let relation_2_column_name_camel = &relation_2_named;
+            let _ = writeln!(
+                wrt,
+                include_str!("../../template/entity_main_association.tmpl"),
+                full_name = self.full_name,
+                import = self.get_import_content(),
+                table_name = self.table_name,
+                relation_1_table_name = relation_1_table_name,
+                relation_2_table_name = relation_2_table_name,
+                relation_1_column_name_snake = relation_1_column_name_camel.to_case(Case::Snake),
+                relation_2_column_name_snake = relation_2_column_name_camel.to_case(Case::Snake),
+                relation_1_column_name_camel = relation_1_column_name_camel,
+                relation_2_column_name_camel = relation_2_column_name_camel,
+                raw = format!("{:#?}", self).prefix("// "),
+            );
+        }
+        Ok(())
+    }
 
-//     /// "import" content for entity_class_main.tmpl
-//     fn get_import_content(&self) -> String {
-//         let mut result = String::from("\n");
-//         result.push_str("use sea_orm::entity::prelude::*;\n");
-//         result
-//     }
-// }
+    /// "import" content for entity_class_main.tmpl
+    fn get_import_content(&self) -> String {
+        let mut result = String::from("\n");
+        result.push_str("use sea_orm::entity::prelude::*;\n");
+        result
+    }
+}
 
 // // ####################################################################################################
 // //
@@ -184,22 +198,22 @@ impl LoadingTracker {
 
 impl CMOFClass {
     /// write content to output file,from "CMOFClass" object
-    fn write_content(&self, wrt: &mut File) -> Result<(), anyhow::Error> {
+    fn write_content(
+        &self,
+        wrt: &mut File,
+        primitive_type_conversion: &BTreeMap<String, String>,
+    ) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             wrt,
             include_str!("../../template/entity_main_class.tmpl"),
             full_name = self.full_name,
             import = self.get_import_content()?,
             table_name = self.table_name,
-            fields = self.get_fields_content()?,
+            fields = self.get_fields_content(primitive_type_conversion)?,
             relations = self.get_relation_content()?,
-            related = "",
-            help_doc = "",
-            help_fn = "",
-            // relations = self.get_relation_content(),
-            // related = self.get_related_content(),
-            // help_doc = self.get_help().prefix("    /// "),
-            // help_fn = self.get_help(),
+            related = self.get_related_content()?,
+            help_doc = self.get_help(primitive_type_conversion)?.prefix("    /// "),
+            help_fn = self.get_help(primitive_type_conversion)?,
             raw = format!("{:#?}", self).prefix("// "),
         );
         Ok(())
@@ -227,22 +241,33 @@ impl CMOFClass {
     }
 
     /// "fields" content for entity_class_main.tmpl
-    fn get_fields_content(&self) -> Result<String, anyhow::Error> {
+    fn get_fields_content(
+        &self,
+        primitive_type_conversion: &BTreeMap<String, String>,
+    ) -> Result<String, anyhow::Error> {
         let mut result = String::from("");
 
         // For super class
-        for (_, class) in self.get_all_direct_super()? {
+        for (_, class) in self.get_super_class()? {
             CMOFClass::format_field_super(&class, &mut result)?;
         }
 
         // For complex property
         for field in self.get_all_complex_field()? {
-            CMOFClass::format_field_complex_property(&field, &mut result)?;
+            CMOFClass::format_field_complex_property(
+                &field,
+                &mut result,
+                primitive_type_conversion,
+            )?;
         }
 
         // For simple property
         for field in self.get_all_simple_field()? {
-            CMOFClass::format_field_simple_property(&field, &mut result)?;
+            CMOFClass::format_field_simple_property(
+                &field,
+                &mut result,
+                primitive_type_conversion,
+            )?;
         }
 
         Ok(result)
@@ -253,18 +278,18 @@ impl CMOFClass {
         let mut result = String::new();
 
         // For direct "Super"
-        for (_, class) in &self.get_all_direct_super()? {
-            let object_class = class.object.borrow();
-            let object_class = match object_class.as_ref().unwrap() {
+        for (_, class) in &self.get_super_class()? {
+            let object_class = class.get_object_as_enum()?;
+            let object_class = match object_class {
                 EnumCMOF::CMOFClass(c) => c,
                 _ => panic!("dfghjdfghjdfgh"),
             };
-            CMOFClass::format_relation_super_from_one(&self, &object_class, &mut result);
+            CMOFClass::format_relation_super_from_one(&self, &object_class, &mut result)?;
         }
 
         // For reverse "Super"
-        for super_class in self.get_all_reverse_super()? {
-            CMOFClass::format_relation_super_to_one(&self, &super_class, &mut result);
+        for super_class in self.get_reverse_super_class()? {
+            CMOFClass::format_relation_super_to_one(&self, &super_class, &mut result)?;
         }
 
         // // For "One to One"
@@ -303,61 +328,43 @@ impl CMOFClass {
         Ok(result)
     }
 
-    //     /// "related" content for entity_class_main.tmpl
-    //     fn get_related_content(&self, _pckg: &LPckg, pre_calc: &LPreCalc) -> String {
-    //         let mut result = String::new();
+    /// "related" content for entity_class_main.tmpl
+    fn get_related_content(&self) -> Result<String, anyhow::Error> {
+        let mut result = String::new();
 
-    //         // For "Super"
-    //         for (_, super_name) in &self.get_all_direct_super()? {
-    //             let object_class = super_name.object.borrow();
-    //             let object_class = match object_class.as_ref().unwrap() {
-    //                 EnumCMOF::CMOFClass(c) => c,
-    //                 _ => panic!("dfghjdfghjdfgh"),
-    //             };
-    //             let class_model_name = &self.model_name;
-    //             let model_name = object_class.get_super_model_name();
-    //             CMOFClass::format_related_direct_super(
-    //                 class_model_name,
-    //                 &model_name,
-    //                 &mut result,
-    //                 pre_calc,
-    //             );
-    //         }
+        // For "Super"
+        for (_, class) in self.get_super_class()? {
+            let object_class = class.get_object_as_class()?;
+            CMOFClass::format_related_direct_super(&self, &object_class, &mut result)?;
+        }
 
-    //         // For reverse "Super"
-    //         for super_class in &self.get_all_reverse_super(pre_calc) {
-    //             let class_model_name: &String = &self.model_name;
-    //             let super_name: &String = &super_class.model_name;
-    //             CMOFClass::format_related_reverse_super(
-    //                 class_model_name,
-    //                 super_name,
-    //                 &mut result,
-    //                 pre_calc,
-    //             );
-    //         }
+        // For reverse "Super"
+        for super_class in self.get_reverse_super_class()? {
+            CMOFClass::format_related_reverse_super(&self, &super_class, &mut result)?;
+        }
 
-    //         // For "Many To Many"
-    //         for (association_name, actual_relation, other_relation) in
-    //             &self.get_all_many_to_many(pre_calc)
-    //         {
-    //             if actual_relation.element_type != other_relation.element_type {
-    //                 CMOFClass::format_related_many_to_many(
-    //                     association_name,
-    //                     actual_relation,
-    //                     other_relation,
-    //                     &mut result,
-    //                     pre_calc,
-    //                 );
-    //             } else {
-    //                 warn!(
-    //                     "Need \"Many to  Many\" implement for \"{}\" linked to itself",
-    //                     actual_relation.element_type
-    //                 );
-    //             }
-    //         }
+        // // For "Many To Many"
+        // for (association_name, actual_relation, other_relation) in
+        //     &self.get_all_many_to_many(pre_calc)
+        // {
+        //     if actual_relation.element_type != other_relation.element_type {
+        //         CMOFClass::format_related_many_to_many(
+        //             association_name,
+        //             actual_relation,
+        //             other_relation,
+        //             &mut result,
+        //             pre_calc,
+        //         );
+        //     } else {
+        //         warn!(
+        //             "Need \"Many to  Many\" implement for \"{}\" linked to itself",
+        //             actual_relation.element_type
+        //         );
+        //     }
+        // }
 
-    //         result
-    //     }
+        Ok(result)
+    }
 
     /// Get all simple field
     fn get_all_simple_field(&self) -> Result<Vec<&CMOFProperty>, anyhow::Error> {
@@ -418,33 +425,6 @@ impl CMOFClass {
         Ok(result)
     }
 
-    /// Get all "Super" name
-    fn get_all_direct_super(&self) -> Result<BTreeMap<String, &XMIIdReference>, anyhow::Error> {
-        self.get_super_class()
-    }
-
-    /// Get all "Super" name
-    fn get_all_reverse_super(&self) -> Result<Vec<Rc<CMOFClass>>, anyhow::Error> {
-        // if pre_calc.reverse_super_link.contains_key(&self.model_name) {
-        //     let mut result = pre_calc
-        //         .reverse_super_link
-        //         .get(&self.model_name)
-        //         .unwrap()
-        //         .clone();
-
-        //     result.sort_by(|a, b| a.cmp(&b));
-        //     result
-        // } else {
-        //     Vec::new()
-        // }
-        let mut result = Vec::new();
-        for obj in &self.reverse_super.borrow().to_vec() {
-            let a = obj.upgrade().clone().unwrap();
-            result.push(a.clone());
-        }
-        Ok(result)
-    }
-
     //     /// Get all Man to Many relation of the class
     //     fn get_all_many_to_many(
     //         &self,
@@ -487,25 +467,6 @@ impl CMOFClass {
     //         }
 
     //         result.sort_by(|(a, _, _), (b, _, _)| a.cmp(&b));
-    //         result
-    //     }
-
-    //     /// Get all direct One To One relation of the class
-    //     fn get_all_direct_one_to_one(&self, pre_calc: &LPreCalc) -> Vec<(String, AssociationRelation)> {
-    //         let mut result: Vec<(String, AssociationRelation)> = Vec::new();
-
-    //         let key = &self.model_name;
-    //         for (association_name, association) in &pre_calc.association_relation {
-    //             if key == &association.relation_1.element_type {
-    //                 match association.ponteration_type {
-    //                     RelationPonderationType::OneToOne => {
-    //                         result.push((association_name.clone(), association.clone()));
-    //                     }
-    //                     _ => {}
-    //                 }
-    //             }
-    //         }
-
     //         result
     //     }
 
@@ -621,24 +582,20 @@ impl CMOFClass {
 
     /// Format "Super" from __get_all_direct_super__, to write field part
     fn format_field_super(
-        class: &XMIIdReference,
+        class: &XMIIdReference<EnumWeakCMOF>,
         result: &mut String,
     ) -> Result<(), anyhow::Error> {
-        let object_class = class.object.borrow();
-        let object_class = match object_class.as_ref().unwrap() {
-            EnumCMOF::CMOFClass(c) => c,
-            _ => panic!("dfghjdfghjdfgh"),
-        };
+        let object_class = class.get_object_as_class()?;
         // Comment
         result.push_str(
             format!(
                 "    /// SUPER FIELD : {comment}\n",
-                comment = object_class.get_super_model_name()
+                comment = &object_class.super_model_name
             )
             .as_str(),
         );
         // Pub element
-        let field_name = object_class.get_super_field_name();
+        let field_name = &object_class.super_field_name;
         let field_type = String::from("i64");
         result.push_str(
             format!(
@@ -656,6 +613,7 @@ impl CMOFClass {
     fn format_field_simple_property(
         content: &CMOFProperty,
         result: &mut String,
+        primitive_type_conversion: &BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         // Comment
         result.push_str(
@@ -680,7 +638,7 @@ impl CMOFClass {
             format!(
                 "    pub {field_name}: {field_type},\n",
                 field_name = content.get_field_name(),
-                field_type = content.get_field_type()?,
+                field_type = content.get_field_type(primitive_type_conversion)?,
             )
             .as_str(),
         );
@@ -691,6 +649,7 @@ impl CMOFClass {
     fn format_field_complex_property(
         content: &CMOFProperty,
         result: &mut String,
+        primitive_type_conversion: &BTreeMap<String, String>,
     ) -> Result<(), anyhow::Error> {
         // Comment
         result.push_str(
@@ -706,7 +665,7 @@ impl CMOFClass {
             format!(
                 "    pub {field_name}: {field_type},\n",
                 field_name = &content.name.to_case(Case::Snake),
-                field_type = content.get_field_type()?,
+                field_type = content.get_field_type(primitive_type_conversion)?,
             )
             .as_str(),
         );
@@ -719,7 +678,7 @@ impl CMOFClass {
         result: &mut String,
     ) -> Result<(), anyhow::Error> {
         let comment = format!(
-            "SUPER : ONE {} need ONE {}",
+            "DIRECT SUPER : ONE {} need ONE {}",
             self_class.model_name, super_class.model_name,
         );
         result.push_str(
@@ -728,7 +687,7 @@ impl CMOFClass {
                 table_name = super_class.table_name,
                 model_name = super_class.model_name,
                 comment = comment,
-                foreign_field = super_class.get_super_model_name(),
+                foreign_field = super_class.super_model_name,
             )
             .as_str(),
         );
@@ -755,7 +714,7 @@ impl CMOFClass {
         result: &mut String,
     ) -> Result<(), anyhow::Error> {
         let comment = format!(
-            "SUPER : ONE {} need ONE {}",
+            "REVERSE SUPER : ONE {} need ONE {}",
             super_class.model_name, self_class.model_name,
         );
         result.push_str(
@@ -770,55 +729,94 @@ impl CMOFClass {
         Ok(())
     }
 
-    //     /// Format "Super" from __get_all_direct_super__, to write related part
-    //     fn format_related_direct_super(
-    //         class_model_name: &String,
-    //         super_name: &String,
-    //         result: &mut String,
-    //         pre_calc: &LPreCalc,
-    //     ) {
-    //         let key = super_name;
-    //         if pre_calc.owned_member_type_list.contains_key(key) {
-    //             let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
-    //             let table_name = &matched_named.table_name;
-    //             let model_name = &matched_named.model_name;
-    //             let comment = format!("SUPER : ONE {} need ONE {}", class_model_name, model_name,);
-    //             result.push_str(
-    //                 format!(
-    //                     include_str!("../template/entity_sub_super_related.tmpl"),
-    //                     table_name = table_name,
-    //                     model_name = model_name,
-    //                     comment = comment,
-    //                 )
-    //                 .as_str(),
-    //             );
-    //         }
+    /// Format "Super" from __get_all_direct_super__, to write related part
+    fn format_related_direct_super(
+        self_class: &CMOFClass,
+        super_class: &Rc<CMOFClass>,
+        result: &mut String,
+    ) -> Result<(), anyhow::Error> {
+        let comment = format!(
+            "DIRECT SUPER : ONE {} need ONE {}",
+            self_class.model_name, super_class.model_name,
+        );
+        result.push_str(
+            format!(
+                include_str!("../../template/entity_sub_super_related.tmpl"),
+                table_name = super_class.table_name,
+                model_name = super_class.model_name,
+                comment = comment,
+            )
+            .as_str(),
+        );
+        Ok(())
+    }
+    //     class_model_name: &String,
+    //     super_name: &String,
+    //     result: &mut String,
+    //     pre_calc: &LPreCalc,
+    // ) {
+    //     let key = super_name;
+    //     if pre_calc.owned_member_type_list.contains_key(key) {
+    //         let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+    //         let table_name = &matched_named.table_name;
+    //         let model_name = &matched_named.model_name;
+    //         let comment = format!("SUPER : ONE {} need ONE {}", class_model_name, model_name,);
+    //         result.push_str(
+    //             format!(
+    //                 include_str!("../../template/entity_sub_super_related.tmpl"),
+    //                 table_name = table_name,
+    //                 model_name = model_name,
+    //                 comment = comment,
+    //             )
+    //             .as_str(),
+    //         );
     //     }
+    // }
 
-    //     /// Format inverse of "Super" from __get_all_reverse_super__, to write related part
-    //     fn format_related_reverse_super(
-    //         class_model_name: &String,
-    //         super_name: &String,
-    //         result: &mut String,
-    //         pre_calc: &LPreCalc,
-    //     ) {
-    //         let key = super_name;
-    //         if pre_calc.owned_member_type_list.contains_key(key) {
-    //             let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
-    //             let table_name = &matched_named.table_name;
-    //             let model_name = &matched_named.model_name;
-    //             let comment = format!("SUPER : ONE {} need ONE {}", model_name, class_model_name,);
-    //             result.push_str(
-    //                 format!(
-    //                     include_str!("../template/entity_sub_super_related.tmpl"),
-    //                     table_name = table_name,
-    //                     model_name = model_name,
-    //                     comment = comment,
-    //                 )
-    //                 .as_str(),
-    //             );
-    //         }
+    /// Format inverse of "Super" from __get_all_reverse_super__, to write related part
+    fn format_related_reverse_super(
+        self_class: &CMOFClass,
+        super_class: &Rc<CMOFClass>,
+        result: &mut String,
+    ) -> Result<(), anyhow::Error> {
+        let comment = format!(
+            "REVERSE SUPER : ONE {} need ONE {}",
+            super_class.model_name, self_class.model_name,
+        );
+        result.push_str(
+            format!(
+                include_str!("../../template/entity_sub_super_related.tmpl"),
+                table_name = super_class.table_name,
+                model_name = super_class.model_name,
+                comment = comment,
+            )
+            .as_str(),
+        );
+        Ok(())
+    }
+
+    //     class_model_name: &String,
+    //     super_name: &String,
+    //     result: &mut String,
+    //     pre_calc: &LPreCalc,
+    // ) {
+    //     let key = super_name;
+    //     if pre_calc.owned_member_type_list.contains_key(key) {
+    //         let matched_named = pre_calc.owned_member_type_list.get(key).unwrap();
+    //         let table_name = &matched_named.table_name;
+    //         let model_name = &matched_named.model_name;
+    //         let comment = format!("SUPER : ONE {} need ONE {}", model_name, class_model_name,);
+    //         result.push_str(
+    //             format!(
+    //                 include_str!("../template/entity_sub_super_related.tmpl"),
+    //                 table_name = table_name,
+    //                 model_name = model_name,
+    //                 comment = comment,
+    //             )
+    //             .as_str(),
+    //         );
     //     }
+    // }
 
     //     /// Format inverse of "Super" from __get_all_reverse_super__, to write related part
     //     fn format_related_many_to_many(
@@ -850,283 +848,280 @@ impl CMOFClass {
     //         );
     //     }
 
-    //     // Return content for "help_doc" in "entity_main_class"
-    //     fn get_help(&self, pre_calc: &LPreCalc) -> String {
-    //         let mut result = String::new();
+    // Return content for "help_doc" in "entity_main_class"
+    fn get_help(
+        &self,
+        primitive_type_conversion: &BTreeMap<String, String>,
+    ) -> Result<String, anyhow::Error> {
+        let mut result = String::new();
 
-    //         // Add a head
-    //         result.push_str(
-    //             format!(
-    //                 "# Help document for \"{}\" ({})\n\n",
-    //                 self.model_name, self.full_name
-    //             )
-    //             .as_str(),
-    //         );
+        // Add a head
+        result.push_str(
+            format!(
+                "# Help document for \"{}\" ({})\n\n",
+                self.model_name, self.full_name
+            )
+            .as_str(),
+        );
 
-    //         // Common
-    //         result.push_str("## Common fields :\n");
-    //         result.push_str("* __id__ (sea_orm only)\n");
-    //         result.push_str("  * type : __i64__\n");
-    //         result.push_str("\n");
+        // Common
+        result.push_str("## Common fields :\n");
+        result.push_str("* __id__ (sea_orm only)\n");
+        result.push_str("  * type : __i64__\n");
+        result.push_str("\n");
 
-    //         // Attribute : SIMPLE
-    //         let iter_properties = self.get_all_simple_field();
-    //         if iter_properties.len() > 0 {
-    //             result.push_str("## Simple fields :\n");
-    //         }
-    //         for property in iter_properties {
-    //             // Property head
-    //             result.push_str(
-    //                 format!(
-    //                     "* __{}__ (xmi_id : \"{}\")\n",
-    //                     property.get_field_name(),
-    //                     property.xmi_id.label()
-    //                 )
-    //                 .as_str(),
-    //             );
+        // Attribute : SIMPLE
+        let iter_properties = self.get_all_simple_field()?;
+        if iter_properties.len() > 0 {
+            result.push_str("## Simple fields :\n");
+        }
+        for property in iter_properties {
+            // Property head
+            result.push_str(
+                format!(
+                    "* __{}__ (xmi_id : \"{}\")\n",
+                    property.get_field_name(),
+                    property.xmi_id.label()?
+                )
+                .as_str(),
+            );
 
-    //             // Property content
-    //             result.push_str(
-    //                 format!("  * type : __{}__\n", property.get_field_type(pre_calc)).as_str(),
-    //             );
-    //             if property.default.is_some() {
-    //                 result.push_str(
-    //                     format!("  * default : \"{}\"\n", property.default.as_ref().unwrap()).as_str(),
-    //                 );
-    //             };
-    //         }
-    //         result.push_str("\n");
+            // Property content
+            result.push_str(
+                format!(
+                    "  * type : __{}__\n",
+                    property.get_field_type(primitive_type_conversion)?
+                )
+                .as_str(),
+            );
+            if property.default.is_some() {
+                result.push_str(
+                    format!("  * default : \"{}\"\n", property.default.as_ref().unwrap()).as_str(),
+                );
+            };
+        }
+        result.push_str("\n");
 
-    //         // Attribute : Complex (direct One To One)
-    //         let iter_direct_one_to_one = self.get_all_direct_one_to_one(pre_calc);
-    //         if iter_direct_one_to_one.len() > 0 {
-    //             result.push_str("## Direct One To One :\n");
-    //         }
-    //         for (association_name, association) in iter_direct_one_to_one {
-    //             // Property head
-    //             result.push_str(
-    //                 format!(
-    //                     "* __{}__ (__{}Model__) from {}\n",
-    //                     association.relation_2.element_type,
-    //                     association.relation_2.element_type,
-    //                     association_name
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * one-to-one link : ({}-{}) __{}__ need ({}-{}) __{}__)\n",
-    //                     association.relation_2.lower,
-    //                     association.relation_2.upper,
-    //                     association.relation_1.element_type,
-    //                     association.relation_1.lower,
-    //                     association.relation_1.upper,
-    //                     association.relation_2.element_type
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * callable using find_also_related(__{}Model__) from __{}__\n",
-    //                     association.relation_2.element_type, self.model_name
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * saved in __{}__ field as foreing key\n",
-    //                     association.relation_2.property_name.to_case(Case::Snake)
-    //                 )
-    //                 .as_str(),
-    //             );
-    //         }
-    //         result.push_str("\n");
+        // Attribute : Complex (direct One To One)
+        let iter_direct_one_to_one = self.get_all_direct_one_to_one()?;
+        if iter_direct_one_to_one.len() > 0 {
+            result.push_str("## Direct One To One :\n");
+        }
+        for (relation_name, relation) in iter_direct_one_to_one {
+            let from_model_name = relation.get_from_class()?.model_name.clone();
+            let to_model_name = relation.get_to_class()?.model_name.clone();
+            // Property head
+            result.push_str(
+                format!(
+                    "* __{from_model_name}__ (__{from_model_name}Model__) from {relation_name}\n",
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * one-to-one link : ({}-{}) __{to_model_name}__ need ({}-{}) __{from_model_name}__)\n",
+                    relation.get_from().lower,
+                    relation.get_from().upper,
+                    relation.get_to().lower,
+                    relation.get_to().upper,
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * callable using find_also_related(__{from_model_name}Model__) from __{}__\n",
+                    self.model_name
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * saved in __{}__ field as foreing key\n",
+                    relation.get_from().name
+                )
+                .as_str(),
+            );
+        }
+        result.push_str("\n");
 
-    //         // Attribute : Relation (direct One To Many)
-    //         let iter_direct_one_to_many = self.get_all_direct_one_to_many(pre_calc);
-    //         if iter_direct_one_to_many.len() > 0 {
-    //             result.push_str("## Relation : One To Many :\n");
-    //         }
-    //         for (association_name, association) in iter_direct_one_to_many {
-    //             // Property head
-    //             result.push_str(
-    //                 format!(
-    //                     "* __{}__ (__{}Model__) from {}\n",
-    //                     association.relation_2.element_type,
-    //                     association.relation_2.element_type,
-    //                     association_name
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * one-to-many link : ({}-{}) __{}__ need ({}-{}) __{}__)\n",
-    //                     association.relation_2.lower,
-    //                     association.relation_2.upper,
-    //                     association.relation_1.element_type,
-    //                     association.relation_1.lower,
-    //                     association.relation_1.upper,
-    //                     association.relation_2.element_type
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * callable using find_with_related(__{}Model__) from __{}__\n",
-    //                     association.relation_2.element_type, self.model_name
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             if association.relation_1.from == RelationSource::FromClass {
-    //                 result.push_str(
-    //                     format!(
-    //                         "  * named {} in BPMN\n",
-    //                         association.relation_2.property_name.to_case(Case::Snake)
-    //                     )
-    //                     .as_str(),
-    //                 );
-    //             }
-    //         }
-    //         result.push_str("\n");
+        // // Attribute : Relation (direct One To Many)
+        // let iter_direct_one_to_many = self.get_all_direct_one_to_many(pre_calc);
+        // if iter_direct_one_to_many.len() > 0 {
+        //     result.push_str("## Relation : One To Many :\n");
+        // }
+        // for (association_name, association) in iter_direct_one_to_many {
+        //     // Property head
+        //     result.push_str(
+        //         format!(
+        //             "* __{}__ (__{}Model__) from {}\n",
+        //             association.relation_2.element_type,
+        //             association.relation_2.element_type,
+        //             association_name
+        //         )
+        //         .as_str(),
+        //     );
+        //     result.push_str(
+        //         format!(
+        //             "  * one-to-many link : ({}-{}) __{}__ need ({}-{}) __{}__)\n",
+        //             association.relation_2.lower,
+        //             association.relation_2.upper,
+        //             association.relation_1.element_type,
+        //             association.relation_1.lower,
+        //             association.relation_1.upper,
+        //             association.relation_2.element_type
+        //         )
+        //         .as_str(),
+        //     );
+        //     result.push_str(
+        //         format!(
+        //             "  * callable using find_with_related(__{}Model__) from __{}__\n",
+        //             association.relation_2.element_type, self.model_name
+        //         )
+        //         .as_str(),
+        //     );
+        //     if association.relation_1.from == RelationSource::FromClass {
+        //         result.push_str(
+        //             format!(
+        //                 "  * named {} in BPMN\n",
+        //                 association.relation_2.property_name.to_case(Case::Snake)
+        //             )
+        //             .as_str(),
+        //         );
+        //     }
+        // }
+        // result.push_str("\n");
 
-    //         // Attribute : Super (direct)
-    //         let iter_direct_super = self.get_all_direct_super();
-    //         if iter_direct_super.len() > 0 {
-    //             result.push_str("## Direct Super :\n");
-    //         }
-    //         for (_, class) in iter_direct_super {
-    //             let object_class = class.object.borrow();
-    //             let direct_super = match object_class.as_ref().unwrap() {
-    //                 EnumCMOF::CMOFClass(c) => c,
-    //                 _ => panic!("dfghjdfghjdfgh"),
-    //             };
-    //             let field_name = &direct_super.get_super_field_name();
-    //             // Property head
-    //             result.push_str(
-    //                 format!(
-    //                     "* __{}__ (__{}Model__)\n",
-    //                     direct_super.get_super_model_name(),
-    //                     direct_super.get_super_model_name()
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * one-to-one link : one __{}__ need one __{}__)\n",
-    //                     self.model_name,
-    //                     direct_super.get_super_model_name()
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * callable using find_also_related(__{}Model__) from __{}__\n",
-    //                     direct_super.get_super_model_name(),
-    //                     self.model_name
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!("  * saved in __{}__ field as foreing key\n", field_name).as_str(),
-    //             );
-    //         }
+        // Attribute : Super (direct)
+        let iter_direct_super = self.get_super_class()?;
+        if iter_direct_super.len() > 0 {
+            result.push_str("## Direct Super :\n");
+        }
+        for (_, class) in iter_direct_super {
+            let direct_super = class.get_object_as_class()?;
+            let field_name = &direct_super.super_field_name;
+            // Property head
+            result.push_str(
+                format!(
+                    "* __{}__ (__{}Model__)\n",
+                    direct_super.model_name, direct_super.model_name
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * one-to-one link : one __{}__ need one __{}__)\n",
+                    self.model_name, direct_super.model_name
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * callable using find_also_related(__{}Model__) from __{}__\n",
+                    direct_super.model_name, self.model_name
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!("  * saved in __{}__ field as foreing key\n", field_name).as_str(),
+            );
+        }
 
-    //         // Attribute : Complex (Reverse One To One)
-    //         let iter_reverse_one_to_one = self.get_all_reverse_one_to_one(pre_calc);
-    //         if iter_reverse_one_to_one.len() > 0 {
-    //             result.push_str("## Reverse One To One :\n");
-    //         }
-    //         for (association_name, association) in iter_reverse_one_to_one {
-    //             // Property head
-    //             result.push_str(
-    //                 format!(
-    //                     "* __{}__ (__{}Model__) from {}\n",
-    //                     association.relation_1.element_type,
-    //                     association.relation_1.element_type,
-    //                     association_name
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * one-to-one link : ({}-{}) __{}__ need ({}-{}) __{}__)\n",
-    //                     association.relation_2.lower,
-    //                     association.relation_2.upper,
-    //                     association.relation_1.element_type,
-    //                     association.relation_1.lower,
-    //                     association.relation_1.upper,
-    //                     association.relation_2.element_type
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * callable using find_also_related(__{}Model__) from __{}__\n",
-    //                     self.model_name, association.relation_1.element_type
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * saved in __{}__ field as foreing key\n",
-    //                     association.relation_2.property_name.to_case(Case::Snake)
-    //                 )
-    //                 .as_str(),
-    //             );
-    //         }
-    //         result.push_str("\n");
+        // // Attribute : Complex (Reverse One To One)
+        // let iter_reverse_one_to_one = self.get_all_reverse_one_to_one(pre_calc);
+        // if iter_reverse_one_to_one.len() > 0 {
+        //     result.push_str("## Reverse One To One :\n");
+        // }
+        // for (association_name, association) in iter_reverse_one_to_one {
+        //     // Property head
+        //     result.push_str(
+        //         format!(
+        //             "* __{}__ (__{}Model__) from {}\n",
+        //             association.relation_1.element_type,
+        //             association.relation_1.element_type,
+        //             association_name
+        //         )
+        //         .as_str(),
+        //     );
+        //     result.push_str(
+        //         format!(
+        //             "  * one-to-one link : ({}-{}) __{}__ need ({}-{}) __{}__)\n",
+        //             association.relation_2.lower,
+        //             association.relation_2.upper,
+        //             association.relation_1.element_type,
+        //             association.relation_1.lower,
+        //             association.relation_1.upper,
+        //             association.relation_2.element_type
+        //         )
+        //         .as_str(),
+        //     );
+        //     result.push_str(
+        //         format!(
+        //             "  * callable using find_also_related(__{}Model__) from __{}__\n",
+        //             self.model_name, association.relation_1.element_type
+        //         )
+        //         .as_str(),
+        //     );
+        //     result.push_str(
+        //         format!(
+        //             "  * saved in __{}__ field as foreing key\n",
+        //             association.relation_2.property_name.to_case(Case::Snake)
+        //         )
+        //         .as_str(),
+        //     );
+        // }
+        // result.push_str("\n");
 
-    //         // Attribute : Super (reverse)
-    //         let iter_reverse_super = self.get_all_reverse_super(pre_calc);
-    //         if iter_reverse_super.len() > 0 {
-    //             result.push_str("## Reverse Super :\n");
-    //         }
-    //         for reverse_super_class in iter_reverse_super {
-    //             let field_name = &self
-    //                 .model_name
-    //                 .to_case(Case::Snake)
-    //                 .prefix("super_")
-    //                 .replace("\n", "");
-    //             let reverse_super: &String = &reverse_super_class.model_name;
-    //             // Property head
-    //             result.push_str(
-    //                 format!("* __{}__ (__{}Model__)\n", reverse_super, reverse_super).as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * one-to-one link (reverse) : one __{}__ need one __{}__)\n",
-    //                     reverse_super, self.model_name
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * callable using find_also_related(__{}Model__) from __{}__\n",
-    //                     self.model_name, reverse_super
-    //                 )
-    //                 .as_str(),
-    //             );
-    //             result.push_str(
-    //                 format!(
-    //                     "  * saved in __{}__ field as foreing key in __{}Model__\n",
-    //                     field_name, reverse_super
-    //                 )
-    //                 .as_str(),
-    //             );
-    //         }
-    //         result.push_str("\n");
+        // Attribute : Super (reverse)
+        let iter_reverse_super = self.get_reverse_super_class()?;
+        if iter_reverse_super.len() > 0 {
+            result.push_str("## Reverse Super :\n");
+        }
+        for reverse_super_class in iter_reverse_super {
+            let field_name = &self
+                .model_name
+                .to_case(Case::Snake)
+                .prefix("super_")
+                .replace("\n", "");
+            let reverse_super: &String = &reverse_super_class.model_name;
+            // Property head
+            result.push_str(
+                format!("* __{}__ (__{}Model__)\n", reverse_super, reverse_super).as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * one-to-one link (reverse) : one __{}__ need one __{}__)\n",
+                    reverse_super, self.model_name
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * callable using find_also_related(__{}Model__) from __{}__\n",
+                    self.model_name, reverse_super
+                )
+                .as_str(),
+            );
+            result.push_str(
+                format!(
+                    "  * saved in __{}__ field as foreing key in __{}Model__\n",
+                    field_name, reverse_super
+                )
+                .as_str(),
+            );
+        }
+        result.push_str("\n");
 
-    //         result
-    //     }
+        Ok(result)
+    }
 
-    //     // /// Format of "Super" from __get_all_direct_super__, to write related part
-    //     // fn format_related_reverse_super(
-    //     //     class_model_name: &String,
-    //     //     super_name: &String,
-    //     //     result: &mut String,
-    //     //     pre_calc: &LPreCalc,
-    //     // ) {
-    //     // }
+    // /// Format of "Super" from __get_all_direct_super__, to write related part
+    // fn format_related_reverse_super(
+    //     class_model_name: &String,
+    //     super_name: &String,
+    //     result: &mut String,
+    //     pre_calc: &LPreCalc,
+    // ) {
+    // }
 }
 
 // // ####################################################################################################
@@ -1137,24 +1132,31 @@ impl CMOFClass {
 
 impl CMOFDataType {
     /// write content to output file,from "CMOFDataType" object
-    fn write_content(&self, wrt: &mut File) -> Result<(), anyhow::Error> {
+    fn write_content(
+        &self,
+        wrt: &mut File,
+        primitive_type_conversion: &BTreeMap<String, String>,
+    ) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             wrt,
             include_str!("../../template/entity_main_datatype.tmpl"),
             full_name = self.full_name,
             table_name = self.table_name,
-            fields = self.get_fields_content()?,
+            fields = self.get_fields_content(primitive_type_conversion)?,
             raw = format!("{:#?}", self).prefix("// "),
         );
         Ok(())
     }
     /// "fields" content for entity_data_type_main.tmpl
-    fn get_fields_content(&self) -> Result<String, anyhow::Error> {
+    fn get_fields_content(
+        &self,
+        primitive_type_conversion: &BTreeMap<String, String>,
+    ) -> Result<String, anyhow::Error> {
         let mut result = String::from("");
 
         // For all property
         for field in self.get_all_field()? {
-            let content = CMOFDataType::write_field_property(&field)?;
+            let content = CMOFDataType::write_field_property(&field, primitive_type_conversion)?;
             result.push_str(content.as_str());
         }
 
@@ -1177,7 +1179,10 @@ impl CMOFDataType {
     }
 
     // Write field content
-    fn write_field_property(content: &CMOFProperty) -> Result<String, anyhow::Error> {
+    fn write_field_property(
+        content: &CMOFProperty,
+        primitive_type_conversion: &BTreeMap<String, String>,
+    ) -> Result<String, anyhow::Error> {
         let mut result: String = String::new();
 
         // Comment
@@ -1203,7 +1208,7 @@ impl CMOFDataType {
             format!(
                 "    pub {field_name}: {field_type},\n",
                 field_name = &content.name.to_case(Case::Snake),
-                field_type = content.get_field_type()?,
+                field_type = content.get_field_type(primitive_type_conversion)?,
             )
             .as_str(),
         );
@@ -1356,7 +1361,10 @@ impl CMOFPrimitiveType {
 // // ####################################################################################################
 
 impl CMOFProperty {
-    fn get_field_type(&self) -> Result<String, anyhow::Error> {
+    fn get_field_type(
+        &self,
+        primitive_type_conversion: &BTreeMap<String, String>,
+    ) -> Result<String, anyhow::Error> {
         let mut result = String::new();
 
         if self.upper > infinitable::Finite(1) {
@@ -1371,12 +1379,18 @@ impl CMOFProperty {
         let content = if self.simple_type.is_some() {
             if self.association.is_none() {
                 // Simple field, i.e. other Enumeration
-                let a = self.simple_type.as_ref().unwrap();
-                let a = &a.object.borrow();
-                let a = a.as_ref().unwrap();
+                let a = self.simple_type.as_ref().unwrap().get_object_as_enum()?;
                 match a {
                     EnumCMOF::CMOFClass(c) => c.model_name.clone(),
-                    EnumCMOF::CMOFPrimitiveType(c) => c.model_name.clone(),
+                    EnumCMOF::CMOFPrimitiveType(c) => {
+                        let r = primitive_type_conversion.get(&c.model_name);
+                        if r.is_none() {
+                            error!("{}", c.model_name);
+                            String::new()
+                        } else {
+                            r.unwrap().clone()
+                        }
+                    }
                     EnumCMOF::CMOFDataType(c) => c.model_name.clone(),
                     EnumCMOF::CMOFEnumeration(c) => c.model_name.clone(),
                     _ => {
@@ -1394,10 +1408,17 @@ impl CMOFProperty {
             match self.complex_type.as_ref().unwrap() {
                 EnumType::HRefPrimitiveType(link) => {
                     // Simple field
-                    let a = link.href.object.borrow();
-                    let a = a.as_ref().unwrap();
+                    let a = link.href.get_object_as_enum()?;
                     match a {
-                        EnumCMOF::CMOFPrimitiveType(c) => c.model_name.clone(),
+                        EnumCMOF::CMOFPrimitiveType(c) => {
+                            let r = primitive_type_conversion.get(&c.model_name);
+                            if r.is_none() {
+                                error!("{}", c.model_name);
+                                String::new()
+                            } else {
+                                r.unwrap().clone()
+                            }
+                        }
                         _ => {
                             return Err(anyhow::format_err!("tcyvubikjl"));
                         }

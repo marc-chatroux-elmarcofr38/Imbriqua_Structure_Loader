@@ -32,19 +32,15 @@ use std::fmt;
 // ####################################################################################################
 
 #[derive(Clone)]
-/// Reference to another XMI object
+/// Reference to self XMI object
 pub struct XMIIdLocalReference {
     object_id: String,
     package_id: String,
-    is_set: bool,
 }
 
 impl PartialEq for XMIIdLocalReference {
     fn eq(&self, other: &Self) -> bool {
-        self.object_id == other.object_id
-            && self.package_id == other.package_id
-            && self.package_id != String::new()
-            && other.package_id != String::new()
+        self.object_id == other.object_id && self.package_id == other.package_id
     }
 }
 
@@ -69,13 +65,13 @@ impl fmt::Debug for XMIIdLocalReference {
         if self.package_id != String::new() {
             write!(
                 f,
-                "\"Complete XMIIdLocalReference RefCell of \'{}-{}\'",
+                "Complete XMIIdLocalReference RefCell of \'{}-{}\'",
                 self.package_id, self.object_id,
             )
         } else {
             write!(
                 f,
-                "\"Uncomplete XMIIdLocalReference RefCell of \'{}\'",
+                "Uncomplete XMIIdLocalReference RefCell of \'{}\'",
                 self.object_id,
             )
         }
@@ -83,30 +79,25 @@ impl fmt::Debug for XMIIdLocalReference {
 }
 
 impl XMIIdLocalReference {
-    /// Create when only object ID is available (need to use set_package after)
+    /// Create when only object ID is available (need to use set_package_id after)
     pub fn new_local(object_id: String) -> Self {
         XMIIdLocalReference {
             object_id: object_id,
             package_id: String::new(),
-            is_set: false,
         }
     }
 
-    /// Create when object ID and package ID are available (DON'T need to use set_package after)
+    /// Create when object ID and package ID are available (DON'T need to use set_package_id after)
     pub fn new_global(object_id: String, package_id: String) -> Self {
         XMIIdLocalReference {
             object_id: object_id,
             package_id: package_id,
-            is_set: true,
         }
     }
 
     /// Define package ID after a new_local
-    pub fn set_package(&mut self, package_id: &String) {
-        if !self.is_set {
-            self.package_id = package_id.clone();
-            self.is_set = true;
-        }
+    pub fn set_package_id(&mut self, package_id: &String) {
+        self.package_id = package_id.clone();
     }
 
     /// Get object ID
@@ -119,9 +110,14 @@ impl XMIIdLocalReference {
         self.package_id.clone()
     }
 
+    /// True, if package_id and object_id not empty
+    pub fn is_set(&self) -> bool {
+        !self.package_id.is_empty() && !self.object_id.is_empty()
+    }
+
     /// Return combinaison of package ID and object ID
     pub fn label(&self) -> Result<String, anyhow::Error> {
-        if self.is_set {
+        if self.is_set() {
             Ok(format!(
                 "{}-{}",
                 self.get_package_id(),
@@ -129,7 +125,7 @@ impl XMIIdLocalReference {
             ))
         } else {
             Err(anyhow::format_err!(
-                "Call \"label()\" on unset XMI ID : (XMIIdReference) {:#?}",
+                "Call \"label()\" on unset XMI ID : (XMIIdReference<EnumWeakCMOF>) {:#?}",
                 self
             ))
         }
@@ -142,74 +138,106 @@ impl XMIIdLocalReference {
 
 #[derive(Clone)]
 /// Reference to another XMI object
-pub struct XMIIdReference {
+pub struct XMIIdReference<T> {
     object_id: String,
     package_id: String,
-    is_set: bool,
     /// Content of the ref, define with make_post_deserialize
-    pub object: RefCell<Option<EnumCMOF>>,
+    object: RefCell<Option<T>>,
 }
 
-impl PartialEq for XMIIdReference {
-    fn eq(&self, other: &Self) -> bool {
-        self.object_id == other.object_id
-            && self.package_id == other.package_id
-            && self.package_id != String::new()
-            && other.package_id != String::new()
+impl<T> Default for XMIIdReference<T> {
+    fn default() -> Self {
+        XMIIdReference {
+            object_id: String::new(),
+            package_id: String::new(),
+            object: RefCell::new(None),
+        }
     }
 }
 
-impl fmt::Debug for XMIIdReference {
+impl<T> PartialEq for XMIIdReference<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.object_id == other.object_id && self.package_id == other.package_id
+    }
+}
+
+impl<T> Eq for XMIIdReference<T> {}
+
+impl<T> PartialOrd for XMIIdReference<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl<T> Ord for XMIIdReference<T> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.package_id
+            .cmp(&other.package_id)
+            .then(self.object_id.cmp(&other.object_id))
+    }
+}
+
+impl<T> fmt::Debug for XMIIdReference<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if self.object.borrow().is_some() {
             write!(
                 f,
-                "\"Loaded XMIIdReference RefCell of \'{}-{}\'",
+                "Loaded XMIIdReference<EnumWeakCMOF> RefCell of \'{}-{}\'",
                 self.package_id, self.object_id,
             )
         } else if self.package_id != String::new() {
             write!(
                 f,
-                "\"UnLoaded XMIIdReference RefCell of \'{}-{}\'",
+                "UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of \'{}-{}\'",
                 self.package_id, self.object_id,
             )
-        } else {
+        } else if self.object_id != String::new() {
             write!(
                 f,
-                "\"Uncomplete XMIIdReference RefCell of \'{}\'",
+                "Uncomplete XMIIdReference<EnumWeakCMOF> RefCell of \'{}\'",
                 self.object_id,
             )
+        } else {
+            write!(f, "Empty XMIIdReference<EnumWeakCMOF> RefCell")
         }
     }
 }
 
-impl XMIIdReference {
-    /// Create when only object ID is available (need to use set_package after)
+impl<T: Clone> XMIIdReference<T> {
+    /// Create when only object ID is available (need to use set_package_id after)
     pub fn new_local(object_id: String) -> Self {
         XMIIdReference {
             object_id: object_id,
             package_id: String::new(),
-            is_set: false,
             object: RefCell::new(None),
         }
     }
 
-    /// Create when object ID and package ID are available (DON'T need to use set_package after)
+    /// Create when object ID and package ID are available (DON'T need to use set_package_id after)
     pub fn new_global(object_id: String, package_id: String) -> Self {
         XMIIdReference {
             object_id: object_id,
             package_id: package_id,
-            is_set: true,
             object: RefCell::new(None),
         }
     }
 
     /// Define package ID after a new_local
-    pub fn set_package(&mut self, package_id: &String) {
-        if !self.is_set {
-            self.package_id = package_id.clone();
-            self.is_set = true;
+    pub fn set_object_id(&mut self, object_id: &String) {
+        if self.object_id.is_empty() {
+            self.object_id = object_id.clone();
         }
+    }
+
+    /// Define package ID after a new_local
+    pub fn set_package_id(&mut self, package_id: &String) {
+        self.package_id = package_id.clone();
+    }
+
+    /// Define object content
+    pub fn set_object(&self, content: T) -> Result<(), anyhow::Error> {
+        self.object.replace(Some(content));
+        Ok(())
     }
 
     /// Get object ID
@@ -222,9 +250,26 @@ impl XMIIdReference {
         self.package_id.clone()
     }
 
+    /// Get object content
+    pub fn get_object(&self) -> Result<T, anyhow::Error> {
+        let r = self.object.borrow();
+        let r = r.as_ref();
+        if r.is_none() {
+            return Err(anyhow::format_err!(
+                "Error in XMIIdReference<EnumWeakCMOF> 'get_object' : None result during borrow of Refcell"
+            ));
+        }
+        Ok(r.unwrap().clone())
+    }
+
+    /// True, if package_id and object_id not empty
+    pub fn is_set(&self) -> bool {
+        !self.package_id.is_empty() && !self.object_id.is_empty() && self.object.borrow().is_some()
+    }
+
     /// Return combinaison of package ID and object ID
     pub fn label(&self) -> Result<String, anyhow::Error> {
-        if self.is_set {
+        if self.is_set() {
             Ok(format!(
                 "{}-{}",
                 self.get_package_id(),
@@ -232,7 +277,7 @@ impl XMIIdReference {
             ))
         } else {
             Err(anyhow::format_err!(
-                "Call \"label()\" on unset XMI ID : (XMIIdReference) {:#?}",
+                "Call \"label()\" on unset XMI ID : (XMIIdReference<EnumWeakCMOF>) {:#?}",
                 self
             ))
         }

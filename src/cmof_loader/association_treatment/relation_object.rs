@@ -29,21 +29,6 @@ use crate::cmof_loader::*;
 // ####################################################################################################
 
 #[derive(Clone, PartialEq, Debug)]
-/// Representation of a package
-pub struct ElementRelation {
-    /// Type of the member of the association
-    pub element_type: String,
-    /// Name of the property
-    pub property_name: String,
-    /// Lower bound for this member
-    pub lower: isize,
-    /// Upper bound for this member
-    pub upper: UnlimitedNatural<usize>,
-    /// Origin of the relation
-    pub from: RelationSource,
-}
-
-#[derive(Clone, PartialEq, Debug)]
 /// Pre Calculation struct helping loading CMOFAssociation
 pub struct AssociationRelation {
     /// First relation
@@ -54,6 +39,21 @@ pub struct AssociationRelation {
     pub ponteration_type: RelationPonderationType,
     /// if is itself reference
     pub is_self_referencing: bool,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl AssociationRelation {
+    pub fn reverse(&self) -> Self {
+        AssociationRelation {
+            relation_1: self.relation_2.clone(),
+            relation_2: self.relation_1.clone(),
+            ponteration_type: self.ponteration_type.clone(),
+            is_self_referencing: self.is_self_referencing,
+        }
+    }
 }
 
 // ####################################################################################################
@@ -87,4 +87,117 @@ pub enum RankRelation {
     IsOne,
     /// Is relation_2
     IsSecond,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[derive(Clone, Debug)]
+pub enum Relation {
+    // Relation : One 'from' as One 'to'
+    OneToOneRelation(OneToOneRelation),
+    // Relation : Many 'from' as One 'to'
+    OneToManyRelation(OneToManyRelation),
+    // Relation : Many 'from' as Many 'to'
+    ManToManyRelation(ManToManyRelation),
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[derive(Clone, Debug)]
+pub struct OneToOneRelation {
+    from: Rc<CMOFProperty>,
+    to: Rc<CMOFProperty>,
+}
+
+impl OneToOneRelation {
+    pub fn new(from: Rc<CMOFProperty>, to: Rc<CMOFProperty>) -> Self {
+        OneToOneRelation { from: from, to: to }
+    }
+    pub fn get_from(&self) -> Rc<CMOFProperty> {
+        self.from.clone()
+    }
+    pub fn get_to(&self) -> Rc<CMOFProperty> {
+        self.to.clone()
+    }
+    pub fn get_from_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
+        self.from.parent.get_object_as_class()
+    }
+    pub fn get_to_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
+        self.to.parent.get_object_as_class()
+    }
+    pub fn is_self_referencing(&self) -> Result<bool, anyhow::Error> {
+        let from_id = self.from.parent.label()?;
+        let to_id = self.to.parent.label()?;
+        Ok(from_id == to_id)
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[derive(Clone, Debug)]
+pub struct OneToManyRelation {
+    from: Rc<CMOFProperty>,
+    to: Rc<CMOFProperty>,
+}
+
+impl OneToManyRelation {
+    pub fn new(from: Rc<CMOFProperty>, to: Rc<CMOFProperty>) -> Self {
+        OneToManyRelation { from: from, to: to }
+    }
+    pub fn get_from(&self) -> Rc<CMOFProperty> {
+        self.from.clone()
+    }
+    pub fn get_to(&self) -> Rc<CMOFProperty> {
+        self.to.clone()
+    }
+    pub fn get_from_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
+        self.from.parent.get_object_as_class()
+    }
+    pub fn get_to_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
+        self.to.parent.get_object_as_class()
+    }
+    pub fn is_self_referencing(&self) -> Result<bool, anyhow::Error> {
+        let from_id = self.from.parent.label()?;
+        let to_id = self.to.parent.label()?;
+        Ok(from_id == to_id)
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[derive(Clone, Debug)]
+pub struct ManToManyRelation {
+    from: Rc<CMOFProperty>,
+    to: Rc<CMOFProperty>,
+}
+
+impl ManToManyRelation {
+    pub fn new(from: Rc<CMOFProperty>, to: Rc<CMOFProperty>) -> Self {
+        ManToManyRelation { from: from, to: to }
+    }
+    pub fn get_from(&self) -> Rc<CMOFProperty> {
+        self.from.clone()
+    }
+    pub fn get_to(&self) -> Rc<CMOFProperty> {
+        self.to.clone()
+    }
+    pub fn get_from_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
+        self.from.parent.get_object_as_class()
+    }
+    pub fn get_to_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
+        self.to.parent.get_object_as_class()
+    }
+    pub fn is_self_referencing(&self) -> Result<bool, anyhow::Error> {
+        let from_id = self.from.parent.label()?;
+        let to_id = self.to.parent.label()?;
+        Ok(from_id == to_id)
+    }
 }

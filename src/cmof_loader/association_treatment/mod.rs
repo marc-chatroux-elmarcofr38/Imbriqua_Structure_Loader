@@ -21,6 +21,10 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Mod section
 mod impl_cmof_association;
+mod impl_cmof_class;
+mod impl_href;
 mod relation_object;
 pub use impl_cmof_association::*;
+pub use impl_cmof_class::*;
+pub use impl_href::*;
 pub use relation_object::*;

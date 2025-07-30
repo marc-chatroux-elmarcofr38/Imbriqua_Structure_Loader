@@ -36,6 +36,9 @@ pub struct CMOFAssociation {
     #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
     pub xmi_id: XMIIdLocalReference,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub parent: XMIIdReference<EnumWeakCMOF>,
     /// name attribute
     #[serde(rename = "_name")]
     name: String,
@@ -45,7 +48,7 @@ pub struct CMOFAssociation {
     /// memberEnd attribute, 2 for CMOF
     #[serde(rename = "_memberEnd")]
     #[serde(deserialize_with = "deser_split_2_space_href")]
-    pub member_end: (XMIIdReference, XMIIdReference),
+    pub member_end: (XMIIdReference<EnumWeakCMOF>, XMIIdReference<EnumWeakCMOF>),
     /// Optional ownedEnd object
     #[serde(rename = "ownedEnd")]
     #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
@@ -69,9 +72,6 @@ pub struct CMOFAssociation {
     /// Casing formating of "name" as full_name
     #[serde(skip)]
     pub full_name: String,
-    /// Casing formating of "name" as full_name
-    #[serde(skip)]
-    pub calc_dict: BTreeMap<String, String>,
 }
 
 // ####################################################################################################
@@ -109,14 +109,18 @@ impl SetCMOFTools for CMOFAssociation {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict_setting.get("package_name").ok_or(anyhow::format_err!(
-            "Dictionnary error in make_post_deserialize"
-        ))?;
+        let package_name = dict_setting
+            .get("package_name")
+            .ok_or(anyhow::format_err!(
+                "Dictionnary error in make_post_deserialize"
+            ))?
+            .clone();
         let package_name_snake_case = package_name.to_case(Case::Snake);
         let class_upper_case = self.name.to_case(Case::UpperCamel);
         let class_snake_case = self.name.to_case(Case::Snake);
+        let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package(&package_name);
+        self.xmi_id.set_package_id(&package_name);
         self.technical_name = format!("{}.cmof#{}", package_name, self.name);
         self.table_name = format!("{}_{}", package_name_snake_case, class_snake_case);
         self.model_name = format!("{}", class_upper_case);
@@ -125,10 +129,18 @@ impl SetCMOFTools for CMOFAssociation {
             package_name_snake_case, class_snake_case
         );
         // Call on child
-        self.member_end.0.set_package(&package_name);
-        self.member_end.1.set_package(&package_name);
+        self.member_end.0.set_package_id(&package_name);
+        self.member_end.1.set_package_id(&package_name);
         for (_, p) in &mut self.owned_end {
-            p.collect_object(dict_setting, dict_object)?;
+            match p {
+                EnumOwnedEnd::Property(c) => {
+                    let m = Rc::get_mut(c).unwrap();
+                    m.parent.set_package_id(&package_name);
+                    m.parent.set_object_id(&parent_name);
+                    m.collect_object(dict_setting, dict_object)?;
+                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFProperty(c.clone()));
+                }
+            }
         }
         //Return
         Ok(())
@@ -140,8 +152,12 @@ impl SetCMOFTools for CMOFAssociation {
     ) -> Result<(), anyhow::Error> {
         // Call on child
         for (_, p) in &self.owned_end {
-            p.make_post_deserialize(dict_object)?;
+            match p {
+                EnumOwnedEnd::Property(c) => c.make_post_deserialize(dict_object)?,
+            }
         }
+        // Self
+        set_href(&self.parent, dict_object)?;
         set_href(&self.member_end.0, dict_object)?;
         set_href(&self.member_end.1, dict_object)?;
         //Return

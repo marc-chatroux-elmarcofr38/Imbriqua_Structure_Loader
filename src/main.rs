@@ -32,9 +32,7 @@ pub mod output_writing;
 mod output_cargo_checker;
 mod output_result_manager;
 
-use std::fmt::Debug;
-
-use log::{error, trace, warn};
+use log::info;
 
 fn main() -> Result<(), anyhow::Error> {
     use std::time::Instant;
@@ -59,8 +57,8 @@ fn main() -> Result<(), anyhow::Error> {
     // Load ordered packages list
     loading_env.make_prepare(main_package_file, main_package_id, "root")?;
 
-    // Generate list of class who don't necessite dependencies
-    loading_env.writing_preparation()?;
+    // // Generate list of class who don't necessite dependencies
+    // loading_env.writing_preparation()?;
     // Makin lib.rs file
     loading_env.write_lib_file()?;
     // Makin all mod_x.rs file
@@ -85,6 +83,6 @@ fn main() -> Result<(), anyhow::Error> {
     // // assert!(_result_link.cargo_full_check()); // Make cargo check, test build and doc
 
     let duration = start.elapsed();
-    warn!("Execution time: {:?}", duration);
+    info!("Execution time: {:?}", duration);
     Ok(())
 }

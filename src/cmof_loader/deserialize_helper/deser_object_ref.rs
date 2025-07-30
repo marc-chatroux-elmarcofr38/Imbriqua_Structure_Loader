@@ -58,7 +58,7 @@ where
 // ####################################################################################################
 
 /// Convert string with space to vec of string, splitting on space
-pub fn deser_xmi_id<'de, D>(deserializer: D) -> Result<XMIIdReference, D::Error>
+pub fn deser_xmi_id<'de, D>(deserializer: D) -> Result<XMIIdReference<EnumWeakCMOF>, D::Error>
 where
     D: de::Deserializer<'de>,
 {
@@ -85,7 +85,9 @@ where
 // ####################################################################################################
 
 /// Convert string with space to vec of string, splitting on space
-pub fn deser_option_xmi_id<'de, D>(deserializer: D) -> Result<Option<XMIIdReference>, D::Error>
+pub fn deser_option_xmi_id<'de, D>(
+    deserializer: D,
+) -> Result<Option<XMIIdReference<EnumWeakCMOF>>, D::Error>
 where
     D: de::Deserializer<'de>,
 {
@@ -113,7 +115,7 @@ where
 // ####################################################################################################
 
 /// Convert string with space to vec of string, splitting on space
-pub fn deser_href<'de, D>(deserializer: D) -> Result<XMIIdReference, D::Error>
+pub fn deser_href<'de, D>(deserializer: D) -> Result<XMIIdReference<EnumWeakCMOF>, D::Error>
 where
     D: de::Deserializer<'de>,
 {
@@ -144,7 +146,9 @@ where
 //
 // ####################################################################################################
 
-pub fn deser_spaced_href<'de, D>(deserializer: D) -> Result<Vec<XMIIdReference>, D::Error>
+pub fn deser_spaced_href<'de, D>(
+    deserializer: D,
+) -> Result<Vec<XMIIdReference<EnumWeakCMOF>>, D::Error>
 where
     D: de::Deserializer<'de>,
 {
@@ -152,7 +156,7 @@ where
         // Split text
         Value::String(s) => {
             let splited: Vec<String> = s.split(" ").map(str::to_string).collect();
-            let mut r: Vec<XMIIdReference> = Vec::new();
+            let mut r: Vec<XMIIdReference<EnumWeakCMOF>> = Vec::new();
             for s in splited {
                 let v = match s.find(".cmof#") {
                     Some(split_index) => {
@@ -181,14 +185,16 @@ where
 // ####################################################################################################
 
 /// Convert string with space to vec of string, splitting on space
-pub fn deser_vec_href<'de, D>(deserializer: D) -> Result<Vec<XMIIdReference>, D::Error>
+pub fn deser_vec_href<'de, D>(
+    deserializer: D,
+) -> Result<Vec<XMIIdReference<EnumWeakCMOF>>, D::Error>
 where
     D: de::Deserializer<'de>,
 {
     Ok(match de::Deserialize::deserialize(deserializer)? {
         // Split text
         Value::Array(v_array) => {
-            let mut result: Vec<XMIIdReference> = Vec::new();
+            let mut result: Vec<XMIIdReference<EnumWeakCMOF>> = Vec::new();
             for v in v_array {
                 match v {
                     Value::String(content) => {
@@ -255,7 +261,7 @@ where
 /// Deserialising 2-String Vec, from String, require a 1-whitespace String
 pub fn deser_split_2_space_href<'de, D>(
     deserializer: D,
-) -> Result<(XMIIdReference, XMIIdReference), D::Error>
+) -> Result<(XMIIdReference<EnumWeakCMOF>, XMIIdReference<EnumWeakCMOF>), D::Error>
 where
     D: de::Deserializer<'de>,
 {

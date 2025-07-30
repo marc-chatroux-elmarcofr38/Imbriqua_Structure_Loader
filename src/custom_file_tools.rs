@@ -489,360 +489,441 @@ mod tests {
 
     #[test]
     fn custom_file_tools_01_check_is_dir() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let folder =
-            Path::new("tests/custom_file_tools/custom_file_tools_01_check_is_dir/folder_to_check");
-        // Preparing
-        // Test
-        folder.check_is_dir();
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let folder = Path::new(
+                "tests/custom_file_tools/custom_file_tools_01_check_is_dir/folder_to_check",
+            );
+            // Preparing
+            // Test
+            folder.check_is_dir()?;
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
-    #[should_panic(expected = "PANIC_FLM01")]
     fn custom_file_tools_01_check_is_dir_panic_01() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let folder = Path::new(
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let folder = Path::new(
             "tests/custom_file_tools/custom_file_tools_01_check_is_dir_panic_01/folder_to_check",
         );
-        // Preparing
-        // Test
-        folder.check_is_dir();
+            // Preparing
+            // Test
+            assert!(folder.check_is_dir().is_err());
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_02_get_folder_content() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let folder_1 = Path::new("tests/custom_file_tools/custom_file_tools_02_get_folder_content");
-        let folder_2 = Path::new(
-            "tests/custom_file_tools/custom_file_tools_02_get_folder_content/random_folder_01",
-        );
-        let folder_3 = Path::new("tests/custom_file_tools/custom_file_tools_02_get_folder_content/random_folder_01/random_folder_03");
-        let folder_4 = Path::new(
-            "tests/custom_file_tools/custom_file_tools_02_get_folder_content/random_folder_02",
-        );
-        // Preparing
-        // Test
-        assert_eq!(folder_1.get_folder_content().unwrap().len(), 3);
-        assert_eq!(folder_2.get_folder_content().unwrap().len(), 2);
-        assert_eq!(folder_3.get_folder_content().unwrap().len(), 1);
-        assert_eq!(folder_4.get_folder_content().unwrap().len(), 1);
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let folder_1 =
+                Path::new("tests/custom_file_tools/custom_file_tools_02_get_folder_content");
+            let folder_2 = Path::new(
+                "tests/custom_file_tools/custom_file_tools_02_get_folder_content/random_folder_01",
+            );
+            let folder_3 = Path::new("tests/custom_file_tools/custom_file_tools_02_get_folder_content/random_folder_01/random_folder_03");
+            let folder_4 = Path::new(
+                "tests/custom_file_tools/custom_file_tools_02_get_folder_content/random_folder_02",
+            );
+            // Preparing
+            // Test
+            assert_eq!(folder_1.get_folder_content()?.len(), 3);
+            assert_eq!(folder_2.get_folder_content()?.len(), 2);
+            assert_eq!(folder_3.get_folder_content()?.len(), 1);
+            assert_eq!(folder_4.get_folder_content()?.len(), 1);
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_03_create_folder() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let folder = Path::new(
-            "tests/custom_file_tools/custom_file_tools_03_create_folder/folder_to_create",
-        );
-        // Preparing
-        if folder.exists() {
-            folder.delete_folder(false);
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let folder = Path::new(
+                "tests/custom_file_tools/custom_file_tools_03_create_folder/folder_to_create",
+            );
+            // Preparing
+            if folder.exists() {
+                folder.delete_folder(false)?;
+            }
+            assert!(!folder.exists());
+            // Test
+            folder.create_folder()?;
+            Ok(())
         }
-        assert!(!folder.exists());
-        // Test
-        folder.create_folder();
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_04_copy_folder() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let from = Path::new("tests/custom_file_tools/custom_file_tools_04_copy_folder/from");
-        let to = Path::new("tests/custom_file_tools/custom_file_tools_04_copy_folder/to");
-        // Preparing
-        if to.exists() {
-            to.delete_folder(false);
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let from = Path::new("tests/custom_file_tools/custom_file_tools_04_copy_folder/from");
+            let to = Path::new("tests/custom_file_tools/custom_file_tools_04_copy_folder/to");
+            // Preparing
+            if to.exists() {
+                to.delete_folder(false)?;
+            }
+            assert!(!to.exists());
+            // Test
+            from.copy_folder(to)?;
+            let to_checking =
+                Path::new("tests/custom_file_tools/custom_file_tools_04_copy_folder/to");
+            assert_eq!(to_checking.get_folder_content()?.len(), 3);
+            let to_checking = Path::new(
+                "tests/custom_file_tools/custom_file_tools_04_copy_folder/to/random_folder_01",
+            );
+            assert_eq!(to_checking.get_folder_content()?.len(), 2);
+            let to_checking = Path::new("tests/custom_file_tools/custom_file_tools_04_copy_folder/to/random_folder_01/random_folder_03");
+            assert_eq!(to_checking.get_folder_content()?.len(), 1);
+            let to_checking = Path::new(
+                "tests/custom_file_tools/custom_file_tools_04_copy_folder/to/random_folder_02",
+            );
+            assert_eq!(to_checking.get_folder_content()?.len(), 1);
+            Ok(())
         }
-        assert!(!to.exists());
-        // Test
-        from.copy_folder(to);
-        let to_checking = Path::new("tests/custom_file_tools/custom_file_tools_04_copy_folder/to");
-        assert_eq!(to_checking.get_folder_content().unwrap().len(), 3);
-        let to_checking = Path::new(
-            "tests/custom_file_tools/custom_file_tools_04_copy_folder/to/random_folder_01",
-        );
-        assert_eq!(to_checking.get_folder_content().unwrap().len(), 2);
-        let to_checking = Path::new("tests/custom_file_tools/custom_file_tools_04_copy_folder/to/random_folder_01/random_folder_03");
-        assert_eq!(to_checking.get_folder_content().unwrap().len(), 1);
-        let to_checking = Path::new(
-            "tests/custom_file_tools/custom_file_tools_04_copy_folder/to/random_folder_02",
-        );
-        assert_eq!(to_checking.get_folder_content().unwrap().len(), 1);
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_05_move_folder() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let from_template =
-            Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/from_template");
-        let from = Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/from");
-        let to = Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/to");
-        // Preparing
-        if from.exists() {
-            from.delete_folder(false);
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let from_template =
+                Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/from_template");
+            let from = Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/from");
+            let to = Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/to");
+            // Preparing
+            if from.exists() {
+                from.delete_folder(false)?;
+            }
+            assert!(!from.exists());
+            if to.exists() {
+                to.delete_folder(false)?;
+            }
+            assert!(!to.exists());
+            from_template.copy_folder(from)?;
+            let from_checking =
+                Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/from");
+            assert_eq!(from_checking.get_folder_content()?.len(), 3);
+            let from_checking = Path::new(
+                "tests/custom_file_tools/custom_file_tools_05_move_folder/from/random_folder_01",
+            );
+            assert_eq!(from_checking.get_folder_content()?.len(), 2);
+            let from_checking = Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/from/random_folder_01/random_folder_03");
+            assert_eq!(from_checking.get_folder_content()?.len(), 1);
+            let from_checking = Path::new(
+                "tests/custom_file_tools/custom_file_tools_05_move_folder/from/random_folder_02",
+            );
+            assert_eq!(from_checking.get_folder_content()?.len(), 1);
+            // Test
+            from.move_folder(to)?;
+            assert!(!from.exists());
+            let to_checking =
+                Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/to");
+            assert_eq!(to_checking.get_folder_content()?.len(), 3);
+            let to_checking = Path::new(
+                "tests/custom_file_tools/custom_file_tools_05_move_folder/to/random_folder_01",
+            );
+            assert_eq!(to_checking.get_folder_content()?.len(), 2);
+            let to_checking = Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/to/random_folder_01/random_folder_03");
+            assert_eq!(to_checking.get_folder_content()?.len(), 1);
+            let to_checking = Path::new(
+                "tests/custom_file_tools/custom_file_tools_05_move_folder/to/random_folder_02",
+            );
+            assert_eq!(to_checking.get_folder_content()?.len(), 1);
+            Ok(())
         }
-        assert!(!from.exists());
-        if to.exists() {
-            to.delete_folder(false);
-        }
-        assert!(!to.exists());
-        from_template.copy_folder(from);
-        let from_checking =
-            Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/from");
-        assert_eq!(from_checking.get_folder_content().unwrap().len(), 3);
-        let from_checking = Path::new(
-            "tests/custom_file_tools/custom_file_tools_05_move_folder/from/random_folder_01",
-        );
-        assert_eq!(from_checking.get_folder_content().unwrap().len(), 2);
-        let from_checking = Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/from/random_folder_01/random_folder_03");
-        assert_eq!(from_checking.get_folder_content().unwrap().len(), 1);
-        let from_checking = Path::new(
-            "tests/custom_file_tools/custom_file_tools_05_move_folder/from/random_folder_02",
-        );
-        assert_eq!(from_checking.get_folder_content().unwrap().len(), 1);
-        // Test
-        from.move_folder(to);
-        assert!(!from.exists());
-        let to_checking = Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/to");
-        assert_eq!(to_checking.get_folder_content().unwrap().len(), 3);
-        let to_checking = Path::new(
-            "tests/custom_file_tools/custom_file_tools_05_move_folder/to/random_folder_01",
-        );
-        assert_eq!(to_checking.get_folder_content().unwrap().len(), 2);
-        let to_checking = Path::new("tests/custom_file_tools/custom_file_tools_05_move_folder/to/random_folder_01/random_folder_03");
-        assert_eq!(to_checking.get_folder_content().unwrap().len(), 1);
-        let to_checking = Path::new(
-            "tests/custom_file_tools/custom_file_tools_05_move_folder/to/random_folder_02",
-        );
-        assert_eq!(to_checking.get_folder_content().unwrap().len(), 1);
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_06_delete_folder() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let folder_with_content_to_remove = Path::new(
-            "tests/custom_file_tools/custom_file_tools_06_delete_folder/empty_folder_to_delete",
-        );
-        let from = Path::new("tests/custom_file_tools/custom_file_tools_06_delete_folder/from");
-        let folder_with_content_to_not_remove = Path::new(
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let folder_with_content_to_remove = Path::new(
+                "tests/custom_file_tools/custom_file_tools_06_delete_folder/empty_folder_to_delete",
+            );
+            let from = Path::new("tests/custom_file_tools/custom_file_tools_06_delete_folder/from");
+            let folder_with_content_to_not_remove = Path::new(
             "tests/custom_file_tools/custom_file_tools_06_delete_folder/not_empty_folder_to_delete",
         );
-        // Preparing
-        if !folder_with_content_to_remove.exists() {
-            from.copy_folder(folder_with_content_to_remove);
+            // Preparing
+            if !folder_with_content_to_remove.exists() {
+                from.copy_folder(folder_with_content_to_remove)?;
+            }
+            assert!(folder_with_content_to_remove.exists());
+            if !folder_with_content_to_not_remove.exists() {
+                from.copy_folder(folder_with_content_to_not_remove)?;
+            }
+            assert!(folder_with_content_to_not_remove.exists());
+            // Test
+            folder_with_content_to_remove.delete_folder(false)?;
+            assert!(!folder_with_content_to_remove.exists());
+            folder_with_content_to_not_remove.delete_folder(true)?;
+            assert!(folder_with_content_to_not_remove.exists());
+            Ok(())
         }
-        assert!(folder_with_content_to_remove.exists());
-        if !folder_with_content_to_not_remove.exists() {
-            from.copy_folder(folder_with_content_to_not_remove);
-        }
-        assert!(folder_with_content_to_not_remove.exists());
-        // Test
-        folder_with_content_to_remove.delete_folder(false);
-        assert!(!folder_with_content_to_remove.exists());
-        folder_with_content_to_not_remove.delete_folder(true);
-        assert!(folder_with_content_to_not_remove.exists());
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_07_purge_folder() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let folder_with_content_to_purge = Path::new(
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let folder_with_content_to_purge = Path::new(
             "tests/custom_file_tools/custom_file_tools_07_purge_folder/not_empty_folder_to_purge",
         );
-        let from = Path::new("tests/custom_file_tools/custom_file_tools_07_purge_folder/from");
-        // Preparing
-        if !folder_with_content_to_purge.exists() {
-            from.copy_folder(folder_with_content_to_purge);
+            let from = Path::new("tests/custom_file_tools/custom_file_tools_07_purge_folder/from");
+            // Preparing
+            if !folder_with_content_to_purge.exists() {
+                from.copy_folder(folder_with_content_to_purge)?;
+            }
+            assert!(folder_with_content_to_purge.exists());
+            if folder_with_content_to_purge.get_folder_content()?.len() != 3 {
+                from.copy_folder(folder_with_content_to_purge);
+            }
+            assert_eq!(folder_with_content_to_purge.get_folder_content()?.len(), 3);
+            // Test
+            folder_with_content_to_purge.purge_folder()?;
+            assert!(folder_with_content_to_purge.exists());
+            assert_eq!(folder_with_content_to_purge.get_folder_content()?.len(), 0);
+            Ok(())
         }
-        assert!(folder_with_content_to_purge.exists());
-        if folder_with_content_to_purge
-            .get_folder_content()
-            .unwrap()
-            .len()
-            != 3
-        {
-            from.copy_folder(folder_with_content_to_purge);
-        }
-        assert_eq!(
-            folder_with_content_to_purge
-                .get_folder_content()
-                .unwrap()
-                .len(),
-            3
-        );
-        // Test
-        folder_with_content_to_purge.purge_folder();
-        assert!(folder_with_content_to_purge.exists());
-        assert_eq!(
-            folder_with_content_to_purge
-                .get_folder_content()
-                .unwrap()
-                .len(),
-            0
-        );
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_08_check_is_file() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let file =
-            Path::new("tests/custom_file_tools/custom_file_tools_08_check_is_file/file_to_check");
-        // Preparing
-        // Test
-        file.check_is_file();
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let file = Path::new(
+                "tests/custom_file_tools/custom_file_tools_08_check_is_file/file_to_check",
+            );
+            // Preparing
+            // Test
+            file.check_is_file()?;
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
-    #[should_panic(expected = "PANIC_FLM08")]
     fn custom_file_tools_08_check_is_file_panic_01() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let file = Path::new(
-            "tests/custom_file_tools/custom_file_tools_08_check_is_file_panic_01/file_to_check",
-        );
-        // Preparing
-        // Test
-        file.check_is_file();
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let file = Path::new(
+                "tests/custom_file_tools/custom_file_tools_08_check_is_file_panic_01/file_to_check",
+            );
+            // Preparing
+            // Test
+            assert!(file.check_is_file().is_err());
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_09_write_new_file() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let file = Path::new(
-            "tests/custom_file_tools/custom_file_tools_09_write_new_file/writing_file.txt",
-        );
-        // Preparing
-        if file.exists() {
-            file.delete_file();
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let file = Path::new(
+                "tests/custom_file_tools/custom_file_tools_09_write_new_file/writing_file.txt",
+            );
+            // Preparing
+            if file.exists() {
+                file.delete_file()?;
+            }
+            assert!(!file.exists());
+            // Test
+            let mut writing_file = file.write_new_file()?;
+            assert!(write!(writing_file, "AAA AAA AAA").is_ok());
+            Ok(())
         }
-        assert!(!file.exists());
-        // Test
-        let mut writing_file = file.write_new_file().unwrap();
-        assert!(write!(writing_file, "AAA AAA AAA").is_ok());
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_10_get_file_content() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let file = Path::new(
-            "tests/custom_file_tools/custom_file_tools_10_get_file_content/file_to_read.txt",
-        );
-        // Preparing
-        // Test
-        let reading_file = file.get_file_content().unwrap();
-        assert_eq!(reading_file, String::from("AAA AAA AAA"));
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let file = Path::new(
+                "tests/custom_file_tools/custom_file_tools_10_get_file_content/file_to_read.txt",
+            );
+            // Preparing
+            // Test
+            let reading_file = file.get_file_content()?;
+            assert_eq!(reading_file, String::from("AAA AAA AAA"));
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_12_copy_file() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let from =
-            Path::new("tests/custom_file_tools/custom_file_tools_12_copy_file/from_file.txt");
-        let to = Path::new("tests/custom_file_tools/custom_file_tools_12_copy_file/to_file.txt");
-        // Preparing
-        if to.exists() {
-            to.delete_file();
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let from =
+                Path::new("tests/custom_file_tools/custom_file_tools_12_copy_file/from_file.txt");
+            let to =
+                Path::new("tests/custom_file_tools/custom_file_tools_12_copy_file/to_file.txt");
+            // Preparing
+            if to.exists() {
+                to.delete_file()?;
+            }
+            assert!(!to.exists());
+            // Test
+            from.copy_file(to)?;
+            assert_eq!(to.get_file_content()?, String::from("AAA AAA AAA"));
+            Ok(())
         }
-        assert!(!to.exists());
-        // Test
-        from.copy_file(to);
-        assert_eq!(to.get_file_content().unwrap(), String::from("AAA AAA AAA"));
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_13_move_file() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let from_template = Path::new(
-            "tests/custom_file_tools/custom_file_tools_13_move_file/from_template_file.txt",
-        );
-        let from =
-            Path::new("tests/custom_file_tools/custom_file_tools_13_move_file/from_file.txt");
-        let to = Path::new("tests/custom_file_tools/custom_file_tools_13_move_file/to_file.txt");
-        // Preparing
-        if from.exists() {
-            from.delete_file();
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let from_template = Path::new(
+                "tests/custom_file_tools/custom_file_tools_13_move_file/from_template_file.txt",
+            );
+            let from =
+                Path::new("tests/custom_file_tools/custom_file_tools_13_move_file/from_file.txt");
+            let to =
+                Path::new("tests/custom_file_tools/custom_file_tools_13_move_file/to_file.txt");
+            // Preparing
+            if from.exists() {
+                from.delete_file()?;
+            }
+            assert!(!from.exists());
+            if to.exists() {
+                to.delete_file()?;
+            }
+            assert!(!to.exists());
+            from_template.copy_file(from)?;
+            assert_eq!(from.get_file_content()?, String::from("AAA AAA AAA"));
+            // Test
+            from.move_file(to)?;
+            assert!(!from.exists());
+            assert_eq!(to.get_file_content()?, String::from("AAA AAA AAA"));
+            Ok(())
         }
-        assert!(!from.exists());
-        if to.exists() {
-            to.delete_file();
-        }
-        assert!(!to.exists());
-        from_template.copy_file(from);
-        assert_eq!(
-            from.get_file_content().unwrap(),
-            String::from("AAA AAA AAA")
-        );
-        // Test
-        from.move_file(to);
-        assert!(!from.exists());
-        assert_eq!(to.get_file_content().unwrap(), String::from("AAA AAA AAA"));
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_14_delete_file() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let file_template = Path::new(
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let file_template = Path::new(
             "tests/custom_file_tools/custom_file_tools_14_delete_file/template_file_to_delete.txt",
         );
-        let file_to_delete = Path::new(
-            "tests/custom_file_tools/custom_file_tools_14_delete_file/file_to_delete.txt",
-        );
-        // Preparing
-        if !file_to_delete.exists() {
-            file_template.copy_file(file_to_delete);
+            let file_to_delete = Path::new(
+                "tests/custom_file_tools/custom_file_tools_14_delete_file/file_to_delete.txt",
+            );
+            // Preparing
+            if !file_to_delete.exists() {
+                file_template.copy_file(file_to_delete)?;
+            }
+            assert!(file_to_delete.exists());
+            assert_eq!(
+                file_to_delete.get_file_content()?,
+                String::from("AAA AAA AAA")
+            );
+            // Test
+            file_to_delete.delete_file()?;
+            assert!(!file_to_delete.exists());
+            Ok(())
         }
-        assert!(file_to_delete.exists());
-        assert_eq!(
-            file_to_delete.get_file_content().unwrap(),
-            String::from("AAA AAA AAA")
-        );
-        // Test
-        file_to_delete.delete_file();
-        assert!(!file_to_delete.exists());
+
+        let r = test();
+        assert!(r.is_ok());
     }
 
     #[test]
     fn custom_file_tools_15_canonicalize_pathbuf() {
-        // Logs
-        initialize_log_for_test();
-        // Setting
-        let file = Path::new(
+        fn test() -> Result<(), anyhow::Error> {
+            // Logs
+            initialize_log_for_test();
+            // Setting
+            let file = Path::new(
             "tests/custom_file_tools/custom_file_tools_15_canonicalize_pathbuf/file_to_canonicalize.txt",
         );
-        let folder = Path::new(
+            let folder = Path::new(
             "tests/custom_file_tools/custom_file_tools_15_canonicalize_pathbuf/folder_to_canonicalize",
         );
-        // Preparing
-        // Test
-        let _ = file.canonicalize_pathbuf(); // Just don't panic
-        let _ = folder.canonicalize_pathbuf(); // Just don't panic
+            // Preparing
+            // Test
+            file.canonicalize_pathbuf()?; // Just don't panic
+            folder.canonicalize_pathbuf()?; // Just don't panic
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

@@ -36,7 +36,7 @@ pub struct HRefRedefinedProperty {
     /// Link to property of RedefinedProperty
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference,
+    pub href: XMIIdReference<EnumWeakCMOF>,
 }
 
 // impl SetCMOFTools for HRefRedefinedProperty {
@@ -77,7 +77,7 @@ pub struct HRefSubsettedProperty {
     /// Link to property of SubsettedProperty
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference,
+    pub href: XMIIdReference<EnumWeakCMOF>,
 }
 
 // ####################################################################################################
@@ -91,7 +91,7 @@ pub struct HRefSuperClass {
     /// Link to Class of SuperClass
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference,
+    pub href: XMIIdReference<EnumWeakCMOF>,
 }
 
 // ####################################################################################################
@@ -105,7 +105,7 @@ pub struct HRefImportedPackage {
     /// Link of the package
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference,
+    pub href: XMIIdReference<EnumWeakCMOF>,
 }
 
 // ####################################################################################################
@@ -119,7 +119,7 @@ pub struct HRefClass {
     /// Link of the Class type
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference,
+    pub href: XMIIdReference<EnumWeakCMOF>,
 }
 
 // ####################################################################################################
@@ -133,7 +133,7 @@ pub struct HRefPrimitiveType {
     /// Link of the Class type
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference,
+    pub href: XMIIdReference<EnumWeakCMOF>,
 }
 
 // ####################################################################################################
@@ -147,5 +147,5 @@ pub struct HRefDataType {
     /// Link of the Class type
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference,
+    pub href: XMIIdReference<EnumWeakCMOF>,
 }

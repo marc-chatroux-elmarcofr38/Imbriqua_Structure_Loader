@@ -142,15 +142,16 @@ impl LoadingTracker {
         self.collect_object(&mut dict_setting, &mut dict_object)?;
         // Make post deserialize
         let r = self.make_post_deserialize(&mut dict_object);
+        catch_error_and_log(r, &dict_object)?;
         for (_, x) in &dict_object {
             match x {
                 EnumCMOF::CMOFClass(class) => {
                     class.generate_reverse_super_class(&dict_object)?;
+                    class.generate_relation(&dict_object)?;
                 }
                 _ => {}
             }
         }
-        catch_error_and_log(r, &dict_object)?;
         // Debug (trace  level)
         trace!("Self after collect_object : {:#?}", self);
         trace!("dict_setting after collect_object : {:#?}", dict_setting);

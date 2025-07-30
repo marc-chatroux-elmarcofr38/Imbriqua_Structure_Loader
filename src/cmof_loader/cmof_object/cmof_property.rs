@@ -38,6 +38,9 @@ pub struct CMOFProperty {
     #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
     pub xmi_id: XMIIdLocalReference,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub parent: XMIIdReference<EnumWeakCMOF>,
     /// name attribute
     #[serde(rename = "_name")]
     #[serde(deserialize_with = "deser_name")]
@@ -50,7 +53,7 @@ pub struct CMOFProperty {
     #[serde(deserialize_with = "deser_option_xmi_id")]
     #[serde(default = "default_option")]
     #[serde(rename = "_type")]
-    pub simple_type: Option<XMIIdReference>,
+    pub simple_type: Option<XMIIdReference<EnumWeakCMOF>>,
     /// Optional type object (complex type)
     #[serde(rename = "type")]
     pub complex_type: Option<EnumType>,
@@ -113,7 +116,7 @@ pub struct CMOFProperty {
     #[serde(rename = "_association")]
     #[serde(deserialize_with = "deser_option_xmi_id")]
     #[serde(default = "default_option")]
-    pub association: Option<XMIIdReference>,
+    pub association: Option<XMIIdReference<EnumWeakCMOF>>,
     /// Optional redefinedProperty object
     #[serde(rename = "redefinedProperty")]
     pub redefined_property_link: Option<EnumRedefinedProperty>,
@@ -157,22 +160,26 @@ impl SetCMOFTools for CMOFProperty {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict_setting.get("package_name").ok_or(anyhow::format_err!(
-            "Dictionnary error in make_post_deserialize"
-        ))?;
+        let package_name = dict_setting
+            .get("package_name")
+            .ok_or(anyhow::format_err!(
+                "Dictionnary error in make_post_deserialize"
+            ))?
+            .clone();
+        let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package(&package_name);
+        self.xmi_id.set_package_id(&package_name);
         if self.simple_type.is_some() {
             self.simple_type
                 .as_mut()
                 .unwrap()
-                .set_package(&package_name);
+                .set_package_id(&package_name);
         }
         if self.association.is_some() {
             self.association
                 .as_mut()
                 .unwrap()
-                .set_package(&package_name);
+                .set_package_id(&package_name);
         }
         // Call on child
         if self.complex_type.is_some() {
@@ -188,7 +195,8 @@ impl SetCMOFTools for CMOFProperty {
                 .collect_object(dict_setting, dict_object)?;
         }
         if self.subsetted_property_link.is_some() {
-            self.subsetted_property_link
+            let m = self
+                .subsetted_property_link
                 .as_mut()
                 .unwrap()
                 .collect_object(dict_setting, dict_object)?;
@@ -226,6 +234,8 @@ impl SetCMOFTools for CMOFProperty {
         if self.association.is_some() {
             set_href(&self.association.as_ref().unwrap(), dict_object)?;
         }
+        // Self
+        set_href(&self.parent, dict_object)?;
         //Return
         Ok(())
     }
@@ -249,7 +259,7 @@ impl GetXMIId for CMOFProperty {
 // ####################################################################################################
 
 impl CMOFProperty {
-    pub fn get_type(&self) -> &XMIIdReference {
+    pub fn get_type(&self) -> &XMIIdReference<EnumWeakCMOF> {
         // For field simple
         if self.simple_type.is_some() {
             self.simple_type.as_ref().unwrap()

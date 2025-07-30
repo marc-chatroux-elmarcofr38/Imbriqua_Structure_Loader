@@ -38,6 +38,9 @@ pub struct CMOFTag {
     #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
     pub xmi_id: XMIIdLocalReference,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub parent: XMIIdReference<EnumWeakCMOF>,
     /// name attribute
     #[serde(rename = "_name")]
     _name: String,
@@ -84,19 +87,25 @@ impl SetCMOFTools for CMOFTag {
         _dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict_setting.get("package_name").ok_or(anyhow::format_err!(
-            "Dictionnary error in make_post_deserialize"
-        ))?;
+        let package_name = dict_setting
+            .get("package_name")
+            .ok_or(anyhow::format_err!(
+                "Dictionnary error in make_post_deserialize"
+            ))?
+            .clone();
+        let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package(&package_name);
+        self.xmi_id.set_package_id(&package_name);
         //Return
         Ok(())
     }
 
     fn make_post_deserialize(
         &self,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
+        // Self
+        set_href(&self.parent, dict_object)?;
         //Return
         Ok(())
     }

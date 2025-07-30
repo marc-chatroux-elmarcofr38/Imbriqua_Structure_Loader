@@ -205,11 +205,11 @@ impl SetCMOFTools for EnumType {
 
 /// Push content to RefCell in XMIIDReerence
 pub fn set_href(
-    reference: &XMIIdReference,
+    reference: &XMIIdReference<EnumWeakCMOF>,
     dict_object: &mut BTreeMap<String, EnumCMOF>,
 ) -> Result<(), anyhow::Error> {
     // Criteria
-    if reference.object.borrow().is_some() {
+    if reference.get_object().is_ok() {
         panic!("'{:#?}' is already loaded", reference)
     };
 
@@ -225,52 +225,40 @@ pub fn set_href(
         let v = r.unwrap();
         match v {
             EnumCMOF::CMOFAssociation(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFAssociation(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFAssociation(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFClass(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFClass(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFClass(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFConstraint(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFConstraint(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFConstraint(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFDataType(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFDataType(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFDataType(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFEnumeration(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFEnumeration(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFEnumeration(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFEnumerationLiteral(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFEnumerationLiteral(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFEnumerationLiteral(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFOpaqueExpression(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFOpaqueExpression(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFOpaqueExpression(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFPackage(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFPackage(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFPackage(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFPackageImport(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFPackageImport(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFPackageImport(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFPrimitiveType(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFPrimitiveType(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFPrimitiveType(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFProperty(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFProperty(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFProperty(Rc::downgrade(c)));
             }
             EnumCMOF::CMOFTag(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFTag(c.clone())));
+                reference.set_object(EnumWeakCMOF::CMOFTag(Rc::downgrade(c)));
             }
         }
     }

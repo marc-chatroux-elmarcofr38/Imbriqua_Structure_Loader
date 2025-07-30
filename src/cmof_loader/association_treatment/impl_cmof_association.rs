@@ -19,8 +19,6 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(dead_code)]
 #![warn(missing_docs)]
 
-use std::ops::Deref;
-
 // Package section
 use crate::cmof_loader::*;
 
@@ -32,14 +30,14 @@ use crate::cmof_loader::*;
 
 impl CMOFAssociation {
     pub fn get_association_relation(&self) -> AssociationRelation {
-        let object_0 = self.member_end.0.object.borrow();
+        let object_0 = self.member_end.0.get_object_as_enum();
         let object_0: &Rc<CMOFProperty> = match object_0.as_ref().unwrap() {
             EnumCMOF::CMOFProperty(c) => c,
             _ => {
                 panic!("etrtyuio_0")
             }
         };
-        let object_1 = self.member_end.1.object.borrow();
+        let object_1 = self.member_end.1.get_object_as_enum();
         let object_1: &Rc<CMOFProperty> = match object_1.as_ref().unwrap() {
             EnumCMOF::CMOFProperty(c) => c,
             _ => {

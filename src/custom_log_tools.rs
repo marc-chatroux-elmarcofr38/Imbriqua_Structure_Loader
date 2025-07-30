@@ -152,6 +152,28 @@ fn get_config_by_file(config_file: &str) -> Result<Config> {
     Ok(config)
 }
 
+/// Make a 'trace' level log of an object, if the input was an error
+///
+/// Input :
+///     - object_result : Result<T1, anyhow::Error>,
+///         - value to evaluate
+///     - object : T2
+///         - value to log ('trace')
+///
+/// Output :
+///     - return object_result
+pub fn catch_error_and_log<T1, T2: Debug>(
+    object_result: Result<T1, anyhow::Error>,
+    object: &T2,
+) -> Result<T1, anyhow::Error> {
+    if object_result.is_err() {
+        trace!("catch_error_and_log : {:#?}", object);
+        object_result
+    } else {
+        object_result
+    }
+}
+
 /// Test on the log module
 #[cfg(test)]
 pub mod tests {
@@ -198,22 +220,28 @@ pub mod tests {
     #[test]
     fn custom_log_tools_03_check_open_logger() {
         initialize_log_for_test();
+        // just check if don't panic
         trace!("LOG TEST : TRACE");
         debug!("LOG TEST : DEBUG");
         info!("LOG TEST : INFO");
         warn!("LOG TEST : WARN");
         error!("LOG TEST : ERROR");
     }
-}
 
-pub fn catch_error_and_log<T1, T2: Debug>(
-    object_result: Result<T1, anyhow::Error>,
-    object: &T2,
-) -> Result<T1, anyhow::Error> {
-    if object_result.is_err() {
-        trace!("catch_error_and_log : {:#?}", object);
-        object_result
-    } else {
-        object_result
+    #[test]
+    fn custom_log_tools_04_catch_error_and_log() {
+        initialize_log_for_test();
+        // make an input
+        let i_1: std::result::Result<String, anyhow::Error> = Ok(String::new());
+        let i_1_clone: std::result::Result<String, anyhow::Error> = Ok(String::new());
+        let i_2: std::result::Result<String, anyhow::Error> = Err(anyhow::format_err!("an error"));
+        let i_2_clone: std::result::Result<String, anyhow::Error> =
+            Err(anyhow::format_err!("an error"));
+        // just check if don't panic
+        let r_1 = catch_error_and_log(i_1, &String::new());
+        let r_2 = catch_error_and_log(i_2, &String::new());
+        assert_eq!(i_1_clone.is_err(), r_1.is_err());
+        assert_eq!(i_1_clone.unwrap(), r_1.unwrap());
+        assert_eq!(i_2_clone.is_err(), r_2.is_err());
     }
 }
