@@ -1,4 +1,4 @@
-Short description
+TESTS OK
 
 # How to use
 
@@ -13,4 +13,3 @@ Short description
 ...
 
 # Panic and failure
-

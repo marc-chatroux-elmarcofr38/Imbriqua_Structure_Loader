@@ -54,11 +54,6 @@ where
             formatter.write_str("object or array of object, with \"name\" attribute")
         }
 
-        // Result for Null
-        fn visit_none<E>(self) -> Result<Self::Value, E> {
-            Ok(BTreeMap::new())
-        }
-
         // Result for Object
         fn visit_map<E>(self, map: E) -> Result<Self::Value, E::Error>
         where
@@ -94,19 +89,81 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cmof_loader::tests::*;
     use crate::custom_log_tools::tests::initialize_log_for_test;
 
-    #[test]
-    fn test_01_creation() {
-        fn test() -> Result<(), anyhow::Error> {
-            initialize_log_for_test();
+    #[derive(Clone, Debug, PartialEq, Deserialize)]
+    struct RandomStruct {
+        #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+        value: BTreeMap<String, SecondRandomStruct>,
+    }
 
-            panic!();
+    #[derive(Clone, Debug, PartialEq, Deserialize)]
+    struct SecondRandomStruct {
+        value: String,
+    }
 
-            Ok(())
+    impl GetXMIId for SecondRandomStruct {
+        fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
+            Ok(self.value.clone())
         }
 
-        let r = test();
-        assert!(r.is_ok());
+        fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
+            Ok(self.value.clone())
+        }
+    }
+
+    #[test]
+    fn deser_btreemap_using_name_as_key_01_creation() {
+        initialize_log_for_test();
+
+        let input_str = r#"{"value": {"value": "key_1"}}"#;
+        let mut btree_map = BTreeMap::new();
+        btree_map.insert(
+            "key_1".to_string(),
+            SecondRandomStruct {
+                value: "key_1".to_string(),
+            },
+        );
+        let value_target = RandomStruct { value: btree_map };
+        check_deser_make_no_error(input_str, &value_target);
+
+        let input_str = r#"{"value": [{"value": "key_1"}, {"value": "key_2"}]}"#;
+        let mut btree_map = BTreeMap::new();
+        btree_map.insert(
+            "key_1".to_string(),
+            SecondRandomStruct {
+                value: "key_1".to_string(),
+            },
+        );
+        btree_map.insert(
+            "key_2  ".to_string(),
+            SecondRandomStruct {
+                value: "key_2".to_string(),
+            },
+        );
+        let value_target = RandomStruct { value: btree_map };
+        check_deser_make_no_error(input_str, &value_target);
+    }
+
+    #[test]
+    fn deser_btreemap_using_name_as_key_02_check_error() {
+        initialize_log_for_test();
+
+        let input_str = r#"{"value": "key_1"}}"#;
+        let error_target = "invalid type: string \"key_1\", expected object";
+        check_deser_make_error::<RandomStruct>(input_str, error_target);
+
+        let input_str = r#"{"value": 1}}"#;
+        let error_target = "invalid type: integer `1`, expected object";
+        check_deser_make_error::<RandomStruct>(input_str, error_target);
+
+        let input_str = r#"{"value": 1.0}}"#;
+        let error_target = "invalid type: floating point `1.0`, expected object";
+        check_deser_make_error::<RandomStruct>(input_str, error_target);
+
+        let input_str = r#"{"value": true}}"#;
+        let error_target = "invalid type: boolean `true`, expected object";
+        check_deser_make_error::<RandomStruct>(input_str, error_target);
     }
 }

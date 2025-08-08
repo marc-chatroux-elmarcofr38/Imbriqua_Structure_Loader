@@ -70,19 +70,58 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cmof_loader::tests::*;
     use crate::custom_log_tools::tests::initialize_log_for_test;
 
     #[test]
-    fn test_01_creation() {
-        fn test() -> Result<(), anyhow::Error> {
-            initialize_log_for_test();
+    fn deser_rc_01_check_value() {
+        initialize_log_for_test();
 
-            panic!();
-
-            Ok(())
+        #[derive(Clone, Debug, PartialEq, Deserialize)]
+        struct RandomStruct {
+            #[serde(deserialize_with = "deser_rc")]
+            value: Rc<SecondRandomStruct>,
         }
 
-        let r = test();
-        assert!(r.is_ok());
+        #[derive(Clone, Debug, PartialEq, Deserialize)]
+        struct SecondRandomStruct {
+            #[serde(deserialize_with = "deser_boolean")]
+            value: bool,
+        }
+
+        let target_value = RandomStruct {
+            value: Rc::new(SecondRandomStruct { value: true }),
+        };
+
+        check_deser_make_no_error::<RandomStruct>(r#"{"value": {"value": "true"}}"#, &target_value);
+    }
+
+    #[test]
+    fn deser_rc_02_check_error() {
+        initialize_log_for_test();
+
+        #[derive(Clone, Debug, PartialEq, Deserialize)]
+        struct RandomStruct {
+            #[serde(deserialize_with = "deser_rc")]
+            value: Rc<SecondRandomStruct>,
+        }
+
+        #[derive(Clone, Debug, PartialEq, Deserialize)]
+        struct SecondRandomStruct {
+            #[serde(deserialize_with = "deser_boolean")]
+            value: bool,
+        }
+
+        let error_target = "invalid type: string";
+        check_deser_make_error::<RandomStruct>(r#"{"value": "true"}"#, error_target);
+
+        let error_target = "invalid type: integer";
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1}"#, error_target);
+
+        let error_target = "invalid type: float";
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1.0}"#, error_target);
+
+        let error_target = "invalid type: sequence";
+        check_deser_make_error::<RandomStruct>(r#"{"value": [1.0, 1.0]}"#, error_target);
     }
 }
