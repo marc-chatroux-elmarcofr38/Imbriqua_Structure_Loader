@@ -29,7 +29,7 @@ use crate::cmof_loader::*;
 // ####################################################################################################
 
 impl CMOFAssociation {
-    pub fn get_association_relation(&self) -> AssociationRelation {
+    pub fn get_association_relation(&self) -> Result<Relation, anyhow::Error> {
         let object_0 = self.member_end.0.get_object_as_enum();
         let object_0: &Rc<CMOFProperty> = match object_0.as_ref().unwrap() {
             EnumCMOF::CMOFProperty(c) => c,
@@ -45,33 +45,41 @@ impl CMOFAssociation {
             }
         };
         if object_0.upper > infinitable::Finite(1) && object_1.upper > infinitable::Finite(1) {
-            AssociationRelation {
-                relation_1: object_0.clone(),
-                relation_2: object_1.clone(),
-                ponteration_type: RelationPonderationType::ManyToMany,
-                is_self_referencing: object_0 == object_1,
-            }
+            let r = ManyToManyRelation::new(object_0.clone(), object_1.clone())?;
+            Ok(Relation::ManyToManyRelation(r))
         } else if object_0.upper > infinitable::Finite(1) {
-            AssociationRelation {
-                relation_1: object_0.clone(),
-                relation_2: object_1.clone(),
-                ponteration_type: RelationPonderationType::OneToMany,
-                is_self_referencing: object_0 == object_1,
-            }
+            let r = OneToManyRelation::new(object_0.clone(), object_1.clone())?;
+            Ok(Relation::OneToManyRelation(r))
         } else if object_1.upper > infinitable::Finite(1) {
-            AssociationRelation {
-                relation_1: object_1.clone(),
-                relation_2: object_0.clone(),
-                ponteration_type: RelationPonderationType::OneToMany,
-                is_self_referencing: object_0 == object_1,
-            }
+            let r = OneToManyRelation::new(object_1.clone(), object_0.clone())?;
+            Ok(Relation::OneToManyRelation(r))
         } else {
-            AssociationRelation {
-                relation_1: object_0.clone(),
-                relation_2: object_1.clone(),
-                ponteration_type: RelationPonderationType::OneToOne,
-                is_self_referencing: object_0 == object_1,
-            }
+            let r = OneToOneRelation::new(object_1.clone(), object_0.clone())?;
+            Ok(Relation::OneToOneRelation(r))
         }
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

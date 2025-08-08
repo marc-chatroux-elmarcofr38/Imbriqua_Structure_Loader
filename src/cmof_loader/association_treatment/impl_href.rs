@@ -77,97 +77,39 @@ impl XMIIdReference<EnumWeakCMOF> {
             )),
         }
     }
+
+    /// Get the 'object' of the XMIIdReference, upgrated as EnumCMOF (Rc object)
     pub fn get_object_as_enum(&self) -> Result<EnumCMOF, anyhow::Error> {
-        let object_class = self.get_object()?;
-        match object_class {
-            EnumWeakCMOF::CMOFAssociation(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFAssociation(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFClass(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFClass(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFConstraint(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFConstraint(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFDataType(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFDataType(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFEnumeration(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFEnumeration(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFEnumerationLiteral(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFEnumerationLiteral(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFOpaqueExpression(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFOpaqueExpression(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFPackage(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFPackage(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFPackageImport(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFPackageImport(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFPrimitiveType(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFPrimitiveType(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFProperty(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFProperty(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-            EnumWeakCMOF::CMOFTag(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(EnumCMOF::CMOFTag(content)),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
-            }
-        }
+        self.get_object()?.upgrade()
     }
+
+    /// Get the weak 'object' of the XMIIdReference, NOT upgrated, as EnumWeakCMOF (Weak object)
     pub fn get_object_as_enum_weak(&self) -> Result<EnumWeakCMOF, anyhow::Error> {
         let object_class = self.get_object()?;
-        Ok(object_class.clone())
+        Ok(object_class)
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }
