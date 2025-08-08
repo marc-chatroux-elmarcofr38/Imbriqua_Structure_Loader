@@ -23,129 +23,395 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::cmof_loader::*;
 
 // Dependencies section
-use serde::Deserialize;
+use serde::de;
+use serde_json::Value;
 
 // ####################################################################################################
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+/// Convert string with space to vec of string, splitting on space
+fn deser_href<'de, D, T: Clone>(deserializer: D) -> Result<XMIIdReference<T>, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    Ok(match de::Deserialize::deserialize(deserializer)? {
+        // Split text
+        Value::String(s) => match s.find(".cmof#") {
+            Some(split_index) => {
+                let a = s[split_index..].replace(".cmof#", "").to_string();
+                let b = s[..split_index].to_string();
+                XMIIdReference::new_global(a, b)
+            }
+            None => {
+                return Err(de::Error::custom(format!(
+                    "HRef deserialize error : no \".cmof#\" for {} (deser_href)",
+                    s
+                )))
+            }
+        },
+        _ => {
+            return Err(de::Error::custom(
+                "Wrong type, expected String for converting to HRef Reference (deser_href)",
+            ))
+        }
+    })
+}
+
+pub trait SetHRef {
+    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error>;
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing RedefinedProperty object
 pub struct HRefRedefinedProperty {
     /// Link to property of RedefinedProperty
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference<EnumWeakCMOF>,
+    pub href: XMIIdReference<Weak<CMOFProperty>>,
 }
 
-// impl SetCMOFTools for HRefRedefinedProperty {
-//     fn collect_object(
-//         &mut self,
-//         _dict_setting: &mut BTreeMap<String, String>,
-//         _dict_object: &mut BTreeMap<String, EnumCMOF>,
-//     ) -> Result<(), anyhow::Error> {
-//         Ok(())
-//     }
-//     fn make_post_deserialize(
-//         &self,
-//         dict_object: &mut BTreeMap<String, EnumCMOF>,
-//     ) -> Result<(), anyhow::Error> {
-//         let k = self.href.label();
-//         let r = dict_object.get(&k);
-//         if r.is_none() {
-//             return Err(anyhow::format_err!(
-//                 "Matching error in post_deserialize : \"{}\" not find in dict_object",
-//                 k
-//             ));
-//         } else {
-//             self.href.set_load(r.unwrap().clone());
-//         }
-//         // Return
-//         Ok(())
-//     }
-// }
+impl SetHRef for HRefRedefinedProperty {
+    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
+        // Criteria
+        if self.href.get_object().is_ok() {
+            panic!("'{:#?}' is already loaded", &self.href)
+        };
+
+        // Catch
+        let k = self.href.label()?;
+        let r = dict_object.get(&k);
+        if r.is_none() {
+            return Err(anyhow::format_err!(
+                "Matching error in post_deserialize : \"{}\" not find in dict_object",
+                k
+            ));
+        } else {
+            let v = r.unwrap();
+            match v {
+                EnumCMOF::CMOFProperty(c) => {
+                    self.href.set_object(Rc::downgrade(c));
+                }
+                _ => {
+                    return Err(anyhow::format_err!(
+                        "Unexpected type for '{}' (require CMOFProperty reference only, HRefRedefinedProperty)",
+                        k
+                    ));
+                }
+            }
+        }
+        // Return
+        Ok(())
+    }
+}
 
 // ####################################################################################################
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing SubsettedProperty object
 pub struct HRefSubsettedProperty {
     /// Link to property of SubsettedProperty
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference<EnumWeakCMOF>,
+    pub href: XMIIdReference<Weak<CMOFProperty>>,
+}
+
+impl SetHRef for HRefSubsettedProperty {
+    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
+        // Criteria
+        if self.href.get_object().is_ok() {
+            panic!("'{:#?}' is already loaded", &self.href)
+        };
+
+        // Catch
+        let k = self.href.label()?;
+        let r = dict_object.get(&k);
+        if r.is_none() {
+            return Err(anyhow::format_err!(
+                "Matching error in post_deserialize : \"{}\" not find in dict_object",
+                k
+            ));
+        } else {
+            let v = r.unwrap();
+            match v {
+                EnumCMOF::CMOFProperty(c) => {
+                    self.href.set_object(Rc::downgrade(c));
+                }
+                _ => {
+                    return Err(anyhow::format_err!(
+                        "Unexpected type for '{}' (require CMOFProperty reference only, HRefSubsettedProperty)",
+                        k
+                    ));
+                }
+            }
+        }
+        // Return
+        Ok(())
+    }
 }
 
 // ####################################################################################################
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing SuperClass Tag
 pub struct HRefSuperClass {
     /// Link to Class of SuperClass
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference<EnumWeakCMOF>,
+    pub href: XMIIdReference<Weak<CMOFClass>>,
+}
+
+impl SetHRef for HRefSuperClass {
+    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
+        // Criteria
+        if self.href.get_object().is_ok() {
+            panic!("'{:#?}' is already loaded", &self.href)
+        };
+
+        // Catch
+        let k = self.href.label()?;
+        let r = dict_object.get(&k);
+        if r.is_none() {
+            return Err(anyhow::format_err!(
+                "Matching error in post_deserialize : \"{}\" not find in dict_object",
+                k
+            ));
+        } else {
+            let v = r.unwrap();
+            match v {
+                EnumCMOF::CMOFClass(c) => {
+                    self.href.set_object(Rc::downgrade(c));
+                }
+                _ => {
+                    return Err(anyhow::format_err!(
+                        "Unexpected type for '{}' (require CMOFPackageImport reference only, HRefSuperClass)",
+                        k
+                    ));
+                }
+            }
+        }
+        // Return
+        Ok(())
+    }
 }
 
 // ####################################################################################################
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing ImportedPackage object
 pub struct HRefImportedPackage {
     /// Link of the package
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference<EnumWeakCMOF>,
+    pub href: XMIIdReference<Weak<CMOFPackage>>,
+}
+
+impl SetHRef for HRefImportedPackage {
+    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
+        // Criteria
+        if self.href.get_object().is_ok() {
+            panic!("'{:#?}' is already loaded", &self.href)
+        };
+
+        // Catch
+        let k = self.href.label()?;
+        let r = dict_object.get(&k);
+        if r.is_none() {
+            return Err(anyhow::format_err!(
+                "Matching error in post_deserialize : \"{}\" not find in dict_object",
+                k
+            ));
+        } else {
+            let v = r.unwrap();
+            match v {
+                EnumCMOF::CMOFPackage(c) => {
+                    self.href.set_object(Rc::downgrade(c));
+                }
+                _ => {
+                    return Err(anyhow::format_err!(
+                        "Unexpected type for '{}' (require CMOFPackage reference only, HRefImportedPackage)",
+                        k
+                    ));
+                }
+            }
+        }
+        // Return
+        Ok(())
+    }
 }
 
 // ####################################################################################################
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing Class link
 pub struct HRefClass {
     /// Link of the Class type
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference<EnumWeakCMOF>,
+    pub href: XMIIdReference<Weak<CMOFClass>>,
+}
+
+impl SetHRef for HRefClass {
+    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
+        // Criteria
+        if self.href.get_object().is_ok() {
+            panic!("'{:#?}' is already loaded", &self.href)
+        };
+
+        // Catch
+        let k = self.href.label()?;
+        let r = dict_object.get(&k);
+        if r.is_none() {
+            return Err(anyhow::format_err!(
+                "Matching error in post_deserialize : \"{}\" not find in dict_object",
+                k
+            ));
+        } else {
+            let v = r.unwrap();
+            match v {
+                EnumCMOF::CMOFClass(c) => {
+                    self.href.set_object(Rc::downgrade(c));
+                }
+                _ => {
+                    return Err(anyhow::format_err!(
+                        "Unexpected type for '{}' (require CMOFClass reference only, HRefClass)",
+                        k
+                    ));
+                }
+            }
+        }
+        // Return
+        Ok(())
+    }
 }
 
 // ####################################################################################################
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing Primitive Type link
 pub struct HRefPrimitiveType {
     /// Link of the Class type
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference<EnumWeakCMOF>,
+    pub href: XMIIdReference<Weak<CMOFPrimitiveType>>,
+}
+
+impl SetHRef for HRefPrimitiveType {
+    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
+        // Criteria
+        if self.href.get_object().is_ok() {
+            panic!("'{:#?}' is already loaded", &self.href)
+        };
+
+        // Catch
+        let k = self.href.label()?;
+        let r = dict_object.get(&k);
+        if r.is_none() {
+            return Err(anyhow::format_err!(
+                "Matching error in post_deserialize : \"{}\" not find in dict_object",
+                k
+            ));
+        } else {
+            let v = r.unwrap();
+            match v {
+                EnumCMOF::CMOFPrimitiveType(c) => {
+                    self.href.set_object(Rc::downgrade(c));
+                }
+                _ => {
+                    return Err(anyhow::format_err!("Unexpected type for '{}' (require CMOFPrimitiveType reference only, HRefPrimitiveType)", k));
+                }
+            }
+        }
+        // Return
+        Ok(())
+    }
 }
 
 // ####################################################################################################
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing Data Type link
 pub struct HRefDataType {
     /// Link of the Class type
     #[serde(deserialize_with = "deser_href")]
     #[serde(rename = "_href")]
-    pub href: XMIIdReference<EnumWeakCMOF>,
+    pub href: XMIIdReference<Weak<CMOFDataType>>,
+}
+
+impl SetHRef for HRefDataType {
+    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
+        // Criteria
+        if self.href.get_object().is_ok() {
+            panic!("'{:#?}' is already loaded", &self.href)
+        };
+
+        // Catch
+        let k = self.href.label()?;
+        let r = dict_object.get(&k);
+        if r.is_none() {
+            return Err(anyhow::format_err!(
+                "Matching error in post_deserialize : \"{}\" not find in dict_object",
+                k
+            ));
+        } else {
+            let v = r.unwrap();
+            match v {
+                EnumCMOF::CMOFDataType(c) => {
+                    self.href.set_object(Rc::downgrade(c));
+                }
+                _ => {
+                    return Err(anyhow::format_err!("Unexpected type for '{}' (require CMOFDataType reference only, HRefDataType)", k));
+                }
+            }
+        }
+        // Return
+        Ok(())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
 }

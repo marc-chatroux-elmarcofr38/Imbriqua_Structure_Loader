@@ -99,6 +99,12 @@ impl XMIIdLocalReference {
     pub fn set_package_id(&mut self, package_id: &String) {
         self.package_id = package_id.clone();
     }
+    /// Define package ID after a new_local, but don't change if not empty
+    pub fn set_package_id_if_empty(&mut self, package_id: &String) {
+        if self.package_id.is_empty() {
+            self.package_id = package_id.clone();
+        }
+    }
 
     /// Get object ID
     pub fn get_object_id(&self) -> String {
@@ -222,22 +228,16 @@ impl<T: Clone> XMIIdReference<T> {
         }
     }
 
-    /// Define package ID after a new_local
+    /// Define object ID after a new_local
     pub fn set_object_id(&mut self, object_id: &String) {
-        if self.object_id.is_empty() {
+        self.object_id = object_id.clone();
+    }
+
+    /// Define object ID after a new_local, but don't change if not empty
+    pub fn set_object_id_if_empty(&mut self, object_id: &String) {
+        if self.package_id.is_empty() {
             self.object_id = object_id.clone();
         }
-    }
-
-    /// Define package ID after a new_local
-    pub fn set_package_id(&mut self, package_id: &String) {
-        self.package_id = package_id.clone();
-    }
-
-    /// Define object content
-    pub fn set_object(&self, content: T) -> Result<(), anyhow::Error> {
-        self.object.replace(Some(content));
-        Ok(())
     }
 
     /// Get object ID
@@ -245,9 +245,33 @@ impl<T: Clone> XMIIdReference<T> {
         self.object_id.clone()
     }
 
+    /// Define package ID after a new_local
+    pub fn set_package_id(&mut self, package_id: &String) {
+        self.package_id = package_id.clone();
+    }
+
+    /// Define package ID after a new_local, but don't change if not empty
+    pub fn set_package_id_if_empty(&mut self, package_id: &String) {
+        if self.package_id.is_empty() {
+            self.package_id = package_id.clone();
+        }
+    }
+
     /// Get package ID
     pub fn get_package_id(&self) -> String {
         self.package_id.clone()
+    }
+
+    /// Define object content
+    pub fn set_object(&self, content: T) {
+        self.object.replace(Some(content));
+    }
+
+    /// Define object content, but don't change if not empty
+    pub fn set_object_if_empty(&self, content: T) {
+        if self.object.borrow().is_none() {
+            self.object.replace(Some(content));
+        }
     }
 
     /// Get object content
@@ -264,6 +288,11 @@ impl<T: Clone> XMIIdReference<T> {
 
     /// True, if package_id and object_id not empty
     pub fn is_set(&self) -> bool {
+        !self.package_id.is_empty() && !self.object_id.is_empty()
+    }
+
+    /// True, if package_id and object_id not empty, and object if not None
+    pub fn is_set_and_complete(&self) -> bool {
         !self.package_id.is_empty() && !self.object_id.is_empty() && self.object.borrow().is_some()
     }
 
@@ -317,4 +346,557 @@ pub trait GetXMIId {
     fn get_xmi_id_field(&self) -> Result<String, anyhow::Error>;
     /// Allow to get the xmi id field object name (use in local BTreeMap)
     fn get_xmi_id_object(&self) -> Result<String, anyhow::Error>;
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn local_reference_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let _ = XMIIdLocalReference::new_local(String::from("object_1"));
+            let _ = XMIIdLocalReference::new_global(
+                String::from("object_2"),
+                String::from("package_2"),
+            );
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn local_reference_02_eq_and_partial_eq() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            // package is more important that object
+
+            let ref_1 = XMIIdLocalReference::new_global(
+                String::from("object_1"),
+                String::from("package_1"),
+            );
+            let ref_2 = XMIIdLocalReference::new_global(
+                String::from("object_2"),
+                String::from("package_1"),
+            );
+            let ref_3 = XMIIdLocalReference::new_global(
+                String::from("object_1"),
+                String::from("package_2"),
+            );
+            let ref_4 = XMIIdLocalReference::new_global(
+                String::from("object_2"),
+                String::from("package_2"),
+            );
+
+            let ref_1_bis = XMIIdLocalReference::new_global(
+                String::from("object_1"),
+                String::from("package_1"),
+            );
+
+            // Equality
+            assert!(ref_1 == ref_1);
+            assert!(ref_2 == ref_2);
+            assert!(ref_3 == ref_3);
+            assert!(ref_4 == ref_4);
+
+            assert!(ref_1 == ref_1_bis);
+
+            // Non-equality
+            assert!(ref_1 != ref_2);
+            assert!(ref_1 != ref_3);
+            assert!(ref_1 != ref_4);
+            assert!(ref_2 != ref_3);
+            assert!(ref_2 != ref_4);
+            assert!(ref_3 != ref_4);
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn local_reference_03_ord_and_partial_ord() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            // package is more important that object
+
+            let ref_1 = XMIIdLocalReference::new_global(
+                String::from("object_1"),
+                String::from("package_1"),
+            );
+            let ref_2 = XMIIdLocalReference::new_global(
+                String::from("object_2"),
+                String::from("package_1"),
+            );
+            let ref_3 = XMIIdLocalReference::new_global(
+                String::from("object_1"),
+                String::from("package_2"),
+            );
+            let ref_4 = XMIIdLocalReference::new_global(
+                String::from("object_2"),
+                String::from("package_2"),
+            );
+
+            // Inequality
+            assert!(ref_1 < ref_2);
+            assert!(ref_1 < ref_3);
+            assert!(ref_1 < ref_4);
+            assert!(ref_2 < ref_3);
+            assert!(ref_2 < ref_4);
+            assert!(ref_3 < ref_4);
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn local_reference_04_debug() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let ref_1 = XMIIdLocalReference::new_local(String::from("object_1"));
+            assert_eq!(
+                format!("{:?}", ref_1),
+                String::from("Uncomplete XMIIdLocalReference RefCell of \'object_1\'")
+            );
+
+            let ref_2 = XMIIdLocalReference::new_global(
+                String::from("object_2"),
+                String::from("package_2"),
+            );
+            assert_eq!(
+                format!("{:?}", ref_2),
+                String::from("Complete XMIIdLocalReference RefCell of \'package_2-object_2\'")
+            );
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn local_reference_05_set_package_id() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let mut ref_1: XMIIdLocalReference =
+                XMIIdLocalReference::new_local(String::from("object_1"));
+            ref_1.set_package_id(&String::from("package_1"));
+            let ref_2 = XMIIdLocalReference::new_global(
+                String::from("object_1"),
+                String::from("package_1"),
+            );
+
+            assert_eq!(ref_1, ref_2);
+
+            let mut ref_1: XMIIdLocalReference =
+                XMIIdLocalReference::new_local(String::from("object_1"));
+            ref_1.set_package_id_if_empty(&String::from("package_1"));
+            let ref_2 = XMIIdLocalReference::new_global(
+                String::from("object_1"),
+                String::from("package_1"),
+            );
+
+            assert_eq!(ref_1, ref_2);
+
+            ref_1.set_package_id_if_empty(&String::from("other_content"));
+
+            assert_eq!(ref_1, ref_2);
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn local_reference_06_get_fields() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let mut ref_1 = XMIIdLocalReference::new_local(String::from("object_1"));
+            ref_1.set_package_id_if_empty(&String::from("package_1"));
+            let ref_2 = XMIIdLocalReference::new_global(
+                String::from("object_1"),
+                String::from("package_1"),
+            );
+
+            assert_eq!(ref_1.get_object_id(), String::from("object_1"));
+            assert_eq!(ref_1.get_package_id(), String::from("package_1"));
+            assert_eq!(ref_2.get_object_id(), String::from("object_1"));
+            assert_eq!(ref_2.get_package_id(), String::from("package_1"));
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn local_reference_07_label_and_is_set() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let ref_1 = XMIIdLocalReference::new_global(
+                String::from("object_1"),
+                String::from("package_1"),
+            );
+
+            assert!(ref_1.is_set());
+            assert!(ref_1.label().is_ok());
+            assert_eq!(ref_1.label().unwrap(), String::from("package_1-object_1"));
+
+            let ref_2 = XMIIdLocalReference::new_local(String::from("object_1"));
+
+            assert!(!ref_2.is_set());
+            assert!(ref_2.label().is_err());
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn reference_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let _: XMIIdReference<String> = XMIIdReference::new_local(String::from("object_1"));
+            let _: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_2"), String::from("package_2"));
+            let _: XMIIdReference<String> = XMIIdReference::default();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn reference_02_eq_and_partial_eq() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            // package is more important that object
+
+            let ref_1: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_1"));
+            let ref_2: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_2"), String::from("package_1"));
+            let ref_3: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_2"));
+            let ref_4 =
+                XMIIdReference::new_global(String::from("object_2"), String::from("package_2"));
+
+            let ref_1_bis =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_1"));
+
+            // Equality
+            assert!(ref_1 == ref_1);
+            assert!(ref_2 == ref_2);
+            assert!(ref_3 == ref_3);
+            assert!(ref_4 == ref_4);
+
+            assert!(ref_1 == ref_1_bis);
+
+            // Non-equality
+            assert!(ref_1 != ref_2);
+            assert!(ref_1 != ref_3);
+            assert!(ref_1 != ref_4);
+            assert!(ref_2 != ref_3);
+            assert!(ref_2 != ref_4);
+            assert!(ref_3 != ref_4);
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn reference_03_ord_and_partial_ord() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            // package is more important that object
+
+            let ref_1: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_1"));
+            let ref_2: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_2"), String::from("package_1"));
+            let ref_3: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_2"));
+            let ref_4: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_2"), String::from("package_2"));
+
+            // Inequality
+            assert!(ref_1 < ref_2);
+            assert!(ref_1 < ref_3);
+            assert!(ref_1 < ref_4);
+            assert!(ref_2 < ref_3);
+            assert!(ref_2 < ref_4);
+            assert!(ref_3 < ref_4);
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn reference_04_debug() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let ref_1: XMIIdReference<String> = XMIIdReference::default();
+            assert_eq!(
+                format!("{:?}", ref_1),
+                String::from("Empty XMIIdReference<EnumWeakCMOF> RefCell")
+            );
+
+            let ref_2: XMIIdReference<String> = XMIIdReference::new_local(String::from("object_1"));
+            assert_eq!(
+                format!("{:?}", ref_2),
+                String::from("Uncomplete XMIIdReference<EnumWeakCMOF> RefCell of \'object_1\'")
+            );
+
+            let ref_3: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_2"), String::from("package_2"));
+            assert_eq!(
+                format!("{:?}", ref_3),
+                String::from(
+                    "UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of \'package_2-object_2\'"
+                )
+            );
+
+            let ref_4: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_2"), String::from("package_2"));
+            let content = String::from("CONTENT !!!");
+            ref_4.set_object(content);
+            assert_eq!(
+                format!("{:?}", ref_4),
+                String::from(
+                    "Loaded XMIIdReference<EnumWeakCMOF> RefCell of \'package_2-object_2\'"
+                )
+            );
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn reference_05_set_package_id() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let mut ref_1: XMIIdReference<String> =
+                XMIIdReference::new_local(String::from("object_1"));
+            ref_1.set_package_id(&String::from("package_1"));
+            let ref_2 =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_1"));
+
+            assert_eq!(ref_1, ref_2);
+
+            let mut ref_1: XMIIdReference<String> =
+                XMIIdReference::new_local(String::from("object_1"));
+            ref_1.set_package_id_if_empty(&String::from("package_1"));
+            let ref_2 =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_1"));
+
+            assert_eq!(ref_1, ref_2);
+
+            ref_1.set_package_id_if_empty(&String::from("other_content"));
+
+            assert_eq!(ref_1, ref_2);
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn reference_06_set_object_id() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let mut ref_1: XMIIdReference<String> = XMIIdReference::default();
+            ref_1.set_object_id(&String::from("object_1"));
+            ref_1.set_package_id(&String::from("package_1"));
+            let ref_2 =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_1"));
+
+            assert_eq!(ref_1, ref_2);
+
+            let mut ref_1: XMIIdReference<String> = XMIIdReference::default();
+            ref_1.set_object_id_if_empty(&String::from("object_1"));
+            ref_1.set_package_id(&String::from("package_1"));
+            let ref_2 =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_1"));
+
+            assert_eq!(ref_1, ref_2);
+
+            ref_1.set_object_id_if_empty(&String::from("other_content"));
+
+            assert_eq!(ref_1, ref_2);
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn reference_07_get_fields() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let mut ref_1: XMIIdReference<String> =
+                XMIIdReference::new_local(String::from("object_1"));
+            ref_1.set_package_id_if_empty(&String::from("package_1"));
+            let ref_2: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_1"));
+
+            assert_eq!(ref_1.get_object_id(), String::from("object_1"));
+            assert_eq!(ref_1.get_package_id(), String::from("package_1"));
+            assert_eq!(ref_2.get_object_id(), String::from("object_1"));
+            assert_eq!(ref_2.get_package_id(), String::from("package_1"));
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn reference_08_set_object() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let ref_1: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_2"), String::from("package_2"));
+
+            assert!(ref_1.is_set());
+            assert!(!ref_1.is_set_and_complete());
+
+            let content = String::from("CONTENT !!!");
+            ref_1.set_object(content);
+
+            assert!(ref_1.is_set());
+            assert!(ref_1.is_set_and_complete());
+
+            let content = String::from("OTHER CONTENT !!!");
+            ref_1.set_object_if_empty(content);
+
+            assert!(ref_1.is_set());
+            assert!(ref_1.is_set_and_complete());
+
+            assert_eq!(ref_1.get_object()?, String::from("CONTENT !!!"));
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn reference_09_get_object() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let ref_1: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_2"), String::from("package_2"));
+
+            assert!(ref_1.is_set());
+            assert!(!ref_1.is_set_and_complete());
+            assert!(ref_1.get_object().is_err());
+
+            let content = String::from("CONTENT !!!");
+            ref_1.set_object(content);
+
+            assert!(ref_1.is_set());
+            assert!(ref_1.is_set_and_complete());
+            assert_eq!(ref_1.get_object()?, String::from("CONTENT !!!"));
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn reference_10_label() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            let ref_1: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_1"));
+
+            assert!(ref_1.is_set());
+            assert!(!ref_1.is_set_and_complete());
+            assert!(ref_1.label().is_ok());
+
+            let ref_2: XMIIdReference<String> = XMIIdReference::new_local(String::from("object_1"));
+
+            assert!(!ref_2.is_set());
+            assert!(!ref_2.is_set_and_complete());
+            assert!(ref_2.label().is_err());
+
+            let ref_3: XMIIdReference<String> = XMIIdReference::new_local(String::from("object_1"));
+            let content = String::from("CONTENT !!!");
+            ref_3.set_object(content);
+
+            assert!(!ref_3.is_set());
+            assert!(!ref_3.is_set_and_complete());
+            assert!(ref_3.label().is_err());
+
+            let ref_4: XMIIdReference<String> =
+                XMIIdReference::new_global(String::from("object_1"), String::from("package_1"));
+            let content = String::from("CONTENT !!!");
+            ref_4.set_object(content);
+
+            assert!(ref_4.is_set());
+            assert!(ref_4.is_set_and_complete());
+            assert!(ref_4.label().is_ok());
+            assert_eq!(ref_4.label().unwrap(), String::from("package_1-object_1"));
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
 }
