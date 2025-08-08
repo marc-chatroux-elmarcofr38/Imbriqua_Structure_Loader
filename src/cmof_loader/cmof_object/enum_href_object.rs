@@ -52,7 +52,7 @@ impl SetCMOFTools for EnumImportedPackage {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumImportedPackage::ImportedPackage(c) => set_href(&c.href, dict_object),
+            EnumImportedPackage::ImportedPackage(c) => c.set_href(dict_object),
         }
     }
 }
@@ -85,7 +85,7 @@ impl SetCMOFTools for EnumRedefinedProperty {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumRedefinedProperty::Property(c) => set_href(&c.href, dict_object),
+            EnumRedefinedProperty::Property(c) => c.set_href(dict_object),
         }
     }
 }
@@ -118,7 +118,7 @@ impl SetCMOFTools for EnumSubsettedProperty {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumSubsettedProperty::Property(c) => set_href(&c.href, dict_object),
+            EnumSubsettedProperty::Property(c) => c.set_href(dict_object),
         }
     }
 }
@@ -151,7 +151,7 @@ impl SetCMOFTools for EnumSuperClass {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumSuperClass::HRefClass(c) => set_href(&c.href, dict_object),
+            EnumSuperClass::HRefClass(c) => c.set_href(dict_object),
         }
     }
 }
@@ -192,9 +192,9 @@ impl SetCMOFTools for EnumType {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumType::HRefClass(c) => set_href(&c.href, dict_object),
-            EnumType::HRefDataType(c) => set_href(&c.href, dict_object),
-            EnumType::HRefPrimitiveType(c) => set_href(&c.href, dict_object),
+            EnumType::HRefClass(c) => c.set_href(dict_object),
+            EnumType::HRefDataType(c) => c.set_href(dict_object),
+            EnumType::HRefPrimitiveType(c) => c.set_href(dict_object),
         }
     }
 }
@@ -203,65 +203,22 @@ impl SetCMOFTools for EnumType {
 //
 // ####################################################################################################
 
-/// Push content to RefCell in XMIIDReerence
-pub fn set_href(
-    reference: &XMIIdReference<EnumWeakCMOF>,
-    dict_object: &mut BTreeMap<String, EnumCMOF>,
-) -> Result<(), anyhow::Error> {
-    // Criteria
-    if reference.get_object().is_ok() {
-        panic!("'{:#?}' is already loaded", reference)
-    };
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
 
-    // Catch
-    let k = reference.label()?;
-    let r = dict_object.get(&k);
-    if r.is_none() {
-        return Err(anyhow::format_err!(
-            "Matching error in post_deserialize : \"{}\" not find in dict_object",
-            k
-        ));
-    } else {
-        let v = r.unwrap();
-        match v {
-            EnumCMOF::CMOFAssociation(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFAssociation(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFClass(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFClass(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFConstraint(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFConstraint(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFDataType(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFDataType(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFEnumeration(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFEnumeration(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFEnumerationLiteral(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFEnumerationLiteral(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFOpaqueExpression(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFOpaqueExpression(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFPackage(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFPackage(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFPackageImport(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFPackageImport(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFPrimitiveType(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFPrimitiveType(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFProperty(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFProperty(Rc::downgrade(c)));
-            }
-            EnumCMOF::CMOFTag(c) => {
-                reference.set_object(EnumWeakCMOF::CMOFTag(Rc::downgrade(c)));
-            }
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
         }
+
+        let r = test();
+        assert!(r.is_ok());
     }
-    // Return
-    Ok(())
 }

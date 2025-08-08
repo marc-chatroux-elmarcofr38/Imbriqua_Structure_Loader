@@ -62,14 +62,14 @@ pub struct CMOFProperty {
     pub datatype: Option<String>,
     /// Optional lower attribute
     #[serde(rename = "_lower")]
-    #[serde(deserialize_with = "deser_integer")]
+    #[serde(deserialize_with = "deser_lower_bound")]
     #[serde(default = "default_lower")]
-    pub lower: isize,
+    pub lower: i32,
     /// Optional upper attribute
     #[serde(rename = "_upper")]
-    #[serde(deserialize_with = "deser_unlimited_natural")]
+    #[serde(deserialize_with = "deser_upper_bound")]
     #[serde(default = "default_upper")]
-    pub upper: UnlimitedNatural<usize>,
+    pub upper: UnlimitedNatural<i32>,
     /// Optional default attribute
     #[serde(rename = "_default")]
     pub default: Option<String>,
@@ -168,18 +168,18 @@ impl SetCMOFTools for CMOFProperty {
             .clone();
         let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package_id(&package_name);
+        self.xmi_id.set_package_id_if_empty(&package_name);
         if self.simple_type.is_some() {
             self.simple_type
                 .as_mut()
                 .unwrap()
-                .set_package_id(&package_name);
+                .set_package_id_if_empty(&package_name);
         }
         if self.association.is_some() {
             self.association
                 .as_mut()
                 .unwrap()
-                .set_package_id(&package_name);
+                .set_package_id_if_empty(&package_name);
         }
         // Call on child
         if self.complex_type.is_some() {
@@ -229,13 +229,13 @@ impl SetCMOFTools for CMOFProperty {
                 .make_post_deserialize(dict_object)?;
         }
         if self.simple_type.is_some() {
-            set_href(&self.simple_type.as_ref().unwrap(), dict_object)?;
+            self.simple_type.as_ref().unwrap().set_href(dict_object)?;
         }
         if self.association.is_some() {
-            set_href(&self.association.as_ref().unwrap(), dict_object)?;
+            self.association.as_ref().unwrap().set_href(dict_object)?;
         }
         // Self
-        set_href(&self.parent, dict_object)?;
+        self.parent.set_href(dict_object)?;
         //Return
         Ok(())
     }
@@ -259,25 +259,49 @@ impl GetXMIId for CMOFProperty {
 // ####################################################################################################
 
 impl CMOFProperty {
-    pub fn get_type(&self) -> &XMIIdReference<EnumWeakCMOF> {
+    pub fn get_type(&self) -> Result<EnumWeakCMOF, anyhow::Error> {
         // For field simple
         if self.simple_type.is_some() {
-            self.simple_type.as_ref().unwrap()
+            self.simple_type.as_ref().unwrap().get_object()
         } else {
             match self.complex_type.as_ref().unwrap() {
                 EnumType::HRefPrimitiveType(link) => {
                     // Foreign field
-                    &link.href
+                    Ok(EnumWeakCMOF::CMOFPrimitiveType(link.href.get_object()?))
                 }
                 EnumType::HRefClass(link) => {
                     // Foreign field
-                    &link.href
+                    Ok(EnumWeakCMOF::CMOFClass(link.href.get_object()?))
                 }
                 EnumType::HRefDataType(link) => {
                     // Foreign field
-                    &link.href
+                    Ok(EnumWeakCMOF::CMOFDataType(link.href.get_object()?))
                 }
             }
         }
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

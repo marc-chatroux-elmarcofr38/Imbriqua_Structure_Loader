@@ -112,7 +112,7 @@ impl SetCMOFTools for CMOFDataType {
         let class_snake_case = self.name.to_case(Case::Snake);
         let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package_id(&package_name);
+        self.xmi_id.set_package_id_if_empty(&package_name);
         self.technical_name = format!("{}.cmof#{}", package_name, self.name);
         self.table_name = format!("{}_{}", package_name_snake_case, class_snake_case);
         self.model_name = format!("{}", class_upper_case);
@@ -122,7 +122,7 @@ impl SetCMOFTools for CMOFDataType {
             match p {
                 EnumOwnedAttribute::Property(c) => {
                     let m = Rc::get_mut(c).unwrap();
-                    m.parent.set_package_id(&package_name);
+                    m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
                     dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFProperty(c.clone()));
@@ -133,7 +133,7 @@ impl SetCMOFTools for CMOFDataType {
             match p {
                 EnumOwnedRule::Constraint(c) => {
                     let m = Rc::get_mut(c).unwrap();
-                    m.parent.set_package_id(&package_name);
+                    m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
                     dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFConstraint(c.clone()));
@@ -160,7 +160,7 @@ impl SetCMOFTools for CMOFDataType {
             }
         }
         // Self
-        set_href(&self.parent, dict_object)?;
+        self.parent.set_href(dict_object)?;
         //Return
         Ok(())
     }
@@ -176,5 +176,29 @@ impl GetXMIId for CMOFDataType {
     }
     fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         Ok(self.xmi_id.get_object_id())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

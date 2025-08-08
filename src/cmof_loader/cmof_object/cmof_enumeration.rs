@@ -107,7 +107,7 @@ impl SetCMOFTools for CMOFEnumeration {
         let class_upper_case = self.name.to_case(Case::UpperCamel);
         let class_snake_case = self.name.to_case(Case::Snake);
         // Set local values
-        self.xmi_id.set_package_id(&package_name);
+        self.xmi_id.set_package_id_if_empty(&package_name);
         self.technical_name = format!("{}.cmof#{}", package_name, self.name);
         self.table_name = format!("{}_{}", package_name_snake_case, class_snake_case);
         self.model_name = format!("{}", class_upper_case);
@@ -120,7 +120,7 @@ impl SetCMOFTools for CMOFEnumeration {
             match p {
                 EnumOwnedLiteral::EnumerationLiteral(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
-                    m.parent.set_package_id(&package_name);
+                    m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
                     dict_object.insert(
@@ -147,7 +147,7 @@ impl SetCMOFTools for CMOFEnumeration {
             }
         }
         // Self
-        set_href(&self.parent, dict_object)?;
+        self.parent.set_href(dict_object)?;
         //Return
         Ok(())
     }
@@ -163,5 +163,29 @@ impl GetXMIId for CMOFEnumeration {
     }
     fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         Ok(self.xmi_id.get_object_id())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

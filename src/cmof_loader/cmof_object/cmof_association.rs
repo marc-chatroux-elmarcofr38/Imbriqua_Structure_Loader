@@ -47,7 +47,7 @@ pub struct CMOFAssociation {
     pub visibility: UMLVisibilityKind,
     /// memberEnd attribute, 2 for CMOF
     #[serde(rename = "_memberEnd")]
-    #[serde(deserialize_with = "deser_split_2_space_href")]
+    #[serde(deserialize_with = "deser_2_space_xmi_id")]
     pub member_end: (XMIIdReference<EnumWeakCMOF>, XMIIdReference<EnumWeakCMOF>),
     /// Optional ownedEnd object
     #[serde(rename = "ownedEnd")]
@@ -120,7 +120,7 @@ impl SetCMOFTools for CMOFAssociation {
         let class_snake_case = self.name.to_case(Case::Snake);
         let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package_id(&package_name);
+        self.xmi_id.set_package_id_if_empty(&package_name);
         self.technical_name = format!("{}.cmof#{}", package_name, self.name);
         self.table_name = format!("{}_{}", package_name_snake_case, class_snake_case);
         self.model_name = format!("{}", class_upper_case);
@@ -129,13 +129,13 @@ impl SetCMOFTools for CMOFAssociation {
             package_name_snake_case, class_snake_case
         );
         // Call on child
-        self.member_end.0.set_package_id(&package_name);
-        self.member_end.1.set_package_id(&package_name);
+        self.member_end.0.set_package_id_if_empty(&package_name);
+        self.member_end.1.set_package_id_if_empty(&package_name);
         for (_, p) in &mut self.owned_end {
             match p {
                 EnumOwnedEnd::Property(c) => {
                     let m = Rc::get_mut(c).unwrap();
-                    m.parent.set_package_id(&package_name);
+                    m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
                     dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFProperty(c.clone()));
@@ -157,9 +157,9 @@ impl SetCMOFTools for CMOFAssociation {
             }
         }
         // Self
-        set_href(&self.parent, dict_object)?;
-        set_href(&self.member_end.0, dict_object)?;
-        set_href(&self.member_end.1, dict_object)?;
+        &self.parent.set_href(dict_object)?;
+        self.member_end.0.set_href(dict_object)?;
+        self.member_end.1.set_href(dict_object)?;
         //Return
         Ok(())
     }
@@ -175,5 +175,29 @@ impl GetXMIId for CMOFAssociation {
     }
     fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         Ok(self.xmi_id.get_object_id())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

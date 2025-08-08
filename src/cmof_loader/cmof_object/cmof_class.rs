@@ -51,12 +51,12 @@ pub struct CMOFClass {
     pub is_abstract: bool,
     /// Optional superClass attribute (simple superClass)
     #[serde(rename = "_superClass")]
-    #[serde(deserialize_with = "deser_spaced_href")]
+    #[serde(deserialize_with = "deser_spaced_xmi_id")]
     #[serde(default = "default_empty_vec")]
     pub super_class: Vec<XMIIdReference<EnumWeakCMOF>>,
     /// Optional superClass object (complex superClass)
     #[serde(rename = "superClass")]
-    #[serde(deserialize_with = "deser_vec_href")]
+    #[serde(deserialize_with = "deser_superclass_object_xmi_id")]
     #[serde(default = "default_empty_vec")]
     pub super_class_link: Vec<XMIIdReference<EnumWeakCMOF>>,
     /// Optional ownedAttribute object array
@@ -141,7 +141,7 @@ impl SetCMOFTools for CMOFClass {
         let class_snake_case = self.name.to_case(Case::Snake);
         let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package_id(&package_name);
+        self.xmi_id.set_package_id_if_empty(&package_name);
         self.technical_name = format!("{}.cmof#{}", package_name, self.name);
         self.table_name = format!("{}_{}", package_name_snake_case, class_snake_case);
         self.model_name = format!("{}", class_upper_case);
@@ -152,16 +152,16 @@ impl SetCMOFTools for CMOFClass {
         // Call on child
         dict_setting.insert(String::from("parent_name"), self.xmi_id.get_object_id());
         for p in &mut self.super_class {
-            p.set_package_id(&package_name);
+            p.set_package_id_if_empty(&package_name);
         }
         for p in &mut self.super_class_link {
-            p.set_package_id(&package_name);
+            p.set_package_id_if_empty(&package_name);
         }
         for (_, p) in &mut self.owned_attribute {
             match p {
                 EnumOwnedAttribute::Property(c) => {
                     let m = Rc::get_mut(c).unwrap();
-                    m.parent.set_package_id(&package_name);
+                    m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
                     dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFProperty(c.clone()));
@@ -172,7 +172,7 @@ impl SetCMOFTools for CMOFClass {
             match p {
                 EnumOwnedRule::Constraint(c) => {
                     let m = Rc::get_mut(c).unwrap();
-                    m.parent.set_package_id(&package_name);
+                    m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
                     dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFConstraint(c.clone()));
@@ -199,13 +199,13 @@ impl SetCMOFTools for CMOFClass {
             }
         }
         for p in &self.super_class {
-            set_href(&p, dict_object)?;
+            p.set_href(dict_object)?;
         }
         for p in &self.super_class_link {
-            set_href(&p, dict_object)?;
+            p.set_href(dict_object)?;
         }
         // Self
-        set_href(&self.parent, dict_object)?;
+        self.parent.set_href(dict_object)?;
         //Return
         Ok(())
     }
@@ -269,29 +269,53 @@ impl CMOFClass {
             let value: Relation = if object_1.upper > infinitable::Finite(1)
                 && object_2.upper > infinitable::Finite(1)
             {
-                Relation::ManToManyRelation(ManToManyRelation::new(
+                Relation::ManyToManyRelation(ManyToManyRelation::new(
                     object_1.clone(),
                     object_2.clone(),
-                ))
+                )?)
             } else if object_1.upper > infinitable::Finite(1) {
                 Relation::OneToManyRelation(OneToManyRelation::new(
                     object_1.clone(),
                     object_2.clone(),
-                ))
+                )?)
             } else if object_2.upper > infinitable::Finite(1) {
                 Relation::OneToManyRelation(OneToManyRelation::new(
                     object_2.clone(),
                     object_1.clone(),
-                ))
+                )?)
             } else {
                 Relation::OneToOneRelation(OneToOneRelation::new(
                     object_1.clone(),
                     object_2.clone(),
-                ))
+                )?)
             };
             let key = association.get_xmi_id_field()?;
             self.relation.borrow_mut().insert(key, value);
         }
         Ok(())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

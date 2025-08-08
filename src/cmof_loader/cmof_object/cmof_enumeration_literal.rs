@@ -101,7 +101,7 @@ impl SetCMOFTools for CMOFEnumerationLiteral {
             .clone();
         let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package_id(&package_name);
+        self.xmi_id.set_package_id_if_empty(&package_name);
         self.litteral_designation = self.name.clone();
         self.litteral_name = self.name.to_case(Case::UpperCamel);
         //Return
@@ -113,7 +113,7 @@ impl SetCMOFTools for CMOFEnumerationLiteral {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Self
-        set_href(&self.parent, dict_object)?;
+        self.parent.set_href(dict_object)?;
         //Return
         Ok(())
     }
@@ -129,5 +129,29 @@ impl GetXMIId for CMOFEnumerationLiteral {
     }
     fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
         Ok(self.xmi_id.get_object_id())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

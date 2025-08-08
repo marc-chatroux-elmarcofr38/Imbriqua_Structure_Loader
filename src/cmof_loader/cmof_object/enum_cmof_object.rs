@@ -133,6 +133,160 @@ impl EnumWeakCMOF {
             EnumCMOF::CMOFTag(c) => EnumWeakCMOF::CMOFTag(Rc::downgrade(&c)),
         }
     }
+
+    pub fn upgrade(&self) -> Result<EnumCMOF, anyhow::Error> {
+        match self {
+            EnumWeakCMOF::CMOFAssociation(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFAssociation(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFClass(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFClass(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFConstraint(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFConstraint(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFDataType(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFDataType(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFEnumeration(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFEnumeration(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFEnumerationLiteral(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFEnumerationLiteral(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFOpaqueExpression(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFOpaqueExpression(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFPackage(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFPackage(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFPackageImport(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFPackageImport(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFPrimitiveType(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFPrimitiveType(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFProperty(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFProperty(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+            EnumWeakCMOF::CMOFTag(c) => {
+                let r = c.upgrade();
+                match r {
+                    Some(content) => Ok(EnumCMOF::CMOFTag(content)),
+                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
+                }
+            }
+        }
+    }
+}
+
+impl XMIIdReference<EnumWeakCMOF> {
+    /// Push content to RefCell in XMIIDReerence
+    pub fn set_href(
+        &self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error> {
+        // Criteria
+        if self.get_object().is_ok() {
+            panic!("'{:#?}' is already loaded", self)
+        };
+
+        // Catch
+        let k = self.label()?;
+        let r = dict_object.get(&k);
+        if r.is_none() {
+            return Err(anyhow::format_err!(
+                "Matching error in post_deserialize : \"{}\" not find in dict_object",
+                k
+            ));
+        } else {
+            let v = r.unwrap();
+            match v {
+                EnumCMOF::CMOFAssociation(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFAssociation(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFClass(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFClass(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFConstraint(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFConstraint(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFDataType(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFDataType(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFEnumeration(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFEnumeration(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFEnumerationLiteral(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFEnumerationLiteral(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFOpaqueExpression(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFOpaqueExpression(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFPackage(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFPackage(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFPackageImport(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFPackageImport(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFPrimitiveType(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFPrimitiveType(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFProperty(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFProperty(Rc::downgrade(c)));
+                }
+                EnumCMOF::CMOFTag(c) => {
+                    self.set_object(EnumWeakCMOF::CMOFTag(Rc::downgrade(c)));
+                }
+            }
+        }
+        // Return
+        Ok(())
+    }
 }
 
 // ####################################################################################################
@@ -622,4 +776,28 @@ fn catch_and_make_post_deserialize<T: SetCMOFTools + GetXMIId>(
 ) -> Result<(), anyhow::Error> {
     object.make_post_deserialize(dict_object)?;
     Ok(())
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
 }
