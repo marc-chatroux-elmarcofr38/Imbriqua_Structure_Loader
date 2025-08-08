@@ -38,8 +38,6 @@ pub struct LoadingTracker {
     loaded_package: BTreeMap<String, LoadingPackage>,
     /// Order of the collection of package
     pub importing_order: BTreeMap<usize, String>,
-    /// builing pre calculation result
-    pub pre_calculation: LoadingPreCalculation,
 }
 
 // Basics
@@ -50,7 +48,6 @@ impl LoadingTracker {
             file_env,
             loaded_package: BTreeMap::new(),
             importing_order: BTreeMap::new(),
-            pre_calculation: LoadingPreCalculation::new(),
         })
     }
 

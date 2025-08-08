@@ -57,8 +57,6 @@ fn main() -> Result<(), anyhow::Error> {
     // Load ordered packages list
     loading_env.make_prepare(main_package_file, main_package_id, "root")?;
 
-    // // Generate list of class who don't necessite dependencies
-    // loading_env.writing_preparation()?;
     // Makin lib.rs file
     loading_env.write_lib_file()?;
     // Makin all mod_x.rs file

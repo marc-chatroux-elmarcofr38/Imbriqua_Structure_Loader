@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-// #![doc = include_str!("../../../doc/loader_deserialise_helper.md")]
+#![doc = include_str!("mod.md")]
 
 // Mod section
 mod href_object;

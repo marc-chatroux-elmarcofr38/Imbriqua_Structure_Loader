@@ -29,6 +29,21 @@ use crate::cmof_loader::*;
 // ####################################################################################################
 
 #[derive(Clone, PartialEq, Debug)]
+/// State on package to load
+pub enum LoadingState {
+    /// No Element (name reserved)
+    Empty,
+    /// With Element (imported)
+    Loaded,
+    /// Element used (converted)
+    Finished,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[derive(Clone, PartialEq, Debug)]
 /// Representation of a package
 pub struct LoadingPackage {
     /// Source file of the package

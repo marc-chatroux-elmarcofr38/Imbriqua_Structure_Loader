@@ -18,18 +18,10 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("loading_tools.md")]
+#![doc = include_str!("mod.md")]
 
 // Mod section
-mod tools_enum;
-mod tools_file_package;
 mod tools_loading_package;
-mod tools_objects;
-mod tools_precalculation;
 mod tools_tracker;
-pub use tools_enum::*;
-pub use tools_file_package::*;
 pub use tools_loading_package::*;
-pub use tools_objects::*;
-pub use tools_precalculation::*;
 pub use tools_tracker::*;
