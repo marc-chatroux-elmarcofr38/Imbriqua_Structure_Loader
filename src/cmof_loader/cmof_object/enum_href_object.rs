@@ -52,7 +52,7 @@ impl SetCMOFTools for EnumImportedPackage {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumImportedPackage::ImportedPackage(c) => c.set_href(dict_object),
+            EnumImportedPackage::ImportedPackage(c) => c.set_xmi_id_object(dict_object),
         }
     }
 }
@@ -85,7 +85,7 @@ impl SetCMOFTools for EnumRedefinedProperty {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumRedefinedProperty::Property(c) => c.set_href(dict_object),
+            EnumRedefinedProperty::Property(c) => c.set_xmi_id_object(dict_object),
         }
     }
 }
@@ -118,7 +118,7 @@ impl SetCMOFTools for EnumSubsettedProperty {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumSubsettedProperty::Property(c) => c.set_href(dict_object),
+            EnumSubsettedProperty::Property(c) => c.set_xmi_id_object(dict_object),
         }
     }
 }
@@ -151,7 +151,7 @@ impl SetCMOFTools for EnumSuperClass {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumSuperClass::HRefClass(c) => c.set_href(dict_object),
+            EnumSuperClass::HRefClass(c) => c.set_xmi_id_object(dict_object),
         }
     }
 }
@@ -192,9 +192,9 @@ impl SetCMOFTools for EnumType {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumType::HRefClass(c) => c.set_href(dict_object),
-            EnumType::HRefDataType(c) => c.set_href(dict_object),
-            EnumType::HRefPrimitiveType(c) => c.set_href(dict_object),
+            EnumType::HRefClass(c) => c.set_xmi_id_object(dict_object),
+            EnumType::HRefDataType(c) => c.set_xmi_id_object(dict_object),
+            EnumType::HRefPrimitiveType(c) => c.set_xmi_id_object(dict_object),
         }
     }
 }

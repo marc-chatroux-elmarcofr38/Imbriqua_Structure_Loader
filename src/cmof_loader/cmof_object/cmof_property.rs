@@ -229,13 +229,13 @@ impl SetCMOFTools for CMOFProperty {
                 .make_post_deserialize(dict_object)?;
         }
         if self.simple_type.is_some() {
-            self.simple_type.as_ref().unwrap().set_href(dict_object)?;
+            self.simple_type.as_ref().unwrap().set_xmi_id_object(dict_object)?;
         }
         if self.association.is_some() {
-            self.association.as_ref().unwrap().set_href(dict_object)?;
+            self.association.as_ref().unwrap().set_xmi_id_object(dict_object)?;
         }
         // Self
-        self.parent.set_href(dict_object)?;
+        self.parent.set_xmi_id_object(dict_object)?;
         //Return
         Ok(())
     }

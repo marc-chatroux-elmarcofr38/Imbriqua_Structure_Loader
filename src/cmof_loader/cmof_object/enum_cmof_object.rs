@@ -226,7 +226,7 @@ impl EnumWeakCMOF {
 
 impl XMIIdReference<EnumWeakCMOF> {
     /// Push content to RefCell in XMIIDReerence
-    pub fn set_href(
+    pub fn set_xmi_id_object(
         &self,
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {

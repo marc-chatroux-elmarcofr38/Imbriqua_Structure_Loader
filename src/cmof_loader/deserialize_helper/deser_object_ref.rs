@@ -98,17 +98,18 @@ fn cut_string_for_xmi_id_local_reference(content: String) -> Result<XMIIdLocalRe
 ///     - Empty
 ///
 /// Generalisation of other function
-fn deserialiaze_spaced_global_xmi_id<'de, D>(
+fn deserialiaze_spaced_global_xmi_id<'de, D, T>(
     deserializer: D,
-) -> Result<Vec<XMIIdReference<EnumWeakCMOF>>, D::Error>
+) -> Result<Vec<XMIIdReference<T>>, D::Error>
 where
     D: de::Deserializer<'de>,
+    T: Clone,
 {
     Ok(match de::Deserialize::deserialize(deserializer)? {
         // Split text
         Value::String(s) => {
             let splited: Vec<String> = s.split(" ").map(str::to_string).collect();
-            let mut r: Vec<XMIIdReference<EnumWeakCMOF>> = Vec::new();
+            let mut r: Vec<XMIIdReference<T>> = Vec::new();
             for s in splited {
                 if s.len() > 0 {
                     match cut_string_for_xmi_id_global_reference(s) {
@@ -129,9 +130,9 @@ where
     })
 }
 
-fn cut_string_for_xmi_id_global_reference(
+fn cut_string_for_xmi_id_global_reference<T: Clone>(
     content: String,
-) -> Result<XMIIdReference<EnumWeakCMOF>, String> {
+) -> Result<XMIIdReference<T>, String> {
     match content.find(".cmof#") {
         Some(split_index) => {
             let n = split_index + 6;
@@ -182,9 +183,10 @@ where
 /// Convert string to a XMIIdReference
 /// Allow :
 ///     - String, with or without '.cmof#' segment, and without space
-pub fn deser_xmi_id<'de, D>(deserializer: D) -> Result<XMIIdReference<EnumWeakCMOF>, D::Error>
+pub fn deser_xmi_id<'de, D, T>(deserializer: D) -> Result<XMIIdReference<T>, D::Error>
 where
     D: de::Deserializer<'de>,
+    T: Clone,
 {
     let r = deserialiaze_spaced_global_xmi_id(deserializer)?;
 
@@ -206,11 +208,12 @@ where
 /// Allow :
 ///     - String, with or without '.cmof#' segment, and without space
 ///     - Empty
-pub fn deser_option_xmi_id<'de, D>(
+pub fn deser_option_xmi_id<'de, D, T>(
     deserializer: D,
-) -> Result<Option<XMIIdReference<EnumWeakCMOF>>, D::Error>
+) -> Result<Option<XMIIdReference<T>>, D::Error>
 where
     D: de::Deserializer<'de>,
+    T: Clone,
 {
     let r = deserialiaze_spaced_global_xmi_id(deserializer)?;
 
@@ -233,11 +236,10 @@ where
 /// Allow :
 ///     - String, with or without '.cmof#' segment, and with or without space
 ///     - Empty
-pub fn deser_spaced_xmi_id<'de, D>(
-    deserializer: D,
-) -> Result<Vec<XMIIdReference<EnumWeakCMOF>>, D::Error>
+pub fn deser_spaced_xmi_id<'de, D, T>(deserializer: D) -> Result<Vec<XMIIdReference<T>>, D::Error>
 where
     D: de::Deserializer<'de>,
+    T: Clone,
 {
     deserialiaze_spaced_global_xmi_id(deserializer)
 }
@@ -250,11 +252,12 @@ where
 /// Allow :
 ///     - String, with or without '.cmof#' segment, and with ONE space
 ///     - Empty
-pub fn deser_2_space_xmi_id<'de, D>(
+pub fn deser_2_space_xmi_id<'de, D, T>(
     deserializer: D,
-) -> Result<(XMIIdReference<EnumWeakCMOF>, XMIIdReference<EnumWeakCMOF>), D::Error>
+) -> Result<(XMIIdReference<T>, XMIIdReference<T>), D::Error>
 where
     D: de::Deserializer<'de>,
+    T: Clone,
 {
     let r = deserialiaze_spaced_global_xmi_id(deserializer)?;
 
@@ -275,11 +278,12 @@ where
 /// Convert Object with '_href' attribute to XMIIdReference
 /// Allow :
 ///     - Object with '_href' String attribute, with or without '.cmof#' segment, and without space
-pub fn deser_superclass_object_xmi_id<'de, D>(
+pub fn deser_superclass_object_xmi_id<'de, D, T>(
     deserializer: D,
-) -> Result<Vec<XMIIdReference<EnumWeakCMOF>>, D::Error>
+) -> Result<Vec<XMIIdReference<T>>, D::Error>
 where
     D: de::Deserializer<'de>,
+    T: Clone,
 {
     Ok(match de::Deserialize::deserialize(deserializer)? {
         Value::Object(map) => {
@@ -318,39 +322,8 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cmof_loader::tests::{check_deser_make_error, check_deser_make_no_error};
     use crate::custom_log_tools::tests::initialize_log_for_test;
-
-    fn check_make_error<'de, T>(input_str: &'de str, error_target: &str)
-    where
-        T: Deserialize<'de> + std::fmt::Debug,
-    {
-        let r: Result<T, serde_json::Error> = serde_json::from_slice(input_str.as_bytes());
-        assert!(r.is_err());
-
-        // Serde error is longer, because adding error source location
-        let n = error_target
-            .len()
-            .min(format!("{}", r.as_ref().unwrap_err()).len());
-        assert_eq!(
-            format!("{}", r.unwrap_err())[0..n],
-            String::from(error_target)
-        );
-    }
-
-    fn check_make_no_error<'de, T>(input_str: &'de str, value_target: &T)
-    where
-        T: Deserialize<'de> + std::fmt::Debug + PartialEq,
-    {
-        let r: Result<T, serde_json::Error> = serde_json::from_slice(input_str.as_bytes());
-
-        if r.is_err() {
-            error!("{}", r.as_ref().unwrap_err());
-        }
-
-        assert!(r.is_ok());
-
-        assert_eq!(&r.unwrap(), value_target);
-    }
 
     #[test]
     fn test_01_check_value_deserialiaze_spaced_local_xmi_id() {
@@ -382,12 +355,12 @@ mod tests {
         };
 
         let input_str = r#"{"value": "package_1.cmof#object_1 package_2.cmof#object_2 object_3 package_4.cmof#object_4 object_5"}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
 
         let target_value = RandomStruct { value: vec![] };
 
         let input_str = r#"{"value": ""}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
     }
 
     #[test]
@@ -401,13 +374,13 @@ mod tests {
         }
 
         let error_target = "Granularity error : 'b.cmof#c' containt '.cmof#'";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_local_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_local_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
     }
 
     #[test]
@@ -417,7 +390,7 @@ mod tests {
         #[derive(Clone, Debug, PartialEq, Deserialize)]
         struct RandomStruct {
             #[serde(deserialize_with = "deserialiaze_spaced_global_xmi_id")]
-            value: Vec<XMIIdReference<EnumWeakCMOF>>,
+            value: Vec<XMIIdReference<i32>>,
         }
 
         let target_value = RandomStruct {
@@ -431,12 +404,12 @@ mod tests {
         };
 
         let input_str = r#"{"value": "package_1.cmof#object_1 package_2.cmof#object_2 object_3 package_4.cmof#object_4 object_5"}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
 
         let target_value = RandomStruct { value: vec![] };
 
         let input_str = r#"{"value": ""}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
     }
 
     #[test]
@@ -446,17 +419,17 @@ mod tests {
         #[derive(Clone, Debug, PartialEq, Deserialize)]
         struct RandomStruct {
             #[serde(deserialize_with = "deserialiaze_spaced_global_xmi_id")]
-            value: Vec<XMIIdReference<EnumWeakCMOF>>,
+            value: Vec<XMIIdReference<i32>>,
         }
 
         let error_target = "Granularity error : 'b.cmof#c' containt '.cmof#'";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_global_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_global_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
     }
 
     #[test]
@@ -477,22 +450,22 @@ mod tests {
         };
 
         let input_str = r#"{"value": "package_1.cmof#object_1"}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
 
         let error_target = "Need only zero whitespace : raw='[Complete XMIIdLocalReference RefCell of 'a-b', Complete XMIIdLocalReference RefCell of 'c-d']";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b c.cmof#d"}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b c.cmof#d"}"#, &error_target);
 
         let error_target = "Need only zero whitespace : raw='[]'";
-        check_make_error::<RandomStruct>(r#"{"value": ""}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": ""}"#, &error_target);
 
         let error_target = "Granularity error : 'b.cmof#c' containt '.cmof#'";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_local_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_local_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
     }
 
     #[test]
@@ -502,7 +475,7 @@ mod tests {
         #[derive(Clone, Debug, PartialEq, Deserialize)]
         struct RandomStruct {
             #[serde(deserialize_with = "deser_xmi_id")]
-            value: XMIIdReference<EnumWeakCMOF>,
+            value: XMIIdReference<i32>,
         }
 
         let target_value = RandomStruct {
@@ -510,22 +483,22 @@ mod tests {
         };
 
         let input_str = r#"{"value": "package_1.cmof#object_1"}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
 
-        let error_target = "Need only zero whitespace : raw='[UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of 'a-b', UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of 'c-d']";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b c.cmof#d"}"#, &error_target);
+        let error_target = "Need only zero whitespace : raw='[UnLoaded XMIIdReference RefCell of 'a-b', UnLoaded XMIIdReference RefCell of 'c-d']";
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b c.cmof#d"}"#, &error_target);
 
         let error_target = "Need only zero whitespace : raw='[]'";
-        check_make_error::<RandomStruct>(r#"{"value": ""}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": ""}"#, &error_target);
 
         let error_target = "Granularity error : 'b.cmof#c' containt '.cmof#'";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_global_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_global_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
     }
 
     #[test]
@@ -535,7 +508,7 @@ mod tests {
         #[derive(Clone, Debug, PartialEq, Deserialize)]
         struct RandomStruct {
             #[serde(deserialize_with = "deser_option_xmi_id")]
-            value: Option<XMIIdReference<EnumWeakCMOF>>,
+            value: Option<XMIIdReference<i32>>,
         }
 
         let target_value = RandomStruct {
@@ -546,24 +519,24 @@ mod tests {
         };
 
         let input_str = r#"{"value": "package_1.cmof#object_1"}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
 
         let target_value = RandomStruct { value: None };
 
         let input_str = r#"{"value": ""}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
 
-        let error_target = "Need only zero whitespace (or empty) : raw='[UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of 'a-b', UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of 'c-d']";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b c.cmof#d"}"#, &error_target);
+        let error_target = "Need only zero whitespace (or empty) : raw='[UnLoaded XMIIdReference RefCell of 'a-b', UnLoaded XMIIdReference RefCell of 'c-d']";
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b c.cmof#d"}"#, &error_target);
 
         let error_target = "Granularity error : 'b.cmof#c' containt '.cmof#'";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_global_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_global_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
     }
 
     #[test]
@@ -573,7 +546,7 @@ mod tests {
         #[derive(Clone, Debug, PartialEq, Deserialize)]
         struct RandomStruct {
             #[serde(deserialize_with = "deser_spaced_xmi_id")]
-            value: Vec<XMIIdReference<EnumWeakCMOF>>,
+            value: Vec<XMIIdReference<i32>>,
         }
 
         let target_value = RandomStruct {
@@ -587,12 +560,12 @@ mod tests {
         };
 
         let input_str = r#"{"value": "package_1.cmof#object_1 package_2.cmof#object_2 object_3 package_4.cmof#object_4 object_5"}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
 
         let target_value = RandomStruct { value: vec![] };
 
         let input_str = r#"{"value": ""}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
     }
 
     #[test]
@@ -602,17 +575,17 @@ mod tests {
         #[derive(Clone, Debug, PartialEq, Deserialize)]
         struct RandomStruct {
             #[serde(deserialize_with = "deser_spaced_xmi_id")]
-            value: Vec<XMIIdReference<EnumWeakCMOF>>,
+            value: Vec<XMIIdReference<i32>>,
         }
 
         let error_target = "Granularity error : 'b.cmof#c' containt '.cmof#'";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_global_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_global_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
     }
 
     #[test]
@@ -622,7 +595,7 @@ mod tests {
         #[derive(Clone, Debug, PartialEq, Deserialize)]
         struct RandomStruct {
             #[serde(deserialize_with = "deser_2_space_xmi_id")]
-            value: (XMIIdReference<EnumWeakCMOF>, XMIIdReference<EnumWeakCMOF>),
+            value: (XMIIdReference<i32>, XMIIdReference<i32>),
         }
 
         let target_value = RandomStruct {
@@ -633,28 +606,29 @@ mod tests {
         };
 
         let input_str = r#"{"value": "package_1.cmof#object_1 package_2.cmof#object_2"}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
 
         let error_target = "Need only one whitespace : raw='[]'";
-        check_make_error::<RandomStruct>(r#"{"value": ""}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": ""}"#, &error_target);
 
-        let error_target = "Need only one whitespace : raw='[UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of 'a-b']";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b"}"#, &error_target);
+        let error_target =
+            "Need only one whitespace : raw='[UnLoaded XMIIdReference RefCell of 'a-b']";
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b"}"#, &error_target);
 
-        let error_target = "Need only one whitespace : raw='[UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of 'a-b', UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of 'c-d', UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of 'e-f']";
-        check_make_error::<RandomStruct>(
+        let error_target = "Need only one whitespace : raw='[UnLoaded XMIIdReference RefCell of 'a-b', UnLoaded XMIIdReference RefCell of 'c-d', UnLoaded XMIIdReference RefCell of 'e-f']";
+        check_deser_make_error::<RandomStruct>(
             r#"{"value": "a.cmof#b c.cmof#d e.cmof#f"}"#,
             &error_target,
         );
 
         let error_target = "Granularity error : 'b.cmof#c' containt '.cmof#'";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b.cmof#c"}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_global_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
 
         let error_target = "Wrong type, expected String (deserialiaze_spaced_global_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
     }
 
     #[test]
@@ -664,7 +638,7 @@ mod tests {
         #[derive(Clone, Debug, PartialEq, Deserialize)]
         struct RandomStruct {
             #[serde(deserialize_with = "deser_superclass_object_xmi_id")]
-            value: Vec<XMIIdReference<EnumWeakCMOF>>,
+            value: Vec<XMIIdReference<i32>>,
         }
 
         let target_value = RandomStruct {
@@ -675,31 +649,31 @@ mod tests {
         };
 
         let input_str = r#"{"value": {"_href" :"package_1.cmof#object_1"}}"#;
-        check_make_no_error::<RandomStruct>(input_str, &target_value);
+        check_deser_make_no_error::<RandomStruct>(input_str, &target_value);
 
         let input_str =
             r#"{"value": {"_href" :"package_1.cmof#object_1 package_2.cmof#object_2"}}"#;
         let error_target =
             "Granularity error : 'object_1 package_2.cmof#object_2' containt '.cmof#'";
-        check_make_error::<RandomStruct>(input_str, &error_target);
+        check_deser_make_error::<RandomStruct>(input_str, &error_target);
 
         let error_target = "Wrong content, expected Object with '_href' field (Sting type) for converting to XMIIdReference (deser_superclass_object_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": "a.cmof#b"}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": "a.cmof#b"}"#, &error_target);
 
         let error_target = "Wrong content, expected Object with '_href' field (Sting type) for converting to XMIIdReference (deser_superclass_object_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1.0}"#, &error_target);
 
         let error_target = "Wrong content, expected Object with '_href' field (Sting type) for converting to XMIIdReference (deser_superclass_object_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": true}"#, &error_target);
 
         let error_target = "Wrong Object content, expected '_href' String type field for converting to XMIIdReference (deser_superclass_object_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": {"_href": 1}}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": {"_href": 1}}"#, &error_target);
 
         let error_target = "Wrong Object content, expected '_href' String type field for converting to XMIIdReference (deser_superclass_object_xmi_id)";
-        check_make_error::<RandomStruct>(r#"{"value": {"_href":true}}"#, &error_target);
+        check_deser_make_error::<RandomStruct>(r#"{"value": {"_href":true}}"#, &error_target);
 
         let input_str = r#"{"value": {"href" :"package_1.cmof#object_1"}}"#;
         let error_target = "Wrong Object content, expected '_href' field (Sting type) for converting to XMIIdReference (deser_superclass_object_xmi_id)";
-        check_make_error::<RandomStruct>(input_str, &error_target);
+        check_deser_make_error::<RandomStruct>(input_str, &error_target);
     }
 }

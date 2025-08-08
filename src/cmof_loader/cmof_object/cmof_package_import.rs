@@ -107,7 +107,7 @@ impl SetCMOFTools for CMOFPackageImport {
         // Call on child
         self.imported_package.make_post_deserialize(dict_object)?;
         // Self
-        self.parent.set_href(dict_object)?;
+        self.parent.set_xmi_id_object(dict_object)?;
         //Return
         Ok(())
     }

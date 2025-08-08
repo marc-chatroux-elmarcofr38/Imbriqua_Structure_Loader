@@ -147,7 +147,7 @@ impl SetCMOFTools for CMOFEnumeration {
             }
         }
         // Self
-        self.parent.set_href(dict_object)?;
+        self.parent.set_xmi_id_object(dict_object)?;
         //Return
         Ok(())
     }

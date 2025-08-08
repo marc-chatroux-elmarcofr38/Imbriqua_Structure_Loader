@@ -157,9 +157,9 @@ impl SetCMOFTools for CMOFAssociation {
             }
         }
         // Self
-        &self.parent.set_href(dict_object)?;
-        self.member_end.0.set_href(dict_object)?;
-        self.member_end.1.set_href(dict_object)?;
+        &self.parent.set_xmi_id_object(dict_object)?;
+        self.member_end.0.set_xmi_id_object(dict_object)?;
+        self.member_end.1.set_xmi_id_object(dict_object)?;
         //Return
         Ok(())
     }

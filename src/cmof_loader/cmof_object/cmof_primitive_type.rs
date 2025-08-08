@@ -118,7 +118,7 @@ impl SetCMOFTools for CMOFPrimitiveType {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Self
-        self.parent.set_href(dict_object)?;
+        self.parent.set_xmi_id_object(dict_object)?;
         //Return
         Ok(())
     }

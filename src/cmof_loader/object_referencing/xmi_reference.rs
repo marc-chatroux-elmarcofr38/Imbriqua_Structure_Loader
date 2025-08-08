@@ -131,7 +131,7 @@ impl XMIIdLocalReference {
             ))
         } else {
             Err(anyhow::format_err!(
-                "Call \"label()\" on unset XMI ID : (XMIIdReference<EnumWeakCMOF>) {:#?}",
+                "Call \"label()\" on unset XMI ID : (XMIIdReference) {:#?}",
                 self
             ))
         }
@@ -188,23 +188,23 @@ impl<T> fmt::Debug for XMIIdReference<T> {
         if self.object.borrow().is_some() {
             write!(
                 f,
-                "Loaded XMIIdReference<EnumWeakCMOF> RefCell of \'{}-{}\'",
+                "Loaded XMIIdReference RefCell of \'{}-{}\'",
                 self.package_id, self.object_id,
             )
         } else if self.package_id != String::new() {
             write!(
                 f,
-                "UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of \'{}-{}\'",
+                "UnLoaded XMIIdReference RefCell of \'{}-{}\'",
                 self.package_id, self.object_id,
             )
         } else if self.object_id != String::new() {
             write!(
                 f,
-                "Uncomplete XMIIdReference<EnumWeakCMOF> RefCell of \'{}\'",
+                "Uncomplete XMIIdReference RefCell of \'{}\'",
                 self.object_id,
             )
         } else {
-            write!(f, "Empty XMIIdReference<EnumWeakCMOF> RefCell")
+            write!(f, "Empty XMIIdReference RefCell")
         }
     }
 }
@@ -280,7 +280,7 @@ impl<T: Clone> XMIIdReference<T> {
         let r = r.as_ref();
         if r.is_none() {
             return Err(anyhow::format_err!(
-                "Error in XMIIdReference<EnumWeakCMOF> 'get_object' : None result during borrow of Refcell"
+                "Error in XMIIdReference 'get_object' : None result during borrow of Refcell"
             ));
         }
         Ok(r.unwrap().clone())
@@ -306,7 +306,7 @@ impl<T: Clone> XMIIdReference<T> {
             ))
         } else {
             Err(anyhow::format_err!(
-                "Call \"label()\" on unset XMI ID : (XMIIdReference<EnumWeakCMOF>) {:#?}",
+                "Call \"label()\" on unset XMI ID : (XMIIdReference) {:#?}",
                 self
             ))
         }
@@ -677,22 +677,20 @@ mod tests {
             let ref_1: XMIIdReference<String> = XMIIdReference::default();
             assert_eq!(
                 format!("{:?}", ref_1),
-                String::from("Empty XMIIdReference<EnumWeakCMOF> RefCell")
+                String::from("Empty XMIIdReference RefCell")
             );
 
             let ref_2: XMIIdReference<String> = XMIIdReference::new_local(String::from("object_1"));
             assert_eq!(
                 format!("{:?}", ref_2),
-                String::from("Uncomplete XMIIdReference<EnumWeakCMOF> RefCell of \'object_1\'")
+                String::from("Uncomplete XMIIdReference RefCell of \'object_1\'")
             );
 
             let ref_3: XMIIdReference<String> =
                 XMIIdReference::new_global(String::from("object_2"), String::from("package_2"));
             assert_eq!(
                 format!("{:?}", ref_3),
-                String::from(
-                    "UnLoaded XMIIdReference<EnumWeakCMOF> RefCell of \'package_2-object_2\'"
-                )
+                String::from("UnLoaded XMIIdReference RefCell of \'package_2-object_2\'")
             );
 
             let ref_4: XMIIdReference<String> =
@@ -701,9 +699,7 @@ mod tests {
             ref_4.set_object(content);
             assert_eq!(
                 format!("{:?}", ref_4),
-                String::from(
-                    "Loaded XMIIdReference<EnumWeakCMOF> RefCell of \'package_2-object_2\'"
-                )
+                String::from("Loaded XMIIdReference RefCell of \'package_2-object_2\'")
             );
 
             Ok(())

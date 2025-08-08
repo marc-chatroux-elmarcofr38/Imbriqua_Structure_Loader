@@ -24,9 +24,9 @@ use crate::cmof_loader::*;
 
 // Dependencies section
 use serde::de;
-use std::collections::BTreeMap;
 use std::fmt;
 use std::marker::PhantomData;
+use std::rc::Rc;
 
 // ####################################################################################################
 //
@@ -34,29 +34,19 @@ use std::marker::PhantomData;
 
 /// Deserialising to __BTreeMap__, from array or single object, various Object type tolerant
 /// Not 'Option' tolerant, use 'default' for this
-pub fn deser_btreemap_using_name_as_key<'de: 'te, 'te: 'de, D, V>(
-    deserializer: D,
-) -> Result<BTreeMap<String, V>, D::Error>
+pub fn deser_rc<'de: 'te, 'te: 'de, D, V>(deserializer: D) -> Result<Rc<V>, D::Error>
 where
     D: de::Deserializer<'de>,
     V: de::Deserialize<'te>,
-    V: GetXMIId,
 {
-    struct OneOrVec<String, V>(PhantomData<BTreeMap<String, V>>);
+    struct OneOrOne<V>(PhantomData<Rc<V>>);
 
-    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te> + GetXMIId> de::Visitor<'de>
-        for OneOrVec<String, V>
-    {
-        type Value = BTreeMap<String, V>;
+    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te>> de::Visitor<'de> for OneOrOne<V> {
+        type Value = Rc<V>;
 
         // Requested type description, returned in error case
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("object or array of object, with \"name\" attribute")
-        }
-
-        // Result for Null
-        fn visit_none<E>(self) -> Result<Self::Value, E> {
-            Ok(BTreeMap::new())
+            formatter.write_str("object only, for Rc")
         }
 
         // Result for Object
@@ -65,26 +55,12 @@ where
             E: de::MapAccess<'de>,
         {
             let v: V = de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
-            let k = v.get_xmi_id_object().unwrap();
-            Ok(BTreeMap::from([(k, v)]))
-        }
-
-        // Result for Array
-        fn visit_seq<S>(self, visitor: S) -> Result<Self::Value, S::Error>
-        where
-            S: de::SeqAccess<'de>,
-        {
-            let mut r: BTreeMap<String, V> = BTreeMap::new();
-            let big_v: Vec<V> =
-                de::Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))?;
-            for n in big_v {
-                r.insert(n.get_xmi_id_object().unwrap(), n);
-            }
-            Ok(r)
+            let v = Rc::new(v);
+            Ok(v)
         }
     }
 
-    deserializer.deserialize_any(OneOrVec(PhantomData))
+    deserializer.deserialize_any(OneOrOne(PhantomData))
 }
 
 // ####################################################################################################

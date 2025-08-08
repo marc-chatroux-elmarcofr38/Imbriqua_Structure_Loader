@@ -56,6 +56,44 @@ mod tests {
     use super::*;
     use crate::custom_log_tools::tests::initialize_log_for_test;
 
+    /// Check if 'input_str' can be deserialize in T
+    /// Panic if not error
+    /// Panic if error text is different that 'error_target'
+    pub fn check_deser_make_error<'de, T>(input_str: &'de str, error_target: &str)
+    where
+        T: Deserialize<'de> + std::fmt::Debug,
+    {
+        let r: Result<T, serde_json::Error> = serde_json::from_slice(input_str.as_bytes());
+        assert!(r.is_err());
+
+        // Serde error is longer, because adding error source location
+        let n = error_target
+            .len()
+            .min(format!("{}", r.as_ref().unwrap_err()).len());
+        assert_eq!(
+            format!("{}", r.unwrap_err())[0..n],
+            String::from(error_target)
+        );
+    }
+
+    /// Check if 'input_str' can be deserialize in T
+    /// Panic if error
+    /// Panic if good result is different that 'value_target'
+    pub fn check_deser_make_no_error<'de, T>(input_str: &'de str, value_target: &T)
+    where
+        T: Deserialize<'de> + std::fmt::Debug + PartialEq,
+    {
+        let r: Result<T, serde_json::Error> = serde_json::from_slice(input_str.as_bytes());
+
+        if r.is_err() {
+            error!("{}", r.as_ref().unwrap_err());
+        }
+
+        assert!(r.is_ok());
+
+        assert_eq!(&r.unwrap(), value_target);
+    }
+
     #[test]
     fn loader_dependencies_explorer_01_open_loader() {
         // Logs

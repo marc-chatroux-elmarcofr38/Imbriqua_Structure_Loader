@@ -199,13 +199,13 @@ impl SetCMOFTools for CMOFClass {
             }
         }
         for p in &self.super_class {
-            p.set_href(dict_object)?;
+            p.set_xmi_id_object(dict_object)?;
         }
         for p in &self.super_class_link {
-            p.set_href(dict_object)?;
+            p.set_xmi_id_object(dict_object)?;
         }
         // Self
-        self.parent.set_href(dict_object)?;
+        self.parent.set_xmi_id_object(dict_object)?;
         //Return
         Ok(())
     }

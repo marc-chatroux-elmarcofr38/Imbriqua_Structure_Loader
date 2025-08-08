@@ -23,44 +23,6 @@ If not, see <https://www.gnu.org/licenses/>.
 use crate::cmof_loader::*;
 
 // Dependencies section
-use serde::de;
-use serde_json::Value;
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-/// Convert string with space to vec of string, splitting on space
-fn deser_href<'de, D, T: Clone>(deserializer: D) -> Result<XMIIdReference<T>, D::Error>
-where
-    D: de::Deserializer<'de>,
-{
-    Ok(match de::Deserialize::deserialize(deserializer)? {
-        // Split text
-        Value::String(s) => match s.find(".cmof#") {
-            Some(split_index) => {
-                let a = s[split_index..].replace(".cmof#", "").to_string();
-                let b = s[..split_index].to_string();
-                XMIIdReference::new_global(a, b)
-            }
-            None => {
-                return Err(de::Error::custom(format!(
-                    "HRef deserialize error : no \".cmof#\" for {} (deser_href)",
-                    s
-                )))
-            }
-        },
-        _ => {
-            return Err(de::Error::custom(
-                "Wrong type, expected String for converting to HRef Reference (deser_href)",
-            ))
-        }
-    })
-}
-
-pub trait SetHRef {
-    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error>;
-}
 
 // ####################################################################################################
 //
@@ -71,43 +33,9 @@ pub trait SetHRef {
 /// RUST Struct for representing RedefinedProperty object
 pub struct HRefRedefinedProperty {
     /// Link to property of RedefinedProperty
-    #[serde(deserialize_with = "deser_href")]
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_href")]
     pub href: XMIIdReference<Weak<CMOFProperty>>,
-}
-
-impl SetHRef for HRefRedefinedProperty {
-    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
-        // Criteria
-        if self.href.get_object().is_ok() {
-            panic!("'{:#?}' is already loaded", &self.href)
-        };
-
-        // Catch
-        let k = self.href.label()?;
-        let r = dict_object.get(&k);
-        if r.is_none() {
-            return Err(anyhow::format_err!(
-                "Matching error in post_deserialize : \"{}\" not find in dict_object",
-                k
-            ));
-        } else {
-            let v = r.unwrap();
-            match v {
-                EnumCMOF::CMOFProperty(c) => {
-                    self.href.set_object(Rc::downgrade(c));
-                }
-                _ => {
-                    return Err(anyhow::format_err!(
-                        "Unexpected type for '{}' (require CMOFProperty reference only, HRefRedefinedProperty)",
-                        k
-                    ));
-                }
-            }
-        }
-        // Return
-        Ok(())
-    }
 }
 
 // ####################################################################################################
@@ -119,43 +47,9 @@ impl SetHRef for HRefRedefinedProperty {
 /// RUST Struct for representing SubsettedProperty object
 pub struct HRefSubsettedProperty {
     /// Link to property of SubsettedProperty
-    #[serde(deserialize_with = "deser_href")]
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_href")]
     pub href: XMIIdReference<Weak<CMOFProperty>>,
-}
-
-impl SetHRef for HRefSubsettedProperty {
-    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
-        // Criteria
-        if self.href.get_object().is_ok() {
-            panic!("'{:#?}' is already loaded", &self.href)
-        };
-
-        // Catch
-        let k = self.href.label()?;
-        let r = dict_object.get(&k);
-        if r.is_none() {
-            return Err(anyhow::format_err!(
-                "Matching error in post_deserialize : \"{}\" not find in dict_object",
-                k
-            ));
-        } else {
-            let v = r.unwrap();
-            match v {
-                EnumCMOF::CMOFProperty(c) => {
-                    self.href.set_object(Rc::downgrade(c));
-                }
-                _ => {
-                    return Err(anyhow::format_err!(
-                        "Unexpected type for '{}' (require CMOFProperty reference only, HRefSubsettedProperty)",
-                        k
-                    ));
-                }
-            }
-        }
-        // Return
-        Ok(())
-    }
 }
 
 // ####################################################################################################
@@ -167,43 +61,9 @@ impl SetHRef for HRefSubsettedProperty {
 /// RUST Struct for representing SuperClass Tag
 pub struct HRefSuperClass {
     /// Link to Class of SuperClass
-    #[serde(deserialize_with = "deser_href")]
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_href")]
     pub href: XMIIdReference<Weak<CMOFClass>>,
-}
-
-impl SetHRef for HRefSuperClass {
-    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
-        // Criteria
-        if self.href.get_object().is_ok() {
-            panic!("'{:#?}' is already loaded", &self.href)
-        };
-
-        // Catch
-        let k = self.href.label()?;
-        let r = dict_object.get(&k);
-        if r.is_none() {
-            return Err(anyhow::format_err!(
-                "Matching error in post_deserialize : \"{}\" not find in dict_object",
-                k
-            ));
-        } else {
-            let v = r.unwrap();
-            match v {
-                EnumCMOF::CMOFClass(c) => {
-                    self.href.set_object(Rc::downgrade(c));
-                }
-                _ => {
-                    return Err(anyhow::format_err!(
-                        "Unexpected type for '{}' (require CMOFPackageImport reference only, HRefSuperClass)",
-                        k
-                    ));
-                }
-            }
-        }
-        // Return
-        Ok(())
-    }
 }
 
 // ####################################################################################################
@@ -215,43 +75,9 @@ impl SetHRef for HRefSuperClass {
 /// RUST Struct for representing ImportedPackage object
 pub struct HRefImportedPackage {
     /// Link of the package
-    #[serde(deserialize_with = "deser_href")]
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_href")]
     pub href: XMIIdReference<Weak<CMOFPackage>>,
-}
-
-impl SetHRef for HRefImportedPackage {
-    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
-        // Criteria
-        if self.href.get_object().is_ok() {
-            panic!("'{:#?}' is already loaded", &self.href)
-        };
-
-        // Catch
-        let k = self.href.label()?;
-        let r = dict_object.get(&k);
-        if r.is_none() {
-            return Err(anyhow::format_err!(
-                "Matching error in post_deserialize : \"{}\" not find in dict_object",
-                k
-            ));
-        } else {
-            let v = r.unwrap();
-            match v {
-                EnumCMOF::CMOFPackage(c) => {
-                    self.href.set_object(Rc::downgrade(c));
-                }
-                _ => {
-                    return Err(anyhow::format_err!(
-                        "Unexpected type for '{}' (require CMOFPackage reference only, HRefImportedPackage)",
-                        k
-                    ));
-                }
-            }
-        }
-        // Return
-        Ok(())
-    }
 }
 
 // ####################################################################################################
@@ -263,43 +89,9 @@ impl SetHRef for HRefImportedPackage {
 /// RUST Struct for representing Class link
 pub struct HRefClass {
     /// Link of the Class type
-    #[serde(deserialize_with = "deser_href")]
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_href")]
     pub href: XMIIdReference<Weak<CMOFClass>>,
-}
-
-impl SetHRef for HRefClass {
-    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
-        // Criteria
-        if self.href.get_object().is_ok() {
-            panic!("'{:#?}' is already loaded", &self.href)
-        };
-
-        // Catch
-        let k = self.href.label()?;
-        let r = dict_object.get(&k);
-        if r.is_none() {
-            return Err(anyhow::format_err!(
-                "Matching error in post_deserialize : \"{}\" not find in dict_object",
-                k
-            ));
-        } else {
-            let v = r.unwrap();
-            match v {
-                EnumCMOF::CMOFClass(c) => {
-                    self.href.set_object(Rc::downgrade(c));
-                }
-                _ => {
-                    return Err(anyhow::format_err!(
-                        "Unexpected type for '{}' (require CMOFClass reference only, HRefClass)",
-                        k
-                    ));
-                }
-            }
-        }
-        // Return
-        Ok(())
-    }
 }
 
 // ####################################################################################################
@@ -311,40 +103,9 @@ impl SetHRef for HRefClass {
 /// RUST Struct for representing Primitive Type link
 pub struct HRefPrimitiveType {
     /// Link of the Class type
-    #[serde(deserialize_with = "deser_href")]
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_href")]
     pub href: XMIIdReference<Weak<CMOFPrimitiveType>>,
-}
-
-impl SetHRef for HRefPrimitiveType {
-    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
-        // Criteria
-        if self.href.get_object().is_ok() {
-            panic!("'{:#?}' is already loaded", &self.href)
-        };
-
-        // Catch
-        let k = self.href.label()?;
-        let r = dict_object.get(&k);
-        if r.is_none() {
-            return Err(anyhow::format_err!(
-                "Matching error in post_deserialize : \"{}\" not find in dict_object",
-                k
-            ));
-        } else {
-            let v = r.unwrap();
-            match v {
-                EnumCMOF::CMOFPrimitiveType(c) => {
-                    self.href.set_object(Rc::downgrade(c));
-                }
-                _ => {
-                    return Err(anyhow::format_err!("Unexpected type for '{}' (require CMOFPrimitiveType reference only, HRefPrimitiveType)", k));
-                }
-            }
-        }
-        // Return
-        Ok(())
-    }
 }
 
 // ####################################################################################################
@@ -356,40 +117,9 @@ impl SetHRef for HRefPrimitiveType {
 /// RUST Struct for representing Data Type link
 pub struct HRefDataType {
     /// Link of the Class type
-    #[serde(deserialize_with = "deser_href")]
+    #[serde(deserialize_with = "deser_xmi_id")]
     #[serde(rename = "_href")]
     pub href: XMIIdReference<Weak<CMOFDataType>>,
-}
-
-impl SetHRef for HRefDataType {
-    fn set_href(&self, dict_object: &mut BTreeMap<String, EnumCMOF>) -> Result<(), anyhow::Error> {
-        // Criteria
-        if self.href.get_object().is_ok() {
-            panic!("'{:#?}' is already loaded", &self.href)
-        };
-
-        // Catch
-        let k = self.href.label()?;
-        let r = dict_object.get(&k);
-        if r.is_none() {
-            return Err(anyhow::format_err!(
-                "Matching error in post_deserialize : \"{}\" not find in dict_object",
-                k
-            ));
-        } else {
-            let v = r.unwrap();
-            match v {
-                EnumCMOF::CMOFDataType(c) => {
-                    self.href.set_object(Rc::downgrade(c));
-                }
-                _ => {
-                    return Err(anyhow::format_err!("Unexpected type for '{}' (require CMOFDataType reference only, HRefDataType)", k));
-                }
-            }
-        }
-        // Return
-        Ok(())
-    }
 }
 
 // ####################################################################################################
@@ -399,19 +129,111 @@ impl SetHRef for HRefDataType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cmof_loader::tests::check_deser_make_no_error;
     use crate::custom_log_tools::tests::initialize_log_for_test;
 
     #[test]
-    fn test_01_creation() {
-        fn test() -> Result<(), anyhow::Error> {
-            initialize_log_for_test();
+    fn href_redefined_property_01_creation() {
+        initialize_log_for_test();
 
-            panic!();
+        let value_target = HRefRedefinedProperty {
+            href: XMIIdReference::new_local("object_1".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "object_1"}"#, &value_target);
 
-            Ok(())
-        }
+        let value_target = HRefRedefinedProperty {
+            href: XMIIdReference::new_global("object_2".to_string(), "package_2".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "package_2.cmof#object_2"}"#, &value_target);
+    }
 
-        let r = test();
-        assert!(r.is_ok());
+    #[test]
+    fn href_subsetted_property_02_creation() {
+        initialize_log_for_test();
+
+        let value_target = HRefSubsettedProperty {
+            href: XMIIdReference::new_local("object_1".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "object_1"}"#, &value_target);
+
+        let value_target = HRefSubsettedProperty {
+            href: XMIIdReference::new_global("object_2".to_string(), "package_2".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "package_2.cmof#object_2"}"#, &value_target);
+    }
+
+    #[test]
+    fn href_super_class_03_creation() {
+        initialize_log_for_test();
+
+        let value_target = HRefSuperClass {
+            href: XMIIdReference::new_local("object_1".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "object_1"}"#, &value_target);
+
+        let value_target = HRefSuperClass {
+            href: XMIIdReference::new_global("object_2".to_string(), "package_2".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "package_2.cmof#object_2"}"#, &value_target);
+    }
+
+    #[test]
+    fn href_imported_package_04_creation() {
+        initialize_log_for_test();
+
+        let value_target = HRefImportedPackage {
+            href: XMIIdReference::new_local("object_1".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "object_1"}"#, &value_target);
+
+        let value_target = HRefImportedPackage {
+            href: XMIIdReference::new_global("object_2".to_string(), "package_2".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "package_2.cmof#object_2"}"#, &value_target);
+    }
+
+    #[test]
+    fn href_class_05_creation() {
+        initialize_log_for_test();
+
+        let value_target = HRefClass {
+            href: XMIIdReference::new_local("object_1".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "object_1"}"#, &value_target);
+
+        let value_target = HRefClass {
+            href: XMIIdReference::new_global("object_2".to_string(), "package_2".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "package_2.cmof#object_2"}"#, &value_target);
+    }
+
+    #[test]
+    fn href_primitive_type_06_creation() {
+        initialize_log_for_test();
+
+        let value_target = HRefPrimitiveType {
+            href: XMIIdReference::new_local("object_1".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "object_1"}"#, &value_target);
+
+        let value_target = HRefPrimitiveType {
+            href: XMIIdReference::new_global("object_2".to_string(), "package_2".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "package_2.cmof#object_2"}"#, &value_target);
+    }
+
+    #[test]
+    fn href_data_type_07_creation() {
+        initialize_log_for_test();
+
+        let value_target = HRefDataType {
+            href: XMIIdReference::new_local("object_1".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "object_1"}"#, &value_target);
+
+        let value_target = HRefDataType {
+            href: XMIIdReference::new_global("object_2".to_string(), "package_2".to_string()),
+        };
+        check_deser_make_no_error(r#"{"_href" : "package_2.cmof#object_2"}"#, &value_target);
     }
 }
