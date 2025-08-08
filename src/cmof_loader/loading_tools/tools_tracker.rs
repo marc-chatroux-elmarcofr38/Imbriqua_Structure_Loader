@@ -134,15 +134,17 @@ impl LoadingTracker {
         parent_label: &str,
     ) -> Result<(), anyhow::Error> {
         // Load
-        self.prepare(main_file, package_id, parent_label)?;
+        let r = self.prepare(main_file, package_id, parent_label);
+        catch_error_and_log(r, &self)?;
         // Create dict for collect_object and make_post_deserialize
         let mut dict_setting: BTreeMap<String, String> = BTreeMap::new();
         let mut dict_object: BTreeMap<String, EnumCMOF> = BTreeMap::new();
         // Collect
-        self.collect_object(&mut dict_setting, &mut dict_object)?;
+        let r = self.collect_object(&mut dict_setting, &mut dict_object);
+        catch_error_and_log(r, &self)?;
         // Make post deserialize
         let r = self.make_post_deserialize(&mut dict_object);
-        catch_error_and_log(r, &dict_object)?;
+        catch_error_and_log(r, &self)?;
         for (_, x) in &dict_object {
             match x {
                 EnumCMOF::CMOFClass(class) => {
@@ -276,5 +278,29 @@ impl SetCMOFTools for LoadingTracker {
             p.make_post_deserialize(dict_object)?;
         }
         Ok(())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

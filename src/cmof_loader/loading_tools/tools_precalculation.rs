@@ -66,7 +66,7 @@ pub struct LoadingPreCalculation {
     ///     ponteration_type: OneToMany,
     ///     is_self_referencing: false,
     /// },
-    pub association_relation: BTreeMap<String, AssociationRelation>,
+    // pub association_relation: BTreeMap<String, AssociationRelation>,
     /// For each CMOFClass (as model_name format), all associed CMOFAssociation with rank (provided by association_relation)
     /// EX :
     /// "CorrelationProperty": [
@@ -87,7 +87,7 @@ pub struct LoadingPreCalculation {
     ///         IsSecond,
     ///     ),
     /// ],
-    pub association_relation_by_class: BTreeMap<String, Vec<(String, RankRelation)>>,
+    // pub association_relation_by_class: BTreeMap<String, Vec<(String, RankRelation)>>,
     /// For each CMOFClass (as model_name format), all CMOFClass (as model_name format) who use it as "Super"
     pub reverse_super_link: BTreeMap<String, Vec<Rc<CMOFClass>>>,
 }
@@ -96,9 +96,33 @@ impl LoadingPreCalculation {
     pub fn new() -> Self {
         LoadingPreCalculation {
             owned_member_type_list: BTreeMap::new(),
-            association_relation: BTreeMap::new(),
-            association_relation_by_class: BTreeMap::new(),
+            // association_relation: BTreeMap::new(),
+            // association_relation_by_class: BTreeMap::new(),
             reverse_super_link: BTreeMap::new(),
         }
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

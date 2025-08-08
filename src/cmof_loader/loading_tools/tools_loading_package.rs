@@ -128,3 +128,27 @@ impl SetCMOFTools for LoadingPackage {
         Ok(())
     }
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
+    }
+}
