@@ -32,7 +32,7 @@ use std::rc::Rc;
 //
 // ####################################################################################################
 
-/// Deserialising to __BTreeMap__, from array or single object, various Object type tolerant
+/// Deserialising to Rc Object, from various Object type tolerant
 /// Not 'Option' tolerant, use 'default' for this
 pub fn deser_rc<'de: 'te, 'te: 'de, D, V>(deserializer: D) -> Result<Rc<V>, D::Error>
 where
