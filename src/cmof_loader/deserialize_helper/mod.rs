@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("deserialize_helper.md")]
+#![doc = include_str!("mod.md")]
 
 // Mod section
 mod default_values;
@@ -26,12 +26,10 @@ mod deser_booleans;
 mod deser_collections;
 mod deser_numbers;
 mod deser_object_ref;
-mod deser_post_treatment;
 mod deser_string;
 pub use default_values::*;
 pub use deser_booleans::*;
 pub use deser_collections::*;
 pub use deser_numbers::*;
 pub use deser_object_ref::*;
-pub use deser_post_treatment::*;
 pub use deser_string::*;
