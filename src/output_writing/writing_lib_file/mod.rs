@@ -18,7 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../../doc/writing_lib_file.md")]
+#![doc = include_str!("../../../doc/writing_lib_file.md")]
 
 // Package section
 use crate::cmof_loader::*;
@@ -44,7 +44,7 @@ impl LoadingTracker {
         // Part 1 : Head of lib.rs, using template
         let _ = writeln!(
             writer,
-            include_str!("../../template/lib_part_1_common.tmpl"),
+            include_str!("../template/lib_part_1_common.tmpl"),
             folder_name = self.get_output_folder(),
         );
 
@@ -105,12 +105,12 @@ impl LoadingTracker {
 impl WritingLibFile for CMOFAssociation {
     fn wrt_lib_file_level(&self, writer: &mut File) -> Result<(), anyhow::Error> {
         // Only for "Many to Many"
-        let association = self.get_association_relation();
-        if association.ponteration_type == RelationPonderationType::ManyToMany {
-            if !association.is_self_referencing {
+        let association = self.get_association_relation()?;
+        if matches!(association, Relation::ManyToManyRelation(_)) {
+            if !association.is_self_referencing()? {
                 let _ = writeln!(
                     writer,
-                    include_str!("../../template/lib_part_2_association.tmpl"),
+                    include_str!("../template/lib_part_2_association.tmpl"),
                     model_name = self.model_name,
                     table_name = self.table_name,
                 );
@@ -129,7 +129,7 @@ impl WritingLibFile for CMOFClass {
     fn wrt_lib_file_level(&self, writer: &mut File) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             writer,
-            include_str!("../../template/lib_part_2_class.tmpl"),
+            include_str!("../template/lib_part_2_class.tmpl"),
             model_name = self.model_name,
             table_name = self.table_name,
         );
@@ -141,7 +141,7 @@ impl WritingLibFile for CMOFDataType {
     fn wrt_lib_file_level(&self, writer: &mut File) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             writer,
-            include_str!("../../template/lib_part_2_datatype.tmpl"),
+            include_str!("../template/lib_part_2_datatype.tmpl"),
             model_name = self.model_name,
             table_name = self.table_name,
         );
@@ -153,7 +153,7 @@ impl WritingLibFile for CMOFEnumeration {
     fn wrt_lib_file_level(&self, writer: &mut File) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             writer,
-            include_str!("../../template/lib_part_2_enumeration.tmpl"),
+            include_str!("../template/lib_part_2_enumeration.tmpl"),
             model_name = self.model_name,
             table_name = self.table_name,
         );
@@ -165,7 +165,7 @@ impl WritingLibFile for CMOFPrimitiveType {
     fn wrt_lib_file_level(&self, writer: &mut File) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             writer,
-            include_str!("../../template/lib_part_2_primitive_type.tmpl"),
+            include_str!("../template/lib_part_2_primitive_type.tmpl"),
             model_name = self.model_name,
             table_name = self.table_name,
         );

@@ -29,17 +29,36 @@ use crate::custom_log_tools::*;
 
 // Dependencies section
 
+// // ####################################################################################################
+// //
+// // ####################################################################################################
+
 #[derive(Debug, Deserialize)]
 struct SimpleValue {
     pub key: String,
     pub value: String,
 }
 
-pub fn read_enumeration_default_values() -> Result<BTreeMap<String, String>, anyhow::Error> {
+// // ####################################################################################################
+// //
+// // ####################################################################################################
+
+/// Storage content of "metamodel_file_extension/enumeration_default_value.json" file
+pub type EnumerationDefaultValues = BTreeMap<String, String>;
+
+/// Storage content of "metamodel_file_extension/primitive_type_conversion.json" file
+pub type PrimitiveTypeConversion = BTreeMap<String, String>;
+
+// // ####################################################################################################
+// //
+// // ####################################################################################################
+
+/// Provide content of "metamodel_file_extension/enumeration_default_value.json" file
+pub fn read_enumeration_default_values() -> Result<EnumerationDefaultValues, anyhow::Error> {
     let reader_path = Path::new("metamodel_file_extension/enumeration_default_value.json");
     let reader = reader_path.get_file_content()?;
     let values: Vec<SimpleValue> = serde_json::from_str(&reader)?;
-    let values: BTreeMap<String, String> = values
+    let values: EnumerationDefaultValues = values
         .iter()
         .map(|x| (x.key.clone(), x.value.clone()))
         .collect();
@@ -47,6 +66,11 @@ pub fn read_enumeration_default_values() -> Result<BTreeMap<String, String>, any
     Ok(values)
 }
 
+// // ####################################################################################################
+// //
+// // ####################################################################################################
+
+/// Provide content of "metamodel_file_extension/primitive_type_conversion.json" file
 pub fn read_primitive_type_conversion() -> Result<BTreeMap<String, String>, anyhow::Error> {
     let reader_path = Path::new("metamodel_file_extension/primitive_type_conversion.json");
     let reader = reader_path.get_file_content()?;
