@@ -28,7 +28,7 @@ use crate::cmof_loader::*;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, XMIIdentification)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Association Object
 pub struct CMOFAssociation {
@@ -157,24 +157,11 @@ impl SetCMOFTools for CMOFAssociation {
             }
         }
         // Self
-        &self.parent.set_xmi_id_object(dict_object)?;
-        self.member_end.0.set_xmi_id_object(dict_object)?;
-        self.member_end.1.set_xmi_id_object(dict_object)?;
+        set_xmi_id_object(&self.parent, dict_object)?;
+        set_xmi_id_object(&self.member_end.0, dict_object)?;
+        set_xmi_id_object(&self.member_end.1, dict_object)?;
         //Return
         Ok(())
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl GetXMIId for CMOFAssociation {
-    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
-        self.xmi_id.label()
-    }
-    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
-        Ok(self.xmi_id.get_object_id())
     }
 }
 

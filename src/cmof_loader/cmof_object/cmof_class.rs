@@ -30,7 +30,7 @@ use crate::cmof_loader::*;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, XMIIdentification)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Class Object
 pub struct CMOFClass {
@@ -199,28 +199,15 @@ impl SetCMOFTools for CMOFClass {
             }
         }
         for p in &self.super_class {
-            p.set_xmi_id_object(dict_object)?;
+            set_xmi_id_object(p, dict_object)?;
         }
         for p in &self.super_class_link {
-            p.set_xmi_id_object(dict_object)?;
+            set_xmi_id_object(p, dict_object)?;
         }
         // Self
-        self.parent.set_xmi_id_object(dict_object)?;
+        set_xmi_id_object(&self.parent, dict_object)?;
         //Return
         Ok(())
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl GetXMIId for CMOFClass {
-    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
-        self.xmi_id.label()
-    }
-    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
-        Ok(self.xmi_id.get_object_id())
     }
 }
 
@@ -237,7 +224,7 @@ impl CMOFClass {
             match object {
                 EnumCMOF::CMOFClass(class) => {
                     for (_, super_class_reference) in class.get_super_class()? {
-                        let super_class = super_class_reference.get_object_as_class()?;
+                        let super_class = get_object_as_class(&super_class_reference)?;
                         if self.get_xmi_id_field()? == super_class.get_xmi_id_field()? {
                             self.reverse_super.borrow_mut().push(Rc::downgrade(class));
                         }
@@ -258,14 +245,10 @@ impl CMOFClass {
             if property.association.is_none() {
                 continue;
             }
-            let association: &Rc<CMOFAssociation> = &property
-                .association
-                .as_ref()
-                .unwrap()
-                .get_object_as_association()?
-                .clone();
-            let object_1: Rc<CMOFProperty> = association.member_end.0.get_object_as_property()?;
-            let object_2: Rc<CMOFProperty> = association.member_end.0.get_object_as_property()?;
+            let association: &Rc<CMOFAssociation> =
+                &get_object_as_association(property.association.as_ref().unwrap())?.clone();
+            let object_1: Rc<CMOFProperty> = get_object_as_property(&association.member_end.0)?;
+            let object_2: Rc<CMOFProperty> = get_object_as_property(&association.member_end.0)?;
             let value: Relation = if object_1.upper > infinitable::Finite(1)
                 && object_2.upper > infinitable::Finite(1)
             {

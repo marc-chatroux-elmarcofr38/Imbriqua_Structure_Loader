@@ -52,7 +52,8 @@ impl CMOFProperty {
         let content = if self.simple_type.is_some() {
             if self.association.is_none() {
                 // Simple field, i.e. other Enumeration
-                let a = self.simple_type.as_ref().unwrap().get_object_as_enum()?;
+                let a = self.simple_type.as_ref().unwrap();
+                let a = get_object_as_enum(a)?;
                 match a {
                     EnumCMOF::CMOFClass(c) => c.model_name.clone(),
                     EnumCMOF::CMOFPrimitiveType(c) => {

@@ -19,6 +19,8 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(dead_code)]
 #![warn(missing_docs)]
 
+//! test
+
 // Package section
 use crate::cmof_loader::*;
 

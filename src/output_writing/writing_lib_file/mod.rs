@@ -27,6 +27,8 @@ use crate::custom_log_tools::*;
 
 use crate::output_writing::*;
 
+use ::xmi_tools::XMIIdentification;
+
 // Dependencies section
 
 // ####################################################################################################

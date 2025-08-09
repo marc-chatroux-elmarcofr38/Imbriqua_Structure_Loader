@@ -28,66 +28,74 @@ use crate::cmof_loader::*;
 //
 // ####################################################################################################
 
-impl XMIIdReference<EnumWeakCMOF> {
-    pub fn get_object_as_association(&self) -> Result<Rc<CMOFAssociation>, anyhow::Error> {
-        let object_class = self.get_object()?;
-        match object_class {
-            EnumWeakCMOF::CMOFAssociation(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(content),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
+pub fn get_object_as_association(
+    object: &XMIIdReference<EnumWeakCMOF>,
+) -> Result<Rc<CMOFAssociation>, anyhow::Error> {
+    let object_class = object.get_object()?;
+    match object_class {
+        EnumWeakCMOF::CMOFAssociation(c) => {
+            let r = c.upgrade();
+            match r {
+                Some(content) => Ok(content),
+                None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", object)),
             }
-            _ => Err(anyhow::format_err!(
-                "'get_object_as_association' error, unexpected type ({:?})",
-                self
-            )),
         }
+        _ => Err(anyhow::format_err!(
+            "'get_object_as_association' error, unexpected type ({:?})",
+            object
+        )),
     }
-    pub fn get_object_as_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
-        let object_class = self.get_object()?;
-        match object_class {
-            EnumWeakCMOF::CMOFClass(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(content),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
+}
+pub fn get_object_as_class(
+    object: &XMIIdReference<EnumWeakCMOF>,
+) -> Result<Rc<CMOFClass>, anyhow::Error> {
+    let object_class = object.get_object()?;
+    match object_class {
+        EnumWeakCMOF::CMOFClass(c) => {
+            let r = c.upgrade();
+            match r {
+                Some(content) => Ok(content),
+                None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", object)),
             }
-            _ => Err(anyhow::format_err!(
-                "'get_object_as_class' error, unexpected type ({:?})",
-                self
-            )),
         }
+        _ => Err(anyhow::format_err!(
+            "'get_object_as_class' error, unexpected type ({:?})",
+            object
+        )),
     }
-    pub fn get_object_as_property(&self) -> Result<Rc<CMOFProperty>, anyhow::Error> {
-        let object_class = self.get_object()?;
-        match object_class {
-            EnumWeakCMOF::CMOFProperty(c) => {
-                let r = c.upgrade();
-                match r {
-                    Some(content) => Ok(content),
-                    None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", self)),
-                }
+}
+pub fn get_object_as_property(
+    object: &XMIIdReference<EnumWeakCMOF>,
+) -> Result<Rc<CMOFProperty>, anyhow::Error> {
+    let object_class = object.get_object()?;
+    match object_class {
+        EnumWeakCMOF::CMOFProperty(c) => {
+            let r = c.upgrade();
+            match r {
+                Some(content) => Ok(content),
+                None => Err(anyhow::format_err!("Upgrade result 'None' : {:?}", object)),
             }
-            _ => Err(anyhow::format_err!(
-                "'get_object_as_property' error, unexpected type ({:?})",
-                self
-            )),
         }
+        _ => Err(anyhow::format_err!(
+            "'get_object_as_property' error, unexpected type ({:?})",
+            object
+        )),
     }
+}
 
-    /// Get the 'object' of the XMIIdReference, upgrated as EnumCMOF (Rc object)
-    pub fn get_object_as_enum(&self) -> Result<EnumCMOF, anyhow::Error> {
-        self.get_object()?.upgrade()
-    }
+/// Get the 'object' of the XMIIdReference, upgrated as EnumCMOF (Rc object)
+pub fn get_object_as_enum(
+    object: &XMIIdReference<EnumWeakCMOF>,
+) -> Result<EnumCMOF, anyhow::Error> {
+    object.get_object()?.upgrade()
+}
 
-    /// Get the weak 'object' of the XMIIdReference, NOT upgrated, as EnumWeakCMOF (Weak object)
-    pub fn get_object_as_enum_weak(&self) -> Result<EnumWeakCMOF, anyhow::Error> {
-        let object_class = self.get_object()?;
-        Ok(object_class)
-    }
+/// Get the weak 'object' of the XMIIdReference, NOT upgrated, as EnumWeakCMOF (Weak object)
+pub fn get_object_as_enum_weak(
+    object: &XMIIdReference<EnumWeakCMOF>,
+) -> Result<EnumWeakCMOF, anyhow::Error> {
+    let object_class = object.get_object()?;
+    Ok(object_class)
 }
 
 // ####################################################################################################

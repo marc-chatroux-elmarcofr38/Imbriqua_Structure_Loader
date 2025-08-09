@@ -116,7 +116,7 @@ impl CMOFClass {
 
         // For direct "Super"
         for (_, class) in &self.get_super_class()? {
-            let object_class = class.get_object_as_enum()?;
+            let object_class = get_object_as_enum(&class)?;
             let object_class = match object_class {
                 EnumCMOF::CMOFClass(c) => c,
                 _ => panic!("dfghjdfghjdfgh"),
@@ -171,7 +171,7 @@ impl CMOFClass {
 
         // For "Super"
         for (_, class) in self.get_super_class()? {
-            let object_class = class.get_object_as_class()?;
+            let object_class = get_object_as_class(class)?;
             CMOFClass::format_related_direct_super(&self, &object_class, &mut result)?;
         }
 
@@ -422,7 +422,7 @@ impl CMOFClass {
         class: &XMIIdReference<EnumWeakCMOF>,
         result: &mut String,
     ) -> Result<(), anyhow::Error> {
-        let object_class = class.get_object_as_class()?;
+        let object_class = get_object_as_class(&class)?;
         // Comment
         result.push_str(
             format!(
@@ -834,7 +834,7 @@ impl CMOFClass {
         if iter_direct_super.len() > 0 {
             result.push_str("## Direct Super :\n");
             for (_, class) in iter_direct_super {
-                let direct_super = class.get_object_as_class()?;
+                let direct_super = get_object_as_class(&class)?;
                 let field_name = &direct_super.super_field_name;
                 // Property head
                 result.push_str(

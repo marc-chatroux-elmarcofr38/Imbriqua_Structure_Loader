@@ -40,11 +40,11 @@ pub fn deser_btreemap_using_name_as_key<'de: 'te, 'te: 'de, D, V>(
 where
     D: de::Deserializer<'de>,
     V: de::Deserialize<'te>,
-    V: GetXMIId,
+    V: XMIIdentification,
 {
     struct OneOrVec<String, V>(PhantomData<BTreeMap<String, V>>);
 
-    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te> + GetXMIId> de::Visitor<'de>
+    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te> + XMIIdentification> de::Visitor<'de>
         for OneOrVec<String, V>
     {
         type Value = BTreeMap<String, V>;
@@ -103,7 +103,7 @@ mod tests {
         value: String,
     }
 
-    impl GetXMIId for SecondRandomStruct {
+    impl XMIIdentification for SecondRandomStruct {
         fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
             Ok(self.value.clone())
         }

@@ -30,7 +30,7 @@ use std::collections::BTreeMap;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, XMIIdentification)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Property Object
 pub struct CMOFProperty {
@@ -229,28 +229,15 @@ impl SetCMOFTools for CMOFProperty {
                 .make_post_deserialize(dict_object)?;
         }
         if self.simple_type.is_some() {
-            self.simple_type.as_ref().unwrap().set_xmi_id_object(dict_object)?;
+            set_xmi_id_object(self.simple_type.as_ref().unwrap(), dict_object)?;
         }
         if self.association.is_some() {
-            self.association.as_ref().unwrap().set_xmi_id_object(dict_object)?;
+            set_xmi_id_object(self.association.as_ref().unwrap(), dict_object)?;
         }
         // Self
-        self.parent.set_xmi_id_object(dict_object)?;
+        set_xmi_id_object(&self.parent, dict_object)?;
         //Return
         Ok(())
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl GetXMIId for CMOFProperty {
-    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
-        self.xmi_id.label()
-    }
-    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
-        Ok(self.xmi_id.get_object_id())
     }
 }
 

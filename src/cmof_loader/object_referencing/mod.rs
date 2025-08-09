@@ -21,7 +21,33 @@ If not, see <https://www.gnu.org/licenses/>.
 #![doc = include_str!("mod.md")]
 
 // Mod section
-mod href_object;
-mod xmi_reference;
+pub mod href_object;
 pub use href_object::*;
-pub use xmi_reference::*;
+
+// Package section
+use crate::cmof_loader::*;
+
+use std::collections::BTreeMap;
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+/// Tools for CMOF Object
+pub trait SetCMOFTools {
+    /// Allow to finish XMIId of object and collect all CMOF object
+    /// Use "dict_setting" for share content between parent object to child object
+    /// Use "dict_object" for collect all object
+    fn collect_object(
+        &mut self,
+        dict_setting: &mut BTreeMap<String, String>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error>;
+    /// Allow to define the post-treatment method : post_deserialize
+    /// Link external XMI Id of object by matching it on "dict_object"
+    /// Use "dict_object" for obtain object between objects
+    fn make_post_deserialize(
+        &self,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
+    ) -> Result<(), anyhow::Error>;
+}

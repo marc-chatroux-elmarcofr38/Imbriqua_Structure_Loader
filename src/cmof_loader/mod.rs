@@ -37,6 +37,9 @@ use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
 use crate::output_result_manager::*;
 
+pub use ::xmi_tools::*;
+pub use ::xmi_tools_derive::*;
+
 // Dependencies section
 pub use serde::Deserialize;
 pub use std::collections::BTreeMap;

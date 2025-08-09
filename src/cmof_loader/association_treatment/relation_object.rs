@@ -132,10 +132,10 @@ impl RelationTools for OneToOneRelation {
         self.to.clone()
     }
     fn get_from_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
-        self.from.parent.get_object_as_class()
+        get_object_as_class(&self.from.parent)
     }
     fn get_to_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
-        self.to.parent.get_object_as_class()
+        get_object_as_class(&self.to.parent)
     }
     fn is_self_referencing(&self) -> Result<bool, anyhow::Error> {
         let from_id = self.from.parent.label()?;
@@ -189,10 +189,10 @@ impl RelationTools for OneToManyRelation {
         self.to.clone()
     }
     fn get_from_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
-        self.from.parent.get_object_as_class()
+        get_object_as_class(&self.from.parent)
     }
     fn get_to_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
-        self.to.parent.get_object_as_class()
+        get_object_as_class(&self.to.parent)
     }
     fn is_self_referencing(&self) -> Result<bool, anyhow::Error> {
         let from_id = self.from.parent.label()?;
@@ -246,10 +246,10 @@ impl RelationTools for ManyToManyRelation {
         self.to.clone()
     }
     fn get_from_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
-        self.from.parent.get_object_as_class()
+        get_object_as_class(&self.from.parent)
     }
     fn get_to_class(&self) -> Result<Rc<CMOFClass>, anyhow::Error> {
-        self.to.parent.get_object_as_class()
+        get_object_as_class(&self.to.parent)
     }
     fn is_self_referencing(&self) -> Result<bool, anyhow::Error> {
         let from_id = self.from.parent.label()?;

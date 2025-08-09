@@ -31,7 +31,7 @@ pub use std::rc::Rc;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, XMIIdentification)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Package Object
 pub struct CMOFPackage {
@@ -184,19 +184,6 @@ impl SetCMOFTools for CMOFPackage {
         }
         //Return
         Ok(())
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl GetXMIId for CMOFPackage {
-    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
-        self.xmi_id.label()
-    }
-    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
-        Ok(self.xmi_id.get_object_id())
     }
 }
 

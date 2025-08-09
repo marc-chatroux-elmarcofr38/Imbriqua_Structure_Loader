@@ -30,7 +30,7 @@ use std::collections::BTreeMap;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, XMIIdentification)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF PackageImport Object
 pub struct CMOFPackageImport {
@@ -107,22 +107,9 @@ impl SetCMOFTools for CMOFPackageImport {
         // Call on child
         self.imported_package.make_post_deserialize(dict_object)?;
         // Self
-        self.parent.set_xmi_id_object(dict_object)?;
+        set_xmi_id_object(&self.parent, dict_object)?;
         //Return
         Ok(())
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl GetXMIId for CMOFPackageImport {
-    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
-        self.xmi_id.label()
-    }
-    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
-        Ok(self.xmi_id.get_object_id())
     }
 }
 

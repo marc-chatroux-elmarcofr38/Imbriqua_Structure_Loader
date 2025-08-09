@@ -29,7 +29,7 @@ use serde::Deserialize;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, XMIIdentification)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF OpaqueExpression Object
 pub struct CMOFOpaqueExpression {
@@ -101,22 +101,9 @@ impl SetCMOFTools for CMOFOpaqueExpression {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Self
-        self.parent.set_xmi_id_object(dict_object)?;
+        set_xmi_id_object(&self.parent, dict_object)?;
         //Return
         Ok(())
-    }
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl GetXMIId for CMOFOpaqueExpression {
-    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
-        self.xmi_id.label()
-    }
-    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
-        Ok(self.xmi_id.get_object_id())
     }
 }
 

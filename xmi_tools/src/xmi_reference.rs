@@ -19,8 +19,28 @@ If not, see <https://www.gnu.org/licenses/>.
 #![warn(dead_code)]
 #![warn(missing_docs)]
 
+//! Provide referencing link between object of CMOF file (referenced by XMI)
+//!
+//! eefefef
+//!
+//! # Content :
+//!
+//! * [XMIIdLocalReference] : Structure for saving key of an XMI object
+//! * [XMIIdReference] : Structure  for saving call to an other XMI object in a XMI object
+//! * [SetCMOFTools] : Trait
+//!     * [SetCMOFTools::collect_object]
+//!     * [SetCMOFTools::make_post_deserialize]
+//!
+//! # Example :
+//!
+//! zagdhfj
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
 // Package section
-use crate::cmof_loader::*;
+// use crate::cmof_loader::*;
 
 // Dependencies section
 use std::cell::RefCell;
@@ -313,40 +333,6 @@ impl<T: Clone> XMIIdReference<T> {
     }
 }
 
-// ####################################################################################################
-//
-// ####################################################################################################
-
-/// Tools for CMOF Object
-pub trait SetCMOFTools {
-    /// Allow to finish XMIId of object and collect all CMOF object
-    /// Use "dict_setting" for share content between parent object to child object
-    /// Use "dict_object" for collect all object
-    fn collect_object(
-        &mut self,
-        dict_setting: &mut BTreeMap<String, String>,
-        dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error>;
-    /// Allow to define the post-treatment method : post_deserialize
-    /// Link external XMI Id of object by matching it on "dict_object"
-    /// Use "dict_object" for obtain object between objects
-    fn make_post_deserialize(
-        &self,
-        dict_object: &mut BTreeMap<String, EnumCMOF>,
-    ) -> Result<(), anyhow::Error>;
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-/// Tool for CMOF Object
-pub trait GetXMIId {
-    /// Allow to get the xmi id field label (use in global BTreeMap)
-    fn get_xmi_id_field(&self) -> Result<String, anyhow::Error>;
-    /// Allow to get the xmi id field object name (use in local BTreeMap)
-    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error>;
-}
 
 // ####################################################################################################
 //
