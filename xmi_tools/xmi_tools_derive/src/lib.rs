@@ -37,7 +37,7 @@ fn impl_xmi_tools_for_enum(ast: &syn::DeriveInput) -> TokenStream {
                         #name::#variant_ident(c) => c.get_xmi_id_field(),
                     });
                     arms_get_xmi_id.push(quote! {
-                        #name::#variant_ident(c) => &c.xmi_id,
+                        #name::#variant_ident(c) => c.xmi_id.clone(),
                     });
                 }
                 Fields::Named(_) => {
@@ -56,7 +56,7 @@ fn impl_xmi_tools_for_enum(ast: &syn::DeriveInput) -> TokenStream {
                     #(#arms_get_xmi_id_field)*
                 }
             }
-            fn get_xmi_id(&self) -> &XMIIdLocalReference {
+            fn get_xmi_id(&self) -> XMIIdLocalReference {
                 match self {
                     #(#arms_get_xmi_id)*
                 }
@@ -91,8 +91,8 @@ fn impl_xmi_tools_for_struct(ast: &syn::DeriveInput) -> TokenStream {
             fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
                 self.xmi_id.label()
             }
-            fn get_xmi_id(&self) -> &XMIIdLocalReference {
-                &self.xmi_id
+            fn get_xmi_id(&self) -> XMIIdLocalReference {
+                self.xmi_id.clone()
             }
         }
         impl PartialEq for #name {

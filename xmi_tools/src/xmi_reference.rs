@@ -44,8 +44,9 @@ If not, see <https://www.gnu.org/licenses/>.
 
 // Dependencies section
 use std::cell::RefCell;
-use std::collections::BTreeMap;
 use std::fmt;
+
+use crate::{XMIIdentification, XMIIdentity};
 
 // ####################################################################################################
 //
@@ -57,6 +58,10 @@ pub struct XMIIdLocalReference {
     object_id: String,
     package_id: String,
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
 
 impl PartialEq for XMIIdLocalReference {
     fn eq(&self, other: &Self) -> bool {
@@ -79,6 +84,22 @@ impl Ord for XMIIdLocalReference {
             .then(self.object_id.cmp(&other.object_id))
     }
 }
+
+impl XMIIdentification for XMIIdLocalReference {
+    fn get_xmi_id(&self) -> XMIIdLocalReference {
+        self.clone()
+    }
+
+    fn get_xmi_id_field(&self) -> anyhow::Result<String, anyhow::Error> {
+        self.label()
+    }
+}
+
+impl XMIIdentity for XMIIdLocalReference {}
+
+// ####################################################################################################
+//
+// ####################################################################################################
 
 impl fmt::Debug for XMIIdLocalReference {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -164,14 +185,18 @@ impl XMIIdLocalReference {
 
 #[derive(Clone)]
 /// Reference to another XMI object
-pub struct XMIIdReference<T> {
+pub struct XMIIdReference<T: Clone> {
     object_id: String,
     package_id: String,
     /// Content of the ref, define with make_post_deserialize
     object: RefCell<Option<T>>,
 }
 
-impl<T> Default for XMIIdReference<T> {
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl<T: Clone> Default for XMIIdReference<T> {
     fn default() -> Self {
         XMIIdReference {
             object_id: String::new(),
@@ -181,21 +206,25 @@ impl<T> Default for XMIIdReference<T> {
     }
 }
 
-impl<T> PartialEq for XMIIdReference<T> {
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl<T: Clone> PartialEq for XMIIdReference<T> {
     fn eq(&self, other: &Self) -> bool {
         self.object_id == other.object_id && self.package_id == other.package_id
     }
 }
 
-impl<T> Eq for XMIIdReference<T> {}
+impl<T: Clone> Eq for XMIIdReference<T> {}
 
-impl<T> PartialOrd for XMIIdReference<T> {
+impl<T: Clone> PartialOrd for XMIIdReference<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<T> Ord for XMIIdReference<T> {
+impl<T: Clone> Ord for XMIIdReference<T> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.package_id
             .cmp(&other.package_id)
@@ -203,7 +232,26 @@ impl<T> Ord for XMIIdReference<T> {
     }
 }
 
-impl<T> fmt::Debug for XMIIdReference<T> {
+impl<T: Clone> XMIIdentification for XMIIdReference<T> {
+    fn get_xmi_id(&self) -> XMIIdLocalReference {
+        XMIIdLocalReference {
+            object_id: self.object_id.clone(),
+            package_id: self.package_id.clone(),
+        }
+    }
+
+    fn get_xmi_id_field(&self) -> anyhow::Result<String, anyhow::Error> {
+        self.label()
+    }
+}
+
+impl<T: Clone> XMIIdentity for XMIIdReference<T> {}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl<T: Clone> fmt::Debug for XMIIdReference<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if self.object.borrow().is_some() {
             write!(
@@ -332,7 +380,6 @@ impl<T: Clone> XMIIdReference<T> {
         }
     }
 }
-
 
 // ####################################################################################################
 //
