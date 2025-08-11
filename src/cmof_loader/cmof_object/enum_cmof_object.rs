@@ -291,7 +291,7 @@ pub fn set_xmi_id_object(
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing OwnedAttribute Tag
@@ -306,7 +306,7 @@ pub enum EnumOwnedAttribute {
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing OwnedEnd Tag
@@ -321,7 +321,7 @@ pub enum EnumOwnedEnd {
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing OwnedLiteral Tag
@@ -336,7 +336,7 @@ pub enum EnumOwnedLiteral {
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing OwnedMember Tag
@@ -406,7 +406,7 @@ impl EnumOwnedMember {
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing OwnedRule Tag
@@ -421,7 +421,7 @@ pub enum EnumOwnedRule {
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing PackageImport Tag
@@ -436,7 +436,7 @@ pub enum EnumPackageImport {
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(tag = "_xmi:type")]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for representing Specification Tag
@@ -471,7 +471,7 @@ fn catch_and_collect_object<T: SetCMOFTools>(
 //
 // ####################################################################################################
 
-fn catch_and_make_post_deserialize<T: SetCMOFTools + XMIIdentification>(
+fn catch_and_make_post_deserialize<T: SetCMOFTools + XMIIdentity>(
     object: &Rc<T>,
     dict_object: &mut BTreeMap<String, EnumCMOF>,
 ) -> Result<(), anyhow::Error> {

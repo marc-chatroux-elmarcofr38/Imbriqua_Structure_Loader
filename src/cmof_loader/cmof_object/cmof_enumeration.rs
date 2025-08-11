@@ -28,7 +28,7 @@ use crate::cmof_loader::*;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Enumeration Object
 pub struct CMOFEnumeration {
@@ -59,30 +59,6 @@ pub struct CMOFEnumeration {
     /// Casing formating of "name" as full_name
     #[serde(skip)]
     pub full_name: String,
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl PartialEq for CMOFEnumeration {
-    fn eq(&self, other: &Self) -> bool {
-        self.xmi_id == other.xmi_id
-    }
-}
-
-impl Eq for CMOFEnumeration {}
-
-impl PartialOrd for CMOFEnumeration {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for CMOFEnumeration {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.xmi_id.cmp(&other.xmi_id)
-    }
 }
 
 // ####################################################################################################

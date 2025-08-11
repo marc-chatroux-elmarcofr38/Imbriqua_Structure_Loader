@@ -28,7 +28,7 @@ use crate::cmof_loader::*;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Constraint Object
 pub struct CMOFConstraint {
@@ -51,30 +51,6 @@ pub struct CMOFConstraint {
     /// specification object
     #[serde(rename = "specification")]
     pub specification: EnumSpecification,
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl PartialEq for CMOFConstraint {
-    fn eq(&self, other: &Self) -> bool {
-        self.xmi_id == other.xmi_id
-    }
-}
-
-impl Eq for CMOFConstraint {}
-
-impl PartialOrd for CMOFConstraint {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for CMOFConstraint {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.xmi_id.cmp(&other.xmi_id)
-    }
 }
 
 // ####################################################################################################

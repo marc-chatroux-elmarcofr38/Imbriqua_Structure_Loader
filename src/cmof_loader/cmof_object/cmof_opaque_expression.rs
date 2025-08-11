@@ -29,7 +29,7 @@ use serde::Deserialize;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF OpaqueExpression Object
 pub struct CMOFOpaqueExpression {
@@ -46,30 +46,6 @@ pub struct CMOFOpaqueExpression {
     /// language attribute
     #[serde(rename = "language")]
     pub language: String,
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl PartialEq for CMOFOpaqueExpression {
-    fn eq(&self, other: &Self) -> bool {
-        self.xmi_id == other.xmi_id
-    }
-}
-
-impl Eq for CMOFOpaqueExpression {}
-
-impl PartialOrd for CMOFOpaqueExpression {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for CMOFOpaqueExpression {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.xmi_id.cmp(&other.xmi_id)
-    }
 }
 
 // ####################################################################################################

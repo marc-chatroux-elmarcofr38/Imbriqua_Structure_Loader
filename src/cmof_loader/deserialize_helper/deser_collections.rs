@@ -40,11 +40,11 @@ pub fn deser_btreemap_using_name_as_key<'de: 'te, 'te: 'de, D, V>(
 where
     D: de::Deserializer<'de>,
     V: de::Deserialize<'te>,
-    V: XMIIdentification,
+    V: XMIIdentity,
 {
     struct OneOrVec<String, V>(PhantomData<BTreeMap<String, V>>);
 
-    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te> + XMIIdentification> de::Visitor<'de>
+    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te> + XMIIdentity> de::Visitor<'de>
         for OneOrVec<String, V>
     {
         type Value = BTreeMap<String, V>;
@@ -60,7 +60,7 @@ where
             E: de::MapAccess<'de>,
         {
             let v: V = de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
-            let k = v.get_xmi_id_object().unwrap();
+            let k = v.get_xmi_id().get_object_id();
             Ok(BTreeMap::from([(k, v)]))
         }
 
@@ -73,7 +73,7 @@ where
             let big_v: Vec<V> =
                 de::Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))?;
             for n in big_v {
-                r.insert(n.get_xmi_id_object().unwrap(), n);
+                r.insert(n.get_xmi_id().get_object_id(), n);
             }
             Ok(r)
         }
@@ -98,48 +98,40 @@ mod tests {
         value: BTreeMap<String, SecondRandomStruct>,
     }
 
-    #[derive(Clone, Debug, PartialEq, Deserialize)]
+    #[derive(Clone, Debug, Deserialize, XMIIdentity)]
     struct SecondRandomStruct {
-        value: String,
-    }
-
-    impl XMIIdentification for SecondRandomStruct {
-        fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
-            Ok(self.value.clone())
-        }
-
-        fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
-            Ok(self.value.clone())
-        }
+        #[serde(deserialize_with = "deser_local_xmi_id")]
+        #[serde(rename = "_xmi:id")]
+        xmi_id: XMIIdLocalReference,
     }
 
     #[test]
     fn deser_btreemap_using_name_as_key_01_creation() {
         initialize_log_for_test();
 
-        let input_str = r#"{"value": {"value": "key_1"}}"#;
+        let input_str = r#"{"value": {"_xmi:id": "key_1"}}"#;
         let mut btree_map = BTreeMap::new();
         btree_map.insert(
             "key_1".to_string(),
             SecondRandomStruct {
-                value: "key_1".to_string(),
+                xmi_id: XMIIdLocalReference::new_local("key_1".to_string()),
             },
         );
         let value_target = RandomStruct { value: btree_map };
         check_deser_make_no_error(input_str, &value_target);
 
-        let input_str = r#"{"value": [{"value": "key_1"}, {"value": "key_2"}]}"#;
+        let input_str = r#"{"value": [{"_xmi:id": "key_1"}, {"_xmi:id": "key_2"}]}"#;
         let mut btree_map = BTreeMap::new();
         btree_map.insert(
             "key_1".to_string(),
             SecondRandomStruct {
-                value: "key_1".to_string(),
+                xmi_id: XMIIdLocalReference::new_local("key_1".to_string()),
             },
         );
         btree_map.insert(
             "key_2  ".to_string(),
             SecondRandomStruct {
-                value: "key_2".to_string(),
+                xmi_id: XMIIdLocalReference::new_local("key_2".to_string()),
             },
         );
         let value_target = RandomStruct { value: btree_map };

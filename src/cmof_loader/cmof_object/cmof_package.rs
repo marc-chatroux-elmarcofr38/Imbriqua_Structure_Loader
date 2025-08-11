@@ -31,7 +31,7 @@ pub use std::rc::Rc;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Package Object
 pub struct CMOFPackage {
@@ -58,30 +58,6 @@ pub struct CMOFPackage {
     /// Casing formating of "name" as technical_name
     #[serde(skip)]
     pub lowercase_name: String,
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl PartialEq for CMOFPackage {
-    fn eq(&self, other: &Self) -> bool {
-        self.xmi_id == other.xmi_id
-    }
-}
-
-impl Eq for CMOFPackage {}
-
-impl PartialOrd for CMOFPackage {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for CMOFPackage {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.xmi_id.cmp(&other.xmi_id)
-    }
 }
 
 // ####################################################################################################

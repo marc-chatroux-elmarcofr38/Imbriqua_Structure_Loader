@@ -30,7 +30,7 @@ use crate::cmof_loader::*;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, XMIIdentification)]
+#[derive(Clone, Debug, Deserialize, XMIIdentity)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Class Object
 pub struct CMOFClass {
@@ -93,30 +93,6 @@ pub struct CMOFClass {
     ///
     #[serde(skip)]
     pub relation: RefCell<BTreeMap<String, Relation>>,
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-impl PartialEq for CMOFClass {
-    fn eq(&self, other: &Self) -> bool {
-        self.xmi_id == other.xmi_id
-    }
-}
-
-impl Eq for CMOFClass {}
-
-impl PartialOrd for CMOFClass {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for CMOFClass {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.xmi_id.cmp(&other.xmi_id)
-    }
 }
 
 // ####################################################################################################

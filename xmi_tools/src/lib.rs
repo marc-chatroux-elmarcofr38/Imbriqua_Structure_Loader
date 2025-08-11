@@ -3,9 +3,11 @@ use anyhow::*;
 pub mod xmi_reference;
 pub use xmi_reference::*;
 
+pub trait XMIIdentity: XMIIdentification + PartialEq + Eq + PartialOrd + Ord {}
+
 pub trait XMIIdentification {
     fn get_xmi_id_field(&self) -> Result<String, anyhow::Error>;
-    fn get_xmi_id_object(&self) -> Result<String, anyhow::Error>;
+    fn get_xmi_id(&self) -> &XMIIdLocalReference;
 }
 
 // /// Allow to finish XMIId of object and collect all CMOF object
@@ -23,3 +25,27 @@ pub trait XMIIdentification {
 //     &self,
 //     dict_object: &mut BTreeMap<String, T>,
 // ) -> Result<(), anyhow::Error>;
+
+// // ####################################################################################################
+// //
+// // ####################################################################################################
+
+// impl PartialEq for CMOFAssociation {
+//     fn eq(&self, other: &Self) -> bool {
+//         self.xmi_id == other.xmi_id
+//     }
+// }
+
+// impl Eq for CMOFAssociation {}
+
+// impl PartialOrd for CMOFAssociation {
+//     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+//         Some(self.cmp(other))
+//     }
+// }
+
+// impl Ord for CMOFAssociation {
+//     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+//         self.xmi_id.cmp(&other.xmi_id)
+//     }
+// }
