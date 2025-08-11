@@ -5,3 +5,5 @@ imbriqua_structure_loader.log
 perf.data
 perf.data.old
 flamegraph.svg
+/xmi_tools/target
+/xmi_tools/xmi_tools_derive/target
