@@ -29,7 +29,7 @@ use crate::output_result_manager::*;
 //
 // ####################################################################################################
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, Debug)]
 /// Collection to package loaded, with loading function (load, treatment, export, etc.)
 pub struct LoadingTracker {
     /// ResultEnv linked with import (input_folder, and output_folder)
@@ -38,20 +38,17 @@ pub struct LoadingTracker {
     loaded_package: BTreeMap<String, LoadingPackage>,
     /// Order of the collection of package
     pub importing_order: BTreeMap<usize, String>,
-    /// builing pre calculation result
-    pub pre_calculation: LoadingPreCalculation,
 }
 
 // Basics
 impl LoadingTracker {
     /// Create new instance
-    pub fn new(file_env: ResultEnv) -> Self {
-        LoadingTracker {
+    pub fn new(file_env: ResultEnv) -> Result<Self, anyhow::Error> {
+        Ok(LoadingTracker {
             file_env,
             loaded_package: BTreeMap::new(),
             importing_order: BTreeMap::new(),
-            pre_calculation: LoadingPreCalculation::new(),
-        }
+        })
     }
 
     /// Shortcut function of file_env input folder
@@ -93,20 +90,22 @@ impl LoadingTracker {
     }
 
     /// Cleaning end process
-    pub fn close(&mut self) {
+    pub fn close(&mut self) -> Result<(), anyhow::Error> {
         // Lock all package
         for package in self.loaded_package.values_mut() {
             // Change state to 'finished'
-            package.make_finished();
+            package.make_finished()?;
         }
         // Ending loading (delete output folder if empty)
-        self.file_env.delete_if_empty();
+        self.file_env.delete_if_empty()?;
+        Ok(())
     }
 
     /// Recall for copy output to result
-    pub fn export_result(&mut self) {
+    pub fn export_result(&mut self) -> Result<(), anyhow::Error> {
         // Copy output to result
-        self.file_env.export_result();
+        self.file_env.export_result()?;
+        Ok(())
     }
 }
 
@@ -125,19 +124,33 @@ impl LoadingTracker {
     }
 
     /// Load minidom element from a gived package, including dependencies, and save element in loaded_package
-    pub fn make_prepare(&mut self, main_file: &str, package_id: &str, parent_label: &str) {
+    pub fn make_prepare(
+        &mut self,
+        main_file: &str,
+        package_id: &str,
+        parent_label: &str,
+    ) -> Result<(), anyhow::Error> {
         // Load
-        self.prepare(main_file, package_id, parent_label);
+        let r = self.prepare(main_file, package_id, parent_label);
+        catch_error_and_log(r, &self)?;
         // Create dict for collect_object and make_post_deserialize
         let mut dict_setting: BTreeMap<String, String> = BTreeMap::new();
         let mut dict_object: BTreeMap<String, EnumCMOF> = BTreeMap::new();
         // Collect
-        let result = self.collect_object(&mut dict_setting, &mut dict_object);
-        if result.is_err() {
-            panic!("Collect object error : {:?}", result.err());
-        };
+        let r = self.collect_object(&mut dict_setting, &mut dict_object);
+        catch_error_and_log(r, &self)?;
         // Make post deserialize
-        let result = self.make_post_deserialize(&mut dict_object);
+        let r = self.make_post_deserialize(&mut dict_object);
+        catch_error_and_log(r, &self)?;
+        for (_, x) in &dict_object {
+            match x {
+                EnumCMOF::CMOFClass(class) => {
+                    class.generate_reverse_super_class(&dict_object)?;
+                    class.generate_relation(&dict_object)?;
+                }
+                _ => {}
+            }
+        }
         // Debug (trace  level)
         trace!("Self after collect_object : {:#?}", self);
         trace!("dict_setting after collect_object : {:#?}", dict_setting);
@@ -150,13 +163,16 @@ impl LoadingTracker {
             dict_object.len()
         );
         trace!("dict_object after collect_object : {:#?}", dict_object);
-        if result.is_err() {
-            panic!("Make post deserialize error : {:?}", result.err());
-        }
+        Ok(())
     }
 
     /// Load minidom element from a gived package, including dependencies, and save element in loaded_package
-    fn prepare(&mut self, main_file: &str, package_id: &str, parent_label: &str) {
+    fn prepare(
+        &mut self,
+        main_file: &str,
+        package_id: &str,
+        parent_label: &str,
+    ) -> Result<(), anyhow::Error> {
         // Make empty package
         let package = LoadingPackage::new(String::from(main_file), String::from(package_id));
         let label = package.get_label();
@@ -167,7 +183,7 @@ impl LoadingTracker {
             panic!("PANIC_DEP01 - Unloaded dependencies : suspicious of circular dependencies ({child} importing {parent})", child=label, parent=parent_label);
         } else if self.check_already_loaded(&label) {
             debug!("Loading \"{}\" : NOPE : already loaded", label);
-            return;
+            return Ok(());
         } else {
             debug!("Loading \"{}\" : START", label);
         }
@@ -178,7 +194,7 @@ impl LoadingTracker {
         // Generate file path
         let mut file_path = self.get_input_folder();
         file_path.push(main_file);
-        let string_content = file_path.get_file_content();
+        let string_content = file_path.get_file_content()?;
 
         // Deserialising
         let cmof_result: FilePackage = serde_json::from_slice(&string_content.as_bytes()).unwrap();
@@ -191,7 +207,7 @@ impl LoadingTracker {
         }
 
         // Evaluate dependencies, and load it
-        self.add_dependencies(&cmof_package, label.clone());
+        self.add_dependencies(&cmof_package, label.clone())?;
 
         // Save object in BTreeMap attribute
         let package_object = self.loaded_package.get_mut(&label).unwrap();
@@ -207,10 +223,15 @@ impl LoadingTracker {
 
         //     break;
         // }
+        Ok(())
     }
 
     /// Import dependencies of a package (indirect recursivity from prepare with add_dependencies)
-    fn add_dependencies(&mut self, cmof_package: &CMOFPackage, label: String) {
+    fn add_dependencies(
+        &mut self,
+        cmof_package: &CMOFPackage,
+        label: String,
+    ) -> Result<(), anyhow::Error> {
         for (_, child) in cmof_package.package_import.iter() {
             // Go to "importedPackage" child
             match child {
@@ -225,11 +246,12 @@ impl LoadingTracker {
                         let mut package_file: String = package_to_import.get_package_id().clone();
                         package_file.push_str(".json");
                         let package_id: String = package_to_import.get_object_id().clone();
-                        self.prepare(package_file.as_str(), package_id.as_str(), label.as_str());
+                        self.prepare(package_file.as_str(), package_id.as_str(), label.as_str())?;
                     }
                 },
             }
         }
+        Ok(())
     }
 }
 
@@ -253,5 +275,29 @@ impl SetCMOFTools for LoadingTracker {
             p.make_post_deserialize(dict_object)?;
         }
         Ok(())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

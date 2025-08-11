@@ -33,12 +33,13 @@ use log4rs::config::{Appender, Config, Deserializers, Logger, RawConfig, Root};
 use log4rs::encode::pattern::PatternEncoder;
 use log4rs::init_config;
 use log4rs::Handle;
+use std::fmt::Debug;
 
 /// Configure logger with __config_file__, after configure it with a backup configuation
 ///
 /// Initialise the logger with __config_file__
 /// Provide minimal logger during initialise on __config_file__, and after if a error has meet
-pub fn open_logger(config_file: &str) -> Handle {
+pub fn open_logger(config_file: &str) -> Result<Handle, anyhow::Error> {
     // Itinialisation of global logger with backup configuration
     let config: Config = match get_config_by_backup() {
         Ok(result) => result,
@@ -47,10 +48,10 @@ pub fn open_logger(config_file: &str) -> Handle {
                 "PANIC_LOG01 - Error during the loading on logs modules - {}",
                 error
             );
-            panic!(
+            return Err(anyhow::format_err!(
                 "PANIC_LOG01 - Error during the loading on logs modules - {}",
                 error
-            );
+            ));
         }
     };
     let handle: Handle = match init_config(config) {
@@ -60,10 +61,10 @@ pub fn open_logger(config_file: &str) -> Handle {
                 "PANIC_LOG02 - Error during the loading on logs modules - {}",
                 error
             );
-            panic!(
+            return Err(anyhow::format_err!(
                 "PANIC_LOG02 - Error during the loading on logs modules - {}",
                 error
-            );
+            ));
         }
     };
 
@@ -76,14 +77,14 @@ pub fn open_logger(config_file: &str) -> Handle {
                 config_file, error
             );
             info!("Logger init success : use of \"!!! BACKUP CONFIGURATION !!!\"");
-            return handle;
+            return Ok(handle);
         }
     };
     handle.set_config(config);
 
     // Return
     info!("Log handle loaded");
-    handle
+    Ok(handle)
 }
 
 #[doc(hidden)]
@@ -130,7 +131,7 @@ fn get_config_by_backup() -> Result<Config> {
 #[doc(hidden)]
 /// Define a config by loading "config_file"
 fn get_config_by_file(config_file: &str) -> Result<Config> {
-    let default_config_string: String = Path::new(config_file).get_file_content();
+    let default_config_string: String = Path::new(config_file).get_file_content().unwrap();
     let default_config_str = default_config_string.as_str();
 
     // Deserialize
@@ -149,6 +150,28 @@ fn get_config_by_file(config_file: &str) -> Result<Config> {
         .build(config.root())?;
 
     Ok(config)
+}
+
+/// Make a 'trace' level log of an object, if the input was an error
+///
+/// Input :
+///     - object_result : Result<T1, anyhow::Error>,
+///         - value to evaluate
+///     - object : T2
+///         - value to log ('trace')
+///
+/// Output :
+///     - return object_result
+pub fn catch_error_and_log<T1, T2: Debug>(
+    object_result: Result<T1, anyhow::Error>,
+    object: &T2,
+) -> Result<T1, anyhow::Error> {
+    if object_result.is_err() {
+        trace!("catch_error_and_log : {:#?}", object);
+        object_result
+    } else {
+        object_result
+    }
 }
 
 /// Test on the log module
@@ -197,10 +220,28 @@ pub mod tests {
     #[test]
     fn custom_log_tools_03_check_open_logger() {
         initialize_log_for_test();
+        // just check if don't panic
         trace!("LOG TEST : TRACE");
         debug!("LOG TEST : DEBUG");
         info!("LOG TEST : INFO");
         warn!("LOG TEST : WARN");
         error!("LOG TEST : ERROR");
+    }
+
+    #[test]
+    fn custom_log_tools_04_catch_error_and_log() {
+        initialize_log_for_test();
+        // make an input
+        let i_1: std::result::Result<String, anyhow::Error> = Ok(String::new());
+        let i_1_clone: std::result::Result<String, anyhow::Error> = Ok(String::new());
+        let i_2: std::result::Result<String, anyhow::Error> = Err(anyhow::format_err!("an error"));
+        let i_2_clone: std::result::Result<String, anyhow::Error> =
+            Err(anyhow::format_err!("an error"));
+        // just check if don't panic
+        let r_1 = catch_error_and_log(i_1, &String::new());
+        let r_2 = catch_error_and_log(i_2, &String::new());
+        assert_eq!(i_1_clone.is_err(), r_1.is_err());
+        assert_eq!(i_1_clone.unwrap(), r_1.unwrap());
+        assert_eq!(i_2_clone.is_err(), r_2.is_err());
     }
 }

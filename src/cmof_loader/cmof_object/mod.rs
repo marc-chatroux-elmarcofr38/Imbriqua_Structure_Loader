@@ -18,6 +18,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
+#![doc = include_str!("mod.md")]
 
 // Mod section
 mod cmof_association;
@@ -34,6 +35,8 @@ mod cmof_property;
 mod cmof_tag;
 mod enum_cmof_object;
 mod enum_href_object;
+mod file_cmof;
+mod set_xmi_id_object;
 mod uml_visibility_kind;
 pub use cmof_association::*;
 pub use cmof_class::*;
@@ -49,4 +52,6 @@ pub use cmof_property::*;
 pub use cmof_tag::*;
 pub use enum_cmof_object::*;
 pub use enum_href_object::*;
+pub use file_cmof::*;
+pub use set_xmi_id_object::*;
 pub use uml_visibility_kind::*;

@@ -18,13 +18,16 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("../doc/writing_lib_file.md")]
+#![doc = include_str!("../../../doc/writing_lib_file.md")]
 
 // Package section
 use crate::cmof_loader::*;
 use crate::custom_file_tools::*;
 use crate::custom_log_tools::*;
-use crate::writing_manager::*;
+
+use crate::output_writing::*;
+
+use ::xmi_tools::XMIIdentification;
 
 // Dependencies section
 
@@ -36,7 +39,7 @@ use crate::writing_manager::*;
 
 impl LoadingTracker {
     /// Make lib.rs from scratch and package
-    pub fn write_lib_file(&mut self) {
+    pub fn write_lib_file(&mut self) -> Result<(), anyhow::Error> {
         // Get folder and file
         let (_, mut writer) = self.get_project_lib_file();
 
@@ -56,19 +59,34 @@ impl LoadingTracker {
             for (_, entity) in &package.get_json().owned_member {
                 match entity {
                     EnumOwnedMember::Association(content) => {
-                        content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
+                        let t = content.get_xmi_id_field()?;
+                        trace!("Start : 'write_lib_file' for {}", t);
+                        content.wrt_lib_file_level(&mut writer)?;
+                        trace!("End : 'write_lib_file' for {}", t);
                     }
                     EnumOwnedMember::Class(content) => {
-                        content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
+                        let t = content.get_xmi_id_field()?;
+                        trace!("Start : 'write_lib_file' for {}", t);
+                        content.wrt_lib_file_level(&mut writer)?;
+                        trace!("End : 'write_lib_file' for {}", t);
                     }
                     EnumOwnedMember::DataType(content) => {
-                        content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
+                        let t = content.get_xmi_id_field()?;
+                        trace!("Start : 'write_lib_file' for {}", t);
+                        content.wrt_lib_file_level(&mut writer)?;
+                        trace!("End : 'write_lib_file' for {}", t);
                     }
                     EnumOwnedMember::Enumeration(content) => {
-                        content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
+                        let t = content.get_xmi_id_field()?;
+                        trace!("Start : 'write_lib_file' for {}", t);
+                        content.wrt_lib_file_level(&mut writer)?;
+                        trace!("End : 'write_lib_file' for {}", t);
                     }
                     EnumOwnedMember::PrimitiveType(content) => {
-                        content.wrt_lib_file_level(&mut writer, &package, &self.pre_calculation);
+                        let t = content.get_xmi_id_field()?;
+                        trace!("Start : 'write_lib_file' for {}", t);
+                        content.wrt_lib_file_level(&mut writer)?;
+                        trace!("End : 'write_lib_file' for {}", t);
                     }
                 }
             }
@@ -76,6 +94,7 @@ impl LoadingTracker {
             // Logs
             info!("Generating \"lib.rs\" from \"{label}\" : Finished");
         }
+        Ok(())
     }
 }
 
@@ -86,20 +105,11 @@ impl LoadingTracker {
 // ####################################################################################################
 
 impl WritingLibFile for CMOFAssociation {
-    fn wrt_lib_file_level(
-        &self,
-        writer: &mut File,
-        _package: &LoadingPackage,
-        pre_calculation: &LoadingPreCalculation,
-    ) {
+    fn wrt_lib_file_level(&self, writer: &mut File) -> Result<(), anyhow::Error> {
         // Only for "Many to Many"
-        let association = pre_calculation.association_relation.get(&self.name);
-        if association.is_some()
-            && association.unwrap().ponteration_type == RelationPonderationType::ManyToMany
-        {
-            if association.unwrap().relation_1.element_type
-                != association.unwrap().relation_2.element_type
-            {
+        let association = self.get_association_relation()?;
+        if matches!(association, Relation::ManyToManyRelation(_)) {
+            if !association.is_self_referencing()? {
                 let _ = writeln!(
                     writer,
                     include_str!("../template/lib_part_2_association.tmpl"),
@@ -109,73 +119,58 @@ impl WritingLibFile for CMOFAssociation {
             } else {
                 warn!(
                     "Need association lib implement for \"{}\" because it's referencin itself",
-                    self.name
+                    self.model_name
                 )
             }
-        }
+        };
+        Ok(())
     }
 }
 
 impl WritingLibFile for CMOFClass {
-    fn wrt_lib_file_level(
-        &self,
-        writer: &mut File,
-        _package: &LoadingPackage,
-        _pre_calculation: &LoadingPreCalculation,
-    ) {
+    fn wrt_lib_file_level(&self, writer: &mut File) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_2_class.tmpl"),
             model_name = self.model_name,
             table_name = self.table_name,
         );
+        Ok(())
     }
 }
 
 impl WritingLibFile for CMOFDataType {
-    fn wrt_lib_file_level(
-        &self,
-        writer: &mut File,
-        _package: &LoadingPackage,
-        _pre_calculation: &LoadingPreCalculation,
-    ) {
+    fn wrt_lib_file_level(&self, writer: &mut File) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_2_datatype.tmpl"),
             model_name = self.model_name,
             table_name = self.table_name,
         );
+        Ok(())
     }
 }
 
 impl WritingLibFile for CMOFEnumeration {
-    fn wrt_lib_file_level(
-        &self,
-        writer: &mut File,
-        _package: &LoadingPackage,
-        _pre_calculation: &LoadingPreCalculation,
-    ) {
+    fn wrt_lib_file_level(&self, writer: &mut File) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_2_enumeration.tmpl"),
             model_name = self.model_name,
             table_name = self.table_name,
         );
+        Ok(())
     }
 }
 
 impl WritingLibFile for CMOFPrimitiveType {
-    fn wrt_lib_file_level(
-        &self,
-        writer: &mut File,
-        _package: &LoadingPackage,
-        _pre_calculation: &LoadingPreCalculation,
-    ) {
+    fn wrt_lib_file_level(&self, writer: &mut File) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             writer,
             include_str!("../template/lib_part_2_primitive_type.tmpl"),
             model_name = self.model_name,
             table_name = self.table_name,
         );
+        Ok(())
     }
 }

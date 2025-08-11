@@ -48,7 +48,9 @@ impl PackageLink {
     /// str_relative_cargo_path (&str) : relative path of the Cargo.toml file to link
     pub fn from(str_relative_cargo_path: &str) -> Self {
         // Make it absolute
-        let var_absolute_path = Path::new(str_relative_cargo_path).canonicalize_pathbuf();
+        let var_absolute_path = Path::new(str_relative_cargo_path)
+            .canonicalize_pathbuf()
+            .unwrap();
         // Instanciate object
         let result = PackageLink {
             absolute_path: var_absolute_path,
@@ -275,7 +277,7 @@ mod tests {
         // Test
         let package_link = open_link(folder);
         let result = package_link.get_absolute_cargo_path();
-        assert_eq!(result, good_result.canonicalize_pathbuf());
+        assert_eq!(result, good_result.canonicalize_pathbuf().unwrap());
     }
 
     #[test]
@@ -291,7 +293,7 @@ mod tests {
         // Test
         let package_link = open_link(folder);
         let result = package_link.get_absolute_source_path();
-        assert_eq!(result, good_result.canonicalize_pathbuf());
+        assert_eq!(result, good_result.canonicalize_pathbuf().unwrap());
     }
 
     #[test]

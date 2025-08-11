@@ -27,55 +27,6 @@ use serde::de;
 use std::collections::BTreeMap;
 use std::fmt;
 use std::marker::PhantomData;
-use std::rc::Rc;
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
-/// Deserialising to __Vec__, from array or single object, various Object type tolerant
-/// Not 'Option' tolerant, use 'default' for this
-pub fn deser_vec<'de: 'te, 'te: 'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
-where
-    D: de::Deserializer<'de>,
-    T: de::Deserialize<'te>,
-{
-    struct OneOrVec<T>(PhantomData<Vec<T>>);
-
-    impl<'de: 'te, 'te: 'de, T: de::Deserialize<'te>> de::Visitor<'de> for OneOrVec<T> {
-        type Value = Vec<T>;
-
-        // Requested type description, returned in error case
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("object or array of object")
-        }
-
-        // Result for Null
-        fn visit_none<E>(self) -> Result<Self::Value, E> {
-            Ok(vec![])
-        }
-
-        // Result for Object
-        fn visit_map<E>(self, map: E) -> Result<Self::Value, E::Error>
-        where
-            E: de::MapAccess<'de>,
-        {
-            Ok(vec![de::Deserialize::deserialize(
-                de::value::MapAccessDeserializer::new(map),
-            )?])
-        }
-
-        // Result for Array
-        fn visit_seq<S>(self, visitor: S) -> Result<Self::Value, S::Error>
-        where
-            S: de::SeqAccess<'de>,
-        {
-            de::Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))
-        }
-    }
-
-    deserializer.deserialize_any(OneOrVec(PhantomData))
-}
 
 // ####################################################################################################
 //
@@ -89,11 +40,11 @@ pub fn deser_btreemap_using_name_as_key<'de: 'te, 'te: 'de, D, V>(
 where
     D: de::Deserializer<'de>,
     V: de::Deserialize<'te>,
-    V: GetXMIId,
+    V: XMIIdentification,
 {
     struct OneOrVec<String, V>(PhantomData<BTreeMap<String, V>>);
 
-    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te> + GetXMIId> de::Visitor<'de>
+    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te> + XMIIdentification> de::Visitor<'de>
         for OneOrVec<String, V>
     {
         type Value = BTreeMap<String, V>;
@@ -103,18 +54,13 @@ where
             formatter.write_str("object or array of object, with \"name\" attribute")
         }
 
-        // Result for Null
-        fn visit_none<E>(self) -> Result<Self::Value, E> {
-            Ok(BTreeMap::new())
-        }
-
         // Result for Object
         fn visit_map<E>(self, map: E) -> Result<Self::Value, E::Error>
         where
             E: de::MapAccess<'de>,
         {
             let v: V = de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
-            let k = v.get_xmi_id_object();
+            let k = v.get_xmi_id_object().unwrap();
             Ok(BTreeMap::from([(k, v)]))
         }
 
@@ -127,7 +73,7 @@ where
             let big_v: Vec<V> =
                 de::Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))?;
             for n in big_v {
-                r.insert(n.get_xmi_id_object(), n);
+                r.insert(n.get_xmi_id_object().unwrap(), n);
             }
             Ok(r)
         }
@@ -140,95 +86,84 @@ where
 //
 // ####################################################################################################
 
-/// Deserialising to __BTreeMap__, from array or single object, various Object type tolerant
-/// Not 'Option' tolerant, use 'default' for this
-pub fn deser_btreemap_with_rc_using_name_as_key<'de: 'te, 'te: 'de, D, V>(
-    deserializer: D,
-) -> Result<BTreeMap<String, Rc<V>>, D::Error>
-where
-    D: de::Deserializer<'de>,
-    V: de::Deserialize<'te>,
-    V: GetXMIId,
-{
-    struct OneOrVec<String, V>(PhantomData<BTreeMap<String, Rc<V>>>);
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::cmof_loader::tests::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
 
-    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te> + GetXMIId> de::Visitor<'de>
-        for OneOrVec<String, V>
-    {
-        type Value = BTreeMap<String, Rc<V>>;
+    #[derive(Clone, Debug, PartialEq, Deserialize)]
+    struct RandomStruct {
+        #[serde(deserialize_with = "deser_btreemap_using_name_as_key")]
+        value: BTreeMap<String, SecondRandomStruct>,
+    }
 
-        // Requested type description, returned in error case
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("object or array of object, with \"name\" attribute")
+    #[derive(Clone, Debug, PartialEq, Deserialize)]
+    struct SecondRandomStruct {
+        value: String,
+    }
+
+    impl XMIIdentification for SecondRandomStruct {
+        fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
+            Ok(self.value.clone())
         }
 
-        // Result for Null
-        fn visit_none<E>(self) -> Result<Self::Value, E> {
-            Ok(BTreeMap::new())
-        }
-
-        // Result for Object
-        fn visit_map<E>(self, map: E) -> Result<Self::Value, E::Error>
-        where
-            E: de::MapAccess<'de>,
-        {
-            let v: V = de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
-            let v = Rc::new(v);
-            let k = v.get_xmi_id_object();
-            Ok(BTreeMap::from([(k, v)]))
-        }
-
-        // Result for Array
-        fn visit_seq<S>(self, visitor: S) -> Result<Self::Value, S::Error>
-        where
-            S: de::SeqAccess<'de>,
-        {
-            let mut r: BTreeMap<String, Rc<V>> = BTreeMap::new();
-            let big_v: Vec<V> =
-                de::Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))?;
-            for n in big_v {
-                let k = n.get_xmi_id_object();
-                let v = Rc::new(n);
-                r.insert(k, v);
-            }
-            Ok(r)
+        fn get_xmi_id_object(&self) -> Result<String, anyhow::Error> {
+            Ok(self.value.clone())
         }
     }
 
-    deserializer.deserialize_any(OneOrVec(PhantomData))
-}
+    #[test]
+    fn deser_btreemap_using_name_as_key_01_creation() {
+        initialize_log_for_test();
 
-// ####################################################################################################
-//
-// ####################################################################################################
+        let input_str = r#"{"value": {"value": "key_1"}}"#;
+        let mut btree_map = BTreeMap::new();
+        btree_map.insert(
+            "key_1".to_string(),
+            SecondRandomStruct {
+                value: "key_1".to_string(),
+            },
+        );
+        let value_target = RandomStruct { value: btree_map };
+        check_deser_make_no_error(input_str, &value_target);
 
-/// Deserialising to __BTreeMap__, from array or single object, various Object type tolerant
-/// Not 'Option' tolerant, use 'default' for this
-pub fn deser_rc<'de: 'te, 'te: 'de, D, V>(deserializer: D) -> Result<Rc<V>, D::Error>
-where
-    D: de::Deserializer<'de>,
-    V: de::Deserialize<'te>,
-{
-    struct OneOrOne<V>(PhantomData<Rc<V>>);
-
-    impl<'de: 'te, 'te: 'de, V: de::Deserialize<'te>> de::Visitor<'de> for OneOrOne<V> {
-        type Value = Rc<V>;
-
-        // Requested type description, returned in error case
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("object only, for Rc")
-        }
-
-        // Result for Object
-        fn visit_map<E>(self, map: E) -> Result<Self::Value, E::Error>
-        where
-            E: de::MapAccess<'de>,
-        {
-            let v: V = de::Deserialize::deserialize(de::value::MapAccessDeserializer::new(map))?;
-            let v = Rc::new(v);
-            Ok(v)
-        }
+        let input_str = r#"{"value": [{"value": "key_1"}, {"value": "key_2"}]}"#;
+        let mut btree_map = BTreeMap::new();
+        btree_map.insert(
+            "key_1".to_string(),
+            SecondRandomStruct {
+                value: "key_1".to_string(),
+            },
+        );
+        btree_map.insert(
+            "key_2  ".to_string(),
+            SecondRandomStruct {
+                value: "key_2".to_string(),
+            },
+        );
+        let value_target = RandomStruct { value: btree_map };
+        check_deser_make_no_error(input_str, &value_target);
     }
 
-    deserializer.deserialize_any(OneOrOne(PhantomData))
+    #[test]
+    fn deser_btreemap_using_name_as_key_02_check_error() {
+        initialize_log_for_test();
+
+        let input_str = r#"{"value": "key_1"}}"#;
+        let error_target = "invalid type: string \"key_1\", expected object";
+        check_deser_make_error::<RandomStruct>(input_str, error_target);
+
+        let input_str = r#"{"value": 1}}"#;
+        let error_target = "invalid type: integer `1`, expected object";
+        check_deser_make_error::<RandomStruct>(input_str, error_target);
+
+        let input_str = r#"{"value": 1.0}}"#;
+        let error_target = "invalid type: floating point `1.0`, expected object";
+        check_deser_make_error::<RandomStruct>(input_str, error_target);
+
+        let input_str = r#"{"value": true}}"#;
+        let error_target = "invalid type: boolean `true`, expected object";
+        check_deser_make_error::<RandomStruct>(input_str, error_target);
+    }
 }

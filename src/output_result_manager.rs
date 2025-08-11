@@ -40,7 +40,11 @@ pub struct ResultEnv {
 }
 
 impl ResultEnv {
-    fn new(input_folder: &str, parent_output_folder: &str, result_folder: &str) -> Self {
+    fn new(
+        input_folder: &str,
+        parent_output_folder: &str,
+        result_folder: &str,
+    ) -> Result<Self, anyhow::Error> {
         // Create output folder (prevention)
         Path::new(parent_output_folder).create_folder();
         Path::new(result_folder).create_folder();
@@ -51,12 +55,13 @@ impl ResultEnv {
         Path::new(result_folder).check_is_dir();
 
         //Set input folder path and output folder path
-        let path_input_folder: PathBuf = Path::new(input_folder).canonicalize_pathbuf();
-        let mut path_output_folder: PathBuf =
-            Path::new(parent_output_folder).canonicalize_pathbuf();
+        let path_input_folder: PathBuf = Path::new(input_folder).canonicalize_pathbuf().unwrap();
+        let mut path_output_folder: PathBuf = Path::new(parent_output_folder)
+            .canonicalize_pathbuf()
+            .unwrap();
         let time_string: String = Local::now().format("%Y-%m-%d_%Hh%Mm%S/").to_string();
         path_output_folder.push(time_string);
-        let path_result_folder: PathBuf = Path::new(result_folder).canonicalize_pathbuf();
+        let path_result_folder: PathBuf = Path::new(result_folder).canonicalize_pathbuf().unwrap();
 
         // Create sub output folder
         path_output_folder.create_folder();
@@ -76,11 +81,11 @@ impl ResultEnv {
         );
 
         // Create instance
-        ResultEnv {
+        Ok(ResultEnv {
             input_folder: path_input_folder,
             output_folder: path_output_folder,
             result_folder: path_result_folder,
-        }
+        })
     }
 
     /// Read input folder Path as PathBuf
@@ -99,21 +104,26 @@ impl ResultEnv {
     }
 
     /// Deleting output folder if empty (for cleaning output main folder)
-    pub fn delete_if_empty(&self) {
-        self.output_folder.delete_folder(true);
+    pub fn delete_if_empty(&self) -> Result<(), anyhow::Error> {
+        self.output_folder.delete_folder(true)
     }
 
     /// Copy output to result
-    pub fn export_result(&self) {
+    pub fn export_result(&self) -> Result<(), anyhow::Error> {
         // Purge folder
-        self.result_folder.purge_folder();
+        self.result_folder.purge_folder()?;
         // Copy content of output_folder to result_folder
-        self.output_folder.copy_folder(&self.result_folder);
+        self.output_folder.copy_folder(&self.result_folder)?;
+        Ok(())
     }
 }
 
 /// Shorcut of __ResultEnv::new()__, creating ResultEnv instance and creating output folder with time name
-pub fn open_env(input_folder: &str, main_output_folder: &str, result_folder: &str) -> ResultEnv {
+pub fn open_env(
+    input_folder: &str,
+    main_output_folder: &str,
+    result_folder: &str,
+) -> Result<ResultEnv, anyhow::Error> {
     ResultEnv::new(input_folder, main_output_folder, result_folder)
 }
 
@@ -152,7 +162,7 @@ mod tests {
         // Preparing
         Path::new(main_output_path).purge_folder();
         // Test
-        let file_env = open_env(input_path, main_output_path, result_path);
+        let file_env = open_env(input_path, main_output_path, result_path).unwrap();
         file_env.delete_if_empty();
     }
 
@@ -168,7 +178,7 @@ mod tests {
         // Preparing
         Path::new(main_output_path).purge_folder();
         // Test
-        let file_env = open_env(input_path, main_output_path, result_path);
+        let file_env = open_env(input_path, main_output_path, result_path).unwrap();
         file_env.get_input_folder();
         file_env.get_output_folder();
         file_env.get_result_folder();
@@ -189,7 +199,7 @@ mod tests {
         // Preparing
         Path::new(main_output_path).purge_folder();
         // Test
-        let file_env = open_env(input_path, main_output_path, result_path);
+        let file_env = open_env(input_path, main_output_path, result_path).unwrap();
         // Clone input in output
         Path::new(step_1).copy_folder(&file_env.get_output_folder());
         Path::new(step_2).copy_folder(&file_env.get_result_folder());

@@ -30,7 +30,7 @@ use std::collections::BTreeMap;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, XMIIdentification)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF EnumerationLiteral Object
 pub struct CMOFEnumerationLiteral {
@@ -38,15 +38,48 @@ pub struct CMOFEnumerationLiteral {
     #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
     pub xmi_id: XMIIdLocalReference,
+    /// Casing formating of "name" as technical_name
+    #[serde(skip)]
+    pub parent: XMIIdReference<EnumWeakCMOF>,
     /// name attribute
     #[serde(rename = "_name")]
-    pub name: String,
+    name: String,
     /// classifier attribute
     #[serde(rename = "_classifier")]
-    pub classifier: String,
+    _classifier: String,
     /// enumeration attribute
     #[serde(rename = "_enumeration")]
-    pub enumeration: String,
+    _enumeration: String,
+    /// Casing formating of "name" as table_name
+    #[serde(skip)]
+    pub litteral_name: String,
+    /// Casing formating of "name" as table_name
+    #[serde(skip)]
+    pub litteral_designation: String,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl PartialEq for CMOFEnumerationLiteral {
+    fn eq(&self, other: &Self) -> bool {
+        self.xmi_id == other.xmi_id
+    }
+}
+
+impl Eq for CMOFEnumerationLiteral {}
+
+impl PartialOrd for CMOFEnumerationLiteral {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for CMOFEnumerationLiteral {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.xmi_id.cmp(&other.xmi_id)
+    }
 }
 
 // ####################################################################################################
@@ -60,29 +93,52 @@ impl SetCMOFTools for CMOFEnumerationLiteral {
         _dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         // Get needed values
-        let package_name = dict_setting.get("package_name").ok_or(anyhow::format_err!(
-            "Dictionnary error in make_post_deserialize"
-        ))?;
+        let package_name = dict_setting
+            .get("package_name")
+            .ok_or(anyhow::format_err!(
+                "Dictionnary error in make_post_deserialize"
+            ))?
+            .clone();
+        let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package(&package_name);
+        self.xmi_id.set_package_id_if_empty(&package_name);
+        self.litteral_designation = self.name.clone();
+        self.litteral_name = self.name.to_case(Case::UpperCamel);
         //Return
         Ok(())
     }
 
     fn make_post_deserialize(
         &self,
-        _dict_object: &mut BTreeMap<String, EnumCMOF>,
+        dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
+        // Self
+        set_xmi_id_object(&self.parent, dict_object)?;
         //Return
         Ok(())
     }
 }
 
-impl GetXMIId for CMOFEnumerationLiteral {
-    fn get_xmi_id_field(&self) -> String {
-        self.xmi_id.label()
-    }
-    fn get_xmi_id_object(&self) -> String {
-        self.xmi_id.get_object_id()
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

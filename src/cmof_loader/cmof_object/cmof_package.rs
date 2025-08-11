@@ -31,7 +31,7 @@ pub use std::rc::Rc;
 //
 // ####################################################################################################
 
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, XMIIdentification)]
 #[serde(deny_unknown_fields)]
 /// RUST Struct for deserialize CMOF Package Object
 pub struct CMOFPackage {
@@ -41,7 +41,7 @@ pub struct CMOFPackage {
     pub xmi_id: XMIIdLocalReference,
     /// name attribute
     #[serde(rename = "_name")]
-    pub name: String,
+    name: String,
     /// uri attribute
     #[serde(rename = "_uri")]
     pub uri: String,
@@ -64,6 +64,30 @@ pub struct CMOFPackage {
 //
 // ####################################################################################################
 
+impl PartialEq for CMOFPackage {
+    fn eq(&self, other: &Self) -> bool {
+        self.xmi_id == other.xmi_id
+    }
+}
+
+impl Eq for CMOFPackage {}
+
+impl PartialOrd for CMOFPackage {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for CMOFPackage {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.xmi_id.cmp(&other.xmi_id)
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
 impl SetCMOFTools for CMOFPackage {
     fn collect_object(
         &mut self,
@@ -74,17 +98,22 @@ impl SetCMOFTools for CMOFPackage {
         let package_name = self.name.clone();
         let package_name_snake_case = package_name.to_case(Case::Snake);
         dict_setting.insert(String::from("package_name"), package_name.clone());
+        let parent_name = self.xmi_id.get_object_id();
         // Set local values
-        self.xmi_id.set_package(&package_name);
+        self.xmi_id.set_package_id_if_empty(&package_name);
         self.lowercase_name = String::from(package_name_snake_case);
         // Call on child
         for (_, p) in &mut self.package_import {
             match p {
                 EnumPackageImport::PackageImport(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
+                    m.parent.set_package_id_if_empty(&package_name);
+                    m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object
-                        .insert(c.get_xmi_id_field(), EnumCMOF::CMOFPackageImport(c.clone()));
+                    dict_object.insert(
+                        c.get_xmi_id_field()?,
+                        EnumCMOF::CMOFPackageImport(c.clone()),
+                    );
                 }
             }
         }
@@ -92,29 +121,41 @@ impl SetCMOFTools for CMOFPackage {
             match p {
                 EnumOwnedMember::Association(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
+                    m.parent.set_package_id_if_empty(&package_name);
+                    m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field(), EnumCMOF::CMOFAssociation(c.clone()));
+                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFAssociation(c.clone()));
                 }
                 EnumOwnedMember::Class(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
+                    m.parent.set_package_id_if_empty(&package_name);
+                    m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field(), EnumCMOF::CMOFClass(c.clone()));
+                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFClass(c.clone()));
                 }
                 EnumOwnedMember::DataType(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
+                    m.parent.set_package_id_if_empty(&package_name);
+                    m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field(), EnumCMOF::CMOFDataType(c.clone()));
+                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFDataType(c.clone()));
                 }
                 EnumOwnedMember::Enumeration(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
+                    m.parent.set_package_id_if_empty(&package_name);
+                    m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field(), EnumCMOF::CMOFEnumeration(c.clone()));
+                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFEnumeration(c.clone()));
                 }
                 EnumOwnedMember::PrimitiveType(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
+                    m.parent.set_package_id_if_empty(&package_name);
+                    m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object
-                        .insert(c.get_xmi_id_field(), EnumCMOF::CMOFPrimitiveType(c.clone()));
+                    dict_object.insert(
+                        c.get_xmi_id_field()?,
+                        EnumCMOF::CMOFPrimitiveType(c.clone()),
+                    );
                 }
             }
         }
@@ -128,21 +169,44 @@ impl SetCMOFTools for CMOFPackage {
     ) -> Result<(), anyhow::Error> {
         // Call on child
         for (_, p) in &self.package_import {
-            p.make_post_deserialize(dict_object)?;
+            match p {
+                EnumPackageImport::PackageImport(c) => c.make_post_deserialize(dict_object)?,
+            }
         }
         for (_, p) in &self.owned_member {
-            p.make_post_deserialize(dict_object)?;
+            match p {
+                EnumOwnedMember::Association(c) => c.make_post_deserialize(dict_object)?,
+                EnumOwnedMember::Class(c) => c.make_post_deserialize(dict_object)?,
+                EnumOwnedMember::DataType(c) => c.make_post_deserialize(dict_object)?,
+                EnumOwnedMember::Enumeration(c) => c.make_post_deserialize(dict_object)?,
+                EnumOwnedMember::PrimitiveType(c) => c.make_post_deserialize(dict_object)?,
+            }
         }
         //Return
         Ok(())
     }
 }
 
-impl GetXMIId for CMOFPackage {
-    fn get_xmi_id_field(&self) -> String {
-        self.xmi_id.label()
-    }
-    fn get_xmi_id_object(&self) -> String {
-        self.xmi_id.get_object_id()
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

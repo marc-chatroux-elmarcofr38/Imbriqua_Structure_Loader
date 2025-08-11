@@ -52,7 +52,7 @@ impl SetCMOFTools for EnumImportedPackage {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumImportedPackage::ImportedPackage(c) => set_href(&c.href, dict_object),
+            EnumImportedPackage::ImportedPackage(c) => c.set_xmi_id_object(dict_object),
         }
     }
 }
@@ -85,7 +85,7 @@ impl SetCMOFTools for EnumRedefinedProperty {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumRedefinedProperty::Property(c) => set_href(&c.href, dict_object),
+            EnumRedefinedProperty::Property(c) => c.set_xmi_id_object(dict_object),
         }
     }
 }
@@ -118,7 +118,7 @@ impl SetCMOFTools for EnumSubsettedProperty {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumSubsettedProperty::Property(c) => set_href(&c.href, dict_object),
+            EnumSubsettedProperty::Property(c) => c.set_xmi_id_object(dict_object),
         }
     }
 }
@@ -151,10 +151,12 @@ impl SetCMOFTools for EnumSuperClass {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumSuperClass::HRefClass(c) => set_href(&c.href, dict_object),
+            EnumSuperClass::HRefClass(c) => c.set_xmi_id_object(dict_object),
         }
     }
 }
+
+impl EnumSuperClass {}
 
 // ####################################################################################################
 //
@@ -190,9 +192,9 @@ impl SetCMOFTools for EnumType {
         dict_object: &mut BTreeMap<String, EnumCMOF>,
     ) -> Result<(), anyhow::Error> {
         match self {
-            EnumType::HRefClass(c) => set_href(&c.href, dict_object),
-            EnumType::HRefDataType(c) => set_href(&c.href, dict_object),
-            EnumType::HRefPrimitiveType(c) => set_href(&c.href, dict_object),
+            EnumType::HRefClass(c) => c.set_xmi_id_object(dict_object),
+            EnumType::HRefDataType(c) => c.set_xmi_id_object(dict_object),
+            EnumType::HRefPrimitiveType(c) => c.set_xmi_id_object(dict_object),
         }
     }
 }
@@ -201,76 +203,22 @@ impl SetCMOFTools for EnumType {
 //
 // ####################################################################################################
 
-pub fn set_href(
-    reference: &XMIIdReference,
-    dict_object: &mut BTreeMap<String, EnumCMOF>,
-) -> Result<(), anyhow::Error> {
-    // Criteria
-    if reference.object.borrow().is_some() {
-        panic!("'{}' is already loaded", reference.label())
-    };
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
 
-    // Catch
-    let k = reference.label();
-    let r = dict_object.get(&k);
-    if r.is_none() {
-        return Err(anyhow::format_err!(
-            "Matching error in post_deserialize : \"{}\" not find in dict_object",
-            k
-        ));
-    } else {
-        let v = r.unwrap();
-        match v {
-            EnumCMOF::CMOFAssociation(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFAssociation(c.clone())));
-            }
-            EnumCMOF::CMOFClass(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFClass(c.clone())));
-            }
-            EnumCMOF::CMOFConstraint(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFConstraint(c.clone())));
-            }
-            EnumCMOF::CMOFDataType(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFDataType(c.clone())));
-            }
-            EnumCMOF::CMOFEnumeration(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFEnumeration(c.clone())));
-            }
-            EnumCMOF::CMOFEnumerationLiteral(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFEnumerationLiteral(c.clone())));
-            }
-            EnumCMOF::CMOFOpaqueExpression(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFOpaqueExpression(c.clone())));
-            }
-            EnumCMOF::CMOFPackage(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFPackage(c.clone())));
-            }
-            EnumCMOF::CMOFPackageImport(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFPackageImport(c.clone())));
-            }
-            EnumCMOF::CMOFPrimitiveType(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFPrimitiveType(c.clone())));
-            }
-            EnumCMOF::CMOFProperty(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFProperty(c.clone())));
-            }
-            EnumCMOF::CMOFTag(c) => {
-                let a = &reference.object;
-                a.replace(Some(EnumCMOF::CMOFTag(c.clone())));
-            }
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
         }
+
+        let r = test();
+        assert!(r.is_ok());
     }
-    // Return
-    Ok(())
 }

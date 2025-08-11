@@ -29,6 +29,21 @@ use crate::cmof_loader::*;
 // ####################################################################################################
 
 #[derive(Clone, PartialEq, Debug)]
+/// State on package to load
+pub enum LoadingState {
+    /// No Element (name reserved)
+    Empty,
+    /// With Element (imported)
+    Loaded,
+    /// Element used (converted)
+    Finished,
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[derive(Clone, PartialEq, Debug)]
 /// Representation of a package
 pub struct LoadingPackage {
     /// Source file of the package
@@ -91,9 +106,10 @@ impl LoadingPackage {
     }
 
     /// Delete Element and change state
-    pub fn make_finished(&mut self) {
+    pub fn make_finished(&mut self) -> Result<(), anyhow::Error> {
         self.cmof_object = None;
         self.state = LoadingState::Finished;
+        Ok(())
     }
 }
 
@@ -107,7 +123,7 @@ impl SetCMOFTools for LoadingPackage {
             let r = self.cmof_object.as_mut().unwrap();
             let m = Rc::get_mut(r).unwrap();
             m.collect_object(dict_setting, dict_object)?;
-            dict_object.insert(m.get_xmi_id_field(), EnumCMOF::CMOFPackage(r.clone()));
+            dict_object.insert(m.get_xmi_id_field()?, EnumCMOF::CMOFPackage(r.clone()));
         } else {
             return Err(anyhow::format_err!("Loading Package without cmof_package"));
         }
@@ -125,5 +141,29 @@ impl SetCMOFTools for LoadingPackage {
             return Err(anyhow::format_err!("Loading Package without cmof_package"));
         }
         Ok(())
+    }
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_creation() {
+        fn test() -> Result<(), anyhow::Error> {
+            initialize_log_for_test();
+
+            panic!();
+
+            Ok(())
+        }
+
+        let r = test();
+        assert!(r.is_ok());
     }
 }

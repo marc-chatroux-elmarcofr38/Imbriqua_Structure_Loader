@@ -30,31 +30,14 @@ use serde_json::Value;
 //
 // ####################################################################################################
 
-/// Convert string with space to vec of string, splitting on space
-pub fn deser_spaced_string<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
-where
-    D: de::Deserializer<'de>,
-{
-    Ok(match de::Deserialize::deserialize(deserializer)? {
-        // Split text
-        Value::String(s) => s.split(" ").map(str::to_string).collect(),
-        // Null, always False
-        Value::Null => Vec::new(),
-        _ => return Err(de::Error::custom("Wrong type, expected String")),
-    })
-}
-
-// ####################################################################################################
-//
-// ####################################################################################################
-
 /// Deserialising to __String__, from name (prevent suspicious name)
+/// Allow :
+///     - String, (and rebrand 'type' as 'r#type')
 pub fn deser_name<'de, D>(deserializer: D) -> Result<String, D::Error>
 where
     D: de::Deserializer<'de>,
 {
     Ok(match de::Deserialize::deserialize(deserializer)? {
-        // String, True if "yes" or "true"
         Value::String(s) => match s.as_str() {
             "type" => "r#type".to_string(),
             _ => s,
@@ -62,4 +45,56 @@ where
         // others
         _ => return Err(de::Error::custom("Wrong type, expected string")),
     })
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::cmof_loader::tests::{check_deser_make_error, check_deser_make_no_error};
+    use crate::custom_log_tools::tests::initialize_log_for_test;
+
+    #[test]
+    fn test_01_check_value_deser_name() {
+        initialize_log_for_test();
+
+        #[derive(Clone, Debug, PartialEq, Deserialize)]
+        struct RandomStruct {
+            #[serde(deserialize_with = "deser_name")]
+            value: String,
+        }
+
+        let target_value = RandomStruct {
+            value: String::from("name"),
+        };
+        check_deser_make_no_error::<RandomStruct>(r#"{"value": "name"}"#, &target_value);
+
+        let target_value = RandomStruct {
+            value: String::from("r#type"),
+        };
+        check_deser_make_no_error::<RandomStruct>(r#"{"value": "type"}"#, &target_value);
+    }
+
+    #[test]
+    fn test_02_check_error_value_deser_name() {
+        initialize_log_for_test();
+
+        #[derive(Clone, Debug, PartialEq, Deserialize)]
+        struct RandomStruct {
+            #[serde(deserialize_with = "deser_name")]
+            value: String,
+        }
+
+        let error_target = "Wrong type, expected string";
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1}"#, &error_target);
+
+        let error_target = "Wrong type, expected string";
+        check_deser_make_error::<RandomStruct>(r#"{"value": true"}"#, &error_target);
+
+        let error_target = "Wrong type, expected string";
+        check_deser_make_error::<RandomStruct>(r#"{"value": 1.0"}"#, &error_target);
+    }
 }
