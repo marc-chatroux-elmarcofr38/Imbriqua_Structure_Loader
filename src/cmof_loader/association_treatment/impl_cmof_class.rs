@@ -78,9 +78,9 @@ impl CMOFClass {
         // // // Filter only OneToOne Relation
         // // .filter(|v| v.ponteration_type == RelationPonderationType::OneToOne)
         // // // Filter direct only (self is relation 1)
-        // // .filter(|v| v.relation_1.get_xmi_id_field().is_ok() && self.get_xmi_id_field().is_ok())
+        // // .filter(|v| v.relation_1.get_xmi_label().is_ok() && self.get_xmi_label().is_ok())
         // // .filter(|v| {
-        // //     v.relation_1.get_xmi_id_field().unwrap() == self.get_xmi_id_field().unwrap()
+        // //     v.relation_1.get_xmi_label().unwrap() == self.get_xmi_label().unwrap()
         // // })
         // {
         //     match v {
@@ -97,12 +97,12 @@ impl CMOFClass {
         //                 let object_2 = relation.relation_1.parent.get_object_as_enum().unwrap();
         //                 match object_1 {
         //                     EnumCMOF::CMOFAssociation(c) => {
-        //                         if c.get_xmi_id_field()? == self.get_xmi_id_field()? {
+        //                         if c.get_xmi_label()? == self.get_xmi_label()? {
         //                             result.push((k.clone(), relation.clone()));
         //                         }
         //                     }
         //                     EnumCMOF::CMOFClass(c) => {
-        //                         if c.get_xmi_id_field()? == self.get_xmi_id_field()? {
+        //                         if c.get_xmi_label()? == self.get_xmi_label()? {
         //                             result.push((k.clone(), relation.clone()));
         //                         }
         //                     }
@@ -110,12 +110,12 @@ impl CMOFClass {
         //                 }
         //                 match object_2 {
         //                     EnumCMOF::CMOFAssociation(c) => {
-        //                         if c.get_xmi_id_field()? == self.get_xmi_id_field()? {
+        //                         if c.get_xmi_label()? == self.get_xmi_label()? {
         //                             result.push((k.clone(), relation.reverse()));
         //                         }
         //                     }
         //                     EnumCMOF::CMOFClass(c) => {
-        //                         if c.get_xmi_id_field()? == self.get_xmi_id_field()? {
+        //                         if c.get_xmi_label()? == self.get_xmi_label()? {
         //                             result.push((k.clone(), relation.reverse()));
         //                         }
         //                     }

@@ -59,31 +59,31 @@ impl LoadingTracker {
             for (_, entity) in &package.get_json().owned_member {
                 match entity {
                     EnumOwnedMember::Association(content) => {
-                        let t = content.get_xmi_id_field()?;
+                        let t = content.get_xmi_label()?;
                         trace!("Start : 'write_lib_file' for {}", t);
                         content.wrt_lib_file_level(&mut writer)?;
                         trace!("End : 'write_lib_file' for {}", t);
                     }
                     EnumOwnedMember::Class(content) => {
-                        let t = content.get_xmi_id_field()?;
+                        let t = content.get_xmi_label()?;
                         trace!("Start : 'write_lib_file' for {}", t);
                         content.wrt_lib_file_level(&mut writer)?;
                         trace!("End : 'write_lib_file' for {}", t);
                     }
                     EnumOwnedMember::DataType(content) => {
-                        let t = content.get_xmi_id_field()?;
+                        let t = content.get_xmi_label()?;
                         trace!("Start : 'write_lib_file' for {}", t);
                         content.wrt_lib_file_level(&mut writer)?;
                         trace!("End : 'write_lib_file' for {}", t);
                     }
                     EnumOwnedMember::Enumeration(content) => {
-                        let t = content.get_xmi_id_field()?;
+                        let t = content.get_xmi_label()?;
                         trace!("Start : 'write_lib_file' for {}", t);
                         content.wrt_lib_file_level(&mut writer)?;
                         trace!("End : 'write_lib_file' for {}", t);
                     }
                     EnumOwnedMember::PrimitiveType(content) => {
-                        let t = content.get_xmi_id_field()?;
+                        let t = content.get_xmi_label()?;
                         trace!("Start : 'write_lib_file' for {}", t);
                         content.wrt_lib_file_level(&mut writer)?;
                         trace!("End : 'write_lib_file' for {}", t);

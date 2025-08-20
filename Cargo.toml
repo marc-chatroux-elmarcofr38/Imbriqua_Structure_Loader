@@ -19,7 +19,7 @@ include = ["/doc", "/examples", "/metamodel_file", "/src", "/tests", "config_log
 [dependencies]
 anyhow = "1.0.81"
 chrono = "0.4.37"
-convert_case="0.6.0"
+convert_case="0.8.0"
 fs_extra="1.3.0"
 infinitable="1.6.0"
 lazy_static="1.4.0"

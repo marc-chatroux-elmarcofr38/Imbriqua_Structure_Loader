@@ -38,7 +38,7 @@ pub struct CMOFClass {
     #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
     pub xmi_id: XMIIdLocalReference,
-    /// Casing formating of "name" as technical_name
+    /// Parent of the XMI object
     #[serde(skip)]
     pub parent: XMIIdReference<EnumWeakCMOF>,
     /// name attribute
@@ -140,7 +140,7 @@ impl SetCMOFTools for CMOFClass {
                     m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFProperty(c.clone()));
+                    dict_object.insert(c.get_xmi_label()?, EnumCMOF::CMOFProperty(c.clone()));
                 }
             }
         }
@@ -151,7 +151,7 @@ impl SetCMOFTools for CMOFClass {
                     m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFConstraint(c.clone()));
+                    dict_object.insert(c.get_xmi_label()?, EnumCMOF::CMOFConstraint(c.clone()));
                 }
             }
         }
@@ -201,7 +201,7 @@ impl CMOFClass {
                 EnumCMOF::CMOFClass(class) => {
                     for (_, super_class_reference) in class.get_super_class()? {
                         let super_class = get_object_as_class(&super_class_reference)?;
-                        if self.get_xmi_id_field()? == super_class.get_xmi_id_field()? {
+                        if self.get_xmi_label()? == super_class.get_xmi_label()? {
                             self.reverse_super.borrow_mut().push(Rc::downgrade(class));
                         }
                     }
@@ -248,7 +248,7 @@ impl CMOFClass {
                     object_2.clone(),
                 )?)
             };
-            let key = association.get_xmi_id_field()?;
+            let key = association.get_xmi_label()?;
             self.relation.borrow_mut().insert(key, value);
         }
         Ok(())

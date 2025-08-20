@@ -38,7 +38,7 @@ pub struct CMOFPrimitiveType {
     #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
     pub xmi_id: XMIIdLocalReference,
-    /// Casing formating of "name" as technical_name
+    /// Parent of the XMI object
     #[serde(skip)]
     pub parent: XMIIdReference<EnumWeakCMOF>,
     /// name attribute

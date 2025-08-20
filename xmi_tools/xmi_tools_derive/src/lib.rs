@@ -1,25 +1,55 @@
+/*
+Copyright 2023-2024 CHATROUX MARC
+
+This file is part of Imbriqua Structure, a interpreter of BPMN model files (in UML notation) for
+Imbriqua Engine project
+
+Imbriqua Structure is free software: you can redistribute it and/or modify it under the terms of
+the GNU General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
+
+Imbriqua Structure is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with Imbriqua Structure.
+If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#![warn(dead_code)]
+#![warn(missing_docs)]
+#![doc = include_str!("lib.md")]
+
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
-use syn::{self, Data, DataEnum, DataStruct, DeriveInput, Fields};
+use syn::{self, Attribute, Data, DataEnum, DataStruct, DeriveInput, Fields};
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
 
 #[proc_macro_derive(XMIIdentity)]
-pub fn xmi_tools(input: TokenStream) -> TokenStream {
+/// Macro derive on implement [XMIIdentity](crate::XMIIdentity) trait to Struct and Enum
+pub fn xmi_identity(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse(input).unwrap();
 
     match &ast.data {
-        Data::Enum(DataEnum { .. }) => impl_xmi_tools_for_enum(&ast),
-        Data::Struct(DataStruct { .. }) => impl_xmi_tools_for_struct(&ast),
+        Data::Enum(DataEnum { .. }) => impl_xmi_identity_for_enum(&ast),
+        Data::Struct(DataStruct { .. }) => impl_xmi_identity_for_struct(&ast),
         _ => panic!("XMIIdentity only for Struct and Enum"),
     }
 }
 
-fn impl_xmi_tools_for_enum(ast: &syn::DeriveInput) -> TokenStream {
+// ####################################################################################################
+
+fn impl_xmi_identity_for_enum(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
 
-    let mut arms_get_xmi_id_field = Vec::new();
+    let mut arms_get_xmi_label = Vec::new();
     let mut arms_get_xmi_id = Vec::new();
 
     if let Data::Enum(DataEnum { variants, .. }) = &ast.data {
@@ -33,8 +63,8 @@ fn impl_xmi_tools_for_enum(ast: &syn::DeriveInput) -> TokenStream {
                     if fields.unnamed.iter().len() != 1 {
                         panic!("Fields::Unnamed");
                     }
-                    arms_get_xmi_id_field.push(quote! {
-                        #name::#variant_ident(c) => c.get_xmi_id_field(),
+                    arms_get_xmi_label.push(quote! {
+                        #name::#variant_ident(c) => c.get_xmi_label(),
                     });
                     arms_get_xmi_id.push(quote! {
                         #name::#variant_ident(c) => c.xmi_id.clone(),
@@ -51,9 +81,9 @@ fn impl_xmi_tools_for_enum(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let content = quote! {
         impl XMIIdentification for #name {
-            fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
+            fn get_xmi_label(&self) -> Result<String, anyhow::Error> {
                 match self {
-                    #(#arms_get_xmi_id_field)*
+                    #(#arms_get_xmi_label)*
                 }
             }
             fn get_xmi_id(&self) -> XMIIdLocalReference {
@@ -83,12 +113,13 @@ fn impl_xmi_tools_for_enum(ast: &syn::DeriveInput) -> TokenStream {
     content.into()
 }
 
-fn impl_xmi_tools_for_struct(ast: &syn::DeriveInput) -> TokenStream {
-    // 'ast' must refer to an Struct
+// ####################################################################################################
+
+fn impl_xmi_identity_for_struct(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let content = quote! {
         impl XMIIdentification for #name {
-            fn get_xmi_id_field(&self) -> Result<String, anyhow::Error> {
+            fn get_xmi_label(&self) -> Result<String, anyhow::Error> {
                 self.xmi_id.label()
             }
             fn get_xmi_id(&self) -> XMIIdLocalReference {
@@ -115,3 +146,85 @@ fn impl_xmi_tools_for_struct(ast: &syn::DeriveInput) -> TokenStream {
     };
     content.into()
 }
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################
+
+#[proc_macro_derive(XMIDeserialize)]
+pub fn xmi_deserialize(input: TokenStream) -> TokenStream {
+    let ast: DeriveInput = syn::parse(input).unwrap();
+
+    match &ast.data {
+        Data::Enum(DataEnum { .. }) => impl_xmi_deserialize_for_enum(&ast),
+        Data::Struct(DataStruct { .. }) => impl_xmi_deserialize_for_struct(&ast),
+        _ => panic!("XMIDeserialize only for Struct and Enum"),
+    }
+}
+
+// ####################################################################################################
+
+fn impl_xmi_deserialize_for_enum(ast: &syn::DeriveInput) -> TokenStream {
+    let name = &ast.ident;
+    let content = quote! {
+        impl XMIDeserialize for #name {}
+    };
+    content.into()
+}
+
+// ####################################################################################################
+
+fn impl_xmi_deserialize_for_struct(ast: &syn::DeriveInput) -> TokenStream {
+    // Vérifier que c'est une struct
+    let data = match &ast.data {
+        Data::Struct(data) => data,
+        _ => return TokenStream::from(quote! { #ast }), // Si ce n'est pas une struct, on retourne tel quel
+    };
+
+    // Récupérer le nom de la struct
+    let name = &ast.ident;
+    let mut name2 = ast.ident.clone().to_string();
+    name2.push_str("Model");
+
+    // Modifier les champs
+    let new_fields = match data.fields.clone() {
+        Fields::Named(mut named_fields) => {
+            for field in &mut named_fields.named {
+                // Exemple : ajouter #[serde(skip_serializing)] à certains champs
+                let should_skip = field.ident.as_ref().map_or(false, |ident| ident == "hash");
+                let should_skip = true;
+                if should_skip {
+                    // Vérifier si l'attribut n'existe pas déjà
+                    let has_serde_skip = &field.attrs.iter().any(|attr| {
+                        attr.path.is_ident("serde")
+                            && attr.tokens.to_string().contains("skip_serializing")
+                    });
+                    if !has_serde_skip {
+                        let attr: Attribute = syn::parse_quote! { #[serde(skip_serializing)] };
+                        field.attrs.push(attr);
+                    }
+                }
+            }
+            // named_fields
+            data.fields.clone()
+        }
+        _ => data.fields.clone(), // Pour simplifier, on ne gère pas les autres cas ici
+    };
+
+    // Recréer la struct avec les nouveaux champs
+    let content = quote! {
+        impl XMIDeserialize for #name {}
+        struct #name2 {
+            #new_fields
+        }
+    };
+    content.into()
+}
+
+// ####################################################################################################
+//
+// ####################################################################################################
+//
+// ####################################################################################################

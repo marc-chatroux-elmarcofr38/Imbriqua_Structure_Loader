@@ -86,10 +86,7 @@ impl SetCMOFTools for CMOFPackage {
                     m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(
-                        c.get_xmi_id_field()?,
-                        EnumCMOF::CMOFPackageImport(c.clone()),
-                    );
+                    dict_object.insert(c.get_xmi_label()?, EnumCMOF::CMOFPackageImport(c.clone()));
                 }
             }
         }
@@ -100,38 +97,35 @@ impl SetCMOFTools for CMOFPackage {
                     m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFAssociation(c.clone()));
+                    dict_object.insert(c.get_xmi_label()?, EnumCMOF::CMOFAssociation(c.clone()));
                 }
                 EnumOwnedMember::Class(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
                     m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFClass(c.clone()));
+                    dict_object.insert(c.get_xmi_label()?, EnumCMOF::CMOFClass(c.clone()));
                 }
                 EnumOwnedMember::DataType(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
                     m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFDataType(c.clone()));
+                    dict_object.insert(c.get_xmi_label()?, EnumCMOF::CMOFDataType(c.clone()));
                 }
                 EnumOwnedMember::Enumeration(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
                     m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFEnumeration(c.clone()));
+                    dict_object.insert(c.get_xmi_label()?, EnumCMOF::CMOFEnumeration(c.clone()));
                 }
                 EnumOwnedMember::PrimitiveType(ref mut c) => {
                     let m = Rc::get_mut(c).unwrap();
                     m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(
-                        c.get_xmi_id_field()?,
-                        EnumCMOF::CMOFPrimitiveType(c.clone()),
-                    );
+                    dict_object.insert(c.get_xmi_label()?, EnumCMOF::CMOFPrimitiveType(c.clone()));
                 }
             }
         }

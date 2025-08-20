@@ -36,7 +36,7 @@ pub struct CMOFEnumeration {
     #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
     pub xmi_id: XMIIdLocalReference,
-    /// Casing formating of "name" as technical_name
+    /// Parent of the XMI object
     #[serde(skip)]
     pub parent: XMIIdReference<EnumWeakCMOF>,
     /// name attribute
@@ -100,7 +100,7 @@ impl SetCMOFTools for CMOFEnumeration {
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
                     dict_object.insert(
-                        c.get_xmi_id_field()?,
+                        c.get_xmi_label()?,
                         EnumCMOF::CMOFEnumerationLiteral(c.clone()),
                     );
                 }

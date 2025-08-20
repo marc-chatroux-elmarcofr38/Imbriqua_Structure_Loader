@@ -36,7 +36,7 @@ pub struct CMOFDataType {
     #[serde(deserialize_with = "deser_local_xmi_id")]
     #[serde(rename = "_xmi:id")]
     pub xmi_id: XMIIdLocalReference,
-    /// Casing formating of "name" as technical_name
+    /// Parent of the XMI object
     #[serde(skip)]
     pub parent: XMIIdReference<EnumWeakCMOF>,
     /// name attribute
@@ -101,7 +101,7 @@ impl SetCMOFTools for CMOFDataType {
                     m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFProperty(c.clone()));
+                    dict_object.insert(c.get_xmi_label()?, EnumCMOF::CMOFProperty(c.clone()));
                 }
             }
         }
@@ -112,7 +112,7 @@ impl SetCMOFTools for CMOFDataType {
                     m.parent.set_package_id_if_empty(&package_name);
                     m.parent.set_object_id(&parent_name);
                     m.collect_object(dict_setting, dict_object)?;
-                    dict_object.insert(c.get_xmi_id_field()?, EnumCMOF::CMOFConstraint(c.clone()));
+                    dict_object.insert(c.get_xmi_label()?, EnumCMOF::CMOFConstraint(c.clone()));
                 }
             }
         }
