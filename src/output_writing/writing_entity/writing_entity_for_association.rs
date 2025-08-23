@@ -67,7 +67,7 @@ impl CMOFAssociation {
     ) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             wrt,
-            include_str!("../template/entity_main_association_one_to_one.tmpl"),
+            include_str!("template/entity_main_association_one_to_one.tmpl"),
             full_name = self.full_name,
             raw = format!("{:#?}", self).prefix("// "),
         );
@@ -81,7 +81,7 @@ impl CMOFAssociation {
     ) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             wrt,
-            include_str!("../template/entity_main_association_one_to_many.tmpl"),
+            include_str!("template/entity_main_association_one_to_many.tmpl"),
             full_name = self.full_name,
             raw = format!("{:#?}", self).prefix("// "),
         );
@@ -133,7 +133,7 @@ impl CMOFAssociation {
         let relation_2_column_name_camel = &relation_2_named;
         let _ = writeln!(
             wrt,
-            include_str!("../template/entity_main_association_many_to_many.tmpl"),
+            include_str!("template/entity_main_association_many_to_many.tmpl"),
             full_name = self.full_name,
             import = self.get_import_content(),
             table_name = self.table_name,

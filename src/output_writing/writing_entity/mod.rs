@@ -27,12 +27,14 @@ pub mod writing_entity_for_datatype;
 pub mod writing_entity_for_enumeration;
 pub mod writing_entity_for_primitive_type;
 pub mod writing_entity_for_property;
+pub mod writting_relation;
 pub use writing_entity_for_association::*;
 pub use writing_entity_for_class::*;
 pub use writing_entity_for_datatype::*;
 pub use writing_entity_for_enumeration::*;
 pub use writing_entity_for_primitive_type::*;
 pub use writing_entity_for_property::*;
+pub use writting_relation::*;
 
 // Package section
 use crate::cmof_loader::*;

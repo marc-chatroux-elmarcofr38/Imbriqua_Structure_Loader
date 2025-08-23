@@ -1,0 +1,9 @@
+impl FlowNode {{
+    pub fn get_incoming<C>(&self, db : &C) -> Result<Vec<SequenceFlow>, DbErr>
+        where C : ConnectionTrait
+        {{
+            Definitions::find()
+            .filter(Expr::col(DefinitionsColumns::Id).eq(1))
+            .all(db)
+        }}
+}}

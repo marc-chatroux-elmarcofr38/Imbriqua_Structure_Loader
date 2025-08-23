@@ -18,13 +18,19 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("mod.md")]
 
 // Mod section
-mod impl_cmof_association;
-mod impl_cmof_class;
-mod impl_cmof_enumeration;
-mod impl_href;
-mod relation_object;
-pub use impl_href::*;
-pub use relation_object::*;
+use crate::output_writing::writing_entity::*;
+
+// Package section
+use crate::cmof_loader::*;
+use crate::custom_file_tools::*;
+use crate::custom_log_tools::*;
+
+// Dependencies section
+
+// // ####################################################################################################
+// //
+// // ####################################################################################################
+
+impl Relation {}

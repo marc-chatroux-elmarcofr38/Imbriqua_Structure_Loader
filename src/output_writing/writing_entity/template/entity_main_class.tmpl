@@ -1,4 +1,4 @@
-//! {full_name}
+//! class : {full_name}
 {import}
 #[derive(Clone, Debug, Default, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "{table_name}")]
@@ -13,12 +13,7 @@ pub enum Relation {{
 {related}
 impl ActiveModelBehavior for ActiveModel {{}}
 
-impl ActiveModel {{
-{help_doc}
-    pub fn help(&self) -> &str {{
-    r#"{help_fn}"#
-    }}
-}}
+impl ActiveModel {{}}
 
 // RAW :
 {raw}

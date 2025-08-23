@@ -45,10 +45,11 @@ impl CMOFPrimitiveType {
             let content = primitive_type_conversion.get(object_type).unwrap();
             let _ = writeln!(
                 wrt,
-                include_str!("../template/entity_main_primitive_type.tmpl"),
+                include_str!("template/entity_main_primitive_type.tmpl"),
                 full_name = self.full_name,
                 model_name = self.model_name,
                 standard_object = content,
+                raw = format!("{:#?}", self).prefix("// "),
             );
         }
         Ok(())

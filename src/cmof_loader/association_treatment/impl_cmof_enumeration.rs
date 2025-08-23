@@ -18,13 +18,30 @@ If not, see <https://www.gnu.org/licenses/>.
 
 #![warn(dead_code)]
 #![warn(missing_docs)]
-#![doc = include_str!("mod.md")]
 
-// Mod section
-mod impl_cmof_association;
-mod impl_cmof_class;
-mod impl_cmof_enumeration;
-mod impl_href;
-mod relation_object;
-pub use impl_href::*;
-pub use relation_object::*;
+// Package section
+use crate::cmof_loader::*;
+
+// Dependencies section
+
+// ####################################################################################################
+//
+// ####################################################################################################
+
+impl CMOFEnumeration {
+    /// Get all literal
+    pub fn get_all_literal(&self) -> Result<Vec<&CMOFEnumerationLiteral>, anyhow::Error> {
+        // As default, empty
+        let mut result: Vec<&CMOFEnumerationLiteral> = Vec::new();
+
+        for (_, property) in &self.owned_attribute {
+            match property {
+                EnumOwnedLiteral::EnumerationLiteral(content) => {
+                    result.push(&content);
+                }
+            }
+        }
+
+        Ok(result)
+    }
+}

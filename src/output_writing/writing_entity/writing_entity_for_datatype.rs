@@ -42,7 +42,7 @@ impl CMOFDataType {
     ) -> Result<(), anyhow::Error> {
         let _ = writeln!(
             wrt,
-            include_str!("../template/entity_main_datatype.tmpl"),
+            include_str!("template/entity_main_datatype.tmpl"),
             full_name = self.full_name,
             table_name = self.table_name,
             fields = self.get_fields_content(primitive_type_conversion)?,
@@ -50,7 +50,7 @@ impl CMOFDataType {
         );
         Ok(())
     }
-    /// "fields" content for entity_data_type_main.tmpl
+
     fn get_fields_content(
         &self,
         primitive_type_conversion: &PrimitiveTypeConversion,
@@ -65,7 +65,7 @@ impl CMOFDataType {
 
         Ok(result)
     }
-    /// Get all field
+
     fn get_all_field(&self) -> Result<Vec<&CMOFProperty>, anyhow::Error> {
         // As default, empty
         let mut result: Vec<&CMOFProperty> = Vec::new();
@@ -81,7 +81,6 @@ impl CMOFDataType {
         Ok(result)
     }
 
-    // Write field content
     fn write_field_property(
         content: &CMOFProperty,
         primitive_type_conversion: &PrimitiveTypeConversion,

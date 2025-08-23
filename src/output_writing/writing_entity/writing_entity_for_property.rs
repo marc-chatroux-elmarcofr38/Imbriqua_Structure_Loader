@@ -34,6 +34,7 @@ use crate::custom_log_tools::*;
 // // ####################################################################################################
 
 impl CMOFProperty {
+    /// Yep
     pub fn get_field_type(
         &self,
         primitive_type_conversion: &PrimitiveTypeConversion,
@@ -115,6 +116,7 @@ impl CMOFProperty {
         Ok(result)
     }
 
+    /// Yep Yep
     pub fn get_field_name(&self) -> String {
         if &self.name.to_case(Case::Snake) == &String::from("id") {
             String::from("bpmn_id")
